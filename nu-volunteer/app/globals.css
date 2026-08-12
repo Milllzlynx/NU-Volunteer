@@ -1,0 +1,385 @@
+/* NU Volunteer — global stylesheet
+ *
+ * ตามกฎใน DESIGN-SYSTEM.md §8: สีและระยะทั้งหมดเขียน inline บนองค์ประกอบ
+ * ไฟล์นี้เก็บเฉพาะ 3 กรณีที่ทำ inline ไม่ได้ —
+ *   1) @keyframes
+ *   2) media query (responsive / print)
+ *   3) ชั้นธีมมืดและสไตล์ Tweak ที่ต้องทับทั้งหน้า
+ */
+
+/* ---- Material Symbols ---- */
+.msr {
+  font-family: 'Material Symbols Rounded';
+  font-weight: normal;
+  font-style: normal;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-feature-settings: 'liga';
+  -webkit-font-smoothing: antialiased;
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  user-select: none;
+}
+.msr.fill {
+  font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+/* ---- Animations ---- */
+@keyframes nuFadeUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes nuPageIn {
+  from { opacity: 0; transform: translateY(14px) scale(0.994); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes nuPop {
+  from { opacity: 0; transform: translateY(10px) scale(0.97); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes nuSpin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+@keyframes nuShimmer {
+  0% { background-position: -460px 0; }
+  100% { background-position: 460px 0; }
+}
+@keyframes nuPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* สถานะกำลังโหลด: skeleton แทน spinner ทุกครั้งที่โครงหน้ารู้ล่วงหน้า */
+.nuv-sk {
+  background: linear-gradient(
+    90deg,
+    rgba(31, 41, 55, 0.06) 25%,
+    rgba(31, 41, 55, 0.12) 50%,
+    rgba(31, 41, 55, 0.06) 75%
+  );
+  background-size: 460px 100%;
+  animation: nuShimmer 1.25s linear infinite;
+  border-radius: 8px;
+}
+
+/* ---- Base ---- */
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  font-family: var(--nuv-font), 'Mitr', 'Noto Sans Thai', 'Inter', system-ui, sans-serif;
+  font-weight: 300;
+  letter-spacing: 0.01em;
+  background: #e9ecf3;
+  -webkit-font-smoothing: antialiased;
+}
+h1, h2, h3, div, span, button, a, input, textarea, select {
+  letter-spacing: 0.01em;
+}
+a {
+  color: #b37cf6;
+  text-decoration: none;
+}
+a:hover {
+  color: #8b2fe0;
+}
+input, textarea, select, button {
+  font-family: inherit;
+}
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(30, 37, 48, 0.15);
+  border-radius: 8px;
+}
+
+/* ---- Responsive: tablet ---- */
+@media (max-width: 1100px) {
+  .nuv-chartrow { grid-template-columns: 1fr !important; }
+}
+
+/* ---- Responsive: mobile ---- */
+@media (max-width: 900px) {
+  .nuv-appshell { padding: 10px !important; gap: 10px !important; }
+
+  /* หน้า auth: เหลือคอลัมน์ฟอร์มอย่างเดียว ซ่อนภาพด้านข้าง */
+  .nuv-auth-split { grid-template-columns: 1fr !important; }
+  .nuv-auth-aside { display: none !important; }
+  .nuv-auth-pane { padding: 28px 22px !important; }
+
+  /* แถบข้างยุบเป็นเมนูสไลด์ */
+  .nuv-sidebar-desktop { display: none !important; }
+  .nuv-collapse-btn { display: none !important; }
+  .nuv-mobile-burger { display: inline-flex !important; }
+  .nuv-chartrow { grid-template-columns: 1fr !important; gap: 12px !important; }
+
+  /* กริดหลายคอลัมน์ที่เขียน inline ยุบเหลือคอลัมน์เดียว ยกเว้นปฏิทินและไทล์เล็ก */
+  [style*="grid-template-columns:1.4fr"],
+  [style*="grid-template-columns:1.5fr"],
+  [style*="grid-template-columns:1.6fr"],
+  [style*="grid-template-columns:2fr 1fr"],
+  [style*="grid-template-columns:1.3fr"],
+  [style*="grid-template-columns:1.1fr"],
+  [style*="grid-template-columns:320px"],
+  [style*="grid-template-columns:1fr 1fr 1fr"],
+  [style*="grid-template-columns:repeat(3,1fr)"] { grid-template-columns: 1fr !important; }
+
+  /* ตารางแบบแถวให้เลื่อนแทนการบีบ */
+  .nuv-tablewrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .nuv-tablewrap > * { min-width: 640px; }
+  .nuv-trow { min-width: 660px; }
+  :has(> .nuv-trow) { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+}
+
+@media (max-width: 640px) {
+  .nuv-appshell { padding: 8px !important; gap: 8px !important; }
+  .nuv-auth-wrap { padding: 14px !important; }
+  .nuv-auth-pane { padding: 24px 18px !important; }
+  [style*="grid-template-columns:1fr 1fr"] { grid-template-columns: 1fr !important; }
+
+  /* padding การ์ดกระชับลงบนมือถือ */
+  [style*="padding:28px"] { padding: 18px !important; }
+  [style*="padding:26px"] { padding: 18px !important; }
+  [style*="padding:24px"] { padding: 16px !important; }
+  [style*="padding:22px"] { padding: 15px !important; }
+  [style*="padding:20px"] { padding: 14px !important; }
+  [style*="padding:40px 38px"] { padding: 22px 18px !important; }
+
+  /* แถบตัวกรอง: แถวเดียวเลื่อนแนวนอน แทนการซ้อนเป็นตั้ง */
+  .nuv-tabs {
+    flex-wrap: nowrap !important;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding-bottom: 2px;
+  }
+  .nuv-tabs::-webkit-scrollbar { display: none; }
+  .nuv-tabs > button { flex: 0 0 auto !important; white-space: nowrap; }
+
+  .nuv-trow { min-width: 620px; }
+  .nuv-trow:first-of-type { margin-top: 0; }
+
+  /* การ์ดรายการ: ภาพเต็มความกว้าง ข้อความ และปุ่มเรียงเป็นแนวตั้ง */
+  .nuv-listcard {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 12px !important;
+  }
+  .nuv-listcard > img { width: 100% !important; height: 132px !important; }
+  .nuv-listcard-actions { width: 100%; justify-content: flex-start; }
+  .nuv-listcard-actions > button { min-width: 44px; min-height: 44px; }
+
+  /* ตารางกว้างกลายเป็นการ์ดซ้อน พร้อมป้ายกำกับจาก data-th */
+  .nuv-cardify {
+    min-width: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 7px !important;
+    padding: 14px 16px !important;
+  }
+  .nuv-cardify > div[data-th] {
+    display: flex !important;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    text-align: left !important;
+    overflow: visible !important;
+  }
+  .nuv-cardify > div[data-th]::before {
+    content: attr(data-th);
+    font-size: 11px;
+    color: #9ca3af;
+    flex-shrink: 0;
+  }
+  .nuv-cardhead {
+    min-width: 0 !important;
+    display: flex !important;
+    align-items: center;
+    gap: 9px;
+    padding: 12px 16px !important;
+  }
+  .nuv-cardhead > div:not([data-th]) { display: none !important; }
+  .nuv-cardhead > div[data-th] {
+    display: flex !important;
+    flex-direction: row-reverse;
+    align-items: center;
+    gap: 9px;
+  }
+  .nuv-cardhead > div[data-th]::before {
+    content: attr(data-th);
+    font-size: 12px;
+    color: #4b5563;
+  }
+
+  /* ปุ่มไอคอน: ซ่อนคำกำกับ แต่คงพื้นที่กด 44×44 */
+  .nuv-blabel { display: none !important; }
+  .nuv-iconbtn {
+    padding: 0 !important;
+    width: 44px !important;
+    min-width: 44px !important;
+    height: 44px !important;
+    justify-content: center !important;
+    gap: 0 !important;
+  }
+}
+
+/* ---- หน้าแรก (landing) ---- */
+html { scroll-behavior: smooth; }
+.nuv-card { transition: transform 0.2s, box-shadow 0.2s; }
+.nuv-card:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(30, 37, 48, 0.12); }
+
+@media (max-width: 820px) {
+  .nuv-land-clock { display: none !important; }
+}
+@media (max-width: 900px) {
+  .nuv-slider { height: 440px !important; }
+  .nuv-slide-panel {
+    left: 16px !important;
+    right: 16px !important;
+    max-width: none !important;
+    top: auto !important;
+    bottom: 80px !important;
+    transform: none !important;
+    padding: 22px !important;
+  }
+  .nuv-why-grid { grid-template-columns: 1fr !important; gap: 26px !important; }
+  .nuv-foot { grid-template-columns: 1fr 1fr !important; }
+}
+@media (max-width: 760px) {
+  .nuv-land-navwrap { padding: 10px 10px 0 !important; }
+  .nuv-land-nav { padding: 9px 10px 9px 12px !important; border-radius: 16px !important; }
+  .nuv-land-brandtext { display: none !important; }
+  .nuv-land-stats { grid-template-columns: 1fr !important; gap: 10px !important; }
+  .nuv-why-cards > div { margin-top: 0 !important; }
+  .nuv-foot { grid-template-columns: 1fr !important; gap: 22px !important; padding: 26px 20px !important; }
+  .nuv-land-hero { padding: 34px 20px 22px !important; }
+  .nuv-land-body { padding: 8px 20px 56px !important; }
+  .nuv-land-cta { padding: 32px 20px 50px !important; }
+  .nuv-land-authbtn { padding: 9px 14px !important; font-size: 12.5px !important; }
+  .nuv-land-stats > div { padding: 14px !important; border-radius: 18px !important; }
+  .nuv-land-grid { grid-template-columns: 1fr !important; gap: 14px !important; }
+  .nuv-land-filters { flex-direction: column !important; align-items: stretch !important; }
+  .nuv-land-chips { flex-wrap: wrap !important; }
+}
+@media (max-width: 640px) {
+  .nuv-land-authgroup { display: none !important; }
+  .nuv-land-burger { display: inline-flex !important; }
+}
+@media (max-width: 420px) {
+  .nuv-land-authbtn { padding: 9px 12px !important; }
+}
+
+/* ---- Print (A4 แนวนอน) ---- */
+@media print {
+  @page {
+    size: A4 landscape;
+    margin: 12mm;
+  }
+  html, body { background: #fff !important; }
+  .nuv-noprint, .nuv-sidebar-desktop, aside { display: none !important; }
+  .nuv-shell { filter: none !important; }
+}
+
+/* ---- Dark mode ----
+ * กลับสีทั้งชั้นที่ .nuv-shell แล้วกลับคืนเฉพาะสื่อที่ห้ามเพี้ยน
+ * (ให้ผลสม่ำเสมอทุกหน้าโดยไม่ต้องดูแลชุดสีคู่ขนาน)
+ */
+html[data-nuv-theme='dark'] { background: #12151c; }
+html[data-nuv-theme='dark'] body { background: #12151c; }
+html[data-nuv-theme='dark'] .nuv-shell { filter: invert(1) hue-rotate(180deg); }
+html[data-nuv-theme='dark'] .nuv-shell img:not(.nuv-noinv),
+html[data-nuv-theme='dark'] .nuv-shell video,
+html[data-nuv-theme='dark'] .nuv-shell canvas,
+html[data-nuv-theme='dark'] .nuv-shell svg image,
+html[data-nuv-theme='dark'] .nuv-shell .nuv-keep { filter: invert(1) hue-rotate(180deg); }
+html[data-nuv-theme='dark'] ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.2); }
+html[data-nuv-theme='dark'] ::placeholder { opacity: 0.75; }
+.nuv-shell { transition: filter 240ms ease; }
+
+/* ---- ชั้นสไตล์ (style mood) — ทับบนธีมบทบาท ไม่แตะสีความหมาย ---- */
+.nuv-shell,
+.nuv-shell * {
+  transition: border-radius 200ms ease, box-shadow 240ms ease, border-color 240ms ease;
+}
+
+/* แคนดี้: สดใสขึ้น มุมโค้งกว้างขึ้น เงามีสี */
+html[data-nuv-mood='candy'] div[style*='backdrop-filter'] {
+  border-radius: 28px !important;
+  border-width: 1.5px !important;
+  box-shadow:
+    0 18px 46px rgba(233, 113, 113, 0.18),
+    0 4px 14px rgba(167, 116, 247, 0.14),
+    inset 0 1px 0 rgba(255, 255, 255, 0.75) !important;
+}
+html[data-nuv-mood='candy'] button:not([style*='50%']):not([style*='999px']) {
+  border-radius: 15px !important;
+}
+html[data-nuv-mood='candy'] button[style*='linear-gradient'] {
+  box-shadow: 0 12px 28px rgba(167, 116, 247, 0.42) !important;
+}
+html[data-nuv-mood='candy'] input,
+html[data-nuv-mood='candy'] textarea,
+html[data-nuv-mood='candy'] select { border-radius: 15px !important; }
+html[data-nuv-mood='candy'] div[style*='font-weight:600'] { font-weight: 700; }
+
+/* มินิมอล: ลดสี มุมแคบ เน้นเส้นขอบแทนเงา */
+html[data-nuv-mood='minimal'] div[style*='backdrop-filter'] {
+  border-radius: 12px !important;
+  border: 1px solid rgba(31, 41, 55, 0.13) !important;
+  box-shadow: 0 1px 2px rgba(31, 41, 55, 0.05) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  background: rgba(255, 255, 255, 0.9) !important;
+}
+html[data-nuv-mood='minimal'] button:not([style*='50%']):not([style*='999px']) {
+  border-radius: 9px !important;
+  box-shadow: none !important;
+}
+html[data-nuv-mood='minimal'] input,
+html[data-nuv-mood='minimal'] textarea,
+html[data-nuv-mood='minimal'] select { border-radius: 9px !important; }
+html[data-nuv-mood='minimal'] div[style*='font-weight:600'] { font-weight: 500; }
+html[data-nuv-mood='minimal'] div[style*='border-radius:16px'][style*='rgba(255,255,255'] {
+  border-radius: 10px !important;
+}
+
+/* นีออน: ใช้ร่วมกับโหมดมืด — ขอบเส้นสว่าง + glow แทนเงาทึบ */
+html[data-nuv-mood='neon'] div[style*='backdrop-filter'] {
+  border-radius: 18px !important;
+  border: 1px solid rgba(167, 116, 247, 0.5) !important;
+  box-shadow:
+    0 0 0 1px rgba(233, 113, 113, 0.2),
+    0 10px 34px rgba(167, 116, 247, 0.3) !important;
+}
+html[data-nuv-mood='neon'] button:not([style*='50%']):not([style*='999px']) {
+  border-radius: 12px !important;
+}
+html[data-nuv-mood='neon'] button[style*='linear-gradient'] {
+  box-shadow:
+    0 0 18px rgba(233, 113, 113, 0.55),
+    0 0 34px rgba(167, 116, 247, 0.4) !important;
+}
+html[data-nuv-mood='neon'] input,
+html[data-nuv-mood='neon'] textarea,
+html[data-nuv-mood='neon'] select {
+  border-radius: 12px !important;
+  border-color: rgba(167, 116, 247, 0.45) !important;
+}
+html[data-nuv-mood='neon'] div[style*='font-weight:600'] {
+  font-weight: 600;
+  letter-spacing: 0.2px;
+}

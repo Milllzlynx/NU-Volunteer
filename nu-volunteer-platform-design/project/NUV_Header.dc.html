@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+
+<helmet data-dc-atomics><style>
+@keyframes nuvHdrPop{from{opacity:0;transform:translateY(-6px) scale(.98)}to{opacity:1;transform:none}}
+@media (max-width:900px){.nuv-hamburger{display:inline-flex !important}.nuv-hdr-search{display:none !important}}
+@media (max-width:1180px){.nuv-hdr-clock{display:none !important}}
+@media (max-width:1040px){.nuv-hdr-rolelabel{display:none !important}}
+@media (max-width:640px){
+  .nuv-hdr-bar{padding:9px 12px !important;gap:8px !important}
+  .nuv-hdr-left{flex:1 1 auto !important;min-width:0 !important;gap:8px !important}
+  .nuv-hdr-right{gap:4px !important;min-width:0 !important}
+  .nuv-hdr-right > *{flex-shrink:0}
+  .nuv-hdr-right button:not(.nuv-hdr-role){min-width:34px;width:34px !important;height:34px !important}
+  .nuv-hdr-right .nuv-hdr-role{width:auto !important;min-width:0;height:34px !important;gap:5px !important;padding:0 7px 0 3px !important}
+  /* ซ่อนเฉพาะปุ่มภาษา — มีตัวเลือกเดียวกันในหน้าตั้งค่าอยู่แล้ว
+     ธีมและเปลี่ยนรหัสผ่านไม่มีทางเข้าอื่นบนมือถือ จึงต้องคงไว้ */
+  .nuv-hdr-lang,.nuv-hdr-2fa{display:none !important}
+  .nuv-hdr-right{flex-wrap:nowrap !important}
+}
+</style></helmet>
+<div ref="{{ sentinelRef }}" style="height:1px;width:100%;flex-shrink:0;margin-bottom:-1px"></div>
+<div class="nuv-noprint nuv-hdr-bar" style="{{ headerStyle }}">
+  <div class="nuv-hdr-left" style="display:flex;align-items:center;gap:12px;min-width:0;flex-shrink:0">
+    <button onClick="{{ onMenu }}" title="{{ hdrL.menu }}" aria-label="{{ hdrL.menu }}" class="nuv-hamburger" style-hover="background:rgba(255,255,255,.85)" style="display:none;align-items:center;justify-content:center;width:36px;height:36px;border-radius:11px;border:1px solid rgba(31,41,55,.1);background:rgba(255,255,255,.6);cursor:pointer;color:#4B5563;transition:all 220ms ease"><span class="msr" style="font-size:20px">menu</span></button>
+    <div style="display:flex;align-items:center;gap:7px;min-width:0;font-size:13px;white-space:nowrap">
+      <span style="color:#1F2937;font-weight:500;overflow:hidden;text-overflow:ellipsis">{{ pageTitle }}</span>
+    </div>
+  </div>
+
+  <div class="nuv-hdr-search" style="flex:1;min-width:0;display:flex;justify-content:center">
+    <div style="position:relative;width:100%;max-width:460px">
+      <span class="msr" style="position:absolute;left:13px;top:50%;transform:translateY(-50%);font-size:19px;color:#9CA3AF;pointer-events:none">search</span>
+      <input ref="{{ searchRef }}" value="{{ headerSearch }}" onChange="{{ onHeaderSearch }}" onKeyDown="{{ onSearchKey }}" onFocus="{{ onSearchFocus }}" placeholder="{{ searchPlaceholder }}" style="width:100%;padding:10px 58px 10px 42px;border-radius:12px;border:1px solid rgba(31,41,55,.1);background:rgba(31,41,55,.035);font-family:inherit;font-size:13px;outline:none;color:#1F2937"/>
+      <span style="position:absolute;right:10px;top:50%;transform:translateY(-50%);padding:3px 7px;border-radius:7px;background:rgba(255,255,255,.9);border:1px solid rgba(31,41,55,.1);font-size:10.5px;color:#9CA3AF;pointer-events:none">⌘K</span>
+    </div>
+  </div>
+
+  <div class="nuv-hdr-right" style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+    <div class="nuv-hdr-clock" style="text-align:right;line-height:1.35;margin-right:4px">
+      <div style="font-size:12.5px;color:#4B5563;font-weight:500;white-space:nowrap">{{ clock }}</div>
+      <div style="font-size:10.5px;color:#9CA3AF;white-space:nowrap">{{ dateLabel }}</div>
+    </div>
+
+    <button onClick="{{ onToggleLang }}" title="{{ langTitle }}" class="nuv-hdr-lang" style-hover="background:rgba(31,41,55,.06)" style="display:inline-flex;align-items:center;justify-content:center;min-width:36px;height:36px;padding:0 9px;border-radius:11px;border:1px solid rgba(31,41,55,.1);background:rgba(255,255,255,.6);cursor:pointer;color:#6B7280;font-family:inherit;font-size:12px;font-weight:600;letter-spacing:.03em;transition:all 220ms ease">{{ langLabel }}</button>
+
+    <button onClick="{{ onToggleTheme }}" title="{{ themeTitle }}" class="nuv-hdr-theme" style-hover="background:rgba(31,41,55,.06)" style="display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:11px;border:1px solid rgba(31,41,55,.1);background:rgba(255,255,255,.6);cursor:pointer;color:#6B7280;transition:all 220ms ease"><span class="msr" style="font-size:19px">{{ themeIcon }}</span></button>
+
+    <div class="nuv-hdr-mood" style="position:relative">
+      <button onClick="{{ onToggleMood }}" title="{{ moodTitle }}" aria-label="{{ moodTitle }}" style-hover="background:rgba(31,41,55,.06)" style="display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:11px;border:1px solid rgba(31,41,55,.1);background:rgba(255,255,255,.6);cursor:pointer;color:#6B7280;transition:all 220ms ease"><span class="msr" style="font-size:19px">brush</span></button>
+      <sc-if value="{{ moodOpen }}" hint-placeholder-val="{{ false }}">
+        <div style="position:absolute;top:46px;right:0;z-index:120;width:288px;max-width:calc(100vw - 28px);padding:14px;border-radius:20px;background:rgba(255,255,255,.9);backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);border:1px solid rgba(255,255,255,.8);box-shadow:0 18px 48px rgba(31,41,55,.18)">
+          <div style="font-size:13.5px;font-weight:600;color:#1F2937">{{ moodPanelTitle }}</div>
+          <div style="font-size:11.5px;line-height:1.6;color:#9CA3AF;margin:2px 0 11px">{{ moodPanelHint }}</div>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <sc-for list="{{ moodOptions }}" as="mo" hint-placeholder-count="4">
+              <button onClick="{{ mo.onClick }}" style="{{ mo.rowStyle }}" style-hover="background:rgba(255,255,255,.95);border-color:rgba(167,116,247,.35)">
+                <span style="{{ mo.swatchStyle }}"></span>
+                <span style="min-width:0;flex:1">
+                  <span style="display:block;font-size:13px;font-weight:500;color:#1F2937">{{ mo.label }}</span>
+                  <span style="display:block;font-size:11px;line-height:1.55;color:#9CA3AF;margin-top:1px">{{ mo.desc }}</span>
+                </span>
+                <sc-if value="{{ mo.active }}" hint-placeholder-val="{{ false }}">
+                  <span class="msr fill" style="font-size:18px;color:#7C2FD9;flex-shrink:0">check_circle</span>
+                </sc-if>
+              </button>
+            </sc-for>
+          </div>
+        </div>
+      </sc-if>
+    </div>
+
+    <div style="position:relative">
+      <button onClick="{{ onToggleNotif }}" title="{{ hdrL.notif }}" aria-label="{{ hdrL.notif }}" style-hover="background:rgba(31,41,55,.06)" style="position:relative;display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:11px;border:1px solid rgba(31,41,55,.1);background:rgba(255,255,255,.6);cursor:pointer;color:#6B7280;transition:all 220ms ease"><span class="msr" style="font-size:19px">notifications</span>
+        <sc-if value="{{ hasUnread }}" hint-placeholder-val="{{ false }}">
+          <div style="position:absolute;top:-5px;right:-5px;min-width:18px;height:18px;padding:0 5px;border-radius:999px;display:flex;align-items:center;justify-content:center;font-size:10px;line-height:1;font-weight:600;background:#E4572E;color:#fff;box-shadow:0 0 0 2px #fff,0 2px 6px rgba(228,87,46,.4)">{{ unreadCount }}</div>
+        </sc-if>
+      </button>
+      <sc-if value="{{ notifOpen }}" hint-placeholder-val="{{ false }}">
+        <div style="position:absolute;right:0;top:46px;width:330px;background:#fff;border:1px solid rgba(30,37,48,.08);border-radius:18px;box-shadow:0 18px 46px rgba(30,37,48,.18);z-index:30;overflow:hidden;animation:nuvHdrPop .16s ease">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:13px 15px;border-bottom:1px solid rgba(30,37,48,.06)">
+            <div style="font-weight:500;font-size:13.5px;color:#1F2937">{{ notifTitle }}</div>
+            <sc-if value="{{ hasUnread }}" hint-placeholder-val="{{ false }}">
+              <div style="padding:2px 9px;border-radius:999px;font-size:10.5px;font-weight:500;background:rgba(228,87,46,.14);color:#B23A17">{{ notifNewLabel }} {{ unreadCount }}</div>
+            </sc-if>
+          </div>
+          <div style="max-height:320px;overflow-y:auto">
+            <sc-if value="{{ hasHeaderNotifs }}" hint-placeholder-val="{{ true }}">
+              <sc-for list="{{ headerNotifs }}" as="n" hint-placeholder-count="4">
+                <div onClick="{{ n.onOpen }}" style="padding:12px 15px;border-bottom:1px solid rgba(30,37,48,.05);display:flex;gap:11px;align-items:flex-start;cursor:pointer;transition:background 160ms ease" style-hover="background:rgba(31,41,55,.035)">
+                  <div style="display:flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:11px;flex-shrink:0;background:{{ n.iconBg }}"><span class="msr fill" style="font-size:17px;color:{{ n.color }}">{{ n.icon }}</span></div>
+                  <div style="flex:1;min-width:0">
+                    <div style="font-size:12.5px;color:#334155;line-height:1.6;font-weight:{{ n.weight }}">{{ n.text }}</div>
+                    <div style="font-size:11px;line-height:1.6;color:#94A3B8;margin-top:2px">{{ n.time }}</div>
+                  </div>
+                </div>
+              </sc-for>
+            </sc-if>
+            <sc-if value="{{ !hasHeaderNotifs }}" hint-placeholder-val="{{ false }}">
+              <div style="text-align:center;padding:32px 16px">
+                <span class="msr" style="font-size:32px;color:#CBD5E1">notifications_off</span>
+                <div style="font-size:12.5px;color:#9CA3AF;margin-top:6px">{{ notifEmptyLabel }}</div>
+              </div>
+            </sc-if>
+          </div>
+          <button onClick="{{ onOpenNotifPage }}" style-hover="background:rgba(167,116,247,.1)" style="width:100%;display:flex;align-items:center;justify-content:center;gap:6px;padding:12px;border:none;border-top:1px solid rgba(30,37,48,.06);background:rgba(167,116,247,.06);color:#7C2FD9;font-family:inherit;font-size:12.5px;font-weight:500;cursor:pointer;transition:background 160ms ease">{{ notifSeeAll }}<span class="msr" style="font-size:16px">arrow_forward</span></button>
+        </div>
+      </sc-if>
+    </div>
+
+    <div style="position:relative">
+      <div class="nuv-hdr-role" style="display:flex;align-items:center;gap:9px;padding:5px 12px 5px 5px;border-radius:999px;border:1px solid rgba(31,41,55,.1);background:rgba(255,255,255,.6)">
+        <sc-if value="{{ hasAvatar }}" hint-placeholder-val="{{ false }}">
+          <img src="{{ avatarUrl }}" alt="" style="width:28px;height:28px;border-radius:50%;object-fit:cover;flex-shrink:0;display:block"/>
+        </sc-if>
+        <sc-if value="{{ noAvatar }}" hint-placeholder-val="{{ true }}">
+          <div style="width:28px;height:28px;border-radius:50%;background:{{ roleAccent }};color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;line-height:1.7;font-weight:500;flex-shrink:0">{{ roleInitial }}</div>
+        </sc-if>
+        <div class="nuv-hdr-rolelabel" style="text-align:left;line-height:1.3">
+          <div style="font-size:12.5px;font-weight:500;color:#1F2937;white-space:nowrap">{{ userName }}</div>
+          <div style="font-size:10.5px;color:#9CA3AF;white-space:nowrap">{{ roleLabel }}</div>
+        </div>
+      </div>
+    </div>
+    <button onClick="{{ onTwoFactor }}" title="{{ tfaBtnTitle }}" aria-label="{{ tfaBtnTitle }}" class="nuv-hdr-2fa" style-hover="background:rgba(122,184,255,.24)" style="{{ tfaBtnStyle }}"><span class="msr" style="font-size:19px">encrypted</span></button>
+    <button onClick="{{ onPassword }}" title="{{ pwBtnTitle }}" aria-label="{{ pwBtnTitle }}" class="nuv-hdr-key" style-hover="background:rgba(167,116,247,.22)" style="display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:11px;border:1px solid rgba(167,116,247,.28);background:rgba(167,116,247,.1);color:#7C2FD9;cursor:pointer;transition:all 220ms ease"><span class="msr" style="font-size:19px">key</span></button>
+    <button onClick="{{ onLogout }}" title="{{ hdrL.signOut }}" aria-label="{{ hdrL.signOut }}" style-hover="background:rgba(233,113,113,.22)" style="display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:11px;border:1px solid rgba(233,113,113,.28);background:rgba(233,113,113,.1);color:#C2410C;cursor:pointer;transition:all 220ms ease"><span class="msr" style="font-size:19px">logout</span></button>
+  </div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+
+const ROLE_ACCENT = {student:'#E97171', organizer:'#A774F7', admin:'#1F2937'};
+class Component extends DCLogic {
+  searchRef = React.createRef();
+  sentinelRef = React.createRef();
+  state = { navHidden:false, atTop:true };
+  componentDidMount(){
+    const start = ()=>{
+      const el = this.sentinelRef.current;
+      if(!el){ this._tries=(this._tries||0)+1; if(this._tries<40) return setTimeout(start,80); return; }
+      this._last = 0;
+      this._tick = ()=>{
+        const y = -el.getBoundingClientRect().top;
+        const atTop = y < 8;
+        const delta = y - this._last;
+        let hidden = this.state.navHidden;
+        if(atTop) hidden = false;
+        else if(delta > 6) hidden = true;
+        else if(delta < -6) hidden = false;
+        if(hidden !== this.state.navHidden || atTop !== this.state.atTop) this.setState({navHidden:hidden, atTop});
+        this._last = y;
+      };
+      this._poll = setInterval(this._tick, 120);
+      this._tick();
+    };
+    start();
+    this._hk = (e)=>{
+      if((e.metaKey||e.ctrlKey) && (e.key==='k'||e.key==='K')){
+        e.preventDefault();
+        const el = this.searchRef.current;
+        if(el){ el.focus(); el.select(); }
+      }
+      if(e.key==='Escape' && document.activeElement===this.searchRef.current){ this.searchRef.current.blur(); }
+    };
+    window.addEventListener('keydown', this._hk);
+  }
+  componentWillUnmount(){ window.removeEventListener('keydown', this._hk); clearInterval(this._poll); }
+  goSearchPage(){
+    const p = this.props;
+    const target = {student:'discover', organizer:'activities', admin:'users'}[p.role];
+    if(target && p.page !== target && p.onNav) p.onNav(target);
+  }
+  renderVals(){
+    const p = this.props;
+    const en = p.lang === 'en';
+    const hdrL = {
+      menu: en ? 'Open menu' : 'เปิดเมนู',
+      notif: en ? 'Notifications' : 'การแจ้งเตือน',
+      signOut: en ? 'Sign out' : 'ออกจากระบบ',
+    };
+    const notifications = (p.notifications||[]).slice(0,6).map(n=>({...n, dotColor: n.read ? '#CBD5E1' : '#A774F7'}));
+    const headerNotifs = (p.headerNotifs || []).map(n=>({...n,
+      onOpen: ()=>{ if(p.onToggleNotif) p.onToggleNotif(); if(n.onOpen) n.onOpen(); else if(p.onNav) p.onNav('notifications'); }}));
+    const PLACEHOLDER_EN = {
+      student:'Search activities, categories, organizers...',
+      organizer:'Search activities, participants, reference ID...',
+      admin:'Search users, activities, announcements...',
+    };
+    const ROOT_EN = {student:'Volunteer System', organizer:'Organizer Console', admin:'System Admin'};
+    const PLACEHOLDER = {
+      student:'ค้นหากิจกรรม, หมวดหมู่, ผู้จัด...',
+      organizer:'ค้นหากิจกรรม, ชื่อผู้เข้าร่วม, รหัสอ้างอิง...',
+      admin:'ค้นหาผู้ใช้งาน, กิจกรรม, ประกาศ...',
+    };
+    const ROOT = {student:'ระบบอาสาสมัคร', organizer:'ผู้จัดกิจกรรม', admin:'ผู้ดูแลระบบ'};
+    return {
+      hdrL,
+      headerNotifs, hasHeaderNotifs: headerNotifs.length>0,
+      onOpenNotifPage: ()=>{ if(p.onToggleNotif) p.onToggleNotif(); if(p.onNav) p.onNav('notifications'); },
+      breadcrumbRoot: en ? (ROOT_EN[p.role]||'Volunteer System') : (ROOT[p.role]||'ระบบอาสาสมัคร'),
+      searchPlaceholder: en ? (PLACEHOLDER_EN[p.role]||'Search...') : (PLACEHOLDER[p.role]||'ค้นหา...'),
+      notifTitle: en ? 'Notifications' : 'การแจ้งเตือน',
+      notifNewLabel: en ? 'New' : 'ใหม่',
+      notifEmptyLabel: en ? 'No notifications yet' : 'ยังไม่มีการแจ้งเตือน',
+      notifSeeAll: en ? 'See all' : 'ดูทั้งหมด',
+      langLabel: en ? 'EN' : 'TH',
+      langTitle: en ? 'Switch to Thai' : 'เปลี่ยนเป็นภาษาอังกฤษ',
+      onToggleLang: ()=>p.onToggleLang && p.onToggleLang(),
+      headerSearch: p.headerSearch||'',
+      searchRef: this.searchRef, sentinelRef: this.sentinelRef,
+      headerStyle: `display:flex;align-items:center;gap:16px;padding:11px 20px;background:rgba(255,255,255,.93);backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);border:1px solid rgba(31,41,55,.07);border-radius:20px;position:sticky;top:16px;z-index:20;flex-shrink:0;transition:transform 300ms ease,box-shadow 260ms ease;transform:translateY(${this.state.navHidden?'-130%':'0'});box-shadow:${this.state.atTop?'0 8px 30px rgba(31,41,55,.09), inset 0 1px 0 rgba(255,255,255,.8)':'0 14px 38px rgba(31,41,55,.18), inset 0 1px 0 rgba(255,255,255,.8)'}`,
+      onHeaderSearch: (e)=>{
+        p.onHeaderSearch && p.onHeaderSearch(e.target.value);
+        if(e.target.value) this.goSearchPage();
+      },
+      onSearchFocus: ()=>{ if(p.headerSearch) this.goSearchPage(); },
+      onSearchKey: (e)=>{ if(e.key==='Enter') this.goSearchPage(); },
+      userName: p.userName || p.roleLabel || '',
+      avatarUrl: p.avatarUrl || '', hasAvatar: !!p.avatarUrl, noAvatar: !p.avatarUrl,
+      onFullscreen: ()=>{
+        try{ document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen(); }catch(e){}
+      },
+      pageTitle: p.pageTitle||'', roleLabel: p.roleLabel||'', clock: p.clock||'', yearBE: p.yearBe||'',
+      dateLabel: p.dateLabel||'',
+      themeIcon: p.darkMode ? 'light_mode' : 'dark_mode',
+      themeTitle: p.darkMode ? (en ? 'Light mode' : 'โหมดสว่าง') : (en ? 'Dark mode' : 'โหมดมืด'),
+      onToggleTheme: ()=> p.onToggleTheme && p.onToggleTheme(),
+      moodTitle: p.moodTitle || (en ? 'Style tweaks' : 'ปรับแต่งสไตล์'),
+      moodPanelTitle: p.moodPanelTitle || (en ? 'Overall style' : 'สไตล์ภาพรวม'),
+      moodPanelHint: p.moodPanelHint || (en ? 'Keeps your role colour — changes how it is presented' : 'ใช้สีหลักของบทบาทเดิม เปลี่ยนแค่วิธีนำเสนอ'),
+      moodOptions: p.moodOptions || [],
+      moodOpen: !!p.moodOpen,
+      onToggleMood: ()=> p.onToggleMood && p.onToggleMood(),
+      unreadCount: p.unreadCount||0, hasUnread: (p.unreadCount||0) > 0,
+      notifOpen: p.notifOpen, notifications,
+      roleAccent: ROLE_ACCENT[p.role]||'#1F2937', roleInitial: (p.roleLabel||'?').slice(0,1),
+      onToggleNotif: ()=> p.onToggleNotif && p.onToggleNotif(),
+      onMenu: ()=> p.onMenu && p.onMenu(),
+      onLogout: ()=> p.onLogout && p.onLogout(),
+      onPassword: ()=> p.onPassword && p.onPassword(),
+      onTwoFactor: ()=> p.onTwoFactor && p.onTwoFactor(),
+      pwBtnTitle: en ? 'Change password' : 'เปลี่ยนรหัสผ่าน',
+      tfaBtnTitle: p.tfaEnabled
+        ? (en ? 'Two-factor authentication is on' : '2FA เปิดใช้งานอยู่')
+        : (en ? 'Set up two-factor authentication' : 'ตั้งค่ายืนยันตัวตนสองขั้นตอน'),
+      tfaBtnStyle: 'display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:11px;cursor:pointer;transition:all 220ms ease;border:1px solid '
+        + (p.tfaEnabled ? 'rgba(99,210,161,.4)' : 'rgba(122,184,255,.3)')
+        + ';background:' + (p.tfaEnabled ? 'rgba(99,210,161,.16)' : 'rgba(122,184,255,.1)')
+        + ';color:' + (p.tfaEnabled ? '#0F8A63' : '#1D4ED8'),
+    };
+  }
+}
+
+</script>
+</body>
+</html>

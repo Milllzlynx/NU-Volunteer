@@ -1,0 +1,497 @@
+// NU Volunteer — full domain schema
+// dev: sqlite / production: postgresql (เปลี่ยน provider + DATABASE_URL)
+//
+// หมายเหตุ SQLite: ไม่รองรับ enum และ scalar list
+//   - ฟิลด์สถานะทั้งหมดเก็บเป็น String (ค่าที่ใช้ได้ระบุไว้ในคอมเมนต์ของแต่ละฟิลด์)
+//   - ฟิลด์ที่เป็นรายการ (perks, prep, gallery) เก็บเป็น JSON string ผ่าน lib/json.ts
+
+generator client {
+  provider = "prisma-client"
+  output   = "../lib/generated/prisma"
+}
+
+// Prisma 7: connection URL อยู่ใน prisma.config.ts และส่ง adapter ให้ PrismaClient (ดู lib/db.ts)
+datasource db {
+  provider = "sqlite"
+}
+
+/* ───────────────────────── auth ───────────────────────── */
+
+model User {
+  id           String  @id @default(cuid())
+  email        String  @unique // unique constraint จริงในฐานข้อมูล
+  passwordHash String
+  role         String  @default("student") // student | organizer | admin
+  name         String  @default("")
+  studentId    String?
+  faculty      String?
+  loanStatus   String? // yes | no  (ผู้กู้ยืม กยศ.)
+  avatarUrl    String?
+  phone        String?
+  active       Boolean @default(true)
+  seeded       Boolean @default(false)
+
+  // ทุก token ที่ออกก่อนเวลานี้ถือว่าใช้ไม่ได้ (เปลี่ยนรหัสผ่าน / ออกจากทุกอุปกรณ์)
+  tokensValidFrom DateTime @default(now())
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  sessions      Session[]
+  resetTokens   PasswordResetToken[]
+  twoFactor     TwoFactor?
+  organized     Activity[]           @relation("ActivityOrganizer")
+  registrations Registration[]
+  favorites     Favorite[]
+  certificates  Certificate[]
+  notifications Notification[]
+  reviews       Review[]
+  appeals       Appeal[]             @relation("AppealStudent")
+  appealsJudged Appeal[]             @relation("AppealJudge")
+  evidenceSeen  Evidence[]           @relation("EvidenceReviewer")
+  messages      ChatMessage[]
+  threadsAsUser ChatThread[]         @relation("ThreadStudent")
+  threadsAsStaff ChatThread[]        @relation("ThreadStaff")
+  hourAdjustments HourAdjustment[]   @relation("AdjustmentStudent")
+  adjustmentsMade HourAdjustment[]   @relation("AdjustmentAuthor")
+  systemLogs    SystemLog[]
+
+  @@index([role])
+  @@index([faculty])
+}
+
+model Session {
+  id          String    @id @default(cuid())
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  refreshHash String    @unique // เก็บ hash ของ refresh token ไม่เก็บตัว token
+  userAgent   String    @default("")
+  ip          String    @default("")
+  device      String    @default("")
+  createdAt   DateTime  @default(now())
+  lastSeenAt  DateTime  @default(now())
+  expiresAt   DateTime
+  revokedAt   DateTime?
+
+  @@index([userId])
+}
+
+model PasswordResetToken {
+  id        String    @id @default(cuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash String    @unique // sha256 ของ token ที่ส่งไปในอีเมล
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([userId])
+}
+
+model TwoFactor {
+  id          String    @id @default(cuid())
+  userId      String    @unique
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  enabled     Boolean   @default(false)
+  pending     Boolean   @default(false)
+  method      String    @default("totp") // totp | sms
+  phone       String?
+  secret      String? // เก็บ secret ของ TOTP (เข้ารหัสก่อนเก็บใน production)
+  backupCodes String    @default("[]") // JSON: sha256 ของรหัสสำรองที่ยังไม่ถูกใช้
+  enrolledAt  DateTime?
+  updatedAt   DateTime  @updatedAt
+}
+
+// ผูกกับ System Log ฝั่งแอดมิน
+model AuthLog {
+  id        String   @id @default(cuid())
+  event     String // login.success | login.failed | register | forgot | reset | logout.others | ratelimit.block
+  email     String   @default("")
+  ip        String   @default("")
+  userAgent String   @default("")
+  detail    String   @default("")
+  createdAt DateTime @default(now())
+
+  @@index([event, createdAt])
+  @@index([email, createdAt])
+}
+
+/* ───────────────────── master data ───────────────────── */
+
+model Faculty {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  colorName String   @default("")
+  color     String   @default("#A774F7")
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+}
+
+model Category {
+  id        String     @id // slug: acad | service | morality | arts | health | recreation | public
+  label     String
+  labelEn   String     @default("")
+  color     String     @default("#A774F7")
+  order     Int        @default(0)
+  active    Boolean    @default(true)
+  activities Activity[]
+}
+
+/* ───────────────────── activities ───────────────────── */
+
+model Activity {
+  id          String  @id @default(cuid())
+  title       String
+  categoryId  String
+  category    Category @relation(fields: [categoryId], references: [id])
+  organizerId String
+  organizer   User     @relation("ActivityOrganizer", fields: [organizerId], references: [id])
+  orgName     String   @default("") // ชื่อหน่วยงาน/ชมรมที่แสดงบนการ์ด
+  description String   @default("")
+
+  location String  @default("")
+  lat      Float?
+  lng      Float?
+  mapLink  String?
+  // รัศมีที่ยอมรับสำหรับการเช็กอินด้วย GPS (เมตร)
+  geoRadiusM Int   @default(300)
+
+  startAt    DateTime
+  endAt      DateTime
+  regOpenAt  DateTime?
+  regCloseAt DateTime?
+
+  seatsTotal Int    @default(0)
+  hours      Float  @default(0)
+  status     String @default("open") // draft | open | closed | cancelled | done
+
+  photo   String? // hero
+  gallery String  @default("[]") // JSON: [url, url]
+  mapImage String?
+  perks   String  @default("[]") // JSON: string[]
+  prep    String  @default("[]") // JSON: string[]
+
+  // ต้องอนุมัติผู้สมัครก่อนหรือไม่ (ค่าเริ่มต้น: ต้องอนุมัติ)
+  requiresApproval Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  registrations Registration[]
+  favorites     Favorite[]
+  certificates  Certificate[]
+  reviews       Review[]
+  checkinTokens CheckinToken[]
+  threads       ChatThread[]
+
+  @@index([status, startAt])
+  @@index([organizerId])
+  @@index([categoryId])
+}
+
+model Registration {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  activityId String
+  activity   Activity @relation(fields: [activityId], references: [id], onDelete: Cascade)
+
+  // pending | approved | rejected | checked-in | checked-out | completed | cancelled | no-show
+  status String @default("pending")
+  regAt  DateTime @default(now())
+
+  approvedAt DateTime?
+  rejectedAt DateTime?
+  rejectReason String?
+
+  checkedInAt  DateTime?
+  checkedOutAt DateTime?
+  checkinLat   Float?
+  checkinLng   Float?
+  // เช็กอินนอกรัศมีที่กำหนด — บันทึกไว้ให้ผู้จัดพิจารณา ไม่บล็อกทันที
+  checkinOutOfRange Boolean @default(false)
+
+  // ชั่วโมงที่คำนวณได้จากช่วงเช็กอิน–เช็กเอาต์ และชั่วโมงที่รับรองแล้ว
+  hoursComputed Float  @default(0)
+  hoursAwarded  Float  @default(0)
+  hoursApprovedAt DateTime?
+
+  cancelRequested Boolean   @default(false)
+  cancelReason    String?
+  cancelStatus    String? // pending | approved | rejected
+  cancelledAt     DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  evidence    Evidence[]
+  appeals     Appeal[]
+  certificate Certificate?
+
+  @@unique([userId, activityId])
+  @@index([activityId, status])
+  @@index([userId, status])
+}
+
+model Favorite {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  activityId String
+  activity   Activity @relation(fields: [activityId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+
+  @@unique([userId, activityId])
+}
+
+// QR ของผู้จัด — หมุนรหัสเป็นระยะและมีเวลาหมดอายุ (สแกนภาพถ่ายเก่าไม่ผ่าน)
+model CheckinToken {
+  id         String   @id @default(cuid())
+  activityId String
+  activity   Activity @relation(fields: [activityId], references: [id], onDelete: Cascade)
+  code       String   @unique
+  kind       String   @default("in") // in | out
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+
+  @@index([activityId, expiresAt])
+}
+
+model Evidence {
+  id             String       @id @default(cuid())
+  registrationId String
+  registration   Registration @relation(fields: [registrationId], references: [id], onDelete: Cascade)
+  fileUrl        String
+  fileName       String       @default("")
+  mimeType       String       @default("")
+  sizeBytes      Int          @default(0)
+  note           String       @default("")
+
+  status       String    @default("pending") // pending | approved | rejected
+  reviewedById String?
+  reviewedBy   User?     @relation("EvidenceReviewer", fields: [reviewedById], references: [id])
+  reviewedAt   DateTime?
+  reviewNote   String?
+
+  createdAt DateTime @default(now())
+
+  @@index([registrationId])
+  @@index([status])
+}
+
+model Appeal {
+  id             String       @id @default(cuid())
+  registrationId String
+  registration   Registration @relation(fields: [registrationId], references: [id], onDelete: Cascade)
+  userId         String
+  user           User         @relation("AppealStudent", fields: [userId], references: [id], onDelete: Cascade)
+
+  reason  String
+  fileUrl String?
+
+  status       String    @default("pending") // pending | approved | rejected
+  decidedById  String?
+  decidedBy    User?     @relation("AppealJudge", fields: [decidedById], references: [id])
+  decidedAt    DateTime?
+  decisionNote String?
+  // ส่งต่อให้แอดมินตัดสินแทนผู้จัด
+  escalated    Boolean   @default(false)
+
+  createdAt DateTime @default(now())
+
+  @@index([status])
+  @@index([userId])
+}
+
+// การปรับชั่วโมงด้วยมือ (ผลอุทธรณ์ / แอดมินแก้ไข) — แยกจาก Registration เพื่อให้ตรวจสอบย้อนหลังได้
+model HourAdjustment {
+  id       String @id @default(cuid())
+  userId   String
+  user     User   @relation("AdjustmentStudent", fields: [userId], references: [id], onDelete: Cascade)
+  authorId String
+  author   User   @relation("AdjustmentAuthor", fields: [authorId], references: [id])
+
+  hours        Float // บวก/ลบได้
+  reason       String
+  academicYear Int
+  createdAt    DateTime @default(now())
+
+  @@index([userId, academicYear])
+}
+
+model Certificate {
+  id             String        @id @default(cuid())
+  ref            String        @unique // NUV-2569-XXXXX (ใช้ในหน้า verify สาธารณะ)
+  userId         String
+  user           User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  activityId     String
+  activity       Activity      @relation(fields: [activityId], references: [id], onDelete: Cascade)
+  registrationId String?       @unique
+  registration   Registration? @relation(fields: [registrationId], references: [id])
+
+  hours     Float
+  issuedAt  DateTime  @default(now())
+  revokedAt DateTime?
+  revokeReason String?
+
+  @@index([userId])
+}
+
+model Review {
+  id         String   @id @default(cuid())
+  activityId String
+  activity   Activity @relation(fields: [activityId], references: [id], onDelete: Cascade)
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  stars      Int      @default(5)
+  comment    String   @default("")
+  createdAt  DateTime @default(now())
+
+  @@unique([activityId, userId])
+  @@index([activityId])
+}
+
+/* ───────────────── communication ───────────────── */
+
+model Notification {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // approval | reminder | message | certificate | kyf | system
+  type  String @default("system")
+  title String
+  body  String @default("")
+  link  String?
+
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([userId, read])
+  @@index([userId, createdAt])
+}
+
+model ChatThread {
+  id         String    @id @default(cuid())
+  activityId String?
+  activity   Activity? @relation(fields: [activityId], references: [id], onDelete: SetNull)
+
+  studentId String
+  student   User   @relation("ThreadStudent", fields: [studentId], references: [id], onDelete: Cascade)
+  staffId   String
+  staff     User   @relation("ThreadStaff", fields: [staffId], references: [id], onDelete: Cascade)
+
+  lastMessageAt DateTime @default(now())
+  createdAt     DateTime @default(now())
+
+  messages ChatMessage[]
+
+  @@unique([activityId, studentId, staffId])
+  @@index([studentId])
+  @@index([staffId])
+}
+
+model ChatMessage {
+  id       String     @id @default(cuid())
+  threadId String
+  thread   ChatThread @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  senderId String
+  sender   User       @relation(fields: [senderId], references: [id], onDelete: Cascade)
+
+  text      String
+  readAt    DateTime?
+  deletedAt DateTime?
+  // me = ซ่อนเฉพาะผู้ส่ง | all = ลบให้ทุกคนเห็น (แอดมินหรือผู้ส่งภายในเวลาที่กำหนด)
+  deleteScope String?
+
+  createdAt DateTime @default(now())
+
+  @@index([threadId, createdAt])
+}
+
+model ContactMessage {
+  id       String   @id @default(cuid())
+  fromName String
+  email    String   @default("")
+  subject  String   @default("")
+  text     String
+  read     Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([read])
+}
+
+/* ───────────────── content & ops ───────────────── */
+
+model News {
+  id        String    @id @default(cuid())
+  title     String
+  body      String    @default("")
+  published Boolean   @default(false)
+  publishedAt DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Banner {
+  id        String  @id @default(cuid())
+  title     String
+  desc      String  @default("")
+  image     String?
+  ctaLabel  String  @default("")
+  ctaTarget String  @default("") // key ของหน้าใน ROLE_NAV
+  type      String  @default("general") // general | reminder | update
+  visible   Boolean @default(true)
+  order     Int     @default(0)
+  createdAt DateTime @default(now())
+}
+
+model SystemLog {
+  id      String  @id @default(cuid())
+  level   String  @default("info") // info | success | warning | error
+  text    String
+  actorId String?
+  actor   User?   @relation(fields: [actorId], references: [id], onDelete: SetNull)
+  meta    String  @default("{}") // JSON
+
+  createdAt DateTime @default(now())
+
+  @@index([level, createdAt])
+  @@index([createdAt])
+}
+
+model EmailLog {
+  id      String @id @default(cuid())
+  event   String
+  to      String
+  lang    String @default("th")
+  subject String
+  body    String @default("")
+
+  status   String    @default("sending") // sending | retrying | sent | failed
+  attempts Int       @default(0)
+  error    String?
+  sentAt   DateTime?
+
+  createdAt DateTime @default(now())
+
+  @@index([status, createdAt])
+}
+
+model Backup {
+  id       String   @id @default(cuid())
+  trigger  String   @default("manual") // manual | scheduled
+  status   String   @default("success") // success | failed
+  sizeMb   Float    @default(0)
+  location String   @default("")
+  error    String?
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+}
+
+// ค่าตั้งค่าระบบแบบ key/value — maintenance mode, เกณฑ์ชั่วโมง กยศ., เปิด/ปิดสมัครสมาชิก ฯลฯ
+model Setting {
+  key       String   @id
+  value     String
+  updatedAt DateTime @updatedAt
+}

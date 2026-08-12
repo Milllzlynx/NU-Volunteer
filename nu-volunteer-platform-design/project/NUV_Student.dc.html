@@ -1,0 +1,2170 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+
+<helmet data-dc-atomics><script src="./image-slot.js"></script><style>
+@keyframes nuvBannerBar{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@media (max-width:900px){ .nuv-form-grid{grid-template-columns:1fr !important} }
+@media (max-width:520px){ .nuv-regtools{flex-direction:column !important;align-items:stretch !important} .nuv-regtools > div{width:100% !important;min-width:0 !important} }
+@media (max-width:1000px){ .nuv-cal-cols{grid-template-columns:1fr !important} }
+@media (max-width:1000px){ .nuv-week-grid{grid-template-columns:repeat(2,minmax(0,1fr)) !important} }
+@media (max-width:1000px){ .nuv-hours-top, .nuv-hours-charts{grid-template-columns:1fr !important} }
+@media (max-width:1000px){ .nuv-prof-grid{grid-template-columns:1fr !important} }
+@media (max-width:820px){ .nuv-chat-grid{grid-template-columns:1fr !important;height:auto !important} }
+@media (max-width:640px){
+  .nuv-cal-grid{gap:4px !important}
+  .nuv-cal-grid > div{min-height:54px !important;padding:6px 5px !important;border-radius:11px !important}
+  .nuv-cal-grid > div > div:last-child{display:none}
+  .nuv-reg-actions{gap:8px !important}
+  .nuv-reg-actions > button, .nuv-reg-actions > sc-if > button{flex:1 1 100% !important;justify-content:center !important;min-height:44px !important;white-space:normal !important;text-align:center}
+  .nuv-reg-head > div{min-width:0 !important}
+  .nuv-reg-head > div > div{min-width:0 !important}
+  .nuv-reg-meta{font-size:11px !important}
+  .nuv-reg-steps{padding:12px 4px !important}
+}
+@media (max-width:820px){
+  /* stack the hero: the nav row was sitting beside the copy and squeezing it to a sliver */
+  .nuv-hero{min-height:0 !important;flex-direction:column;align-items:stretch !important}
+  .nuv-hero-body{padding:24px 22px 18px !important;max-width:none !important;width:100%;box-sizing:border-box}
+  .nuv-hero-title{font-size:26px !important;line-height:1.28 !important}
+  .nuv-hero-desc{font-size:13px !important;line-height:1.75 !important;max-width:none !important;margin-top:10px !important}
+  .nuv-hero-cta{width:100%;justify-content:center;white-space:nowrap;padding:14px 20px !important;min-height:48px}
+  .nuv-hero-scrim{background:linear-gradient(180deg,rgba(248,249,252,.96) 0%,rgba(248,249,252,.9) 55%,rgba(248,249,252,.62) 100%) !important}
+  .nuv-hero > img{opacity:.42}
+  .nuv-hero-nav{position:static !important;left:auto !important;right:auto !important;bottom:auto !important;padding:0 22px 20px;width:100%;box-sizing:border-box}
+  .nuv-hero-nav button{width:38px !important;height:38px !important}
+}
+/* แถวการ์ดเลื่อนแนวนอน: สกอลล์บาร์บางกลมกลืน โผล่เฉพาะตอน hover */
+.nuv-rail{overflow-x:auto;overflow-y:hidden;scrollbar-width:thin;scrollbar-color:transparent transparent;scroll-behavior:smooth;-webkit-overflow-scrolling:touch}
+.nuv-rail::-webkit-scrollbar{height:7px}
+.nuv-rail::-webkit-scrollbar-track{background:transparent}
+.nuv-rail::-webkit-scrollbar-thumb{background:transparent;border-radius:999px}
+.nuv-railwrap:hover .nuv-rail{scrollbar-color:rgba(31,41,55,.18) transparent}
+.nuv-railwrap:hover .nuv-rail::-webkit-scrollbar-thumb{background:rgba(31,41,55,.18)}
+.nuv-rail::-webkit-scrollbar-thumb:hover{background:rgba(31,41,55,.3)}
+.nuv-railnext{opacity:.9;transition:opacity 200ms ease, transform 200ms ease}
+.nuv-railwrap:hover .nuv-railnext{opacity:1}
+@media (hover:none){ .nuv-railnext, .nuv-railfade{display:none !important} }
+@media (max-width:820px){ .nuv-railnext{display:none !important} }
+/* ปุ่มลบในแชท: โผล่เมื่อ hover แถวข้อความ/ห้องสนทนา */
+.nuv-msgdel{opacity:0}
+.nuv-msgrow:hover .nuv-msgdel{opacity:1}
+.nuv-msgdel:focus-visible{opacity:1}
+.nuv-convdel{opacity:.5}
+.nuv-convdel:hover,.nuv-convdel:focus-visible{opacity:1}
+@media (hover:none){ .nuv-msgdel,.nuv-convdel{opacity:.75} }
+</style></helmet>
+<sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
+  <div style="display:flex;flex-direction:column;gap:20px;animation:nuFadeUp .3s ease">
+    <sc-if value="{{ hasBanners }}" hint-placeholder-val="{{ false }}">
+      <div class="nuv-keep nuv-hero" onMouseEnter="{{ onBannerEnter }}" onMouseLeave="{{ onBannerLeave }}" onTouchStart="{{ onBannerTouchStart }}" onTouchEnd="{{ onBannerTouchEnd }}" onMouseDown="{{ onBannerDown }}" onMouseUp="{{ onBannerUp }}" style="touch-action:pan-y;user-select:none;position:relative;border-radius:26px;overflow:hidden;min-height:330px;display:flex;align-items:center;box-shadow:0 20px 55px rgba(31,41,55,.2)">
+        <img src="{{ activeBanner.image }}" alt="" class="nuv-noinv" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block"/>
+        <div class="nuv-hero-scrim" style="position:absolute;inset:0;background:linear-gradient(96deg,rgba(248,249,252,.97) 0%,rgba(248,249,252,.92) 30%,rgba(248,249,252,.55) 52%,rgba(248,249,252,.05) 72%)"></div>
+
+        <div class="nuv-hero-body" style="position:relative;padding:38px 42px 62px;max-width:560px">
+          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:16px">
+            <div style="display:inline-flex;padding:5px 13px;border-radius:999px;font-size:11px;font-weight:500;background:{{ activeBanner.tagBg }};color:{{ activeBanner.tagColor }}">{{ activeBanner.tagLabel }}</div>
+            <div style="display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:500;color:#A774F7"><span class="msr fill" style="font-size:14px">star</span>{{ activeBanner.date }}</div>
+          </div>
+          <div class="nuv-hero-title" style="font-size:34px;font-weight:600;color:#1F2937;line-height:1.32;text-wrap:pretty">{{ activeBanner.title }}</div>
+          <div class="nuv-hero-desc" style="font-size:13.5px;line-height:1.9;color:#4B5563;margin-top:14px;max-width:440px">{{ activeBanner.desc }}</div>
+          <div style="display:flex;gap:11px;margin-top:22px;flex-wrap:wrap">
+            <button onClick="{{ onBannerAction }}" class="nuv-hero-cta" style-hover="transform:translateY(-2px);box-shadow:0 14px 32px rgba(167,116,247,.45)" style="display:flex;align-items:center;gap:8px;padding:12px 24px;border-radius:13px;border:none;background:linear-gradient(135deg,#E97171,#A774F7);color:#fff;font-family:inherit;font-weight:500;font-size:13.5px;cursor:pointer;box-shadow:0 8px 22px rgba(167,116,247,.35);transition:all 220ms ease">{{ activeBanner.ctaLabel }}<span class="msr" style="font-size:18px">rocket_launch</span></button>
+          </div>
+        </div>
+
+        <div class="nuv-hero-nav" style="position:absolute;left:42px;right:26px;bottom:24px;display:flex;align-items:center;justify-content:space-between;gap:14px;z-index:2">
+          <div style="display:flex;gap:7px;align-items:center">
+            <sc-for list="{{ bannerDots }}" as="d" hint-placeholder-count="5"><div style="{{ d }}"></div></sc-for>
+          </div>
+          <div style="display:flex;gap:10px">
+            <button onClick="{{ onBannerPrev }}" title="{{ L.k60 }}" style-hover="background:#fff;transform:scale(1.07);box-shadow:0 8px 20px rgba(31,41,55,.2)" style="display:inline-flex;align-items:center;justify-content:center;width:42px;height:42px;border-radius:50%;border:none;background:rgba(240,241,244,.94);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);color:#4B5563;cursor:pointer;transition:all 220ms ease"><span class="msr" style="font-size:22px">chevron_left</span></button>
+            <button onClick="{{ onBannerNext }}" title="{{ L.k78 }}" style-hover="background:#fff;transform:scale(1.07);box-shadow:0 8px 20px rgba(31,41,55,.2)" style="display:inline-flex;align-items:center;justify-content:center;width:42px;height:42px;border-radius:50%;border:none;background:rgba(240,241,244,.94);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);color:#4B5563;cursor:pointer;transition:all 220ms ease"><span class="msr" style="font-size:22px">chevron_right</span></button>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+    <div style="font-size:22px;line-height:1.7;font-weight:600;color:#1F2937">{{ L.k90 }} {{ studentName }}</div>
+    <sc-if value="{{ kyfOn }}" hint-placeholder-val="{{ true }}">
+    <div style="background:linear-gradient(120deg,rgba(233,113,113,.14),rgba(167,116,247,.1));border:1px solid rgba(233,113,113,.2);border-radius:22px;padding:22px 24px">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px">
+        <div>
+          <div style="font-size:12.5px;line-height:1.7;font-weight:500;color:#c2410c;text-transform:uppercase;letter-spacing:.03em">{{ L.k30 }}</div>
+          <div style="font-size:26px;line-height:1.7;font-weight:600;color:#1F2937;margin-top:4px">{{ hoursStats.total }} / {{ hoursStats.goal }} {{ L.k95 }}</div>
+        </div>
+        <div style="font-size:12.5px;line-height:1.7;color:#6B7280;text-align:right">{{ L.k35 }}<br/>{{ L.k88 }} {{ hoursStats.remaining }} {{ L.k95 }}</div>
+      </div>
+      <div style="height:9px;border-radius:6px;background:rgba(30,37,48,.08);margin-top:14px;overflow:hidden"><div style="height:100%;width:{{ hoursStats.pct }}%;background:linear-gradient(90deg,#E97171,#A774F7)"></div></div>
+    </div>
+    </sc-if>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px">
+      <sc-for list="{{ statCards }}" as="c" hint-placeholder-count="4">
+        <div style="position:relative;overflow:hidden;background:rgba(255,255,255,.62);backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);border:1px solid rgba(255,255,255,.75);border-radius:24px;padding:20px 18px 18px;box-shadow:0 15px 45px rgba(31,41,55,.10), inset 0 1px 0 rgba(255,255,255,.6);transition:all 300ms ease" style-hover="transform:translateY(-4px) scale(1.02);box-shadow:0 24px 60px rgba(31,41,55,.14), inset 0 1px 0 rgba(255,255,255,.7)">
+          <div style="position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,{{ c.color }},{{ c.accentTo }})"></div>
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:10px">
+            <div style="font-size:26px;line-height:1.5;font-weight:600;color:#1F2937">{{ c.value }}</div>
+            <div style="width:42px;height:42px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:{{ c.iconBg }}"><span class="msr fill" style="font-size:21px;color:{{ c.color }}">{{ c.icon }}</span></div>
+          </div>
+          <div style="font-size:12.5px;line-height:1.7;color:#6B7280;margin-top:2px">{{ c.label }}</div>
+        </div>
+      </sc-for>
+    </div>
+
+    <div>
+      <div style="font-weight:500;font-size:15px;line-height:1.7;color:#1F2937;margin-bottom:10px">{{ L.k61 }}</div>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <sc-for list="{{ recentActivities }}" as="a" hint-placeholder-count="3">
+          <div style="display:flex;align-items:center;gap:14px;background:rgba(255,255,255,.62);backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);border:1px solid rgba(255,255,255,.75);border-radius:16px;padding:12px 16px">
+            <div style="width:5px;align-self:stretch;border-radius:4px;background:{{ a.catObj.color }}"></div>
+            <div style="flex:1;min-width:0">
+              <div style="font-weight:500;font-size:14px;line-height:1.7;color:#1F2937">{{ a.title }}</div>
+              <div style="font-size:12px;line-height:1.7;color:#6B7280">{{ a.org }} · {{ a.date }}{{ a.timeSuffix }}</div>
+            </div>
+            <div style="display:flex;gap:6px">
+              <button onClick="{{ a.onDetail }}" title="{{ L.k74 }}" style-hover="background:rgba(255,255,255,.9);transform:translateY(-2px);box-shadow:0 6px 16px rgba(31,41,55,.14)" style="display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:11px;cursor:pointer;transition:all 220ms ease;flex-shrink:0;border:1px solid rgba(31,41,55,.10);background:rgba(255,255,255,.6);backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);color:#4B5563"><span class="msr" style="font-size:18px">visibility</span></button>
+              <button onClick="{{ a.onParticipants }}" title="{{ L.k82 }}" style-hover="background:rgba(255,255,255,.9);transform:translateY(-2px);box-shadow:0 6px 16px rgba(31,41,55,.14)" style="display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:11px;cursor:pointer;transition:all 220ms ease;flex-shrink:0;border:1px solid rgba(31,41,55,.10);background:rgba(255,255,255,.6);backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);color:#4B5563"><span class="msr" style="font-size:18px">groups</span></button>
+              <button onClick="{{ a.onShare }}" title="{{ L.k94 }}" style-hover="background:rgba(255,255,255,.9);transform:translateY(-2px);box-shadow:0 6px 16px rgba(31,41,55,.14)" style="display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:11px;cursor:pointer;transition:all 220ms ease;flex-shrink:0;border:1px solid rgba(31,41,55,.10);background:rgba(255,255,255,.6);backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);color:#4B5563"><span class="msr" style="font-size:18px">share</span></button>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </div>
+</sc-if>
+
+<sc-if value="{{ isDiscover }}" hint-placeholder-val="{{ false }}">
+  <div style="display:flex;flex-direction:column;gap:16px">
+    <div style="display:flex;gap:12px;flex-wrap:wrap">
+      <input value="{{ search }}" onChange="{{ onSearchChange }}" placeholder="{{ L.k53 }}" style="flex:1;min-width:200px;padding:11px 15px;border-radius:13px;border:1px solid rgba(30,37,48,.12);font-size:14px;line-height:1.7;outline:none;background:#fff"/>
+      <div style="display:flex;flex-wrap:wrap;gap:8px">
+        <sc-for list="{{ chips }}" as="c" hint-placeholder-count="7"><div onClick="{{ c.onClick }}" style="{{ c.style }};cursor:pointer">{{ c.label }}</div></sc-for>
+      </div>
+    </div>
+    <div class="nuv-tabs" style="display:flex;gap:8px;flex-wrap:wrap">
+      <sc-for list="{{ availTabs }}" as="tb" hint-placeholder-count="4">
+        <button onClick="{{ tb.onClick }}" style="{{ tb.style }}">{{ tb.label }}<span style="opacity:.65">{{ tb.count }}</span></button>
+      </sc-for>
+    </div>
+    <sc-if value="{{ hasDiscoverResults }}" hint-placeholder-val="{{ true }}">
+    <div style="font-size:12px;color:#9CA3AF">{{ discoverCountLabel }}</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:16px">
+      <sc-for list="{{ discoverActivities }}" as="a" hint-placeholder-count="6">
+        <div style="background:rgba(255,255,255,.62);backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);border:1px solid rgba(255,255,255,.75);border-radius:22px;overflow:hidden;box-shadow:0 15px 45px rgba(31,41,55,.10), inset 0 1px 0 rgba(255,255,255,.6);display:flex;flex-direction:column">
+          <div style="position:relative">
+            <img src="{{ a.photo }}" alt="" style="width:100%;height:120px;object-fit:cover;display:block"/>
+            <div style="position:absolute;top:10px;left:10px;display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:999px;font-size:11px;font-weight:500;background:rgba(255,255,255,.85);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,.7);color:{{ a.capColor }};box-shadow:0 6px 18px rgba(31,41,55,.12)">
+              <span style="width:7px;height:7px;border-radius:50%;background:{{ a.capDot }}"></span>{{ a.capLabel }}
+            </div>
+            <sc-if value="{{ a.isRegistered }}" hint-placeholder-val="{{ false }}">
+              <div style="position:absolute;top:10px;right:10px;display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:999px;font-size:11px;font-weight:500;background:rgba(99,210,161,.94);border:1px solid rgba(255,255,255,.7);color:#fff;box-shadow:0 6px 18px rgba(31,41,55,.16)">
+                <span class="msr fill" style="font-size:14px">check_circle</span>{{ L.k62 }}
+              </div>
+            </sc-if>
+          </div>
+          <div style="padding:14px;display:flex;flex-direction:column;gap:7px;flex:1">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:6px">
+              <div style="display:inline-flex;padding:4px 10px;border-radius:999px;font-size:11px;line-height:1.7;font-weight:500;background:{{ a.catBg }};color:{{ a.catObj.color }}">{{ a.catObj.label }}</div>
+              <button onClick="{{ a.onWishlist }}" title="{{ L.k23 }}" style-hover="background:rgba(255,255,255,.85);transform:translateY(-2px);box-shadow:0 6px 16px rgba(31,41,55,.14)" style="display:inline-flex;align-items:center;justify-content:center;background:none;border:none;cursor:pointer;color:{{ a.wishColor }};transition:all 220ms ease"><span class="msr fill" style="font-size:19px">favorite</span></button>
+            </div>
+            <div style="font-weight:500;font-size:14.5px;color:#1F2937;line-height:1.35">{{ a.title }}</div>
+            <div style="font-size:12px;line-height:1.7;color:#6B7280">{{ a.org }} · {{ a.date }}{{ a.timeSuffix }}</div>
+            <div style="height:7px;border-radius:5px;background:rgba(31,41,55,.08);overflow:hidden;margin-top:2px"><div style="height:100%;width:{{ a.seatPct }}%;background:{{ a.capDot }};transition:width 300ms ease"></div></div>
+            <div style="display:flex;justify-content:space-between;font-size:11px;line-height:1.7"><span style="color:{{ a.capColor }};font-weight:500">{{ a.seatsLeftLabel }}</span><span style="color:#9CA3AF">{{ a.seatsFilled }}/{{ a.seatsTotal }}</span></div>
+            <div style="display:flex;gap:6px;margin-top:4px;flex-wrap:wrap">
+              <button onClick="{{ a.onApply }}" disabled="{{ a.applyDisabled }}" style="{{ a.applyStyle }}">{{ a.applyLabel }}</button>
+              <button onClick="{{ a.onDetail }}" title="{{ L.k74 }}" style-hover="background:rgba(255,255,255,.9);transform:translateY(-2px);box-shadow:0 6px 16px rgba(31,41,55,.14)" style="display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:11px;cursor:pointer;transition:all 220ms ease;flex-shrink:0;border:1px solid rgba(31,41,55,.10);background:rgba(255,255,255,.6);backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);color:#4B5563"><span class="msr" style="font-size:18px">visibility</span></button>
+              <button onClick="{{ a.onParticipants }}" title="{{ L.k82 }}" style-hover="background:rgba(255,255,255,.9);transform:translateY(-2px);box-shadow:0 6px 16px rgba(31,41,55,.14)" style="display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:11px;cursor:pointer;transition:all 220ms ease;flex-shrink:0;border:1px solid rgba(31,41,55,.10);background:rgba(255,255,255,.6);backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);color:#4B5563"><span class="msr" style="font-size:18px">groups</span></button>
+              <button onClick="{{ a.onContact }}" title="{{ L.k75 }}" style-hover="background:rgba(255,255,255,.9);transform:translateY(-2px);box-shadow:0 6px 16px rgba(31,41,55,.14)" style="display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:11px;cursor:pointer;transition:all 220ms ease;flex-shrink:0;border:1px solid rgba(31,41,55,.10);background:rgba(255,255,255,.6);backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);color:#4B5563"><span class="msr" style="font-size:18px">chat</span></button>
+            </div>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+    <sc-if value="{{ showDiscoverPager }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;justify-content:center;align-items:center;gap:7px;flex-wrap:wrap;margin-top:4px">
+        <button onClick="{{ onDiscoverPrev }}" title="{{ L.k76 }}" style="{{ discoverPrevStyle }}"><span class="msr" style="font-size:19px">chevron_left</span></button>
+        <sc-for list="{{ discoverPager }}" as="pg" hint-placeholder-count="2">
+          <button onClick="{{ pg.onClick }}" style="{{ pg.style }}">{{ pg.label }}</button>
+        </sc-for>
+        <button onClick="{{ onDiscoverNext }}" title="{{ L.k86 }}" style="{{ discoverNextStyle }}"><span class="msr" style="font-size:19px">chevron_right</span></button>
+      </div>
+    </sc-if>
+    </sc-if>
+    <sc-if value="{{ !hasDiscoverResults }}" hint-placeholder-val="{{ false }}">
+      <div style="text-align:center;padding:60px 20px;color:#94A3B8;font-size:13.5px;line-height:1.7;background:rgba(255,255,255,.5);border:1px dashed rgba(30,37,48,.14);border-radius:22px">{{ L.k6 }}</div>
+    </sc-if>
+  </div>
+</sc-if>
+
+<sc-if value="{{ isRegistrations }}" hint-placeholder-val="{{ false }}">
+  <div style="display:flex;flex-direction:column;gap:14px">
+    <div style="display:flex;align-items:center;gap:14px;padding:16px 18px;border-radius:20px;background:linear-gradient(135deg,rgba(233,113,113,.12),rgba(167,116,247,.14));border:1px solid rgba(167,116,247,.26)">
+      <div style="flex-shrink:0;display:flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:14px;background:linear-gradient(135deg,#E97171,#A774F7);color:#fff;box-shadow:0 8px 20px rgba(167,116,247,.32)"><span class="msr" style="font-size:23px">qr_code_scanner</span></div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:13.5px;font-weight:500;color:#1F2937;line-height:1.6">{{ scanAnyTitle }}</div>
+        <div style="font-size:11.5px;color:#6B7280;line-height:1.6;margin-top:2px">{{ scanAnyHint }}</div>
+      </div>
+      <button onClick="{{ onOpenScanAny }}" style-hover="transform:translateY(-2px);box-shadow:0 12px 26px rgba(167,116,247,.4)" style="flex-shrink:0;display:flex;align-items:center;gap:7px;padding:11px 17px;border-radius:13px;border:none;background:linear-gradient(135deg,#E97171,#A774F7);color:#fff;font-family:inherit;font-weight:500;font-size:13px;cursor:pointer;box-shadow:0 8px 20px rgba(167,116,247,.3);transition:all 220ms ease"><span class="msr" style="font-size:18px">photo_camera</span>{{ scanAnyBtn }}</button>
+    </div>
+    <div class="nuv-regtools" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+      <div style="position:relative;flex:1;min-width:220px">
+        <span class="msr" style="position:absolute;left:13px;top:50%;transform:translateY(-50%);font-size:18px;color:#9CA3AF;pointer-events:none">search</span>
+        <input value="{{ regQuery }}" onChange="{{ onRegQuery }}" placeholder="{{ regSearchPh }}" style="width:100%;box-sizing:border-box;padding:11px 38px 11px 40px;border-radius:13px;border:1px solid rgba(30,37,48,.12);background:rgba(255,255,255,.72);font-family:inherit;font-size:13px;color:#1F2937;outline:none"/>
+        <sc-if value="{{ hasRegQuery }}" hint-placeholder-val="{{ false }}">
+          <button onClick="{{ onRegQueryClear }}" aria-label="{{ regClearFiltersLabel }}" style-hover="background:rgba(31,41,55,.09)" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);display:flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;border:none;background:rgba(31,41,55,.05);color:#6B7280;cursor:pointer"><span class="msr" style="font-size:16px">close</span></button>
+        </sc-if>
+      </div>
+      <div style="position:relative;flex-shrink:0">
+        <button onClick="{{ onRegSortToggle }}" style-hover="background:rgba(255,255,255,.92)" style="display:flex;align-items:center;gap:7px;padding:11px 15px;border-radius:13px;border:1px solid rgba(30,37,48,.12);background:rgba(255,255,255,.72);font-family:inherit;font-size:12.5px;color:#4B5563;cursor:pointer;white-space:nowrap"><span class="msr" style="font-size:17px;color:#9CA3AF">sort</span>{{ regSortCurrent }}<span class="msr" style="font-size:17px;color:#9CA3AF">expand_more</span></button>
+        <sc-if value="{{ regSortOpen }}" hint-placeholder-val="{{ false }}">
+          <div style="position:absolute;top:48px;right:0;z-index:40;width:230px;padding:7px;border-radius:15px;background:rgba(255,255,255,.95);backdrop-filter:blur(24px) saturate(180%);-webkit-backdrop-filter:blur(24px) saturate(180%);border:1px solid rgba(255,255,255,.85);box-shadow:0 16px 40px rgba(31,41,55,.16)">
+            <div style="font-size:10.5px;font-weight:500;color:#9CA3AF;padding:5px 12px 6px">{{ regSortLabel }}</div>
+            <div style="display:flex;flex-direction:column;gap:2px">
+              <sc-for list="{{ regSortOptions }}" as="so" hint-placeholder-count="5">
+                <button onClick="{{ so.onClick }}" style="{{ so.style }}" style-hover="background:rgba(31,41,55,.05)">{{ so.label }}
+                  <sc-if value="{{ so.active }}" hint-placeholder-val="{{ false }}"><span class="msr fill" style="font-size:16px;color:#7C2FD9">check_circle</span></sc-if>
+                </button>
+              </sc-for>
+            </div>
+          </div>
+        </sc-if>
+      </div>
+    </div>
+    <div class="nuv-tabs" style="display:flex;gap:8px;flex-wrap:wrap">
+      <sc-for list="{{ regTabs }}" as="tb" hint-placeholder-count="5">
+        <button onClick="{{ tb.onClick }}" style="{{ tb.style }}">{{ tb.label }}<span style="opacity:.65">{{ tb.count }}</span></button>
+      </sc-for>
+    </div>
+    <sc-if value="{{ !hasRegs }}" hint-placeholder-val="{{ false }}">
+      <div style="text-align:center;padding:56px 20px;background:rgba(255,255,255,.5);border:1px dashed rgba(30,37,48,.14);border-radius:22px">
+        <span class="msr" style="font-size:42px;color:#CBD5E1">assignment</span>
+        <div style="color:#94A3B8;font-size:13.5px;line-height:1.8;margin-top:8px">{{ L.k16 }}</div>
+        <button onClick="{{ onGoDiscover }}" style-hover="transform:translateY(-2px);box-shadow:0 12px 26px rgba(167,116,247,.4)" style="margin-top:16px;display:inline-flex;align-items:center;gap:7px;padding:11px 20px;border-radius:13px;border:none;background:linear-gradient(135deg,#E97171,#A774F7);color:#fff;font-family:inherit;font-weight:500;font-size:13px;cursor:pointer;box-shadow:0 8px 20px rgba(167,116,247,.3);transition:all 220ms ease"><span class="msr" style="font-size:18px">travel_explore</span>{{ L.k54 }}</button>
+      </div>
+    </sc-if>
+    <sc-if value="{{ regNoMatch }}" hint-placeholder-val="{{ false }}">
+      <div style="text-align:center;padding:46px 20px;background:rgba(255,255,255,.5);border:1px dashed rgba(30,37,48,.14);border-radius:22px">
+        <span class="msr" style="font-size:38px;color:#CBD5E1">search_off</span>
+        <div style="color:#94A3B8;font-size:13.5px;line-height:1.8;margin-top:8px">{{ regNoMatchText }}</div>
+        <button onClick="{{ onRegClearFilters }}" style-hover="background:rgba(255,255,255,.95)" style="margin-top:14px;display:inline-flex;align-items:center;gap:6px;padding:9px 18px;border-radius:12px;border:1px solid rgba(30,37,48,.14);background:rgba(255,255,255,.7);font-family:inherit;font-size:12.5px;color:#4B5563;cursor:pointer"><span class="msr" style="font-size:16px">filter_alt_off</span>{{ regClearFiltersLabel }}</button>
+      </div>
+    </sc-if>
+    <sc-for list="{{ regRows }}" as="r" hint-placeholder-count="3">
+      <div style="background:rgba(255,255,255,.62);backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);border:1px solid rgba(255,255,255,.75);border-radius:22px;padding:18px;box-shadow:0 15px 45px rgba(31,41,55,.10), inset 0 1px 0 rgba(255,255,255,.6)">
+        <div class="nuv-reg-head" style="display:flex;gap:14px;flex-wrap:wrap;margin-bottom:14px">
+          <img src="{{ r.photo }}" alt="" style="width:88px;height:66px;border-radius:14px;object-fit:cover;display:block;flex-shrink:0"/>
+          <div style="flex:1;min-width:180px">
+            <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;flex-wrap:wrap">
+              <div style="flex:1;min-width:160px">
+                <div style="font-weight:500;font-size:15px;line-height:1.5;color:#1F2937">{{ r.activity.title }}</div>
+                <div style="font-size:12px;line-height:1.7;color:#6B7280">{{ r.activity.org }}</div>
+              </div>
+              <div style="padding:6px 12px;border-radius:999px;font-size:12px;font-weight:500;background:{{ r.statusBg }};color:{{ r.statusColor }};white-space:nowrap">{{ r.statusLabel }}</div>
+            </div>
+            <div class="nuv-reg-meta" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:8px;font-size:11.5px;color:#6B7280">
+              <span style="{{ r.catPillStyle }}">{{ r.catLabel }}</span>
+              <span style="display:inline-flex;align-items:center;gap:4px"><span class="msr" style="font-size:14px;color:#9CA3AF">event</span>{{ r.activity.date }}</span>
+              <span style="display:inline-flex;align-items:center;gap:4px"><span class="msr" style="font-size:14px;color:#9CA3AF">schedule</span>{{ r.hoursLabel }}</span>
+              <span style="display:inline-flex;align-items:center;gap:4px"><span class="msr" style="font-size:14px;color:#9CA3AF">place</span>{{ r.locationLabel }}</span>
+            </div>
+          </div>
+        </div>
+        <sc-if value="{{ r.cancelRequested }}" hint-placeholder-val="{{ false }}">
+          <div style="font-size:12px;line-height:1.7;color:#c2760f;background:rgba(245,166,35,.1);border-radius:10px;padding:8px 12px;margin-bottom:10px">{{ L.k12 }}</div>
+        </sc-if>
+        <div class="nuv-reg-steps" style="display:flex;align-items:flex-start;padding:14px 6px;border-radius:16px;background:rgba(255,255,255,.45);border:1px solid rgba(31,41,55,.05)">
+          <sc-for list="{{ r.steps }}" as="st" hint-placeholder-count="5">
+            <div style="display:flex;align-items:flex-start;flex:1;min-width:0">
+              <div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0;width:100%">
+                <div style="{{ st.dotStyle }}"><span class="msr" style="font-size:16px">{{ st.icon }}</span></div>
+                <div style="{{ st.labelStyle }}">{{ st.label }}</div>
+              </div>
+              <sc-if value="{{ !st.isLast }}" hint-placeholder-val="{{ true }}">
+                <div style="{{ st.lineStyle }};margin-top:14px"></div>
+              </sc-if>
+            </div>
+          </sc-for>
+        </div>
+        <sc-if value="{{ r.evidenceRejected }}" hint-placeholder-val="{{ false }}">
+          <div style="margin-top:12px;display:flex;align-items:center;gap:10px;padding:11px 13px;border-radius:15px;background:rgba(233,113,113,.1);border:1px solid rgba(233,113,113,.32)">
+            <span class="msr" style="font-size:18px;color:#C2410C">report</span>
+            <div style="flex:1;min-width:0;font-size:12.5px;color:#C2410C;line-height:1.6">{{ r.evidenceRejectedLabel }}</div>
+          </div>
+        </sc-if>
+        <sc-if value="{{ r.hasEvidenceImage }}" hint-placeholder-val="{{ false }}">
+          <div style="margin-top:12px;display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:15px;background:rgba(99,210,161,.1);border:1px solid rgba(99,210,161,.32)">
+            <img src="{{ r.evidenceImage }}" alt="" style="width:56px;height:44px;border-radius:10px;object-fit:cover;flex-shrink:0;display:block"/>
+            <div style="flex:1;min-width:0">
+              <div style="display:flex;align-items:center;gap:6px;font-size:12.5px;font-weight:500;color:#0F8A63;line-height:1.5"><span class="msr" style="font-size:16px">verified</span>{{ r.evidenceCaption }}</div>
+            </div>
+            <button onClick="{{ r.onReplaceEvidence }}" style-hover="background:rgba(255,255,255,.95)" style="flex-shrink:0;padding:8px 13px;border-radius:11px;border:1px solid rgba(31,41,55,.1);background:rgba(255,255,255,.7);color:#4B5563;font-family:inherit;font-size:12px;cursor:pointer;transition:all 200ms ease">{{ r.replaceEvidenceLabel }}</button>
+          </div>
+        </sc-if>
+        <div class="nuv-reg-actions" style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap">
+          <button onClick="{{ r.onDetailReg }}" style-hover="background:rgba(255,255,255,.95);transform:translateY(-2px)" style="display:flex;align-items:center;gap:6px;padding:9px 16px;border-radius:11px;border:1px solid rgba(31,41,55,.1);background:rgba(255,255,255,.65);color:#4B5563;font-family:inherit;font-size:13px;cursor:pointer;transition:all 200ms ease"><span class="msr" style="font-size:17px">visibility</span>{{ L.k79 }}</button>
+          <sc-if value="{{ r.canCheckin }}" hint-placeholder-val="{{ false }}"><button onClick="{{ r.onCheckin }}" style-hover="transform:translateY(-2px);box-shadow:0 12px 26px rgba(233,113,113,.35)" style="display:flex;align-items:center;gap:6px;padding:9px 16px;min-height:40px;border-radius:11px;border:1px solid rgba(233,113,113,.45);background:rgba(233,113,113,.12);color:#C2410C;font-family:inherit;font-weight:500;font-size:13px;cursor:pointer;transition:all 200ms ease"><span class="msr" style="font-size:17px">login</span>{{ L.k48 }}</button></sc-if>
+          <sc-if value="{{ r.canCheckout }}" hint-placeholder-val="{{ false }}"><button onClick="{{ r.onCheckout }}" style-hover="transform:translateY(-2px);box-shadow:0 12px 26px rgba(167,116,247,.35)" style="display:flex;align-items:center;gap:6px;padding:9px 16px;min-height:40px;border-radius:11px;border:1px solid rgba(167,116,247,.45);background:rgba(167,116,247,.12);color:#7C3AED;font-family:inherit;font-weight:500;font-size:13px;cursor:pointer;transition:all 200ms ease"><span class="msr" style="font-size:17px">logout</span>{{ L.k43 }}</button></sc-if>
+          <sc-if value="{{ r.canUpload }}" hint-placeholder-val="{{ false }}"><button onClick="{{ r.onUpload }}" style="padding:9px 16px;border-radius:11px;border:1px solid rgba(30,37,48,.14);background:rgba(255,255,255,.55);backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);color:#1F2937;font-weight:600;font-size:13px;line-height:1.7;cursor:pointer">{{ L.k55 }}</button></sc-if>
+          <sc-if value="{{ r.canReview }}" hint-placeholder-val="{{ false }}"><button onClick="{{ r.onReview }}" style="padding:9px 16px;border-radius:11px;border:1px solid rgba(30,37,48,.14);background:rgba(255,255,255,.55);backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);color:#1F2937;font-weight:600;font-size:13px;line-height:1.7;cursor:pointer">{{ L.k56 }}</button></sc-if>
+          <sc-if value="{{ r.canCancel }}" hint-placeholder-val="{{ false }}"><button onClick="{{ r.onCancelRequest }}" style="padding:9px 16px;border-radius:11px;border:1px solid rgba(233,113,113,.3);background:rgba(233,113,113,.08);color:#c2410c;font-weight:600;font-size:13px;line-height:1.7;cursor:pointer">{{ L.k63 }}</button></sc-if>
+        </div>
+      </div>
+    </sc-for>
+  </div>
+</sc-if>
+
+<sc-if value="{{ isHours }}" hint-placeholder-val="{{ false }}">
+  <div style="display:flex;flex-direction:column;gap:18px">
+    <sc-if value="{{ showAppealBox }}" hint-placeholder-val="{{ false }}">
+      <div style="background:rgba(255,255,255,.62);backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);border:1px solid rgba(245,166,35,.28);border-radius:22px;padding:20px;box-shadow:0 12px 34px rgba(31,41,55,.07)">
+        <div style="display:flex;align-items:center;gap:10px">
+          <span class="msr" style="font-size:20px;color:#B45309">gavel</span>
+          <div style="flex:1;min-width:0;font-size:14px;font-weight:600;color:#1F2937;line-height:1.5">{{ appealBoxTitle }}</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:9px;margin-top:14px">
+          <sc-for list="{{ rejectedRows }}" as="rr" hint-placeholder-count="1">
+            <div style="padding:13px 15px;border-radius:15px;background:rgba(233,113,113,.09);border:1px solid rgba(233,113,113,.2);display:flex;align-items:center;gap:11px;flex-wrap:wrap">
+              <div style="flex:1;min-width:160px">
+                <div style="font-size:13px;font-weight:500;color:#1F2937;line-height:1.55">{{ rr.title }}</div>
+                <div style="font-size:11.5px;color:#C2410C;line-height:1.6">{{ rr.note }}</div>
+              </div>
+              <button onClick="{{ rr.onAppeal }}" style-hover="transform:translateY(-1px)" style="min-height:40px;display:inline-flex;align-items:center;gap:6px;padding:9px 16px;border-radius:12px;border:none;background:linear-gradient(135deg,#E97171,#A774F7);color:#fff;font-family:inherit;font-size:12.5px;cursor:pointer;box-shadow:0 8px 20px rgba(167,116,247,.26);transition:all 200ms ease"><span class="msr" style="font-size:16px">gavel</span>{{ appealCta }}</button>
+            </div>
+          </sc-for>
+          <sc-for list="{{ myAppeals }}" as="ap" hint-placeholder-count="1">
+            <div style="padding:13px 15px;border-radius:15px;background:rgba(255,255,255,.66);border:1px solid rgba(31,41,55,.08);display:flex;flex-direction:column;gap:6px">
+              <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+                <div style="flex:1;min-width:150px;font-size:13px;font-weight:500;color:#1F2937;line-height:1.55">{{ ap.activityTitle }}</div>
+                <div style="{{ ap.statusStyle }}">{{ ap.statusLabel }}</div>
+              </div>
+              <div style="font-size:11.5px;color:#6B7280;line-height:1.7">{{ ap.reason }}</div>
+              <sc-if value="{{ ap.hasReply }}" hint-placeholder-val="{{ false }}">
+                <div style="font-size:11.5px;color:#4B5563;line-height:1.7;padding:9px 12px;border-radius:11px;background:rgba(167,116,247,.1)">{{ ap.reply }}</div>
+              </sc-if>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </sc-if>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+      <select value="{{ hoursYear }}" onChange="{{ onHoursYear }}" style="padding:11px 14px;border-radius:13px;border:1px solid rgba(255,255,255,.75);background:rgba(255,255,255,.62);backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);font-size:13px;outline:none;color:#374151;cursor:pointer">
+        <sc-for list="{{ hoursYearOptions }}" as="yo" hint-placeholder-count="3"><option value="{{ yo.id }}">{{ yo.label }}</option></sc-for>
+      </select>
+      <div class="nuv-tabs" style="display:flex;gap:8px;flex-wrap:wrap">
+        <sc-for list="{{ termTabs }}" as="tb" hint-placeholder-count="3">
+          <button onClick="{{ tb.onClick }}" style="{{ tb.style }}">{{ tb.label }}<span style="opacity:.65">{{ tb.count }}</span></button>
+        </sc-for>
+      </div>
+    </div>
+    <div class="nuv-hours-top" style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;align-items:start">
+      <div style="display:flex;align-items:center;gap:22px;flex-wrap:wrap;background:linear-gradient(125deg,rgba(233,113,113,.16),rgba(167,116,247,.12));border:1px solid rgba(233,113,113,.22);border-radius:24px;padding:24px;box-shadow:0 15px 45px rgba(31,41,55,.08)">
+        <div style="{{ hoursRingStyle }}">
+          <div style="width:118px;height:118px;border-radius:50%;background:rgba(255,255,255,.92);display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:inset 0 1px 0 rgba(255,255,255,.9)">
+            <div style="font-size:27px;font-weight:600;color:#1F2937;line-height:1.2">{{ hoursView.total }}</div>
+            <div style="font-size:11.5px;color:#6B7280">/ {{ hoursView.goal }} {{ L.k95 }}</div>
+            <div style="font-size:11px;font-weight:500;color:#A774F7;margin-top:2px">{{ hoursPctLabel }}</div>
+          </div>
+        </div>
+        <div style="flex:1;min-width:170px">
+          <div style="font-size:12.5px;font-weight:500;color:#c2410c;letter-spacing:.03em">{{ L.k36 }}</div>
+          <div style="font-size:12.5px;color:#6B7280;line-height:1.8;margin-top:6px">{{ hoursScopeLabel }}</div>
+          <div style="margin-top:12px"><span style="{{ hoursStatusStyle }}"><span class="msr fill" style="font-size:15px">{{ hoursStatusIcon }}</span>{{ hoursStatusLabel }}</span></div>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:12px">
+        <div style="background:rgba(255,255,255,.62);backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);border:1px solid rgba(255,255,255,.75);border-radius:20px;padding:16px;box-shadow:0 12px 34px rgba(31,41,55,.07)"><span class="msr" style="font-size:19px;color:#E97171">pending_actions</span><div style="font-size:21px;font-weight:600;color:#1F2937;margin-top:5px">{{ hoursView.remaining }} {{ L.k95 }}</div><div style="font-size:11.5px;color:#6B7280">{{ L.k64 }}</div></div>
+        <div style="background:rgba(255,255,255,.62);backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);border:1px solid rgba(255,255,255,.75);border-radius:20px;padding:16px;box-shadow:0 12px 34px rgba(31,41,55,.07)"><span class="msr" style="font-size:19px;color:#A774F7">trending_up</span><div style="font-size:21px;font-weight:600;color:#1F2937;margin-top:5px">{{ hoursView.perMonth }}</div><div style="font-size:11.5px;color:#6B7280">{{ L.k37 }}</div></div>
+        <div style="background:rgba(255,255,255,.62);backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);border:1px solid rgba(255,255,255,.75);border-radius:20px;padding:16px;box-shadow:0 12px 34px rgba(31,41,55,.07)"><span class="msr" style="font-size:19px;color:#7AB8FF">event_upcoming</span><div style="font-size:21px;font-weight:600;color:#1F2937;margin-top:5px">{{ hoursView.monthsLeft }} เดือน</div><div style="font-size:11.5px;color:#6B7280">{{ L.k31 }}</div></div>
+      </div>
+    </div>
+
+    <div class="nuv-hours-charts" style="display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:16px;align-items:start">
+      <div style="background:rgba(255,255,255,.62);backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);border:1px solid rgba(255,255,255,.75);border-radius:22px;padding:20px;box-shadow:0 12px 34px rgba(31,41,55,.07)">
+        <div style="font-size:13.5px;font-weight:500;color:#1F2937;margin-bottom:16px">{{ L.k49 }}</div>
+        <div style="display:flex;align-items:flex-end;gap:6px;height:130px">
+          <sc-for list="{{ hoursMonthly }}" as="m" hint-placeholder-count="12">
+            <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:6px;height:100%">
+              <sc-if value="{{ m.hasHours }}" hint-placeholder-val="{{ false }}">
+                <div style="font-size:10px;font-weight:500;color:#7C2FD9">{{ m.hours }}</div>
+              </sc-if>
+              <div style="{{ m.barStyle }}"></div>
+              <div style="font-size:9.5px;color:#9CA3AF;white-space:nowrap">{{ m.label }}</div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+      <div style="background:rgba(255,255,255,.62);backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);border:1px solid rgba(255,255,255,.75);border-radius:22px;padding:20px;box-shadow:0 12px 34px rgba(31,41,55,.07)">
+        <div style="font-size:13.5px;font-weight:500;color:#1F2937;margin-bottom:16px">{{ L.k44 }}</div>
+        <sc-if value="{{ hasHoursByCat }}" hint-placeholder-val="{{ true }}">
+          <div style="display:flex;flex-direction:column;gap:13px">
+            <sc-for list="{{ hoursByCat }}" as="c" hint-placeholder-count="4">
+              <div>
+                <div style="display:flex;justify-content:space-between;gap:8px;font-size:11.5px;color:#4B5563;margin-bottom:5px"><span>{{ c.label }}</span><span style="color:#9CA3AF">{{ c.hours }} {{ L.k95 }}</span></div>
+                <div style="height:8px;border-radius:5px;background:rgba(31,41,55,.07);overflow:hidden"><div style="{{ c.barStyle }}"></div></div>
+              </div>
+            </sc-for>
+          </div>
+        </sc-if>
+        <sc-if value="{{ !hasHoursByCat }}" hint-placeholder-val="{{ false }}">
+          <div style="text-align:center;padding:26px 14px;color:#9CA3AF;font-size:12.5px">{{ L.k24 }}</div>
+        </sc-if>
+      </div>
+    </div>
+    <div>
+      <div style="font-weight:500;font-size:15px;line-height:1.7;color:#1F2937;margin-bottom:10px">{{ L.k13 }}</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px">
+        <sc-for list="{{ recoActivities }}" as="a" hint-placeholder-count="3">
+          <div style="background:rgba(255,255,255,.62);backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);border:1px solid rgba(255,255,255,.75);border-radius:16px;padding:14px">
+            <div style="font-weight:500;font-size:13.5px;line-height:1.7;color:#1F2937">{{ a.title }}</div>
+            <div style="font-size:11.5px;line-height:1.7;color:#6B7280;margin-top:4px">{{ a.hours }} ชั่วโมง · {{ a.date }}</div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+    <div>
+      <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:10px;flex-wrap:wrap"><div style="font-weight:500;font-size:15px;line-height:1.7;color:#1F2937">{{ L.k57 }}</div><div style="font-size:11.5px;color:#9CA3AF">{{ hoursScopeLabel }}</div></div>
+        <sc-if value="{{ !hasHoursHistory }}" hint-placeholder-val="{{ false }}">
+          <div style="text-align:center;padding:28px 18px;background:rgba(255,255,255,.55);border:1px dashed rgba(31,41,55,.12);border-radius:16px;font-size:12.5px;color:#9CA3AF">{{ L.k20 }}</div>
+        </sc-if>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <sc-for list="{{ hoursHistoryRows }}" as="h" hint-placeholder-count="3">
+          <div style="display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.7);border:1px solid rgba(255,255,255,.6);border-radius:15px;padding:13px 16px;transition:all 200ms ease" style-hover="background:rgba(255,255,255,.95);transform:translateY(-2px);box-shadow:0 8px 20px rgba(31,41,55,.09)">
+            <span style="{{ h.dotStyle }}"></span>
+            <div style="flex:1;min-width:0">
+              <div style="font-size:13px;font-weight:500;color:#334155;line-height:1.5">{{ h.label }}</div>
+              <div style="font-size:11.5px;color:#9CA3AF;margin-top:2px">{{ h.catLabel }} · {{ h.date }}</div>
+            </div>
+            <span style="{{ h.hoursPillStyle }}">{{ h.hours }} {{ L.k95 }}</span>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </div>
+</sc-if>
+
+<sc-if value="{{ isCalendar }}" hint-placeholder-val="{{ false }}">
+  <div style="display:flex;flex-direction:column;gap:16px">
+    <div style="display:flex;align-items:flex-start;gap:12px;flex-wrap:wrap;background:rgba(255,255,255,.62);backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);border:1px solid rgba(255,255,255,.75);border-radius:22px;padding:14px 20px">
+      <div style="font-size:12px;color:#9CA3AF;font-weight:500;padding-top:7px;white-space:nowrap;flex-shrink:0">{{ calLegendLabel }}</div>
+      <div style="display:flex;align-items:center;flex-wrap:wrap;gap:8px;flex:1;min-width:0">
+        <sc-for list="{{ calLegend }}" as="c" hint-placeholder-count="7">
+          <div onClick="{{ c.onClick }}" style="{{ c.style }}"><span style="width:9px;height:9px;border-radius:50%;background:{{ c.color }};flex-shrink:0"></span>{{ c.label }}</div>
+        </sc-for>
+      </div>
+      <sc-if value="{{ hasStuCatFilter }}" hint-placeholder-val="{{ false }}">
+        <button onClick="{{ onClearStuCatFilter }}" style-hover="background:rgba(31,41,55,.06)" style="display:flex;align-items:center;gap:5px;padding:6px 12px;border-radius:999px;border:1px solid rgba(31,41,55,.1);background:transparent;color:#6B7280;font-family:inherit;font-size:11.5px;cursor:pointer;transition:background 160ms ease"><span class="msr" style="font-size:15px">close</span>{{ stuClearFilterLabel }}</button>
+      </sc-if>
+    </div>
+    <div class="nuv-cal-cols" style="display:flex;flex-direction:column;gap:16px">
+    <div style="display:flex;flex-direction:column;gap:16px;min-width:0">
+    <div style="display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,.62);backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);border:1px solid rgba(255,255,255,.75);border-radius:22px;padding:16px 20px">
+      <div style="display:flex;gap:7px;margin-right:auto">
+        <sc-for list="{{ calViewTabs }}" as="v" hint-placeholder-count="2">
+          <button onClick="{{ v.onClick }}" style="{{ v.style }}"><span class="msr" style="font-size:16px">{{ v.icon }}</span>{{ v.label }}</button>
+        </sc-for>
+      </div>
+      <button onClick="{{ onCalPrev }}" title="{{ L.k68 }}" style-hover="background:rgba(255,255,255,.85);transform:translateY(-2px);box-shadow:0 6px 16px rgba(31,41,55,.14)" style="border:none;background:#f1f5f9;width:34px;height:34px;border-radius:10px;cursor:pointer;font-size:15px;line-height:1.7;transition:all 220ms ease">‹</button>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:5px">
+        <div style="font-weight:600;font-size:16px;line-height:1.5;color:#1F2937">{{ calendarData.monthLabel }}</div>
+        <sc-if value="{{ calSyncOn }}" hint-placeholder-val="{{ false }}">
+          <div style="display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:999px;font-size:10.5px;font-weight:500;background:rgba(122,184,255,.16);color:#3268c9"><span class="msr" style="font-size:13px">event_repeat</span>{{ L.k28 }} {{ calReminderLabel }}</div>
+        </sc-if>
+        <sc-if value="{{ true }}" hint-placeholder-val="{{ true }}">
+          <button onClick="{{ onExportIcs }}" title="{{ icsTitle }}" aria-label="{{ icsLabel }}" style-hover="background:rgba(122,184,255,.28)" style="display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:999px;border:1px solid rgba(122,184,255,.3);background:rgba(122,184,255,.14);color:#3268c9;font-family:inherit;font-size:11px;cursor:pointer;transition:all 200ms ease"><span class="msr" style="font-size:14px">download</span>{{ icsLabel }}</button>
+        </sc-if>
+      </div>
+      <button onClick="{{ onCalNext }}" title="{{ L.k83 }}" style-hover="background:rgba(255,255,255,.85);transform:translateY(-2px);box-shadow:0 6px 16px rgba(31,41,55,.14)" style="border:none;background:#f1f5f9;width:34px;height:34px;border-radius:10px;cursor:pointer;font-size:15px;line-height:1.7;transition:all 220ms ease">›</button>
+    </div>
+    <div style="background:rgba(255,255,255,.62);backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);border:1px solid rgba(255,255,255,.75);border-radius:22px;padding:16px;box-shadow:0 15px 45px rgba(31,41,55,.09), inset 0 1px 0 rgba(255,255,255,.6)">
+      <sc-if value="{{ isStuMonthView }}" hint-placeholder-val="{{ true }}">
+      <div class="nuv-cal-grid" style="display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:8px">
+        <sc-for list="{{ weekdayLabels }}" as="w" hint-placeholder-count="7">
+          <div style="{{ w.style }}">{{ w.label }}</div>
+        </sc-for>
+      </div>
+      <div class="nuv-cal-grid" style="display:grid;grid-template-columns:repeat(7,1fr);gap:6px">
+        <sc-for list="{{ calBlanks }}" as="b" hint-placeholder-count="0"><div></div></sc-for>
+        <sc-for list="{{ calDays }}" as="d" hint-placeholder-count="31">
+          <div onClick="{{ d.onClick }}" style-hover="{{ d.hoverStyle }}" style="{{ d.style }}">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:4px">
+              <span style="font-size:13px;line-height:1.5;font-weight:500">{{ d.day }}</span>
+              <sc-if value="{{ d.isToday }}" hint-placeholder-val="{{ false }}">
+                <span style="{{ d.todayDotStyle }}"></span>
+              </sc-if>
+            </div>
+            <div style="display:flex;flex-wrap:wrap;gap:3px;margin-top:6px;min-height:6px">
+              <sc-for list="{{ d.dots }}" as="dot" hint-placeholder-count="0"><div style="width:6px;height:6px;border-radius:50%;background:{{ dot }}"></div></sc-for>
+            </div>
+            <sc-if value="{{ d.hasCount }}" hint-placeholder-val="{{ false }}">
+              <div style="{{ d.countStyle }}">{{ d.countLabel }}</div>
+            </sc-if>
+          </div>
+        </sc-for>
+      </div>
+      </sc-if>
+
+      <sc-if value="{{ isStuWeekView }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px">
+          <button onClick="{{ onStuWeekPrev }}" title="{{ stuWeekPrevTitle }}" style-hover="background:rgba(255,255,255,.95)" style="border:1px solid rgba(31,41,55,.1);background:rgba(255,255,255,.65);width:32px;height:32px;border-radius:10px;cursor:pointer;font-size:14px;color:#4B5563;transition:all 200ms ease">‹</button>
+          <div style="text-align:center">
+            <div style="font-size:13px;font-weight:500;color:#1F2937">{{ stuWeekLabel }}</div>
+            <div style="font-size:11px;color:#9CA3AF">{{ stuWeekRange }}</div>
+          </div>
+          <button onClick="{{ onStuWeekNext }}" title="{{ stuWeekNextTitle }}" style-hover="background:rgba(255,255,255,.95)" style="border:1px solid rgba(31,41,55,.1);background:rgba(255,255,255,.65);width:32px;height:32px;border-radius:10px;cursor:pointer;font-size:14px;color:#4B5563;transition:all 200ms ease">›</button>
+        </div>
+        <sc-if value="{{ !hasStuWeekActs }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;align-items:center;gap:9px;padding:14px;border-radius:14px;background:rgba(31,41,55,.03);color:#9CA3AF;font-size:12.5px;margin-bottom:12px"><span class="msr" style="font-size:20px;color:#CBD5E1">event_available</span>{{ stuWeekEmpty }}</div>
+        </sc-if>
+        <div class="nuv-week-grid" style="display:grid;grid-template-columns:repeat(7,minmax(104px,1fr));gap:8px;align-items:start;overflow-x:auto;padding-bottom:4px">
+          <sc-for list="{{ stuWeekDays }}" as="wd" hint-placeholder-count="7">
+            <div onClick="{{ wd.onClick }}" style="{{ wd.colStyle }}">
+              <div style="{{ wd.dayNumStyle }}">{{ wd.day }}</div>
+              <sc-for list="{{ wd.items }}" as="it" hint-placeholder-count="0">
+                <div onClick="{{ it.onClick }}" style="{{ it.style }}">
+                  <div style="font-size:11.5px;font-weight:500;color:#1F2937;line-height:1.4">{{ it.title }}</div>
+                  <sc-if value="{{ it.hasTime }}" hint-placeholder-val="{{ false }}">
+                    <div style="font-size:10px;color:#6B7280;margin-top:1px">{{ it.timeText }}</div>
+                  </sc-if>
+                  <div style="font-size:10px;color:#9CA3AF;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ it.hoursLabel }}</div>
+                </div>
+              </sc-for>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
+    </div>
+    <sc-if value="{{ hasSelectedDay }}" hint-placeholder-val="{{ false }}">
+      <div style="background:rgba(255,255,255,.62);backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);border:1px solid rgba(255,255,255,.75);border-radius:22px;padding:16px">
+        <div style="font-weight:500;font-size:14px;line-height:1.7;color:#1F2937;margin-bottom:10px">{{ L.k65 }} {{ calSelected }} {{ calendarData.monthLabel }}</div>
+        <sc-if value="{{ noSelectedDayActivities }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;align-items:center;gap:10px;padding:14px;border-radius:14px;background:rgba(31,41,55,.03);color:#9CA3AF;font-size:12.5px"><span class="msr" style="font-size:20px;color:#CBD5E1">event_available</span>{{ L.k29 }}</div>
+        </sc-if>
+        <sc-for list="{{ selectedDayActivities }}" as="a" hint-placeholder-count="1">
+          <div style="display:flex;gap:11px;align-items:center;padding:10px 0;border-top:1px solid rgba(30,37,48,.05)">
+            <img src="{{ a.photo }}" alt="" style="width:56px;height:44px;border-radius:10px;object-fit:cover;flex-shrink:0;display:block"/>
+            <div style="flex:1;min-width:0">
+              <div style="font-size:13px;line-height:1.6;color:#334155;font-weight:500">{{ a.title }}</div>
+              <div style="display:flex;align-items:center;gap:6px;margin-top:2px"><div style="width:7px;height:7px;border-radius:50%;background:{{ a.catObj.color }}"></div><div style="font-size:11.5px;color:#94A3B8">{{ a.catObj.label }} · {{ a.hours }} {{ L.k95 }}</div></div>
+              <sc-if value="{{ a.hasTime }}" hint-placeholder-val="{{ false }}">
+                <div style="display:flex;align-items:center;gap:5px;margin-top:3px"><span class="msr" style="font-size:13px;color:#A774F7">access_time</span><span style="font-size:11px;color:#6B7280">{{ a.timeText }}</span></div>
+              </sc-if>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </sc-if>
+    </div>
+    <div style="background:rgba(255,255,255,.62);backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);border:1px solid rgba(255,255,255,.75);border-radius:22px;padding:18px 20px;box-shadow:0 15px 45px rgba(31,41,55,.09), inset 0 1px 0 rgba(255,255,255,.6);min-width:0">
+      <div style="font-weight:500;font-size:14px;color:#1F2937;margin-bottom:8px">{{ calUpcomingTitle }}</div>
+      <sc-if value="{{ !hasCalUpcoming }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;align-items:center;gap:9px;padding:14px;border-radius:14px;background:rgba(31,41,55,.03);color:#9CA3AF;font-size:12.5px"><span class="msr" style="font-size:20px;color:#CBD5E1">event_available</span>{{ calUpcomingEmpty }}</div>
+      </sc-if>
+      <div class="nuv-railwrap" style="position:relative;min-width:0">
+      <div class="nuv-rail" style="display:grid;grid-auto-flow:column;grid-auto-columns:minmax(262px,1fr);gap:12px;overflow-x:auto;padding:2px 60px 8px 2px">
+      <sc-for list="{{ calUpcoming }}" as="u" hint-placeholder-count="5">
+        <div onClick="{{ u.onClick }}" style-hover="background:rgba(255,255,255,.95);transform:translateY(-2px);box-shadow:0 12px 26px rgba(31,41,55,.12)" style="display:flex;gap:12px;align-items:flex-start;padding:12px 14px;border:1px solid rgba(31,41,55,.07);background:rgba(255,255,255,.6);border-radius:16px;cursor:pointer;transition:all 200ms ease">
+          <div style="width:44px;height:44px;flex:0 0 44px;box-sizing:border-box;text-align:center;background:{{ u.dateBg }};border-radius:12px;padding:5px 0;display:flex;flex-direction:column;justify-content:center">
+            <div style="font-size:15.5px;font-weight:600;color:{{ u.catColor }};line-height:1.2">{{ u.dayNum }}</div>
+            <div style="font-size:9.5px;color:#9CA3AF">{{ u.monthShort }}</div>
+          </div>
+          <div style="flex:1;min-width:0">
+            <div style="font-size:12.5px;color:#1F2937;line-height:1.45;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ u.title }}</div>
+            <div style="font-size:11px;color:#9CA3AF;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ u.org }}</div>
+            <div style="font-size:10.5px;font-weight:500;color:{{ u.distColor }};margin-top:2px">{{ u.distLabel }}</div>
+          </div>
+        </div>
+      </sc-for>
+      </div>
+      <div class="nuv-railfade" aria-hidden="true" style="position:absolute;top:0;bottom:8px;right:0;width:56px;pointer-events:none;border-radius:0 16px 16px 0;background:linear-gradient(to right,rgba(255,255,255,0),rgba(255,255,255,.92))"></div>
+      <button class="nuv-railnext" onClick="{{ onRailNext }}" title="{{ railNextLabel }}" aria-label="{{ railNextLabel }}" style-hover="background:#fff;transform:translateY(-50%) translateX(-2px)" style="position:absolute;right:6px;top:50%;transform:translateY(-50%);display:flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;border:1px solid rgba(31,41,55,.1);background:rgba(255,255,255,.94);color:#4B5563;font-size:15px;cursor:pointer;box-shadow:0 4px 14px rgba(31,41,55,.14)">›</button>
+      </div>
+    </div>
+    </div>
+  </div>
+</sc-if>
+
+<sc-if value="{{ isCertificates }}" hint-placeholder-val="{{ false }}">
+  <div style="display:flex;flex-direction:column;gap:14px">
+    <div style="display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,.62);backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);border:1px solid rgba(255,255,255,.75);border-radius:22px;padding:16px 20px">
+      <div style="font-weight:500;font-size:14.5px;line-height:1.7;color:#1F2937">{{ L.k21 }}</div>
+      <button onClick="{{ onDownloadReport }}" title="{{ L.k50 }}" aria-label="{{ L.k50 }}" class="nuv-iconbtn" style="display:flex;align-items:center;gap:7px;padding:10px 18px;border-radius:12px;border:none;background:#1F2937;color:#fff;font-family:inherit;font-weight:500;font-size:13px;cursor:pointer"><span class="msr" style="font-size:18px">download</span><span class="nuv-blabel">{{ L.k50 }}</span></button>
+    </div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+      <div class="nuv-tabs" style="display:flex;gap:8px;flex-wrap:wrap">
+        <sc-for list="{{ certYearTabs }}" as="tb" hint-placeholder-count="3">
+          <button onClick="{{ tb.onClick }}" style="{{ tb.style }}">{{ tb.label }}<span style="opacity:.65">{{ tb.count }}</span></button>
+        </sc-for>
+      </div>
+      <select value="{{ certActivity }}" onChange="{{ onCertActivity }}" style="padding:11px 14px;border-radius:13px;border:1px solid rgba(255,255,255,.75);background:rgba(255,255,255,.62);backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);font-size:13px;outline:none;color:#374151;cursor:pointer;max-width:260px">
+        <sc-for list="{{ certActivityOptions }}" as="co" hint-placeholder-count="3"><option value="{{ co.id }}">{{ co.title }}</option></sc-for>
+      </select>
+    </div>
+    <sc-if value="{{ !hasCerts }}" hint-placeholder-val="{{ false }}">
+      <div style="text-align:center;padding:56px 20px;background:rgba(255,255,255,.5);border:1px dashed rgba(30,37,48,.14);border-radius:22px">
+        <span class="msr" style="font-size:42px;color:#CBD5E1">workspace_premium</span>
+        <div style="color:#94A3B8;font-size:13.5px;line-height:1.8;margin-top:8px">{{ L.k1 }}</div>
+      </div>
+    </sc-if>
+    <sc-if value="{{ hasCerts }}" hint-placeholder-val="{{ true }}">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px">
+        <sc-for list="{{ certSummary }}" as="cs" hint-placeholder-count="3">
+          <div style="background:rgba(255,255,255,.62);backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);border:1px solid rgba(255,255,255,.75);border-radius:20px;padding:16px;box-shadow:0 12px 34px rgba(31,41,55,.07)">
+            <div style="display:flex;align-items:center;gap:7px;font-size:11.5px;color:#6B7280"><span class="msr" style="font-size:17px;color:{{ cs.color }}">{{ cs.icon }}</span>{{ cs.label }}</div>
+            <div style="font-size:20px;font-weight:600;color:#1F2937;margin-top:5px">{{ cs.value }}</div>
+          </div>
+        </sc-for>
+      </div>
+    </sc-if>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px">
+      <sc-for list="{{ completedRegs }}" as="r" hint-placeholder-count="2">
+        <div style="{{ r.cardStyle }}" style-hover="{{ r.cardHoverStyle }}">
+          <div style="display:flex;align-items:flex-start;gap:13px">
+            <div style="{{ r.sealStyle }}"><span class="msr fill" style="font-size:23px">workspace_premium</span></div>
+            <div style="flex:1;min-width:0">
+              <div style="font-size:10.5px;letter-spacing:.1em;color:#9CA3AF;text-transform:uppercase">certificate of participation</div>
+              <div style="font-size:14.5px;font-weight:500;color:#1F2937;line-height:1.5;margin-top:3px;text-wrap:pretty">{{ r.actTitle }}</div>
+            </div>
+          </div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:14px">
+            <span style="{{ r.catPillStyle }}">{{ r.catLabel }}</span>
+            <span style="{{ r.hoursPillStyle }}"><span class="msr" style="font-size:14px">schedule</span>{{ r.actHours }} {{ L.k95 }}</span>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:5px;margin-top:14px;padding-top:14px;border-top:1px dashed rgba(31,41,55,.14);font-size:11.5px;color:#6B7280">
+            <div style="display:flex;align-items:center;gap:6px"><span class="msr" style="font-size:15px;color:#9CA3AF">event</span>{{ r.actDate }}</div>
+            <div style="display:flex;align-items:center;gap:6px"><span class="msr" style="font-size:15px;color:#9CA3AF">apartment</span>{{ r.actOrg }}</div>
+            <div style="display:flex;align-items:center;gap:6px;font-family:monospace;font-size:11px;color:#9CA3AF"><span class="msr" style="font-size:15px">qr_code_2</span>{{ r.code }}</div>
+          </div>
+          <div style="display:flex;gap:8px;margin-top:16px">
+            <button onClick="{{ r.onPreview }}" style-hover="background:rgba(255,255,255,.95);transform:translateY(-2px);box-shadow:0 8px 20px rgba(31,41,55,.12)" style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:10px;border-radius:12px;cursor:pointer;transition:all 220ms ease;border:1px solid rgba(31,41,55,.1);background:rgba(255,255,255,.72);color:#4B5563;font-family:inherit;font-size:12.5px"><span class="msr" style="font-size:17px">visibility</span>{{ L.k80 }}</button>
+            <button onClick="{{ r.onPreview }}" title="{{ L.k87 }}" style-hover="transform:translateY(-2px);box-shadow:0 10px 24px rgba(167,116,247,.4)" style="display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:12px;border:none;background:linear-gradient(135deg,#E97171,#A774F7);color:#fff;cursor:pointer;transition:all 220ms ease;box-shadow:0 6px 18px rgba(167,116,247,.3)"><span class="msr" style="font-size:18px">download</span></button>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+</sc-if>
+
+<sc-if value="{{ isWishlist }}" hint-placeholder-val="{{ false }}">
+  <div style="display:flex;flex-direction:column;gap:16px">
+    <sc-if value="{{ hasWish }}" hint-placeholder-val="{{ true }}">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+        <div style="display:flex;align-items:center;gap:9px;font-size:13px;color:#4B5563"><span class="msr fill" style="font-size:19px;color:#E97171">favorite</span>{{ wishCountLabel }}</div>
+        <button onClick="{{ onGoDiscover }}" style-hover="background:rgba(255,255,255,.95);transform:translateY(-2px)" style="display:flex;align-items:center;gap:7px;padding:10px 17px;border-radius:12px;cursor:pointer;border:1px solid rgba(31,41,55,.1);background:rgba(255,255,255,.65);backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);color:#4B5563;font-family:inherit;font-size:12.5px;transition:all 220ms ease"><span class="msr" style="font-size:17px">travel_explore</span>{{ L.k45 }}</button>
+      </div>
+    </sc-if>
+    <sc-if value="{{ !hasWish }}" hint-placeholder-val="{{ false }}">
+      <div style="text-align:center;padding:56px 20px;background:rgba(255,255,255,.5);border:1px dashed rgba(30,37,48,.14);border-radius:22px">
+        <span class="msr" style="font-size:42px;color:#CBD5E1">favorite_border</span>
+        <div style="color:#94A3B8;font-size:13.5px;line-height:1.8;margin-top:8px">{{ L.k3 }}</div>
+        <button onClick="{{ onGoDiscover }}" style-hover="transform:translateY(-2px);box-shadow:0 12px 26px rgba(167,116,247,.4)" style="margin-top:16px;display:inline-flex;align-items:center;gap:7px;padding:11px 20px;border-radius:13px;border:none;background:linear-gradient(135deg,#E97171,#A774F7);color:#fff;font-family:inherit;font-weight:500;font-size:13px;cursor:pointer;box-shadow:0 8px 20px rgba(167,116,247,.3);transition:all 220ms ease"><span class="msr" style="font-size:18px">travel_explore</span>{{ L.k54 }}</button>
+      </div>
+    </sc-if>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px">
+      <sc-for list="{{ wishActivities }}" as="a" hint-placeholder-count="2">
+        <div style="display:flex;flex-direction:column;background:rgba(255,255,255,.62);backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);border:1px solid rgba(255,255,255,.75);border-radius:22px;overflow:hidden;box-shadow:0 15px 45px rgba(31,41,55,.1), inset 0 1px 0 rgba(255,255,255,.6);transition:all 260ms ease" style-hover="transform:translateY(-4px);box-shadow:0 24px 54px rgba(31,41,55,.14)">
+          <div style="position:relative">
+            <img src="{{ a.photo }}" alt="" style="width:100%;height:132px;object-fit:cover;display:block"/>
+            <div style="{{ a.capBadgeStyle }}">{{ a.capLabel }}</div>
+            <button onClick="{{ a.onRemove }}" title="{{ L.k34 }}" style-hover="background:#fff;transform:scale(1.08)" style="position:absolute;top:10px;right:10px;display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:50%;border:none;background:rgba(255,255,255,.9);color:#E97171;cursor:pointer;transition:all 200ms ease;box-shadow:0 6px 16px rgba(31,41,55,.18)"><span class="msr fill" style="font-size:18px">favorite</span></button>
+          </div>
+          <div style="padding:16px;display:flex;flex-direction:column;flex:1">
+            <div style="display:inline-flex;align-self:flex-start;padding:4px 11px;border-radius:999px;font-size:11px;font-weight:500;background:{{ a.catBg }};color:{{ a.catObj.color }}">{{ a.catObj.label }}</div>
+            <div style="font-weight:500;font-size:14.5px;line-height:1.5;color:#1F2937;margin-top:9px;text-wrap:pretty">{{ a.title }}</div>
+            <div style="display:flex;flex-direction:column;gap:4px;margin-top:9px;font-size:11.5px;color:#6B7280">
+              <div style="display:flex;align-items:center;gap:6px"><span class="msr" style="font-size:15px;color:#9CA3AF">event</span>{{ a.date }}{{ a.timeSuffix }}</div>
+              <div style="display:flex;align-items:center;gap:6px"><span class="msr" style="font-size:15px;color:#9CA3AF">place</span>{{ a.location }}</div>
+              <div style="display:flex;align-items:center;gap:6px"><span class="msr" style="font-size:15px;color:#9CA3AF">schedule</span>{{ a.hours }} ชั่วโมงจิตอาสา</div>
+            </div>
+            <div style="margin-top:12px">
+              <div style="height:7px;border-radius:4px;background:rgba(31,41,55,.07);overflow:hidden"><div style="{{ a.barStyle }}"></div></div>
+              <div style="display:flex;justify-content:space-between;font-size:11px;color:#9CA3AF;margin-top:5px"><span>{{ a.seatsLabel }}</span><span>{{ a.seatPct }}%</span></div>
+            </div>
+            <div style="display:flex;gap:8px;margin-top:auto;padding-top:14px">
+              <button onClick="{{ a.onApply }}" disabled="{{ a.applyDisabled }}" style="{{ a.applyStyle }}">{{ a.applyLabel }}</button>
+              <button onClick="{{ a.onDetail }}" title="{{ L.k74 }}" style-hover="background:rgba(255,255,255,.95);transform:translateY(-2px)" style="display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:12px;cursor:pointer;transition:all 220ms ease;border:1px solid rgba(31,41,55,.1);background:rgba(255,255,255,.7);color:#4B5563"><span class="msr" style="font-size:18px">visibility</span></button>
+            </div>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+</sc-if>
+
+<sc-if value="{{ isNotifications }}" hint-placeholder-val="{{ false }}">
+  <div style="display:flex;flex-direction:column;gap:14px;max-width:720px">
+    <div style="display:flex;align-items:center;gap:9px;font-size:13px;color:#4B5563">
+      <span class="msr fill" style="font-size:19px;color:#A774F7">notifications</span>{{ notifSummary }}
+    </div>
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <sc-for list="{{ notifFilters }}" as="f" hint-placeholder-count="3">
+          <button onClick="{{ f.onClick }}" style="{{ f.style }}"><span class="msr" style="font-size:16px">{{ f.icon }}</span>{{ f.label }}<span style="opacity:.6">{{ f.count }}</span></button>
+        </sc-for>
+      </div>
+      <button onClick="{{ onMarkAllRead }}" style="display:flex;align-items:center;gap:6px;padding:8px 14px;border-radius:11px;border:1px solid rgba(30,37,48,.1);background:rgba(255,255,255,.5);backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);font-size:12.5px;color:#475569;cursor:pointer"><span class="msr" style="font-size:17px">done_all</span>{{ L.k77 }}</button>
+    </div>
+
+    <sc-if value="{{ hasMutedNotifs }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;align-items:center;gap:9px;padding:11px 15px;border-radius:14px;background:rgba(31,41,55,.04);border:1px solid rgba(31,41,55,.06);font-size:12px;color:#6B7280"><span class="msr" style="font-size:17px;color:#9CA3AF">notifications_paused</span>{{ L.k18 }} {{ notifMutedCount }} {{ L.k15 }}</div>
+    </sc-if>
+    <sc-if value="{{ !hasNotifs }}" hint-placeholder-val="{{ false }}">
+      <div style="text-align:center;padding:56px 20px;background:rgba(255,255,255,.62);backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);border:1px dashed rgba(30,37,48,.14);border-radius:24px">
+        <span class="msr" style="font-size:44px;color:#CBD5E1">notifications_off</span>
+        <div style="font-size:13.5px;color:#94A3B8;margin-top:8px">{{ L.k19 }}</div>
+      </div>
+    </sc-if>
+
+    <sc-for list="{{ notifGroups }}" as="g" hint-placeholder-count="2">
+      <div>
+        <div style="display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:9px">
+          <div style="font-size:11.5px;font-weight:500;color:#94A3B8;letter-spacing:.05em">{{ g.label }}</div>
+          <div style="font-size:11px;color:#CBD5E1">{{ g.countLabel }}</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:9px">
+          <sc-for list="{{ g.items }}" as="n" hint-placeholder-count="3">
+            <div onClick="{{ n.onRead }}" style="{{ n.cardStyle }}" style-hover="background:rgba(255,255,255,.72);transform:translateY(-2px);box-shadow:0 12px 30px rgba(30,37,48,.12)">
+              <div style="{{ n.accentStyle }}"></div>
+              <div style="width:38px;height:38px;border-radius:12px;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:{{ n.iconBg }}"><span class="msr fill" style="font-size:20px;color:{{ n.color }}">{{ n.icon }}</span></div>
+              <div style="flex:1;min-width:0">
+                <div style="font-size:13px;line-height:1.65;color:#334155;font-weight:{{ n.weight }}">{{ n.text }}</div>
+                <div style="display:flex;align-items:center;gap:6px;margin-top:3px">
+                  <div style="padding:2px 8px;border-radius:999px;font-size:10.5px;font-weight:500;background:{{ n.iconBg }};color:{{ n.color }}">{{ n.typeLabel }}</div>
+                  <div style="font-size:11px;color:#94A3B8">{{ n.time }}</div>
+                </div>
+              </div>
+              <sc-if value="{{ n.unread }}" hint-placeholder-val="{{ false }}"><div style="width:8px;height:8px;border-radius:50%;background:{{ n.color }};flex-shrink:0;margin-top:6px"></div></sc-if>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </sc-for>
+  </div>
+</sc-if>
+
+<sc-if value="{{ isChat }}" hint-placeholder-val="{{ false }}">
+  <sc-if value="{{ !hasThreads }}" hint-placeholder-val="{{ false }}">
+    <div style="text-align:center;padding:60px 20px;color:#94A3B8;font-size:13.5px;line-height:1.7;background:rgba(255,255,255,.5);border:1px dashed rgba(30,37,48,.14);border-radius:22px">{{ L.k2 }}</div>
+  </sc-if>
+  <sc-if value="{{ hasThreads }}" hint-placeholder-val="{{ true }}">
+  <div class="nuv-chat-grid" style="display:grid;grid-template-columns:270px minmax(0,1fr);gap:16px;height:560px">
+    <div style="display:flex;flex-direction:column;min-height:0;background:rgba(255,255,255,.62);backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);border:1px solid rgba(255,255,255,.75);border-radius:20px;overflow:hidden;box-shadow:0 15px 45px rgba(31,41,55,.09)">
+      <div style="padding:15px 16px;border-bottom:1px solid rgba(31,41,55,.06);font-size:13px;font-weight:500;color:#1F2937">{{ L.k66 }}</div>
+      <div style="flex:1;min-height:0;overflow-y:auto">
+        <sc-for list="{{ threadList }}" as="t" hint-placeholder-count="2">
+          <div onClick="{{ t.onClick }}" style="{{ t.style }}" style-hover="{{ t.hoverStyle }}">
+            <div style="{{ t.accentStyle }}"></div>
+            <div style="{{ t.avatarStyle }}">{{ t.initial }}</div>
+            <div style="flex:1;min-width:0">
+              <div style="display:flex;align-items:baseline;gap:8px">
+                <div style="flex:1;min-width:0;font-weight:500;font-size:12.5px;color:#1F2937;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ t.title }}</div>
+                <div style="font-size:10px;color:#CBD5E1;white-space:nowrap;flex-shrink:0">{{ t.lastTime }}</div>
+              </div>
+              <div style="display:flex;align-items:center;gap:8px;margin-top:2px">
+                <div style="flex:1;min-width:0;font-size:11.5px;color:#94A3B8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ t.lastMsg }}</div>
+                <sc-if value="{{ t.hasUnread }}" hint-placeholder-val="{{ false }}">
+                  <span style="{{ t.unreadStyle }}">{{ t.unreadLabel }}</span>
+                </sc-if>
+                <button class="nuv-convdel" onClick="{{ t.onDelete }}" title="{{ t.deleteLabel }}" aria-label="{{ t.deleteLabel }}" style-hover="background:rgba(233,113,113,.16);color:#C0392B" style="flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:7px;border:none;background:transparent;color:#C3CAD4;cursor:pointer;transition:all 160ms ease"><span class="msr" style="font-size:15px">delete_outline</span></button>
+              </div>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+    <div style="min-width:0;display:flex;flex-direction:column;background:rgba(255,255,255,.62);backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);border:1px solid rgba(255,255,255,.75);border-radius:20px;overflow:hidden;box-shadow:0 15px 45px rgba(31,41,55,.09)">
+      <sc-if value="{{ hasActiveThread }}" hint-placeholder-val="{{ true }}">
+        <div style="display:flex;align-items:center;gap:12px;padding:14px 18px;border-bottom:1px solid rgba(31,41,55,.06);background:rgba(255,255,255,.55)">
+          <div style="display:flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:12px;flex-shrink:0;background:rgba(167,116,247,.16);color:#7C2FD9"><span class="msr" style="font-size:19px">forum</span></div>
+          <div style="flex:1;min-width:0">
+            <div style="font-size:13.5px;font-weight:500;color:#1F2937;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ activeThreadTitle }}</div>
+            <div style="font-size:11.5px;color:#9CA3AF">{{ activeThreadOrg }}</div>
+          </div>
+          <button onClick="{{ onActiveDetail }}" title="{{ L.k33 }}" style-hover="background:rgba(255,255,255,.95);transform:translateY(-2px)" style="display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:12px;cursor:pointer;transition:all 200ms ease;border:1px solid rgba(31,41,55,.1);background:rgba(255,255,255,.7);color:#4B5563;flex-shrink:0"><span class="msr" style="font-size:18px">open_in_new</span></button>
+        </div>
+      </sc-if>
+      <div style="flex:1;min-height:0;overflow-y:auto;padding:18px;display:flex;flex-direction:column;gap:10px">
+        <sc-for list="{{ chatMessages }}" as="m" hint-placeholder-count="3">
+          <div style="{{ m.wrapStyle }}">
+            <sc-if value="{{ m.isTheirs }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;flex-shrink:0;background:rgba(167,116,247,.16);color:#7C2FD9"><span class="msr" style="font-size:16px">person</span></div>
+            </sc-if>
+            <sc-if value="{{ m.isDeleted }}" hint-placeholder-val="{{ false }}">
+              <div style="{{ m.tombStyle }}"><span class="msr" style="font-size:15px;vertical-align:-3px;margin-right:5px">block</span>{{ m.deletedLabel }}</div>
+            </sc-if>
+            <sc-if value="{{ m.isLive }}" hint-placeholder-val="{{ true }}">
+              <div class="nuv-msgrow" style="{{ m.rowStyle }}">
+                <sc-if value="{{ m.canDelete }}" hint-placeholder-val="{{ false }}">
+                  <button class="nuv-msgdel" onClick="{{ m.onDelete }}" title="{{ m.deleteLabel }}" aria-label="{{ m.deleteLabel }}" style-hover="background:rgba(233,113,113,.16);color:#C0392B" style="flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:8px;border:none;background:transparent;color:#B9C1CC;cursor:pointer;transition:all 160ms ease"><span class="msr" style="font-size:16px">more_vert</span></button>
+                </sc-if>
+                <div style="{{ m.bubbleStyle }}">{{ m.text }}<div style="{{ m.timeStyle }}">{{ m.time }}</div></div>
+              </div>
+            </sc-if>
+          </div>
+        </sc-for>
+      </div>
+      <div style="display:flex;gap:9px;padding:14px;border-top:1px solid rgba(31,41,55,.06);background:rgba(255,255,255,.5)">
+        <input value="{{ chatDraft }}" onChange="{{ onDraftChange }}" onKeyDown="{{ onDraftKey }}" placeholder="{{ L.k9 }}" style="flex:1;padding:12px 15px;border-radius:14px;border:1px solid rgba(31,41,55,.12);background:rgba(255,255,255,.85);font-family:inherit;font-size:13.5px;color:#1F2937;outline:none"/>
+        <button onClick="{{ onSend }}" title="{{ L.k84 }}" aria-label="{{ L.k84 }}" class="nuv-iconbtn" style-hover="transform:translateY(-2px);box-shadow:0 12px 26px rgba(167,116,247,.4)" style="display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:0 20px;min-height:44px;border-radius:14px;border:none;background:linear-gradient(135deg,#E97171,#A774F7);color:#fff;font-family:inherit;font-weight:500;font-size:13px;cursor:pointer;box-shadow:0 8px 20px rgba(167,116,247,.3);transition:all 220ms ease"><span class="msr" style="font-size:18px">send</span><span class="nuv-blabel">{{ L.k96 }}</span></button>
+      </div>
+    </div>
+  </div>
+  </sc-if>
+</sc-if>
+
+<sc-if value="{{ isStuSettings }}" hint-placeholder-val="{{ false }}">
+  <div style="max-width:820px;display:flex;flex-direction:column;gap:18px">
+    <div style="position:relative;overflow:hidden;background:rgba(255,255,255,.62);backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);border:1px solid rgba(255,255,255,.75);border-radius:24px;box-shadow:0 15px 45px rgba(31,41,55,.10), inset 0 1px 0 rgba(255,255,255,.6);padding:24px">
+      <div style="position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,#E97171,#A774F7)"></div>
+      <div style="display:flex;align-items:center;gap:13px">
+        <div style="width:44px;height:44px;border-radius:14px;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:rgba(167,116,247,.16)"><span class="msr" style="font-size:23px;color:#7C2FD9">tune</span></div>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:17px;font-weight:600;color:#1F2937;line-height:1.4">{{ L.k70 }}</div>
+          <div style="font-size:12px;color:#9CA3AF;margin-top:2px">{{ L.k8 }}</div>
+        </div>
+        <sc-if value="{{ stuSettingsSaved }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:#0d6e50;flex-shrink:0"><span class="msr fill" style="font-size:17px;color:#0F8A63">check_circle</span>{{ L.k51 }}</div>
+        </sc-if>
+      </div>
+      <div style="position:relative;margin-top:16px">
+        <span class="msr" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:18px;color:#9CA3AF">search</span>
+        <input value="{{ stuSettingSearch }}" onChange="{{ onStuSettingSearch }}" placeholder="{{ L.k42 }}" style="width:100%;padding:11px 14px 11px 40px;border-radius:13px;border:1px solid rgba(31,41,55,.12);background:rgba(255,255,255,.8);font-family:inherit;font-size:13px;color:#1F2937;outline:none"/>
+      </div>
+    </div>
+
+    <sc-if value="{{ !hasStuSettingResults }}" hint-placeholder-val="{{ false }}">
+      <div style="text-align:center;padding:40px 20px;background:rgba(255,255,255,.55);border:1px dashed rgba(31,41,55,.14);border-radius:22px;color:#9CA3AF;font-size:12.5px">{{ L.k17 }}</div>
+    </sc-if>
+
+    <sc-for list="{{ stuSettingSections }}" as="sec" hint-placeholder-count="4">
+      <div style="background:rgba(255,255,255,.62);backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);border:1px solid rgba(255,255,255,.75);border-radius:24px;box-shadow:0 15px 45px rgba(31,41,55,.10), inset 0 1px 0 rgba(255,255,255,.6);padding:22px">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px">
+          <div style="width:36px;height:36px;border-radius:12px;display:flex;align-items:center;justify-content:center;background:{{ sec.iconBg }}"><span class="msr fill" style="font-size:19px;color:{{ sec.color }}">{{ sec.icon }}</span></div>
+          <div>
+            <div style="font-weight:500;font-size:15px;color:#1F2937">{{ sec.title }}</div>
+            <div style="font-size:11.5px;color:#9CA3AF">{{ sec.desc }}</div>
+          </div>
+        </div>
+        <div style="margin-top:14px;display:flex;flex-direction:column">
+          <sc-for list="{{ sec.toggles }}" as="tg" hint-placeholder-count="3">
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:14px;padding:13px 0;border-top:1px solid rgba(31,41,55,.05)">
+              <div style="flex:1;min-width:0">
+                <div style="font-size:13px;color:#1F2937">{{ tg.label }}</div>
+                <div style="font-size:11.5px;color:#9CA3AF;line-height:1.6;margin-top:1px">{{ tg.hint }}</div>
+              </div>
+              <div onClick="{{ tg.onToggle }}" style="{{ tg.trackStyle }}"><div style="{{ tg.knobStyle }}"></div></div>
+            </div>
+          </sc-for>
+          <sc-for list="{{ sec.fields }}" as="fd" hint-placeholder-count="0">
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:14px;padding:13px 0;border-top:1px solid rgba(31,41,55,.05)">
+              <div style="flex:1;min-width:0">
+                <div style="font-size:13px;color:#1F2937">{{ fd.label }}</div>
+                <div style="font-size:11.5px;color:#9CA3AF;line-height:1.6;margin-top:1px">{{ fd.hint }}</div>
+              </div>
+              <input value="{{ fd.value }}" onChange="{{ fd.onChange }}" style="width:110px;flex-shrink:0;padding:9px 12px;border-radius:11px;border:1px solid rgba(31,41,55,.12);background:rgba(255,255,255,.7);font-family:inherit;font-size:13px;text-align:center;outline:none;color:#1F2937"/>
+            </div>
+          </sc-for>
+          <sc-for list="{{ sec.selects }}" as="sl" hint-placeholder-count="0">
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:14px;padding:13px 0;border-top:1px solid rgba(31,41,55,.05)">
+              <div style="flex:1;min-width:0">
+                <div style="font-size:13px;color:#1F2937">{{ sl.label }}</div>
+                <div style="font-size:11.5px;color:#9CA3AF;line-height:1.6;margin-top:1px">{{ sl.hint }}</div>
+              </div>
+              <select value="{{ sl.value }}" onChange="{{ sl.onChange }}" style="flex-shrink:0;padding:9px 12px;border-radius:11px;border:1px solid rgba(31,41,55,.12);background:rgba(255,255,255,.7);font-family:inherit;font-size:13px;outline:none;color:#374151;cursor:pointer">
+                <sc-for list="{{ sl.options }}" as="op" hint-placeholder-count="3"><option value="{{ op.id }}">{{ op.label }}</option></sc-for>
+              </select>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </sc-for>
+  </div>
+</sc-if>
+
+<sc-if value="{{ isGuide }}" hint-placeholder-val="{{ false }}">
+  <div style="display:flex;flex-direction:column;gap:18px;max-width:960px">
+
+    <div style="position:relative;overflow:hidden;background:rgba(255,255,255,.62);backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);border:1px solid rgba(255,255,255,.75);border-radius:24px;box-shadow:0 15px 45px rgba(31,41,55,.10), inset 0 1px 0 rgba(255,255,255,.6);padding:28px 30px">
+      <div style="position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,#E97171,#A774F7)"></div>
+      <div style="display:flex;align-items:center;gap:14px">
+        <div style="width:52px;height:52px;border-radius:16px;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:rgba(167,116,247,.16)"><span class="msr fill" style="font-size:28px;color:#A774F7">help_center</span></div>
+        <div>
+          <div style="font-size:21px;font-weight:600;color:#1F2937;line-height:1.4">{{ L.k52 }}</div>
+          <div style="font-size:12.5px;color:#6B7280;margin-top:2px">{{ L.k5 }}</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:9px;flex-wrap:wrap;margin-top:18px">
+        <sc-for list="{{ guideLinks }}" as="l" hint-placeholder-count="4">
+          <button onClick="{{ l.onClick }}" style-hover="background:rgba(255,255,255,.95);transform:translateY(-2px);box-shadow:0 8px 20px rgba(31,41,55,.1)" style="display:flex;align-items:center;gap:7px;padding:9px 15px;border-radius:12px;cursor:pointer;transition:all 200ms ease;border:1px solid rgba(31,41,55,.09);background:rgba(255,255,255,.7);color:#4B5563;font-family:inherit;font-size:12.5px"><span class="msr" style="font-size:17px;color:{{ l.color }}">{{ l.icon }}</span>{{ l.label }}</button>
+        </sc-for>
+      </div>
+    </div>
+
+    <div>
+      <div style="font-size:12px;font-weight:500;color:#9CA3AF;letter-spacing:.06em;text-transform:uppercase;margin-bottom:12px">{{ L.k22 }}</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px">
+        <sc-for list="{{ guideSteps }}" as="g" hint-placeholder-count="5">
+          <div style="position:relative;overflow:hidden;background:rgba(255,255,255,.62);backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);border:1px solid rgba(255,255,255,.75);border-radius:24px;box-shadow:0 15px 45px rgba(31,41,55,.10), inset 0 1px 0 rgba(255,255,255,.6);padding:20px;transition:all 300ms ease" style-hover="transform:translateY(-4px);box-shadow:0 24px 60px rgba(31,41,55,.14)">
+            <div style="position:absolute;top:0;left:0;right:0;height:4px;background:{{ g.color }}"></div>
+            <div style="display:flex;align-items:center;gap:11px">
+              <div style="width:40px;height:40px;border-radius:13px;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:{{ g.iconBg }}"><span class="msr fill" style="font-size:21px;color:{{ g.color }}">{{ g.icon }}</span></div>
+              <div style="display:flex;align-items:center;gap:7px"><span style="{{ g.stepBadgeStyle }}">{{ g.step }}</span><span style="font-size:11px;font-weight:500;color:{{ g.color }};letter-spacing:.06em">{{ L.k91 }} {{ g.step }}</span></div>
+            </div>
+            <div style="font-weight:500;font-size:14.5px;color:#1F2937;margin-top:12px;line-height:1.4">{{ g.title }}</div>
+            <div style="font-size:12.5px;line-height:1.75;color:#6B7280;margin-top:5px">{{ g.desc }}</div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1.3fr 1fr;gap:18px" class="nuv-chartrow">
+      <div style="background:rgba(255,255,255,.62);backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);border:1px solid rgba(255,255,255,.75);border-radius:24px;box-shadow:0 15px 45px rgba(31,41,55,.10), inset 0 1px 0 rgba(255,255,255,.6);padding:24px">
+        <div style="font-weight:500;font-size:15px;color:#1F2937;margin-bottom:4px">{{ L.k58 }}</div>
+        <div style="font-size:11.5px;color:#9CA3AF;margin-bottom:12px">{{ L.k47 }}</div>
+        <div style="position:relative;margin-bottom:6px">
+          <span class="msr" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:18px;color:#9CA3AF">search</span>
+          <input value="{{ faqSearch }}" onChange="{{ onFaqSearch }}" placeholder="{{ L.k69 }}" style="width:100%;padding:11px 14px 11px 40px;border-radius:13px;border:1px solid rgba(31,41,55,.12);background:rgba(255,255,255,.78);font-family:inherit;font-size:13px;color:#1F2937;outline:none"/>
+        </div>
+        <sc-if value="{{ !hasFaqResults }}" hint-placeholder-val="{{ false }}">
+          <div style="text-align:center;padding:26px 14px;color:#9CA3AF;font-size:12.5px">{{ L.k25 }}</div>
+        </sc-if>
+        <sc-for list="{{ faqItems }}" as="f" hint-placeholder-count="6">
+          <div style="border-top:1px solid rgba(31,41,55,.06)">
+            <div onClick="{{ f.onToggle }}" style="display:flex;align-items:center;gap:10px;padding:14px 0;cursor:pointer">
+              <span class="msr" style="font-size:19px;color:{{ f.chevColor }};transition:transform 240ms ease;transform:{{ f.chevRotate }}">chevron_right</span>
+              <div style="flex:1;min-width:0;font-size:13.5px;color:#1F2937;line-height:1.5">{{ f.q }}</div>
+            </div>
+            <sc-if value="{{ f.open }}" hint-placeholder-val="{{ false }}">
+              <div style="font-size:12.5px;line-height:1.85;color:#6B7280;padding:0 0 14px 29px">{{ f.a }}</div>
+            </sc-if>
+          </div>
+        </sc-for>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:18px">
+        <div style="background:rgba(255,255,255,.62);backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);border:1px solid rgba(255,255,255,.75);border-radius:24px;box-shadow:0 15px 45px rgba(31,41,55,.10), inset 0 1px 0 rgba(255,255,255,.6);padding:22px">
+          <div style="font-weight:500;font-size:15px;color:#1F2937;margin-bottom:12px">{{ L.k32 }}</div>
+          <sc-for list="{{ guideRules }}" as="r" hint-placeholder-count="4">
+            <div style="display:flex;gap:10px;align-items:flex-start;padding:9px 0;border-top:1px solid rgba(31,41,55,.05)">
+              <span class="msr fill" style="font-size:17px;color:{{ r.color }};flex-shrink:0;margin-top:1px">{{ r.icon }}</span>
+              <div style="flex:1;min-width:0">
+                <div style="font-size:12.5px;color:#1F2937;line-height:1.5">{{ r.label }}</div>
+                <div style="font-size:11.5px;color:#9CA3AF;line-height:1.6;margin-top:1px">{{ r.hint }}</div>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+
+        <div style="background:rgba(255,255,255,.62);backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);border:1px solid rgba(255,255,255,.75);border-radius:24px;box-shadow:0 15px 45px rgba(31,41,55,.10), inset 0 1px 0 rgba(255,255,255,.6);padding:22px">
+          <div style="font-weight:500;font-size:15px;color:#1F2937;margin-bottom:6px">{{ L.k46 }}</div>
+          <div style="font-size:12.5px;line-height:1.75;color:#6B7280;margin-bottom:14px">{{ L.k4 }}</div>
+          <button onClick="{{ onGuideContact }}" style="width:100%;display:flex;align-items:center;justify-content:center;gap:7px;padding:12px;border-radius:13px;border:none;background:linear-gradient(135deg,#E97171,#A774F7);color:#fff;font-family:inherit;font-weight:500;font-size:13px;cursor:pointer;box-shadow:0 6px 18px rgba(167,116,247,.32)"><span class="msr" style="font-size:18px">support_agent</span>{{ L.k71 }}</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</sc-if>
+
+<sc-if value="{{ isProfile }}" hint-placeholder-val="{{ false }}">
+  <div class="nuv-prof-grid" style="display:grid;grid-template-columns:320px minmax(0,1fr);gap:18px;align-items:start">
+
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <div style="background:rgba(255,255,255,.62);backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);border:1px solid rgba(255,255,255,.75);border-radius:24px;box-shadow:0 15px 45px rgba(31,41,55,.10), inset 0 1px 0 rgba(255,255,255,.6);padding:26px 22px;text-align:center;position:relative;overflow:hidden">
+        <div style="{{ facultyBannerStyle }}"></div>
+        <div style="position:relative">
+          <div style="position:relative;width:104px;margin:22px auto 0">
+            <div style="width:104px;height:104px;border-radius:50%;background:#fff;padding:5px;box-shadow:0 10px 26px rgba(30,37,48,.18)">
+              <sc-if value="{{ hasAvatar }}" hint-placeholder-val="{{ false }}">
+                <img src="{{ avatarUrl }}" alt="" style="width:94px;height:94px;border-radius:50%;object-fit:cover;display:block"/>
+              </sc-if>
+              <sc-if value="{{ noAvatar }}" hint-placeholder-val="{{ true }}">
+                <image-slot id="student-avatar" shape="circle" placeholder="{{ L.k85 }}" style="width:94px;height:94px;display:block;border-radius:50%"></image-slot>
+              </sc-if>
+            </div>
+            <div title="{{ L.k14 }}" style="position:absolute;right:0;bottom:0;display:flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#E97171,#A774F7);color:#fff;border:2px solid #fff;box-shadow:0 6px 16px rgba(167,116,247,.4);cursor:pointer"><span class="msr" style="font-size:16px">photo_camera</span></div>
+          </div>
+          <sc-if value="{{ !editingProfile }}" hint-placeholder-val="{{ true }}">
+            <div style="font-weight:600;font-size:18px;color:#1F2937;margin-top:12px">{{ studentName }}</div>
+            <div style="font-size:12.5px;color:#6B7280;margin-top:2px">{{ studentSubtitle }}</div>
+            <div style="display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-top:10px">
+              <sc-if value="{{ hasStudentFaculty }}" hint-placeholder-val="{{ true }}">
+                <div style="{{ facultyChipStyle }}"><span style="{{ facultyDotStyle }}"></span>{{ studentFaculty }}</div>
+              </sc-if>
+              <div style="padding:4px 11px;border-radius:999px;background:rgba(99,210,161,.16);color:#0d8f66;font-size:11.5px;font-weight:500">{{ L.k59 }}</div>
+              <div style="padding:4px 11px;border-radius:999px;background:rgba(167,116,247,.16);color:#8b2fe0;font-size:11.5px;font-weight:500">{{ volunteerRank }}</div>
+            </div>
+          </sc-if>
+          <sc-if value="{{ editingProfile }}" hint-placeholder-val="{{ false }}">
+            <input value="{{ editName }}" onChange="{{ onEditNameChange }}" style="width:100%;padding:10px 12px;border-radius:11px;border:1px solid rgba(30,37,48,.14);font-size:14px;outline:none;margin-top:12px;margin-bottom:8px;text-align:center"/>
+            <div style="display:flex;gap:8px">
+              <button onClick="{{ onSaveEdit }}" style="flex:1;padding:9px;border-radius:11px;border:none;background:linear-gradient(135deg,#E97171,#A774F7);color:#fff;font-size:12.5px;font-weight:500;cursor:pointer">{{ L.k92 }}</button>
+              <button onClick="{{ onCancelEdit }}" style="flex:1;padding:9px;border-radius:11px;border:1px solid rgba(30,37,48,.12);background:rgba(255,255,255,.55);backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);font-size:12.5px;cursor:pointer">{{ L.k93 }}</button>
+            </div>
+          </sc-if>
+        </div>
+      </div>
+
+      <div style="background:rgba(255,255,255,.62);backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);border:1px solid rgba(255,255,255,.75);border-radius:24px;box-shadow:0 15px 45px rgba(31,41,55,.10), inset 0 1px 0 rgba(255,255,255,.6);padding:20px">
+        <div style="font-size:12px;font-weight:500;color:#94A3B8;letter-spacing:.04em;margin-bottom:12px">{{ L.k27 }}</div>
+        <div style="display:flex;align-items:baseline;gap:6px"><div style="font-size:28px;font-weight:600;color:#63D2A1">{{ hoursStats.total }}</div><div style="font-size:12.5px;color:#6B7280">{{ L.k72 }}</div></div>
+        <div style="height:8px;border-radius:5px;background:rgba(30,37,48,.08);overflow:hidden;margin-top:10px"><div style="height:100%;width:{{ kyfPct }}%;background:linear-gradient(90deg,#63D2A1,#7AB8FF)"></div></div>
+        <div style="font-size:11.5px;color:#94A3B8;margin-top:7px">{{ kyfRemainingLabel }}</div>
+        <div style="margin-top:12px;padding-top:12px;border-top:1px solid rgba(31,41,55,.07)">
+          <button onClick="{{ onContactAdmin }}" style-hover="color:#7C2FD9" style="display:inline-flex;align-items:center;gap:6px;border:none;background:none;padding:0;color:#A774F7;font-family:inherit;font-size:12px;cursor:pointer;transition:color 180ms ease"><span class="msr" style="font-size:16px">support_agent</span>{{ L.k10 }}</button>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:18px">
+      <div style="display:flex;gap:8px;padding:5px;border-radius:16px;background:rgba(31,41,55,.05);border:1px solid rgba(255,255,255,.6)">
+        <button onClick="{{ onProfileTabInfo }}" style="{{ profileTabInfoStyle }}"><span class="msr" style="font-size:18px">badge</span>{{ L.k67 }}</button>
+        <button onClick="{{ onProfileTabAchieve }}" style="{{ profileTabAchieveStyle }}"><span class="msr" style="font-size:18px">emoji_events</span>{{ L.k38 }}</button>
+      </div>
+      <sc-if value="{{ isProfileInfo }}" hint-placeholder-val="{{ true }}">
+      <sc-if value="{{ profileIncomplete }}" hint-placeholder-val="{{ true }}">
+        <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:16px 20px;border-radius:20px;border:1px solid rgba(245,166,35,.4);background:rgba(245,166,35,.12);box-shadow:0 12px 30px rgba(245,166,35,.14)">
+          <span class="msr fill" style="font-size:24px;color:#c2740a;flex-shrink:0">error</span>
+          <div style="flex:1;min-width:200px">
+            <div style="font-size:13.5px;font-weight:500;color:#8a5205;line-height:1.6">{{ profileMissingLabel }}</div>
+            <div style="display:flex;align-items:center;gap:10px;margin-top:8px">
+              <div style="flex:1;height:8px;border-radius:5px;background:rgba(31,41,55,.09);overflow:hidden"><div style="{{ profilePctBarStyle }}"></div></div>
+              <div style="font-size:12px;font-weight:500;color:#8a5205;white-space:nowrap">{{ L.k89 }} {{ profilePct }}%</div>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+      <div style="position:sticky;top:0;z-index:5;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;padding:14px 18px;border-radius:20px;background:rgba(255,255,255,.86);backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);border:1px solid rgba(255,255,255,.85);box-shadow:0 10px 30px rgba(31,41,55,.10)">
+        <div>
+          <div style="font-size:15px;font-weight:500;color:#1F2937">{{ L.k67 }}</div>
+          <div style="font-size:11.5px;color:#9CA3AF;margin-top:2px">{{ L.k89 }} {{ profilePct }}{{ L.k39 }}</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+          <sc-if value="{{ profileSaved }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:#0d6e50"><span class="msr fill" style="font-size:17px;color:#0F8A63">check_circle</span>{{ L.k81 }}</div>
+          </sc-if>
+          <button onClick="{{ onSaveProfileForm }}" disabled="{{ profileSaveDisabled }}" style="{{ profileSaveStyle }}" title="{{ L.k73 }}" aria-label="{{ L.k73 }}"><span class="msr" style="font-size:19px">save</span><span class="nuv-blabel">{{ L.k73 }}</span></button>
+        </div>
+      </div>
+
+      <sc-for list="{{ profileSections }}" as="sec" hint-placeholder-count="2">
+        <div style="background:rgba(255,255,255,.62);backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);border:1px solid rgba(255,255,255,.75);border-radius:24px;box-shadow:0 15px 45px rgba(31,41,55,.10), inset 0 1px 0 rgba(255,255,255,.6);padding:22px">
+          <div style="display:flex;align-items:center;gap:11px;margin-bottom:18px">
+            <div style="display:flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:12px;background:{{ sec.color }}24;color:{{ sec.color }}"><span class="msr" style="font-size:20px">{{ sec.icon }}</span></div>
+            <div style="font-size:15px;font-weight:500;color:#1F2937">{{ sec.title }}</div>
+          </div>
+          <div class="nuv-form-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+            <sc-for list="{{ sec.fields }}" as="f" hint-placeholder-count="6">
+              <div style="display:flex;flex-direction:column;gap:6px">
+                <label style="display:flex;align-items:center;gap:3px;font-size:12px;font-weight:500;color:#4B5563">{{ f.label }}<sc-if value="{{ f.isRequired }}" hint-placeholder-val="{{ false }}"><span style="color:#E97171">*</span></sc-if></label>
+                <sc-if value="{{ f.isInput }}" hint-placeholder-val="{{ true }}">
+                  <input value="{{ f.value }}" onChange="{{ f.onChange }}" placeholder="{{ f.placeholder }}" style="{{ f.inputStyle }}"/>
+                </sc-if>
+                <sc-if value="{{ f.isSelect }}" hint-placeholder-val="{{ false }}">
+                  <select value="{{ f.value }}" onChange="{{ f.onChange }}" style="{{ f.inputStyle }}">
+                    <sc-for list="{{ f.options }}" as="o" hint-placeholder-count="3"><option value="{{ o.value }}">{{ o.label }}</option></sc-for>
+                  </select>
+                </sc-if>
+                <sc-if value="{{ f.isReadonly }}" hint-placeholder-val="{{ false }}">
+                  <div style="display:flex;align-items:center;gap:7px;padding:11px 13px;border-radius:12px;background:rgba(31,41,55,.05);border:1px solid rgba(31,41,55,.06);font-size:13px;color:#6B7280"><span class="msr" style="font-size:16px;color:#9CA3AF">lock</span>{{ f.value }}</div>
+                </sc-if>
+                <sc-if value="{{ f.hasError }}" hint-placeholder-val="{{ false }}">
+                  <div style="display:flex;align-items:center;gap:5px;font-size:11.5px;color:#c2410c"><span class="msr" style="font-size:14px">error</span>{{ f.error }}</div>
+                </sc-if>
+                <sc-if value="{{ f.hasHint }}" hint-placeholder-val="{{ false }}">
+                  <div style="font-size:11px;color:#9CA3AF;line-height:1.5">{{ f.hint }}</div>
+                </sc-if>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </sc-for>
+
+      </sc-if>
+
+      <sc-if value="{{ isProfileAchieve }}" hint-placeholder-val="{{ false }}">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px">
+        <sc-for list="{{ profileStats }}" as="ps" hint-placeholder-count="4">
+          <div style="background:rgba(255,255,255,.62);backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);border:1px solid rgba(255,255,255,.75);border-radius:24px;box-shadow:0 15px 45px rgba(31,41,55,.10), inset 0 1px 0 rgba(255,255,255,.6);padding:16px">
+            <span class="msr fill" style="font-size:21px;color:{{ ps.color }};opacity:.65">{{ ps.icon }}</span>
+            <div style="font-size:22px;font-weight:600;color:#1F2937;margin-top:5px">{{ ps.value }}</div>
+            <div style="font-size:11.5px;color:#6B7280">{{ ps.label }}</div>
+          </div>
+        </sc-for>
+      </div>
+
+      <div style="background:rgba(255,255,255,.62);backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);border:1px solid rgba(255,255,255,.75);border-radius:24px;box-shadow:0 15px 45px rgba(31,41,55,.10), inset 0 1px 0 rgba(255,255,255,.6);padding:22px">
+        <div style="font-size:12px;font-weight:500;color:#94A3B8;letter-spacing:.04em;margin-bottom:14px">{{ L.k40 }}</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:12px">
+          <sc-for list="{{ badges }}" as="b" hint-placeholder-count="4">
+            <div style="{{ b.style }}">
+              <span class="msr fill" style="font-size:26px;color:{{ b.color }}">{{ b.icon }}</span>
+              <div style="font-size:11.5px;font-weight:500;color:#1F2937;margin-top:6px;line-height:1.5">{{ b.label }}</div>
+              <div style="font-size:10.5px;color:#94A3B8;margin-top:2px">{{ b.hint }}</div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+
+      <div style="background:rgba(255,255,255,.62);backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);border:1px solid rgba(255,255,255,.75);border-radius:24px;box-shadow:0 15px 45px rgba(31,41,55,.10), inset 0 1px 0 rgba(255,255,255,.6);padding:22px">
+        <div style="font-size:12px;font-weight:500;color:#94A3B8;letter-spacing:.04em;margin-bottom:14px">{{ L.k26 }}</div>
+        <sc-if value="{{ !hasSkills }}" hint-placeholder-val="{{ false }}">
+          <div style="font-size:12.5px;color:#94A3B8;padding:10px 0">{{ L.k7 }}</div>
+        </sc-if>
+        <sc-for list="{{ skills }}" as="sk" hint-placeholder-count="4">
+          <div style="margin-bottom:12px">
+            <div style="display:flex;justify-content:space-between;font-size:12.5px;color:#334155;margin-bottom:5px"><span>{{ sk.label }}</span><span style="color:#94A3B8">{{ sk.hours }} {{ L.k95 }}</span></div>
+            <div style="height:7px;border-radius:4px;background:rgba(30,37,48,.07);overflow:hidden"><div style="height:100%;width:{{ sk.pct }}%;background:{{ sk.color }}"></div></div>
+          </div>
+        </sc-for>
+      </div>
+
+      <div style="background:rgba(255,255,255,.62);backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);border:1px solid rgba(255,255,255,.75);border-radius:24px;box-shadow:0 15px 45px rgba(31,41,55,.10), inset 0 1px 0 rgba(255,255,255,.6);padding:22px">
+        <div style="font-size:12px;font-weight:500;color:#94A3B8;letter-spacing:.04em;margin-bottom:14px">{{ L.k41 }}</div>
+        <sc-if value="{{ !hasHistory }}" hint-placeholder-val="{{ false }}">
+          <div style="font-size:12.5px;color:#94A3B8;padding:10px 0">{{ L.k11 }}</div>
+        </sc-if>
+        <sc-for list="{{ profileHistory }}" as="h" hint-placeholder-count="4">
+          <div style="display:flex;gap:12px;padding:11px 0;border-bottom:1px solid rgba(30,37,48,.05)">
+            <div style="width:34px;height:34px;border-radius:11px;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:{{ h.iconBg }}"><span class="msr fill" style="font-size:18px;color:{{ h.color }}">{{ h.icon }}</span></div>
+            <div style="flex:1;min-width:0">
+              <div style="font-size:13px;color:#1F2937;font-weight:400">{{ h.title }}</div>
+              <div style="font-size:11.5px;color:#94A3B8;margin-top:1px">{{ h.date }} · {{ h.hours }} {{ L.k95 }}</div>
+            </div>
+            <div style="padding:4px 10px;border-radius:999px;font-size:11px;font-weight:500;height:fit-content;background:{{ h.statusBg }};color:{{ h.statusColor }}">{{ h.statusLabel }}</div>
+          </div>
+        </sc-for>
+      </div>
+      </sc-if>
+    </div>
+  </div>
+</sc-if>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+var STU_LANG = "th";
+const STU_EN = {"ลงทะเบียนล่าสุด":"Recently registered","วันจัดกิจกรรมใกล้ที่สุด":"Soonest event date","วันจัดกิจกรรมไกลที่สุด":"Furthest event date","ชื่อกิจกรรม":"Activity name","ชั่วโมงมาก→น้อย":"Most hours first","เรียงตาม":"Sort by","ไม่พบรายการที่ตรงกับเงื่อนไข":"Nothing matches these filters","ค้นหาชื่อกิจกรรม...":"Search activity name...","ข้อความนี้ถูกลบแล้ว":"This message was deleted","ลบข้อความ":"Delete message","ลบการสนทนา":"Delete conversation","เลื่อนดูถัดไป":"Scroll for more","มี ":"","อัปโหลดหลักฐานภายใน ":"Upload evidence within ","วันนี้":"Today","น.":"","ผู้จัดขอให้อัปโหลดหลักฐานใหม่ กรุณาแนบรูปที่ชัดเจนอีกครั้ง":"The organizer asked for new evidence — please attach a clearer photo","หลักฐานผ่านการตรวจแล้ว":"Evidence approved","อัปโหลดแล้ว · รอผู้จัดตรวจ · ":"Uploaded · awaiting review · ","อัปโหลดแล้ว · รอผู้จัดตรวจ":"Uploaded · awaiting review","เปลี่ยนรูป":"Change photo","สแกน QR เพื่อเช็กอิน-เช็กเอาต์":"Scan a QR code to check in or out","เปิดกล้องแล้วหันไปที่ QR ที่ผู้จัดกิจกรรมแสดง":"Open the camera and point it at the QR the organizer is showing","เปิดกล้อง":"Open camera","หลักฐานไม่ผ่านการอนุมัติ — ยื่นอุทธรณ์ได้":"Evidence rejected — you can appeal","การอุทธรณ์ผลการอนุมัติชั่วโมง":"Hours decision appeal","ยื่นอุทธรณ์":"File an appeal","ดาวน์โหลด .ics":"Download .ics","เพิ่มกิจกรรมที่อนุมัติแล้วเข้าปฏิทินอุปกรณ์":"Add approved activities to your device calendar","เปิด \"ซิงก์ปฏิทิน\" ในหน้าตั้งค่าเพื่อซิงก์อัตโนมัติ":"Turn on \"Calendar sync\" in Settings to sync automatically","กรองตามหมวดหมู่":"Filter by category","ล้างตัวกรอง":"Clear filter","รายเดือน":"Month","รายสัปดาห์":"Week","สัปดาห์ที่":"Week","สัปดาห์ก่อนหน้า":"Previous week","สัปดาห์ถัดไป":"Next week","ไม่มีกิจกรรมในสัปดาห์นี้":"No activities this week","หมวดหมู่:":"Categories:","กิจกรรมที่กำลังจะถึง":"Upcoming activities","ไม่มีกิจกรรมที่กำลังจะถึง":"No upcoming activities","ผ่านไปแล้ว":"Past","อีก ":"in ","รออนุมัติ":"Pending","อนุมัติแล้ว":"Approved","เช็กอินแล้ว":"Checked in","รอหลักฐาน/อนุมัติ":"Awaiting evidence/approval","เสร็จสิ้น":"Completed","รอหลักฐาน":"Awaiting evidence","อัพเดทระบบ":"System update","เตือนความจำ":"Reminder","ประกาศทั่วไป":"General announcement","การแจ้งเตือน":"Notifications","เลือกเรื่องที่ต้องการให้ระบบเตือน":"Choose what you want to be alerted about","แจ้งเตือนเมื่อผลการสมัครเปลี่ยน":"Notify me when my application status changes","อนุมัติ ปฏิเสธ หรือถูกยกเลิก":"Approved, rejected, or cancelled","เตือนก่อนวันกิจกรรม":"Remind me before the activity","กันลืมเช็กอินหน้างาน":"So you don't forget to check in","แจ้งเตือนข้อความใหม่จากผู้จัด":"Notify me about new messages from organizers","แสดงตัวเลขที่เมนูแชท":"Shows a count on the Messages menu","แจ้งเตือนข่าวสารและประกาศ":"Notify me about news and announcements","ข่าวจากกองกิจการนิสิต":"News from Student Affairs","เตือนล่วงหน้า (วัน)":"Remind in advance (days)","จำนวนวันก่อนวันกิจกรรม":"Days before the activity","ปฏิทินและการวางแผน":"Calendar & planning","การซิงก์กิจกรรมกับปฏิทินส่วนตัว":"Syncing activities with your personal calendar","ซิงก์กิจกรรมที่อนุมัติแล้วเข้าปฏิทิน":"Sync approved activities to my calendar","เพิ่มกิจกรรมลงปฏิทินอุปกรณ์อัตโนมัติ":"Adds activities to your device calendar automatically","ความเป็นส่วนตัว":"Privacy","ข้อมูลที่ผู้อื่นมองเห็นได้":"What others can see","ให้ผู้จัดเห็นโปรไฟล์ของฉัน":"Let organizers see my profile","ชื่อ คณะ และเบอร์ติดต่อฉุกเฉิน":"Name, faculty, and emergency contact","แสดงชั่วโมงสะสมในรายชื่อผู้เข้าร่วม":"Show my hours in participant lists","ผู้เข้าร่วมคนอื่นจะเห็นชั่วโมงของคุณ":"Other participants can see your hours","แสดงคณะบนโปรไฟล์":"Show my faculty on my profile","ใช้สีประจำคณะเป็นธีมการ์ดโปรไฟล์":"Uses your faculty color as the profile card theme","การแสดงผล":"Display","ภาษาและความหนาแน่นของเนื้อหา":"Language and content density","ภาษา":"Language","ภาษาที่ใช้แสดงในระบบ":"Language used across the app","ไทย":"Thai","ความหนาแน่นเนื้อหา":"Content density","ปรับระยะห่างของการ์ดและรายการ":"Adjust spacing of cards and lists","สบายตา":"Comfortable","กระชับ":"Compact","ค้นหากิจกรรม":"Find activities","เลือกดูกิจกรรมตามหมวดหมู่ 7 ด้าน หรือค้นหาจากชื่อกิจกรรม สถานที่ และผู้จัด":"Browse the 7 categories, or search by activity name, venue, or organizer","กดสมัคร":"Apply","กดปุ่ม \"สมัคร\" บนการ์ดกิจกรรม ตรวจสอบรายละเอียดแล้วยืนยัน คำขอจะถูกส่งไปยังผู้จัด":"Tap \"Apply\" on an activity card, review the details, and confirm — your request goes to the organizer.","รอการอนุมัติ":"Wait for approval","ติดตามสถานะได้ที่เมนู \"การลงทะเบียน\" ระบบจะแจ้งเตือนเมื่อผู้จัดอนุมัติแล้ว":"Track the status under \"My Registrations\" — you'll be notified once the organizer approves.","เช็กอิน–เช็กเอาต์":"Check in and out","ในวันงาน สแกน QR Code จากผู้จัดเพื่อเช็กอิน และสแกนอีกครั้งเมื่อเสร็จกิจกรรม":"On event day, scan the organizer's QR code to check in, and scan again when the activity ends.","ส่งหลักฐานและรับใบประกาศ":"Submit evidence and get your certificate","อัปโหลดหลักฐานภายใน 7 วัน เมื่ออนุมัติแล้วชั่วโมงจะถูกบันทึกและออกใบประกาศให้":"Upload evidence within 7 days; once approved your hours are recorded and a certificate is issued.","ต้องสะสมชั่วโมงจิตอาสากี่ชั่วโมงถึงจะครบเกณฑ์?":"How many volunteer hours do I need?","ผู้กู้ยืม กยศ. ต้องสะสมให้ครบ 36 ชั่วโมงต่อปีการศึกษา ดูความคืบหน้าได้ที่เมนู \"ชั่วโมงสะสม\" และหน้าโปรไฟล์":"SLF loan recipients need 36 hours per academic year. Check your progress under \"Volunteer Hours\" and on your profile.","สมัครแล้วยกเลิกได้ไหม?":"Can I cancel after applying?","ได้ ไปที่เมนู \"การลงทะเบียน\" แล้วกด \"ยกเลิกกิจกรรม\" พร้อมระบุเหตุผล คำขอจะถูกส่งไปให้ผู้จัดพิจารณา โดยต้องยกเลิกก่อนวันงานอย่างน้อย 3 วัน":"Yes. Go to \"My Registrations\", tap \"Cancel activity\" and give a reason. The organizer reviews the request; cancel at least 3 days before the event.","ทำไมสถานะยังเป็น \"รออนุมัติ\" อยู่?":"Why is my status still \"Pending\"?","ผู้จัดกิจกรรมต้องตรวจสอบและอนุมัติรายชื่อผู้สมัครก่อน โดยทั่วไปใช้เวลาไม่เกิน 2–3 วันทำการ หากเกินกำหนดสามารถติดต่อผู้จัดผ่านเมนูแชทได้":"Organizers review applicants first, usually within 2–3 business days. If it takes longer, message the organizer from the Messages menu.","ลืมเช็กเอาต์ต้องทำอย่างไร?":"What if I forgot to check out?","ติดต่อผู้จัดกิจกรรมผ่านเมนูแชท ผู้จัดสามารถเช็กเอาต์ให้ย้อนหลังได้จากหน้าผู้เข้าร่วมกิจกรรม":"Message the organizer — they can check you out retroactively from the participants page.","ที่นั่งเต็มแล้วยังสมัครได้ไหม?":"Can I still apply when it's full?","เมื่อที่นั่งเต็มปุ่มสมัครจะถูกปิด แนะนำให้กดหัวใจเพิ่มลงรายการโปรดไว้ หากมีผู้ยกเลิกที่นั่งจะเปิดอีกครั้ง":"The Apply button closes when seats fill. Add it to your favorites — seats reopen if someone cancels.","ใบประกาศดาวน์โหลดได้ที่ไหน?":"Where can I download my certificate?","ไปที่เมนู \"ใบประกาศ\" กิจกรรมที่เสร็จสิ้นและอนุมัติชั่วโมงแล้วจะมีปุ่มดูและดาวน์โหลดใบประกาศให้":"Under \"Certificates\" — completed activities with approved hours have view and download buttons.","ครบ 36 ชั่วโมงต่อปีการศึกษา":"36 hours per academic year","สำหรับผู้กู้ยืม กยศ.":"For SLF loan recipients","ต้องเช็กอินและเช็กเอาต์ครบ":"Both check-in and check-out required","ขาดอย่างใดอย่างหนึ่งจะไม่ได้รับชั่วโมง":"Missing either one means no hours awarded","อัปโหลดหลักฐานภายใน 7 วัน":"Upload evidence within 7 days","นับจากวันที่เช็กเอาต์":"Counted from your check-out date","ชั่วโมงจะบันทึกเมื่อผู้จัดอนุมัติ":"Hours are recorded once the organizer approves","ตรวจสอบสถานะได้ที่เมนูชั่วโมงสะสม":"Check the status under Volunteer Hours","การลงทะเบียน":"My Registrations","ชั่วโมงสะสม":"Volunteer Hours","ใบประกาศ":"Certificates","กรอกเบอร์โทร 10 หลัก":"Enter a 10-digit phone number","เลขบัตรประชาชนต้องมี 13 หลัก":"National ID must be 13 digits","รูปแบบอีเมลไม่ถูกต้อง":"Invalid email format","รูปแบบ วว/ดด/ปปปป":"Format DD/MM/YYYY","ข้อมูลส่วนตัว":"Personal info","คำนำหน้า":"Title","นาย":"Mr.","นาง":"Mrs.","นางสาว":"Ms.","อื่นๆ":"Other","เพศ":"Gender","ชาย":"Male","หญิง":"Female","ไม่ระบุ":"Prefer not to say","ชื่อ":"First name","นามสกุล":"Last name","ชื่อเล่น":"Nickname","วัน/เดือน/ปีเกิด":"Date of birth","เบอร์โทรศัพท์":"Phone number","ใช้ติดต่อกรณีฉุกเฉินระหว่างกิจกรรม":"Used for emergencies during activities","อีเมล":"Email","อีเมลมหาวิทยาลัยที่ผูกกับบัญชี":"University email linked to your account","การศึกษา":"Education","คณะ":"Faculty","สาขาวิชา":"Major","ชั้นปี":"Year of study","ชั้นปีที่ 1":"Year 1","ชั้นปีที่ 2":"Year 2","ชั้นปีที่ 3":"Year 3","ชั้นปีที่ 4":"Year 4","ชั้นปีที่ 5":"Year 5","ชั้นปีที่ 6":"Year 6","รหัสนิสิต":"Student ID","วิทยาการคอมพิวเตอร์":"Computer Science","คณะวิทยาศาสตร์":"Faculty of Science","กรุณากรอก":"Please complete","ให้ครบก่อนสมัครกิจกรรม":"before applying for activities"," ชั่วโมงจะครบเกณฑ์":" more hours to meet the requirement","ครบเกณฑ์เรียบร้อยแล้ว":"Requirement complete","จิตอาสาระดับทอง":"Gold volunteer","จิตอาสาระดับเงิน":"Silver volunteer","จิตอาสาหน้าใหม่":"New volunteer"," ชม.":" hrs","ชม.":"hrs","กิจกรรมที่เสร็จสิ้น":"Completed activities","กำลังดำเนินการ":"In progress","ก้าวแรกจิตอาสา":"First step","เข้าร่วม 1 กิจกรรม":"Join 1 activity","นักอาสาต่อเนื่อง":"Regular volunteer","เสร็จสิ้น 2 กิจกรรม":"Complete 2 activities","ครบเกณฑ์ กยศ.":"SLF requirement met","สะสม 36 ชั่วโมง":"Earn 36 hours","ครบ 3 กิจกรรม":"3 activities done","เข้าร่วม 3 กิจกรรม":"Join 3 activities","ยกเลิก":"Cancel","อนุมัติ":"Approve","เช็กอิน":"Check in","เช็กเอาต์":"Check out","ทั่วไป":"General","ทั้งหมด":"All","ยังไม่อ่าน":"Unread","ล่าสุด":"Recent","ก่อนหน้านี้":"Earlier"," รายการ":" items"," รายการที่ยังไม่อ่าน":" unread","อ่านครบทุกรายการแล้ว":"Everything has been read","กิจกรรมที่เข้าร่วม":"Activities joined","รายการโปรด":"Favorites","เปิดรับสมัคร":"Open","ใกล้เต็ม":"Almost full","ที่นั่งเต็ม":"Full","ลงทะเบียนแล้ว":"Registered","สมัคร":"Apply","หลักฐาน":"Evidence","รีวิว":"Review"," กิจกรรม":" activities","อา.":"Sun","จ.":"Mon","อ.":"Tue","พ.":"Wed","พฤ.":"Thu","ศ.":"Fri","ส.":"Sat","ทุกปี":"All years","ทุกกิจกรรม":"All activities","มหาวิทยาลัยนเรศวร":"Naresuan University","ใบประกาศทั้งหมด":"Total certificates"," ใบ":" certificates","ชั่วโมงรวมในใบประกาศ":"Hours in certificates","ใบล่าสุด":"Latest certificate","ปีการศึกษา 2568":"Academic year 2025","ปีการศึกษา 2569":"Academic year 2026","ปีการศึกษา ":"Academic year ","ทั้งปี":"Full year","ภาคเรียนที่ 1":"Semester 1","ภาคเรียนที่ 2":"Semester 2"," · ทั้งปี":" · Full year"," · ภาคเรียนที่ ":" · Semester "," ที่นั่ง":" seats","สมัครเลย":"Apply now"," กิจกรรมที่บันทึกไว้":" saved activities","ผู้จัดกิจกรรม":"Organizer","ดูกิจกรรม":"View activity","แสดง ":"Showing "," จาก ":" of ","เตือนล่วงหน้า ":"Reminder "," วัน":" days","ครบเกณฑ์ กยศ. แล้ว":"SLF requirement met","ยังไม่ครบเกณฑ์ กยศ.":"SLF requirement not yet met"};
+function T(s){ return STU_LANG === "en" ? (STU_EN[s] || s) : s; }
+
+const STATUS_MAP = {
+  pending:{label:T('รออนุมัติ'),bg:'rgba(245,166,35,.12)',color:'#c2760f'},
+  approved:{label:T('อนุมัติแล้ว'),bg:'rgba(122,184,255,.12)',color:'#3268c9'},
+  'checked-in':{label:T('เช็กอินแล้ว'),bg:'rgba(167,116,247,.12)',color:'#8b2fe0'},
+  'checked-out':{label:T('รอหลักฐาน/อนุมัติ'),bg:'rgba(245,166,35,.12)',color:'#c2760f'},
+  completed:{label:T('เสร็จสิ้น'),bg:'rgba(99,210,161,.12)',color:'#0d8f66'},
+};
+const BANNER_TAG = {update:{label:T('อัพเดทระบบ'),bg:'rgba(122,184,255,.14)',color:'#3268c9'}, reminder:{label:T('เตือนความจำ'),bg:'rgba(245,166,35,.14)',color:'#c2760f'}, general:{label:T('ประกาศทั่วไป'),bg:'rgba(167,116,247,.14)',color:'#8b2fe0'}};
+class Component extends DCLogic {
+
+  _watchAvatar(){
+    /* image-slot ตั้งค่า data-filled เมื่อผู้ใช้วางรูป — เฝ้าดูแล้วส่งค่าไปบันทึกจริง */
+    clearInterval(this._avT);
+    const grab = ()=>{
+      try{
+        const el = document.getElementById('student-avatar');
+        if(!el || !el.hasAttribute('data-filled') || !el.shadowRoot) return;
+        const im = el.shadowRoot.querySelector('img');
+        if(im && im.src && /^data:image\//.test(im.src) && im.src !== this._lastAv){
+          this._lastAv = im.src;
+          if(this.props.onAvatarChange) this.props.onAvatarChange(im.src);
+        }
+      }catch(e){}
+    };
+    this._avT = setInterval(grab, 700);
+  }
+  componentDidMount(){
+    this._watchAvatar(); this._bn = setInterval(()=>{ if(!this._hover) this.setState(s=>({bannerIdx:s.bannerIdx+1})); }, 7000); }
+  componentWillUnmount(){
+    clearInterval(this._avT); clearInterval(this._bn); }
+  state = { bannerIdx:0, faqOpen:0, editingProfile:false, editName:'', regFilter:'all', regQuery:'', regSort:'recent', regSortOpen:false, discoverStatus:'all', certYear:'all', certActivity:'all', hoursYear:'2569', hoursTerm:'all' };
+  tabStyle(active){ return `display:flex;align-items:center;gap:7px;padding:9px 16px;border-radius:12px;cursor:pointer;font-family:inherit;font-size:12.5px;white-space:nowrap;flex-shrink:0;transition:all 300ms ease;border:1px solid ${active?'transparent':'rgba(31,41,55,.1)'};background:${active?'linear-gradient(135deg,#E97171,#A774F7)':'rgba(255,255,255,.55)'};backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);color:${active?'#fff':'#4B5563'};font-weight:${active?500:300};box-shadow:${active?'0 6px 18px rgba(167,116,247,.3)':'none'}`; }
+
+  stuSettings(){
+    const defaults = {
+      notifyApproval:true, notifyReminder:true, notifyNews:false, notifyChat:true,
+      reminderDays:'2', calendarSync:false,
+      showProfilePublic:true, showHoursPublic:false, shareFaculty:true,
+      language:'th', density:'comfortable',
+    };
+    return {...defaults, ...(this.state.stuSettings||{})};
+  }
+  i18nVals(){
+    const en = this.props.lang === "en";
+    STU_LANG = en ? "en" : "th";
+    return {L: {
+      k1: en ? "No certificates yet. They appear here once activities are completed and approved." : "ยังไม่มีใบประกาศ เมื่อกิจกรรมเสร็จสิ้นและได้รับการอนุมัติ ใบประกาศจะปรากฏที่นี่",
+      k2: en ? "No conversations yet. Start a chat from an activity you registered for." : "ยังไม่มีการสนทนา เริ่มแชทได้จากหน้ารายละเอียดกิจกรรมที่ลงทะเบียน",
+      k3: en ? "No favorites yet. Tap the heart on an activity to save it here." : "ยังไม่มีรายการโปรด กดหัวใจที่กิจกรรมที่สนใจเพื่อบันทึกไว้ที่นี่",
+      k4: en ? "Contact the Student Affairs team — available during office hours." : "ติดต่อทีมงานกองกิจการนิสิต เราพร้อมช่วยเหลือในวันและเวลาราชการ",
+      k5: en ? "Get started with NU Volunteer and complete your volunteer hours" : "เริ่มต้นใช้งาน NU Volunteer และสะสมชั่วโมงจิตอาสาให้ครบเกณฑ์",
+      k6: en ? "No activities match your search. Try another keyword or category." : "ไม่พบกิจกรรมที่ตรงกับการค้นหา ลองเปลี่ยนคำค้นหรือหมวดหมู่",
+      k7: en ? "No data yet. Join activities to build up skills." : "ยังไม่มีข้อมูล เข้าร่วมกิจกรรมเพื่อสะสมความถนัด",
+      k8: en ? "Adjust notifications, privacy, and display" : "ปรับการแจ้งเตือน ความเป็นส่วนตัว และการแสดงผล",
+      k9: en ? "Type a message... (press Enter to send)" : "พิมพ์ข้อความ... (กด Enter เพื่อส่ง)",
+      k10: en ? "Issue with your hours? Contact admin" : "มีปัญหาเรื่องชั่วโมง? ติดต่อแอดมิน",
+      k11: en ? "No participation history yet" : "ยังไม่มีประวัติการเข้าร่วมกิจกรรม",
+      k12: en ? "Waiting for the organizer to review your cancellation request" : "รอผู้จัดพิจารณาคำขอยกเลิกกิจกรรม",
+      k13: en ? "Suggested activities to reach your goal" : "กิจกรรมแนะนำเพื่อให้ครบเป้าหมาย",
+      k14: en ? "Change profile photo (drag an image here)" : "เปลี่ยนรูปโปรไฟล์ (ลากรูปมาวาง)",
+      k15: en ? "items — adjust in Settings" : "รายการ — ปรับได้ที่หน้าตั้งค่า",
+      k16: en ? "No registrations in this category" : "ยังไม่มีการลงทะเบียนในหมวดนี้",
+      k17: en ? "No settings match your search" : "ไม่พบการตั้งค่าที่ตรงกับคำค้น",
+      k18: en ? "Some notification types are muted:" : "ปิดการแจ้งเตือนบางประเภทไว้",
+      k19: en ? "No notifications in this category" : "ไม่มีการแจ้งเตือนในหมวดนี้",
+      k20: en ? "No hours this term" : "ไม่มีชั่วโมงในภาคเรียนนี้",
+      k21: en ? "Summary report of all certificates" : "รายงานสรุปใบประกาศทั้งหมด",
+      k22: en ? "How to join an activity" : "ขั้นตอนการเข้าร่วมกิจกรรม",
+      k23: en ? "Add/remove from favorites" : "เพิ่ม/เอาออกจากรายการโปรด",
+      k24: en ? "No hours in this period" : "ยังไม่มีชั่วโมงในช่วงนี้",
+      k25: en ? "No questions match your search" : "ไม่พบคำถามที่ตรงกับคำค้น",
+      k26: en ? "Skills from your activities" : "ความถนัดจากกิจกรรมที่ทำ",
+      k27: en ? "SLF requirement progress" : "ความคืบหน้าเกณฑ์ กยศ.",
+      k28: en ? "Device calendar sync ·" : "ซิงก์ปฏิทินอุปกรณ์ ·",
+      k29: en ? "No activities on this day" : "ไม่มีกิจกรรมในวันนี้",
+      k30: en ? "Student loan (SLF) status" : "สถานะผู้กู้ยืม กยศ.",
+      k31: en ? "Time left this year" : "เวลาที่เหลือในปีนี้",
+      k32: en ? "Volunteer hour requirements" : "เกณฑ์ชั่วโมงจิตอาสา",
+      k33: en ? "View activity details" : "ดูรายละเอียดกิจกรรม",
+      k34: en ? "Remove from favorites" : "เอาออกจากรายการโปรด",
+      k35: en ? "Goal: 36 hrs/year" : "เป้าหมาย 36 ชม./ปี",
+      k36: en ? "Volunteer hours earned" : "ชั่วโมงจิตอาสาสะสม",
+      k37: en ? "hrs/month needed" : "ชม./เดือน ที่ควรทำ",
+      k38: en ? "Achievements" : "ผลงานและความสำเร็จ",
+      k39: en ? "% of all fields" : "% ของข้อมูลทั้งหมด",
+      k40: en ? "Badges earned" : "เหรียญตราที่ได้รับ",
+      k41: en ? "Participation history" : "ประวัติการเข้าร่วม",
+      k42: en ? "Search settings..." : "ค้นหาการตั้งค่า...",
+      k43: en ? "Scan QR to check out" : "สแกน QR เช็กเอาต์",
+      k44: en ? "By activity category" : "แยกตามหมวดกิจกรรม",
+      k45: en ? "Find more activities" : "ค้นหากิจกรรมเพิ่ม",
+      k46: en ? "Still need help?" : "ยังหาคำตอบไม่เจอ?",
+      k47: en ? "Tap to see the answer" : "คลิกเพื่อดูคำตอบ",
+      k48: en ? "Scan QR to check in" : "สแกน QR เช็กอิน",
+      k49: en ? "Hours per month" : "ชั่วโมงรายเดือน",
+      k50: en ? "Download report" : "ดาวน์โหลดรายงาน",
+      k51: en ? "Saved automatically" : "บันทึกอัตโนมัติ",
+      k52: en ? "User guide" : "คู่มือผู้ใช้งาน",
+      k53: en ? "Search activities..." : "ค้นหากิจกรรม...",
+      k54: en ? "Find activities" : "ไปค้นหากิจกรรม",
+      k55: en ? "Upload evidence" : "อัปโหลดหลักฐาน",
+      k56: en ? "Rate & review" : "ให้คะแนน+รีวิว",
+      k57: en ? "Hours history" : "ประวัติชั่วโมง",
+      k58: en ? "Frequently asked questions" : "คำถามที่พบบ่อย",
+      k59: en ? "SLF loan recipient" : "ผู้กู้ยืม กยศ.",
+      k60: en ? "Previous announcement" : "ประกาศก่อนหน้า",
+      k61: en ? "Latest activities" : "กิจกรรมล่าสุด",
+      k62: en ? "Registered" : "ลงทะเบียนแล้ว",
+      k63: en ? "Cancel activity" : "ยกเลิกกิจกรรม",
+      k64: en ? "Hours short" : "ชั่วโมงที่ขาด",
+      k65: en ? "Activities on" : "กิจกรรมวันที่",
+      k66: en ? "My messages" : "ข้อความของฉัน",
+      k67: en ? "Personal info" : "ข้อมูลส่วนตัว",
+      k68: en ? "Previous month" : "เดือนก่อนหน้า",
+      k69: en ? "Search questions..." : "ค้นหาคำถาม...",
+      k70: en ? "Account settings" : "ตั้งค่าบัญชี",
+      k71: en ? "Contact admin" : "ติดต่อแอดมิน",
+      k72: en ? "/ 36 hours" : "/ 36 ชั่วโมง",
+      k73: en ? "Save" : "บันทึกข้อมูล",
+      k74: en ? "View details" : "ดูรายละเอียด",
+      k75: en ? "Contact organizer" : "ติดต่อผู้จัด",
+      k76: en ? "Previous page" : "หน้าก่อนหน้า",
+      k77: en ? "Mark all read" : "อ่านทั้งหมด",
+      k78: en ? "Next announcement" : "ประกาศถัดไป",
+      k79: en ? "Details" : "รายละเอียด",
+      k80: en ? "View certificate" : "ดูใบประกาศ",
+      k81: en ? "Saved" : "บันทึกแล้ว",
+      k82: en ? "View applicants" : "ดูผู้สมัคร",
+      k83: en ? "Next month" : "เดือนถัดไป",
+      k84: en ? "Send message" : "ส่งข้อความ",
+      k85: en ? "Profile photo" : "รูปโปรไฟล์",
+      k86: en ? "Next page" : "หน้าถัดไป",
+      k87: en ? "Download" : "ดาวน์โหลด",
+      k88: en ? "Remaining" : "เหลืออีก",
+      k89: en ? "Completed" : "กรอกแล้ว",
+      k90: en ? "Hi," : "สวัสดี,",
+      k91: en ? "Step" : "ขั้นที่",
+      k92: en ? "Save" : "บันทึก",
+      k93: en ? "Cancel" : "ยกเลิก",
+      k94: en ? "Share" : "แชร์",
+      k95: en ? "hrs" : "ชม.",
+      k96: en ? "Send" : "ส่ง",
+    }};
+  }
+  stuSettingsVals(){
+    const p = this.props;
+    const defaults = {
+      notifyApproval:true, notifyReminder:true, notifyNews:false, notifyChat:true,
+      reminderDays:'2', calendarSync:false,
+      showProfilePublic:true, showHoursPublic:false, shareFaculty:true,
+      language:'th', density:'comfortable',
+    };
+    const st = {...defaults, ...(this.state.stuSettings||{})};
+    const set = (k,v)=>{
+      this.setState(s=>({stuSettings:{...defaults, ...(s.stuSettings||{}), [k]:v}, stuSettingsSaved:true}));
+      if(k==='language' && p.onSetLang) p.onSetLang(v);
+    };
+    const tg = (k,label,hint)=>{
+      const on = !!st[k];
+      return {label, hint, onToggle:()=>set(k, !on),
+        trackStyle:`width:46px;height:26px;border-radius:999px;flex-shrink:0;cursor:pointer;padding:3px;transition:all 260ms ease;display:flex;justify-content:${on?'flex-end':'flex-start'};background:${on?'linear-gradient(135deg,#E97171,#A774F7)':'rgba(31,41,55,.15)'}`,
+        knobStyle:'width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 2px 6px rgba(31,41,55,.25);transition:all 260ms ease'};
+    };
+    const fd = (k,label,hint)=>({label, hint, value:st[k], onChange:(e)=>set(k, e.target.value)});
+    const sl = (k,label,hint,options)=>({label, hint, value:st[k], options, onChange:(e)=>set(k, e.target.value)});
+    const q = (this.state.stuSettingSearch||'').trim();
+    const sections = [
+      {title:T('การแจ้งเตือน'), desc:T('เลือกเรื่องที่ต้องการให้ระบบเตือน'), icon:'notifications', color:'#E97171', iconBg:'rgba(233,113,113,.16)',
+       toggles:[
+         tg('notifyApproval',T('แจ้งเตือนเมื่อผลการสมัครเปลี่ยน'),T('อนุมัติ ปฏิเสธ หรือถูกยกเลิก')),
+         tg('notifyReminder',T('เตือนก่อนวันกิจกรรม'),T('กันลืมเช็กอินหน้างาน')),
+         tg('notifyChat',T('แจ้งเตือนข้อความใหม่จากผู้จัด'),T('แสดงตัวเลขที่เมนูแชท')),
+         tg('notifyNews',T('แจ้งเตือนข่าวสารและประกาศ'),T('ข่าวจากกองกิจการนิสิต')),
+       ],
+       fields:[ fd('reminderDays',T('เตือนล่วงหน้า (วัน)'),T('จำนวนวันก่อนวันกิจกรรม')) ], selects:[]},
+      {title:T('ปฏิทินและการวางแผน'), desc:T('การซิงก์กิจกรรมกับปฏิทินส่วนตัว'), icon:'calendar_month', color:'#7AB8FF', iconBg:'rgba(122,184,255,.16)',
+       toggles:[ tg('calendarSync',T('ซิงก์กิจกรรมที่อนุมัติแล้วเข้าปฏิทิน'),T('เพิ่มกิจกรรมลงปฏิทินอุปกรณ์อัตโนมัติ')) ],
+       fields:[], selects:[]},
+      {title:T('ความเป็นส่วนตัว'), desc:T('ข้อมูลที่ผู้อื่นมองเห็นได้'), icon:'lock', color:'#63D2A1', iconBg:'rgba(99,210,161,.16)',
+       toggles:[
+         tg('showProfilePublic',T('ให้ผู้จัดเห็นโปรไฟล์ของฉัน'),T('ชื่อ คณะ และเบอร์ติดต่อฉุกเฉิน')),
+         tg('showHoursPublic',T('แสดงชั่วโมงสะสมในรายชื่อผู้เข้าร่วม'),T('ผู้เข้าร่วมคนอื่นจะเห็นชั่วโมงของคุณ')),
+         tg('shareFaculty',T('แสดงคณะบนโปรไฟล์'),T('ใช้สีประจำคณะเป็นธีมการ์ดโปรไฟล์')),
+       ], fields:[], selects:[]},
+      {title:T('การแสดงผล'), desc:T('ภาษาและความหนาแน่นของเนื้อหา'), icon:'palette', color:'#A774F7', iconBg:'rgba(167,116,247,.16)',
+       toggles:[], fields:[],
+       selects:[
+         sl('language',T('ภาษา'),T('ภาษาที่ใช้แสดงในระบบ'),[{id:'th',label:T('ไทย')},{id:'en',label:'English'}]),
+         sl('density',T('ความหนาแน่นเนื้อหา'),T('ปรับระยะห่างของการ์ดและรายการ'),[{id:'comfortable',label:T('สบายตา')},{id:'compact',label:T('กระชับ')}]),
+       ]},
+    ];
+    const match = (o)=> !q || (o.label||'').includes(q) || (o.hint||'').includes(q);
+    const filtered = sections.map(s=>({...s,
+      toggles:s.toggles.filter(match), fields:s.fields.filter(match), selects:s.selects.filter(match)}))
+      .filter(s=> !q || s.toggles.length || s.fields.length || s.selects.length || s.title.includes(q));
+    return {
+      isStuSettings: p.page==='settings',
+      stuSettingSections: filtered, hasStuSettingResults: filtered.length>0,
+      stuSettingSearch: this.state.stuSettingSearch||'',
+      onStuSettingSearch: (e)=>this.setState({stuSettingSearch:e.target.value}),
+      stuSettingsSaved: !!this.state.stuSettingsSaved,
+    };
+  }
+  guideVals(){
+    const p = this.props;
+    const guideSteps = [
+      {step:1, title:T('ค้นหากิจกรรม'), desc:T('เลือกดูกิจกรรมตามหมวดหมู่ 7 ด้าน หรือค้นหาจากชื่อกิจกรรม สถานที่ และผู้จัด'), icon:'travel_explore', color:'#E97171', iconBg:'rgba(233,113,113,.16)'},
+      {step:2, title:T('กดสมัคร'), desc:T('กดปุ่ม "สมัคร" บนการ์ดกิจกรรม ตรวจสอบรายละเอียดแล้วยืนยัน คำขอจะถูกส่งไปยังผู้จัด'), icon:'how_to_reg', color:'#A774F7', iconBg:'rgba(167,116,247,.16)'},
+      {step:3, title:T('รอการอนุมัติ'), desc:T('ติดตามสถานะได้ที่เมนู "การลงทะเบียน" ระบบจะแจ้งเตือนเมื่อผู้จัดอนุมัติแล้ว'), icon:'pending_actions', color:'#7AB8FF', iconBg:'rgba(122,184,255,.16)'},
+      {step:4, title:T('เช็กอิน–เช็กเอาต์'), desc:T('ในวันงาน สแกน QR Code จากผู้จัดเพื่อเช็กอิน และสแกนอีกครั้งเมื่อเสร็จกิจกรรม'), icon:'qr_code_scanner', color:'#63D2A1', iconBg:'rgba(99,210,161,.16)'},
+      {step:5, title:T('ส่งหลักฐานและรับใบประกาศ'), desc:T('อัปโหลดหลักฐานภายใน 7 วัน เมื่ออนุมัติแล้วชั่วโมงจะถูกบันทึกและออกใบประกาศให้'), icon:'workspace_premium', color:'#F5A623', iconBg:'rgba(245,166,35,.16)'},
+    ];
+    const FAQ = [
+      {q:T('ต้องสะสมชั่วโมงจิตอาสากี่ชั่วโมงถึงจะครบเกณฑ์?'), a:T('ผู้กู้ยืม กยศ. ต้องสะสมให้ครบ 36 ชั่วโมงต่อปีการศึกษา ดูความคืบหน้าได้ที่เมนู "ชั่วโมงสะสม" และหน้าโปรไฟล์')},
+      {q:T('สมัครแล้วยกเลิกได้ไหม?'), a:T('ได้ ไปที่เมนู "การลงทะเบียน" แล้วกด "ยกเลิกกิจกรรม" พร้อมระบุเหตุผล คำขอจะถูกส่งไปให้ผู้จัดพิจารณา โดยต้องยกเลิกก่อนวันงานอย่างน้อย 3 วัน')},
+      {q:T('ทำไมสถานะยังเป็น "รออนุมัติ" อยู่?'), a:T('ผู้จัดกิจกรรมต้องตรวจสอบและอนุมัติรายชื่อผู้สมัครก่อน โดยทั่วไปใช้เวลาไม่เกิน 2–3 วันทำการ หากเกินกำหนดสามารถติดต่อผู้จัดผ่านเมนูแชทได้')},
+      {q:T('ลืมเช็กเอาต์ต้องทำอย่างไร?'), a:T('ติดต่อผู้จัดกิจกรรมผ่านเมนูแชท ผู้จัดสามารถเช็กเอาต์ให้ย้อนหลังได้จากหน้าผู้เข้าร่วมกิจกรรม')},
+      {q:T('ที่นั่งเต็มแล้วยังสมัครได้ไหม?'), a:T('เมื่อที่นั่งเต็มปุ่มสมัครจะถูกปิด แนะนำให้กดหัวใจเพิ่มลงรายการโปรดไว้ หากมีผู้ยกเลิกที่นั่งจะเปิดอีกครั้ง')},
+      {q:T('ใบประกาศดาวน์โหลดได้ที่ไหน?'), a:T('ไปที่เมนู "ใบประกาศ" กิจกรรมที่เสร็จสิ้นและอนุมัติชั่วโมงแล้วจะมีปุ่มดูและดาวน์โหลดใบประกาศให้')},
+    ];
+    const fq = (this.state.faqSearch||'').trim();
+    const open = this.state.faqOpen;
+    const faqItems = FAQ.map((f,i)=>({
+      ...f, open: open===i,
+      chevColor: open===i ? '#A774F7' : '#9CA3AF',
+      chevRotate: open===i ? 'rotate(90deg)' : 'rotate(0deg)',
+      onToggle: ()=>this.setState(st=>({faqOpen: st.faqOpen===i ? null : i})),
+    }));
+    const guideRules = [
+      {label:T('ครบ 36 ชั่วโมงต่อปีการศึกษา'), hint:T('สำหรับผู้กู้ยืม กยศ.'), icon:'verified', color:'#63D2A1'},
+      {label:T('ต้องเช็กอินและเช็กเอาต์ครบ'), hint:T('ขาดอย่างใดอย่างหนึ่งจะไม่ได้รับชั่วโมง'), icon:'how_to_reg', color:'#A774F7'},
+      {label:T('อัปโหลดหลักฐานภายใน ')+(p.evidenceDays||7)+T(' วัน'), hint:T('นับจากวันที่เช็กเอาต์'), icon:'photo_camera', color:'#7AB8FF'},
+      {label:T('ชั่วโมงจะบันทึกเมื่อผู้จัดอนุมัติ'), hint:T('ตรวจสอบสถานะได้ที่เมนูชั่วโมงสะสม'), icon:'fact_check', color:'#F5A623'},
+    ];
+    const faqShown = fq ? faqItems.filter(f=>f.q.includes(fq) || f.a.includes(fq)) : faqItems;
+    const guideLinks = [
+      {label:T('ค้นหากิจกรรม'), icon:'travel_explore', color:'#E97171', onClick:()=>p.onNav && p.onNav('discover')},
+      {label:T('การลงทะเบียน'), icon:'assignment', color:'#A774F7', onClick:()=>p.onNav && p.onNav('registrations')},
+      {label:T('ชั่วโมงสะสม'), icon:'schedule', color:'#63D2A1', onClick:()=>p.onNav && p.onNav('hours')},
+      {label:T('ใบประกาศ'), icon:'workspace_premium', color:'#7AB8FF', onClick:()=>p.onNav && p.onNav('certificates')},
+    ];
+    return {guideSteps: guideSteps.map(g=>({...g, stepBadgeStyle:`display:flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;font-size:11px;font-weight:600;color:#fff;background:${g.color};box-shadow:0 4px 10px ${g.color}59`})),
+      faqItems: faqShown, hasFaqResults: faqShown.length>0,
+      faqSearch: this.state.faqSearch||'',
+      onFaqSearch: (e)=>this.setState({faqSearch:e.target.value}),
+      guideLinks, guideRules,
+      onGuideContact: ()=>p.onContact && p.onContact(null)};
+  }
+
+  formValue(){ return {...(this.props.studentProfile||{}), ...(this.state.form||{})}; }
+  formVals(){
+    const p = this.props;
+    const v = this.formValue();
+    const set = (k)=>(e)=>this.setState(s=>({form:{...(s.form||{}), [k]: e.target.value}, savedProfile:false}));
+    const digits = (x)=>String(x||'').replace(/\D/g,'');
+    const err = {};
+    if(v.phone && digits(v.phone).length!==10) err.phone=T('กรอกเบอร์โทร 10 หลัก');
+    if(v.citizenId && digits(v.citizenId).length!==13) err.citizenId=T('เลขบัตรประชาชนต้องมี 13 หลัก');
+    if(v.altEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.altEmail)) err.altEmail=T('รูปแบบอีเมลไม่ถูกต้อง');
+    if(v.birthDate && !/^\d{2}\/\d{2}\/\d{4}$/.test(v.birthDate)) err.birthDate=T('รูปแบบ วว/ดด/ปปปป');
+
+    const facultyNames = (p.faculties||[]).map(f=>f.name);
+    const mk = (key, label, opt)=>{
+      const o = opt||{};
+      const val = v[key]==null ? '' : v[key];
+      const bad = !!err[key];
+      return {
+        key, label, required: !!o.required, isRequired: !!o.required,
+        value: val, onChange: set(key),
+        isSelect: !!o.options, isReadonly: !!o.readonly, isInput: !o.options && !o.readonly,
+        options: (o.options||[]).map(x=>({value:x, label:x})),
+        placeholder: o.placeholder||'',
+        hasError: bad, error: err[key]||'',
+        inputStyle: `width:100%;padding:11px 13px;border-radius:12px;border:1px solid ${bad?'rgba(233,113,113,.7)':'rgba(31,41,55,.12)'};background:rgba(255,255,255,.78);font-family:inherit;font-size:13px;color:#1F2937;outline:none;transition:border-color 180ms ease,box-shadow 180ms ease`,
+        hint: o.hint||'', hasHint: !!o.hint,
+      };
+    };
+    const sections = [
+      {title:T('ข้อมูลส่วนตัว'), icon:'person', color:'#E97171', fields:[
+        mk('prefix',T('คำนำหน้า'),{options:[T('นาย'),T('นาง'),T('นางสาว'),T('อื่นๆ')]}),
+        mk('gender',T('เพศ'),{options:[T('ชาย'),T('หญิง'),T('ไม่ระบุ')]}),
+        mk('firstNameTh',T('ชื่อ'),{required:true, placeholder:'ณัฐชา'}),
+        mk('lastNameTh',T('นามสกุล'),{required:true, placeholder:'วิริยะกุล'}),
+        mk('nickname',T('ชื่อเล่น'),{placeholder:'ใบเฟิร์น'}),
+        mk('birthDate',T('วัน/เดือน/ปีเกิด'),{placeholder:'01/01/2547'}),
+        mk('phone',T('เบอร์โทรศัพท์'),{required:true, placeholder:'0812345678', hint:T('ใช้ติดต่อกรณีฉุกเฉินระหว่างกิจกรรม')}),
+        mk('nuEmail',T('อีเมล'),{readonly:true, hint:T('อีเมลมหาวิทยาลัยที่ผูกกับบัญชี')}),
+      ]},
+      {title:T('การศึกษา'), icon:'school', color:'#A774F7', fields:[
+        mk('faculty',T('คณะ'),{options:facultyNames.length?facultyNames:[T('คณะวิทยาศาสตร์')], required:true}),
+        mk('major',T('สาขาวิชา'),{placeholder:T('วิทยาการคอมพิวเตอร์')}),
+        mk('yearLevel',T('ชั้นปี'),{options:[T('ชั้นปีที่ 1'),T('ชั้นปีที่ 2'),T('ชั้นปีที่ 3'),T('ชั้นปีที่ 4'),T('ชั้นปีที่ 5'),T('ชั้นปีที่ 6')]}),
+        mk('studentId',T('รหัสนิสิต'),{readonly:true}),
+      ]},
+    ];
+    const tracked = ['prefix','gender','firstNameTh','lastNameTh','nickname','birthDate','phone','faculty','major','yearLevel'];
+    const filled = tracked.filter(k=>String(v[k]||'').trim()).length;
+    const pct = Math.round(filled/tracked.length*100);
+    const missingRequired = [['phone',T('เบอร์โทรศัพท์')],['firstNameTh',T('ชื่อ')],['lastNameTh',T('นามสกุล')]]
+      .filter(([k])=>!String(v[k]||'').trim()).map(([,l])=>l);
+    const hasErrors = Object.keys(err).length>0;
+    const ptab = this.state.profileTab==='achieve' ? 'achieve' : 'info';
+    const tabStyle = (active)=>`flex:1;display:flex;align-items:center;justify-content:center;gap:7px;padding:11px 14px;border-radius:13px;border:none;font-family:inherit;font-size:13px;font-weight:500;cursor:pointer;transition:all 200ms ease;color:${active?'#fff':'#6B7280'};background:${active?'linear-gradient(135deg,#E97171,#A774F7)':'transparent'};box-shadow:${active?'0 8px 20px rgba(167,116,247,.3)':'none'}`;
+    return {
+      profileSections: sections,
+      isProfileInfo: ptab==='info', isProfileAchieve: ptab==='achieve',
+      profileTabInfoStyle: tabStyle(ptab==='info'), profileTabAchieveStyle: tabStyle(ptab==='achieve'),
+      onProfileTabInfo: ()=>this.setState({profileTab:'info'}),
+      onProfileTabAchieve: ()=>this.setState({profileTab:'achieve'}),
+      profilePct: pct,
+      profilePctBarStyle: `height:100%;width:${pct}%;background:linear-gradient(90deg,#E97171,#A774F7);border-radius:5px;transition:width 300ms ease`,
+      profileIncomplete: missingRequired.length>0,
+      profileMissingLabel: T('กรุณากรอก')+missingRequired.join(', ')+T('ให้ครบก่อนสมัครกิจกรรม'),
+      profileSaveDisabled: hasErrors || missingRequired.length>0,
+      profileSaveStyle: `width:100%;display:flex;align-items:center;justify-content:center;gap:8px;padding:13px;border-radius:14px;border:none;font-family:inherit;font-weight:500;font-size:13.5px;transition:all 220ms ease;color:#fff;cursor:${(hasErrors||missingRequired.length)?'not-allowed':'pointer'};background:${(hasErrors||missingRequired.length)?'#CBD5E1':'linear-gradient(135deg,#E97171,#A774F7)'};box-shadow:${(hasErrors||missingRequired.length)?'none':'0 10px 24px rgba(167,116,247,.32)'}`,
+      profileSaved: !!this.state.savedProfile,
+      onSaveProfileForm: ()=>{
+        if(hasErrors || missingRequired.length) return;
+        p.onSaveProfile && p.onSaveProfile(this.formValue());
+        this.setState({savedProfile:true});
+        clearTimeout(this._saveT);
+        this._saveT = setTimeout(()=>this.setState({savedProfile:false}), 3000);
+      },
+    };
+  }
+  profileVals(){
+    const p = this.props;
+    const regs = p.registrations || [];
+    const acts = p.activities || [];
+    const hs = p.hoursStats || {total:0};
+    const done = regs.filter(r=>r.status==='completed');
+    const actOf = (id)=>acts.find(a=>a.id===id);
+
+    const kyfPct = Math.min(100, Math.round((hs.total||0)/36*100));
+    const remain = Math.max(0, 36-(hs.total||0));
+    const kyfRemainingLabel = remain>0 ? T('อีก ')+remain+T(' ชั่วโมงจะครบเกณฑ์') : T('ครบเกณฑ์เรียบร้อยแล้ว');
+    const volunteerRank = (hs.total||0)>=36 ? T('จิตอาสาระดับทอง') : (hs.total||0)>=18 ? T('จิตอาสาระดับเงิน') : T('จิตอาสาหน้าใหม่');
+
+    const profileStats = [
+      {label:T('ชั่วโมงสะสม'), value:(hs.total||0)+T(' ชม.'), color:'#A774F7', icon:'schedule'},
+      {label:T('กิจกรรมที่เสร็จสิ้น'), value:done.length, color:'#63D2A1', icon:'task_alt'},
+      {label:T('กำลังดำเนินการ'), value:regs.filter(r=>!['completed','cancelled'].includes(r.status)).length, color:'#E97171', icon:'pending_actions'},
+      {label:T('ใบประกาศ'), value:done.length, color:'#7AB8FF', icon:'workspace_premium'},
+    ];
+
+    const badgeDefs = [
+      {label:T('ก้าวแรกจิตอาสา'), hint:T('เข้าร่วม 1 กิจกรรม'), icon:'footprint', color:'#E97171', got:regs.length>=1},
+      {label:T('นักอาสาต่อเนื่อง'), hint:T('เสร็จสิ้น 2 กิจกรรม'), icon:'local_fire_department', color:'#A774F7', got:done.length>=2},
+      {label:T('ครบเกณฑ์ กยศ.'), hint:T('สะสม 36 ชั่วโมง'), icon:'verified', color:'#63D2A1', got:(hs.total||0)>=36},
+      {label:T('ครบ 3 กิจกรรม'), hint:T('เข้าร่วม 3 กิจกรรม'), icon:'military_tech', color:'#7AB8FF', got:done.length>=3},
+    ];
+    const badges = badgeDefs.map(b=>({
+      ...b,
+      color: b.got ? b.color : '#CBD5E1',
+      style: `text-align:center;padding:16px 10px;border-radius:16px;background:${b.got?b.color+'1f':'rgba(30,37,48,.04)'};border:1px solid ${b.got?b.color+'3d':'rgba(30,37,48,.06)'};opacity:${b.got?1:.55}`,
+    }));
+
+    const byCat = {};
+    done.forEach(r=>{ const a=actOf(r.activityId); if(!a) return; byCat[a.cat]=(byCat[a.cat]||0)+a.hours; });
+    const catMeta = {}; (p.categories||[]).forEach(c=>catMeta[c.id]=c);
+    const maxSkill = Math.max(...Object.values(byCat), 1);
+    const skills = Object.entries(byCat).map(([cid,h])=>({
+      label: catMeta[cid] ? catMeta[cid].label : cid,
+      hours: h, pct: Math.round(h/maxSkill*100),
+      color: catMeta[cid] ? catMeta[cid].color : '#A774F7',
+    })).sort((a,b)=>b.hours-a.hours);
+
+    const HIST = {
+      completed:{label:T('เสร็จสิ้น'),bg:'rgba(99,210,161,.14)',color:'#0d8f66',icon:'task_alt'},
+      'checked-in':{label:T('เช็กอินแล้ว'),bg:'rgba(167,116,247,.14)',color:'#8b2fe0',icon:'login'},
+      'checked-out':{label:T('รอหลักฐาน'),bg:'rgba(245,166,35,.14)',color:'#c2760f',icon:'hourglass_top'},
+      approved:{label:T('อนุมัติแล้ว'),bg:'rgba(122,184,255,.14)',color:'#3268c9',icon:'event_available'},
+      pending:{label:T('รออนุมัติ'),bg:'rgba(245,166,35,.14)',color:'#c2760f',icon:'pending'},
+      cancelled:{label:T('ยกเลิก'),bg:'rgba(233,113,113,.14)',color:'#c2410c',icon:'cancel'},
+    };
+    const profileHistory = regs.map(r=>{
+      const a = actOf(r.activityId) || {title:'—',date:'',hours:0};
+      const h = HIST[r.status] || HIST.pending;
+      return {title:a.title, date:a.date, hours:a.hours, icon:h.icon, color:h.color, iconBg:h.bg, statusLabel:h.label, statusBg:h.bg, statusColor:h.color};
+    });
+
+    return {kyfPct, kyfRemainingLabel, volunteerRank, profileStats, badges, skills, hasSkills:skills.length>0, profileHistory, hasHistory:profileHistory.length>0};
+  }
+
+  notifVals(){
+    const p = this.props;
+    const raw = p.notifications || [];
+    const TYPES = {
+      approval:{label:T('อนุมัติ'), icon:'task_alt', color:'#63D2A1', bg:'rgba(99,210,161,.14)'},
+      checkin:{label:T('เช็กอิน'), icon:'how_to_reg', color:'#A774F7', bg:'rgba(167,116,247,.14)'},
+      reminder:{label:T('เตือนความจำ'), icon:'alarm', color:'#E97171', bg:'rgba(233,113,113,.14)'},
+      cert:{label:T('ใบประกาศ'), icon:'workspace_premium', color:'#7AB8FF', bg:'rgba(122,184,255,.14)'},
+      info:{label:T('ทั่วไป'), icon:'campaign', color:'#7AB8FF', bg:'rgba(122,184,255,.14)'},
+    };
+    const classify = (t)=>{
+      if(/อนุมัติ|สำเร็จ|ผ่านเกณฑ์/.test(t)) return 'approval';
+      if(/เช็กอิน|เช็กเอาต์/.test(t)) return 'checkin';
+      if(/ใกล้|เตือน|อีก \d+ วัน|หลักฐาน/.test(t)) return 'reminder';
+      if(/ใบประกาศ|เกียรติบัตร/.test(t)) return 'cert';
+      return 'info';
+    };
+    const isRecent = (time)=>/นาที|ชั่วโมง|เมื่อสักครู่/.test(time||'');
+
+    const all = raw.map((n,i)=>{
+      const key = classify(n.text||'');
+      const t = TYPES[key];
+      const readSet = this.state.notifRead || {};
+      const unread = this.state.notifAllRead ? false : readSet[n.id||i] ? false : (n.read===undefined ? i<2 : !n.read);
+      return {
+        ...n, typeKey:key, typeLabel:t.label, icon:t.icon, color:t.color, iconBg:t.bg,
+        unread, weight: unread?500:300,
+        recent: isRecent(n.time),
+        accentStyle:`position:absolute;left:0;top:12px;bottom:12px;width:3px;border-radius:0 3px 3px 0;background:${unread?t.color:'transparent'}`,
+        onRead: ()=>this.setState(s=>({notifRead:{...(s.notifRead||{}), [n.id||i]:true}})),
+        cardStyle:`position:relative;overflow:hidden;cursor:pointer;transition:all 200ms ease;display:flex;gap:12px;align-items:flex-start;background:rgba(255,255,255,${unread?'.44':'.28'});backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);border:1px solid rgba(255,255,255,${unread?'.6':'.42'});border-radius:16px;padding:14px 16px;box-shadow:0 10px 34px rgba(30,37,48,${unread?'.13':'.07'}), inset 0 1px 0 rgba(255,255,255,.6)`,
+      };
+    });
+
+    const filter = this.state.notifFilter || 'all';
+    const cfg0 = this.stuSettings();
+    const allow0 = all.filter(n=> n.typeKey==='approval' ? cfg0.notifyApproval : n.typeKey==='reminder' ? (cfg0.notifyReminder && p.remindersEnabled !== false) : n.typeKey==='info' ? cfg0.notifyNews : true);
+    const counts = {all:allow0.length, unread:allow0.filter(n=>n.unread).length, reminder:allow0.filter(n=>n.typeKey==='reminder').length};
+    const fdefs = [
+      {key:'all', label:T('ทั้งหมด'), icon:'inbox', count:counts.all},
+      {key:'unread', label:T('ยังไม่อ่าน'), icon:'mark_email_unread', count:counts.unread},
+      {key:'reminder', label:T('เตือนความจำ'), icon:'alarm', count:counts.reminder},
+    ];
+    const notifFilters = fdefs.map(f=>({
+      ...f,
+      onClick: ()=>this.setState({notifFilter:f.key}),
+      style:`display:flex;align-items:center;gap:6px;padding:8px 14px;border-radius:11px;cursor:pointer;font-size:12.5px;font-family:inherit;border:1px solid ${filter===f.key?'transparent':'rgba(30,37,48,.1)'};background:${filter===f.key?'#1F2937':'rgba(255,255,255,.5)'};backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);color:${filter===f.key?'#fff':'#475569'};font-weight:${filter===f.key?500:300}`,
+    }));
+
+    const cfg = this.stuSettings();
+    const typeAllowed = (k)=> k==='approval' ? cfg.notifyApproval
+      : k==='reminder' ? (cfg.notifyReminder && p.remindersEnabled !== false)
+      : k==='info' ? cfg.notifyNews
+      : true;
+    const allowed = all.filter(n=>typeAllowed(n.typeKey));
+    const shown = allowed.filter(n=> filter==='all' ? true : filter==='unread' ? n.unread : n.typeKey==='reminder');
+    const groups = [
+      {label:T('ล่าสุด'), items: shown.filter(n=>n.recent)},
+      {label:T('ก่อนหน้านี้'), items: shown.filter(n=>!n.recent)},
+    ].filter(g=>g.items.length>0).map(g=>({...g, countLabel:g.items.length+T(' รายการ')}));
+    const unreadCount = allowed.filter(n=>n.unread).length;
+
+    return {
+      notifFilters, notifGroups:groups, hasNotifs: shown.length>0,
+      notifMutedCount: all.length - allowed.length,
+      hasMutedNotifs: (all.length - allowed.length) > 0,
+      hasUnread: unreadCount>0,
+      notifSummary: unreadCount>0 ? T('มี ')+unreadCount+T(' รายการที่ยังไม่อ่าน') : T('อ่านครบทุกรายการแล้ว'),
+      onMarkAllRead: ()=>{ this.setState({notifAllRead:true, notifRead:{}}); if(this.props.onMarkAllNotifRead) this.props.onMarkAllNotifRead(); },
+    };
+  }
+
+  calExtraVals(){
+    const p = this.props;
+    const cats = p.categories || [];
+    const catMap = {}; cats.forEach(c=>{ catMap[c.id] = c; });
+    const MSHORT = ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+    const MSHORT_EN = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    const en = p.lang === 'en';
+    /* แถวกิจกรรมที่กำลังจะถึงใช้ scope เดียวกับปฏิทิน (เฉพาะที่ลงทะเบียนไว้) */
+    const upcoming = (p.calActivities || p.activities || []).map(a=>{
+      const iso = String(a.dateISO||'');
+      const day = iso ? Number(iso.slice(8,10)) : 1;
+      const month = iso ? Number(iso.slice(5,7))-1 : 0;
+      /* คำนวณจาก ISO ตรง ๆ — ไม่พึ่ง daysUntil ที่อาจกลับเครื่องหมายกับวันที่ผ่านมาแล้ว */
+      const _n = new Date(); _n.setHours(0,0,0,0);
+      const dist = iso ? Math.round((new Date(iso+'T00:00:00') - _n)/86400000) : -1;
+      const cat = catMap[a.cat] || {color:'#9CA3AF', label:''};
+      return {title:a.title, org:a.org, dayNum:day, monthShort: en?MSHORT_EN[month]:MSHORT[month], dist,
+        catColor:cat.color, dateBg:(cat.color||'#9CA3AF')+'22',
+        distLabel: dist===0 ? T('วันนี้') : T('อีก ')+dist+T(' วัน'),
+        distColor: dist<=7 ? '#C2410C' : dist<=14 ? '#B45309' : '#0F8A63',
+        onClick: ()=> p.onDetail && p.onDetail(a.id)};
+    }).filter(a=>a.dist>=0).sort((a,b)=>a.dist-b.dist).slice(0,6);
+    return {
+      calLegendLabel: T('หมวดหมู่:'),
+      calLegend: cats.map(c=>({label:c.label, color:c.color})),
+      calUpcomingTitle: T('กิจกรรมที่กำลังจะถึง'),
+      railNextLabel: T('เลื่อนดูถัดไป'),
+      onRailNext: (e)=>{
+        const wrap = e.currentTarget.parentElement;
+        const rail = wrap && wrap.querySelector('.nuv-rail');
+        if(!rail) return;
+        const step = Math.max(200, rail.clientWidth - 80);
+        const atEnd = rail.scrollLeft + rail.clientWidth >= rail.scrollWidth - 4;
+        rail.scrollTo({left: atEnd ? 0 : rail.scrollLeft + step, behavior:'smooth'});
+      },
+      calUpcoming: upcoming, hasCalUpcoming: upcoming.length>0,
+      calUpcomingEmpty: T('ไม่มีกิจกรรมที่กำลังจะถึง'),
+    };
+  }
+  renderVals(){
+    const p = this.props;
+    STU_LANG = p.lang === 'en' ? 'en' : 'th';
+    const page = p.page;
+    const studentProfile = p.studentProfile || {name:'', subtitle:''};
+    const studentName = studentProfile.name;
+    const regs = p.registrations || [];
+    const hoursStats = p.hoursStats || {};
+    const statCards = [
+      {label:T('กิจกรรมที่เข้าร่วม'), value: regs.length, color:'#E97171', accentTo:'#F5A9A0', iconBg:'rgba(233,113,113,.16)', icon:'volunteer_activism'},
+      {label:T('ชั่วโมงสะสม'), value: hoursStats.total+T(' ชม.'), color:'#A774F7', accentTo:'#C9A5FA', iconBg:'rgba(167,116,247,.16)', icon:'schedule'},
+      {label:T('ใบประกาศ'), value: regs.filter(r=>r.status==='completed').length, color:'#63D2A1', accentTo:'#9BE5C6', iconBg:'rgba(99,210,161,.16)', icon:'workspace_premium'},
+      {label:T('รายการโปรด'), value: (p.wishlist||[]).length, color:'#7AB8FF', accentTo:'#AED5FF', iconBg:'rgba(122,184,255,.16)', icon:'favorite'},
+    ];
+    const recentActivities = (p.activities||[]).slice(0,3).map(a=>({
+      ...a, timeSuffix: a.timeStart ? (' · '+a.timeStart+(a.timeEnd?' – '+a.timeEnd:'')+' '+T('น.')) : '',
+      onDetail: ()=> p.onDetail(a.id), onParticipants: ()=> p.onParticipants(a.id), onShare: ()=> p.onShare(a.id),
+    }));
+
+    const catFilter = p.catFilter||'all';
+    const chips = [{id:'all',label:T('ทั้งหมด')}, ...(p.categories||[])].map(c=>{
+      const active = (c.id||'all')===catFilter; const color = c.color||'#1F2937';
+      return {label:c.label||T('ทั้งหมด'), onClick:()=>{ this.setState({discoverPage:1}); p.onCat(c.id||'all'); }, style:`padding:8px 14px;border-radius:999px;font-size:12.5px;font-weight:600;white-space:nowrap;border:1px solid ${active?color:'rgba(30,37,48,.12)'};background:${active?color:'#fff'};color:${active?'#fff':'#475569'}`};
+    });
+    const wishlist = p.wishlist||[];
+    const rawDiscover = p.filteredActivities||[];
+    const dsf = this.state.discoverStatus||'all';
+    const availTabs = [
+      {key:'all', label:T('ทั้งหมด'), count:rawDiscover.length},
+      {key:'open', label:T('เปิดรับสมัคร'), count:rawDiscover.filter(a=>a.capKey==='open').length},
+      {key:'almost', label:T('ใกล้เต็ม'), count:rawDiscover.filter(a=>a.capKey==='almost').length},
+      {key:'full', label:T('ที่นั่งเต็ม'), count:rawDiscover.filter(a=>a.capKey==='full').length},
+    ].map(x=>({...x, style:this.tabStyle(x.key===dsf), onClick:()=>this.setState({discoverStatus:x.key, discoverPage:1})}));
+    const discoverActivities = rawDiscover.filter(a=>dsf==='all'||a.capKey===dsf).map(a=>({
+      ...a, catBg:(a.catObj.color)+'1a', timeSuffix: a.timeStart ? (' · '+a.timeStart+(a.timeEnd?' – '+a.timeEnd:'')+T(' น.')) : '', seatPct: Math.round(a.seatsFilled/a.seatsTotal*100), seatsLeft: a.seatsTotal-a.seatsFilled,
+      wishColor: wishlist.includes(a.id) ? '#E97171' : '#CBD5E1',
+      applyLabel: a.isRegistered ? T('ลงทะเบียนแล้ว') : (a.capKey==='full'||a.capKey==='closed') ? T('ที่นั่งเต็ม') : T('สมัคร'),
+      applyDisabled: !!a.isRegistered || a.capKey==='full' || a.capKey==='closed',
+      applyStyle: (a.isRegistered || a.capKey==='full' || a.capKey==='closed')
+        ? 'flex:1;padding:9px;border-radius:12px;border:1px solid rgba(31,41,55,.08);background:rgba(31,41,55,.05);color:#9CA3AF;font-family:inherit;font-size:12.5px;line-height:1.7;font-weight:500;cursor:not-allowed'
+        : 'flex:1;padding:9px;border-radius:12px;border:none;background:linear-gradient(135deg,#E97171,#A774F7);color:#fff;font-family:inherit;font-size:12.5px;line-height:1.7;font-weight:500;cursor:pointer;box-shadow:0 6px 18px rgba(233,113,113,.3);transition:all 300ms ease',
+      onApply: ()=>{ if(!a.isRegistered && a.capKey!=='full' && a.capKey!=='closed') p.onApply(a.id); },
+      onWishlist: ()=>p.onWishlist(a.id), onDetail:()=>p.onDetail(a.id), onParticipants:()=>p.onParticipants(a.id), onContact:()=>p.onContact(a.id),
+    }));
+
+    const PER_PAGE = 12;
+    const discoverTotal = discoverActivities.length;
+    const discoverPageCount = Math.max(1, Math.ceil(discoverTotal/PER_PAGE));
+    const discoverPage = Math.min(this.state.discoverPage||1, discoverPageCount);
+    const discoverPaged = discoverActivities.slice((discoverPage-1)*PER_PAGE, discoverPage*PER_PAGE);
+    const goPage = (n)=>{
+      this.setState({discoverPage: Math.min(discoverPageCount, Math.max(1, n))});
+      try{
+        window.scrollTo({top:0, behavior:'smooth'});
+        if(window.parent && window.parent!==window) window.parent.scrollTo({top:0, behavior:'smooth'});
+      }catch(e){}
+    };
+    const pageBtn = (active)=>`min-width:36px;height:36px;padding:0 10px;border-radius:11px;cursor:pointer;font-family:inherit;font-size:12.5px;font-weight:500;transition:all 200ms ease;border:1px solid ${active?'transparent':'rgba(31,41,55,.1)'};background:${active?'linear-gradient(135deg,#E97171,#A774F7)':'rgba(255,255,255,.7)'};color:${active?'#fff':'#4B5563'};box-shadow:${active?'0 8px 20px rgba(167,116,247,.3)':'none'}`;
+    const discoverPager = Array.from({length:discoverPageCount},(_,i)=>({
+      label:String(i+1), onClick:()=>goPage(i+1), style:pageBtn(i+1===discoverPage),
+    }));
+    const navBtn = (disabled)=>`display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:11px;border:1px solid rgba(31,41,55,.1);background:rgba(255,255,255,.7);color:${disabled?'#CBD5E1':'#4B5563'};cursor:${disabled?'not-allowed':'pointer'};transition:all 200ms ease`;
+    const discoverRangeFrom = discoverTotal ? (discoverPage-1)*PER_PAGE+1 : 0;
+    const discoverRangeTo = Math.min(discoverTotal, discoverPage*PER_PAGE);
+
+    const stepDef = (r)=>{
+      const steps = [
+        {label:T('อนุมัติ'), icon:'how_to_reg', done: r.status!=='pending' && r.status!=='cancelled'},
+        {label:T('เช็กอิน'), icon:'login', done:!!r.checkedIn},
+        {label:T('เช็กเอาต์'), icon:'logout', done:!!r.checkedOut},
+        {label:T('หลักฐาน'), icon:'attach_file', done:!!r.evidence},
+        {label:T('รีวิว'), icon:'rate_review', done:!!r.reviewed},
+      ];
+      return steps.map((st,i)=>({
+        label: st.label, icon: st.done ? 'check' : st.icon, isLast: i===steps.length-1,
+        dotStyle:`display:flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;flex-shrink:0;transition:all 220ms ease;background:${st.done?'linear-gradient(135deg,#63D2A1,#7AB8FF)':'rgba(31,41,55,.06)'};color:${st.done?'#fff':'#9CA3AF'};box-shadow:${st.done?'0 5px 14px rgba(99,210,161,.35)':'none'}`,
+        labelStyle:`font-size:10.5px;margin-top:5px;white-space:nowrap;color:${st.done?'#0d6e50':'#9CA3AF'};font-weight:${st.done?500:400}`,
+        lineStyle:`flex:1;height:2px;min-width:14px;border-radius:2px;margin:0 2px;background:${st.done?'rgba(99,210,161,.55)':'rgba(31,41,55,.08)'}`,
+      }));
+    };
+    const rf = this.state.regFilter||'all';
+    const regMatch = (st)=> rf==='all' ? true
+      : rf==='pending' ? st==='pending'
+      : rf==='checked-in' ? ['approved','checked-in'].includes(st)
+      : rf==='completed' ? ['completed','checked-out'].includes(st)
+      : rf==='cancelled' ? st==='cancelled' : true;
+    const regTabs = [
+      {key:'all', label:T('ทั้งหมด'), count:regs.length},
+      {key:'pending', label:T('รออนุมัติ'), count:regs.filter(r=>r.status==='pending').length},
+      {key:'checked-in', label:T('เช็กอินแล้ว'), count:regs.filter(r=>['approved','checked-in'].includes(r.status)).length},
+      {key:'completed', label:T('เสร็จสิ้น'), count:regs.filter(r=>['completed','checked-out'].includes(r.status)).length},
+      {key:'cancelled', label:T('ยกเลิก'), count:regs.filter(r=>r.status==='cancelled').length},
+    ].map(x=>({...x, style:this.tabStyle(x.key===rf), onClick:()=>this.setState({regFilter:x.key})}));
+    const rq = (this.state.regQuery||'').trim().toLowerCase();
+    const rsort = this.state.regSort||'recent';
+    const actOf = (r)=> r.activity || {};
+    const dateKey = (r)=>{ const a=actOf(r); return a.dateISO || a.date || ''; };
+    const sortedRegs = regs
+      .filter(r=>regMatch(r.status))
+      .filter(r=> !rq || String(actOf(r).title||'').toLowerCase().includes(rq))
+      .slice()
+      .sort((a,b)=>{
+        if(rsort==='soonest') return String(dateKey(a)).localeCompare(String(dateKey(b)));
+        if(rsort==='latest')  return String(dateKey(b)).localeCompare(String(dateKey(a)));
+        if(rsort==='title')   return String(actOf(a).title||'').localeCompare(String(actOf(b).title||''), 'th');
+        if(rsort==='hours')   return (Number(actOf(b).hours)||0) - (Number(actOf(a).hours)||0);
+        return (Number(b.regAt)||0) - (Number(a.regAt)||0); /* ลงทะเบียนล่าสุดก่อน */
+      });
+    const REG_SORTS = [
+      {key:'recent',  label:T('ลงทะเบียนล่าสุด')},
+      {key:'soonest', label:T('วันจัดกิจกรรมใกล้ที่สุด')},
+      {key:'latest',  label:T('วันจัดกิจกรรมไกลที่สุด')},
+      {key:'title',   label:T('ชื่อกิจกรรม')},
+      {key:'hours',   label:T('ชั่วโมงมาก→น้อย')},
+    ];
+    const regRows = sortedRegs.map(r=>{
+      const sm = STATUS_MAP[r.status]||STATUS_MAP.pending;
+      const act = r.activity || {};
+      const cat = act.catObj || {label:'', color:'#A774F7'};
+      return {
+        ...r, statusLabel: sm.label, statusBg: sm.bg, statusColor: sm.color, steps: stepDef(r),
+        photo: act.photo || '',
+        catLabel: cat.label, catPillStyle:`display:inline-flex;padding:4px 11px;border-radius:999px;font-size:10.5px;font-weight:500;background:${cat.color}24;color:#374151`,
+        hoursLabel: (act.hours||0)+T(' ชม.'), locationLabel: act.location||'',
+        onDetailReg: ()=>p.onDetail(act.id),
+        canCheckin: r.status==='approved' && !r.checkedIn,
+        canCheckout: r.checkedIn && !r.checkedOut,
+        canUpload: r.checkedOut && !r.evidence,
+        hasEvidenceImage: !!r.evidenceImage && r.evidenceStatus!=='rejected',
+        evidenceRejected: r.evidenceStatus==='rejected',
+        evidenceRejectedLabel: T('ผู้จัดขอให้อัปโหลดหลักฐานใหม่ กรุณาแนบรูปที่ชัดเจนอีกครั้ง'), evidenceImage: r.evidenceImage||'',
+        evidenceCaption: r.evidenceStatus==='approved' ? T('หลักฐานผ่านการตรวจแล้ว') : (r.evidenceAt ? (T('อัปโหลดแล้ว · รอผู้จัดตรวจ · ')+r.evidenceAt) : T('อัปโหลดแล้ว · รอผู้จัดตรวจ')),
+        onReplaceEvidence: ()=>p.onUpload(r.id),
+        replaceEvidenceLabel: T('เปลี่ยนรูป'),
+        canReview: r.evidence && !r.reviewed && r.status!=='completed' || (r.status==='checked-out' && r.evidence && !r.reviewed),
+        canCancel: !r.cancelRequested && !['completed','cancelled'].includes(r.status),
+        onCheckin: ()=>p.onCheckin(r.id), onCheckout: ()=>p.onCheckout(r.id), onUpload: ()=>p.onUpload(r.id), onReview: ()=>p.onReview(r.id),
+        onCancelRequest: ()=>p.onCancelRequest(r.id),
+      };
+    });
+
+    const calendarData = p.calendar || {days:[],monthLabel:'',year:0};
+    const calSelected = p.calSelected;
+    const stuCatFilter = this.state.stuCatFilter || null;
+    const actsOf = (d)=>((d.activities)||[]).filter(x=> !stuCatFilter || x.cat===stuCatFilter);
+    const timeTextOf = (a)=> a.timeStart ? (a.timeStart+(a.timeEnd?' – '+a.timeEnd:'')+' '+T('น.')) : '';
+    const calDays = calendarData.days.map(d=>{
+      const sel = calSelected===d.day;
+      const acts = actsOf(d);
+      const n = acts.length;
+      return {
+        day:d.day, dots: acts.slice(0,4).map(x=>((x.catObj||{}).color)||'#9CA3AF'), isToday:!!d.isToday,
+        onClick: ()=> p.onCalDay(d.day),
+        hasCount: n>0, countLabel: n,
+        countStyle: `margin-top:5px;display:inline-block;padding:1px 7px;border-radius:999px;font-size:9.5px;font-weight:500;background:${sel?'rgba(255,255,255,.22)':'rgba(31,41,55,.06)'};color:${sel?'#fff':'#6B7280'}`,
+        todayDotStyle: `width:6px;height:6px;border-radius:50%;background:${sel?'#fff':'#E97171'};box-shadow:0 0 0 3px ${sel?'rgba(255,255,255,.25)':'rgba(233,113,113,.2)'}`,
+        hoverStyle: sel ? '' : 'background:rgba(255,255,255,.95);transform:translateY(-2px);box-shadow:0 8px 18px rgba(31,41,55,.1)',
+        style:`min-height:72px;padding:9px 10px;border-radius:14px;cursor:pointer;transition:all 180ms ease;background:${sel?'linear-gradient(135deg,#E97171,#A774F7)':'rgba(255,255,255,.72)'};color:${sel?'#fff':'#334155'};border:1px solid ${sel?'transparent':d.isToday?'rgba(233,113,113,.45)':'rgba(31,41,55,.06)'};box-shadow:${sel?'0 10px 24px rgba(167,116,247,.32)':'none'}`,
+      };
+    });
+    const stuCalView = this.state.stuCalView || 'month';
+    const stuWeekIdxRaw = this.state.stuWeekIdx || 0;
+    const rawDays = calendarData.days || [];
+    const blanksN = (p.calBlanks || []).length || 0;
+    const weekChunks = [];
+    { let cursor = 0; let first = 7 - (blanksN % 7 || 7) + (blanksN%7===0?7:0);
+      first = 7 - (blanksN % 7); if(first===7) first = 7;
+      weekChunks.push(rawDays.slice(0, first));
+      cursor = first;
+      while(cursor < rawDays.length){ weekChunks.push(rawDays.slice(cursor, cursor+7)); cursor += 7; }
+    }
+    const wIdx = Math.min(Math.max(0, stuWeekIdxRaw), Math.max(0, weekChunks.length-1));
+    const WD = [T('อา.'),T('จ.'),T('อ.'),T('พ.'),T('พฤ.'),T('ศ.'),T('ส.')];
+    const stuWeekDays = (weekChunks[wIdx]||[]).map((d)=>{
+      const acts = actsOf(d);
+      const sel = calSelected===d.day;
+      return {
+        day:d.day, actCount: acts.length,
+        onClick: ()=> p.onCalDay(d.day),
+        colStyle: `display:flex;flex-direction:column;gap:8px;padding:12px 11px;border-radius:16px;min-height:170px;cursor:pointer;transition:all 200ms ease;background:${sel?'rgba(167,116,247,.1)':(d.isToday?'rgba(233,113,113,.09)':'rgba(255,255,255,.66)')};border:1px solid ${sel?'rgba(167,116,247,.5)':(d.isToday?'rgba(233,113,113,.4)':'rgba(255,255,255,.8)')}`,
+        dayNumStyle: `display:flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:9px;font-size:12.5px;font-weight:600;background:${d.isToday?'linear-gradient(135deg,#E97171,#A774F7)':'rgba(31,41,55,.05)'};color:${d.isToday?'#fff':'#4B5563'}`,
+        items: acts.map(x=>{
+          const col = (x.catObj||{}).color || '#9CA3AF';
+          return {title:x.title, org:x.org, hoursLabel:(x.hours||0)+T(' ชม.'), timeText: timeTextOf(x), hasTime: !!x.timeStart,
+            onClick: ()=> p.onDetail && p.onDetail(x.id),
+            style: `padding:7px 9px;border-radius:10px;background:${col}1a;border-left:3px solid ${col};cursor:pointer`};
+        }),
+      };
+    });
+    const stuWeekTotal = stuWeekDays.reduce((a,d)=>a+d.actCount,0);
+    const weekdayLabels = WD.map((w,i)=>({label:w,
+      style:`text-align:center;font-size:11px;font-weight:500;padding:4px 0;color:${i===0||i===6?'#E97171':'#9CA3AF'}`}));
+    const calBlanks = Array.from({length: calendarData.firstWeekday||0}, (_,i)=>i);
+    const selectedDayActivities = (calSelected ? actsOf(calendarData.days.find(d=>d.day===calSelected)||{activities:[]}) : []).map(a=>({...a, timeText: timeTextOf(a), hasTime: !!a.timeStart}));
+
+    const allCompleted = regs.filter(r=>r.status==='completed');
+    const actTitleOf = (id)=>((p.activities||[]).find(a=>a.id===id)||{}).title||'';
+    const yearOf = (r)=>{ const d=((p.activities||[]).find(a=>a.id===r.activityId)||{}).date||''; const m=d.match(/(\d{4})/); return m?m[1]:'2569'; };
+    const cy = this.state.certYear||'all';
+    const ca = this.state.certActivity||'all';
+    const years = [...new Set(allCompleted.map(yearOf))].sort();
+    const certYearTabs = [{key:'all', label:T('ทุกปี'), count:allCompleted.length},
+      ...years.map(y=>({key:y, label: STU_LANG==='en' ? String(Number(y)-543) : 'พ.ศ. '+y, count:allCompleted.filter(r=>yearOf(r)===y).length}))]
+      .map(x=>({...x, style:this.tabStyle(x.key===cy), onClick:()=>this.setState({certYear:x.key})}));
+    const certActivityOptions = [{id:'all', title:T('ทุกกิจกรรม')},
+      ...[...new Set(allCompleted.map(r=>r.activityId))].map(id=>({id, title:actTitleOf(id)}))];
+    const completedRegs = allCompleted
+      .filter(r=> cy==='all'||yearOf(r)===cy)
+      .filter(r=> ca==='all'||r.activityId===ca)
+      .map(r=>{
+        const a = (p.activities||[]).find(x=>x.id===r.activityId) || {title:'', hours:0, date:'', catObj:{label:'',color:'#A774F7'}};
+        const c = (a.catObj||{}).color || '#A774F7';
+        return {...r, onPreview: ()=>p.onCertPreview(r.id),
+          actTitle: a.title, actHours: a.hours, actDate: a.date, actOrg: a.org||T('มหาวิทยาลัยนเรศวร'),
+          catLabel: (a.catObj||{}).label||'', catColor: c,
+          code: 'CERT-'+String(r.id).toUpperCase()+'-'+yearOf(r),
+          cardStyle:`position:relative;overflow:hidden;display:flex;flex-direction:column;border-radius:22px;padding:20px;transition:all 260ms ease;background:linear-gradient(155deg,${c}1f,rgba(255,255,255,.78) 55%);backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);border:1px solid ${c}47;box-shadow:0 14px 38px ${c}24, inset 0 1px 0 rgba(255,255,255,.7)`,
+          cardHoverStyle:`transform:translateY(-4px);box-shadow:0 26px 56px ${c}3d`,
+          sealStyle:`display:flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:50%;flex-shrink:0;background:${c}2b;color:${c};border:1px dashed ${c}8c`,
+          catPillStyle:`display:inline-flex;padding:4px 11px;border-radius:999px;font-size:10.5px;font-weight:500;background:${c}24;color:#374151`,
+          hoursPillStyle:`display:inline-flex;align-items:center;gap:5px;padding:4px 11px;border-radius:999px;font-size:10.5px;font-weight:500;background:rgba(31,41,55,.06);color:#4B5563`};
+      });
+    const certTotalHours = completedRegs.reduce((s,r)=>s+(Number(r.actHours)||0),0);
+    const certSummary = [
+      {label:T('ใบประกาศทั้งหมด'), value:completedRegs.length+T(' ใบ'), icon:'workspace_premium', color:'#A774F7'},
+      {label:T('ชั่วโมงรวมในใบประกาศ'), value:certTotalHours+T(' ชม.'), icon:'schedule', color:'#63D2A1'},
+      {label:T('ใบล่าสุด'), value:(completedRegs[0]||{}).actDate||'—', icon:'event_available', color:'#7AB8FF'},
+    ];
+
+    const hy = this.state.hoursYear||'2569';
+    const ht = this.state.hoursTerm||'all';
+    const hoursYearOptions = [{id:'2568', label:T('ปีการศึกษา 2568')},{id:'2569', label:T('ปีการศึกษา 2569')}];
+    const MON = ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+    const histAll = hoursStats.history || [];
+    const parseH = (h)=>{
+      /* ISO มาก่อนเสมอ — สตริงที่แสดงผลเปลี่ยนตามภาษา จึงใช้ parse ไม่ได้ */
+      const iso = String(h.dateISO||'').match(/^(\d{4})-(\d{2})/);
+      if(iso) return {mi: (+iso[2])-1, year: String((+iso[1])+543)};
+      const d = String(h.date||'');
+      const mi = MON.findIndex(m=>d.includes(m));
+      const ym = d.match(/(\d{4})/);
+      return {mi: mi<0?6:mi, year: ym?ym[1]:'2569'};
+    };
+    // Thai academic year: term 1 = มิ.ย.–ต.ค. (5-9), term 2 = พ.ย.–มี.ค. (10,11,0,1,2)
+    const termOf = (mi)=> (mi>=5 && mi<=9) ? '1' : '2';
+    const inYear = (h)=>parseH(h).year===hy;
+    const yearHist = histAll.filter(inYear);
+    const termCount = (k)=> k==='all' ? yearHist.length : yearHist.filter(h=>termOf(parseH(h).mi)===k).length;
+    const termTabs = [{key:'all', label:T('ทั้งปี')},{key:'1', label:T('ภาคเรียนที่ 1')},{key:'2', label:T('ภาคเรียนที่ 2')}]
+      .map(x=>({...x, count:termCount(x.key), style:this.tabStyle(x.key===ht), onClick:()=>this.setState({hoursTerm:x.key})}));
+    const filteredHist = yearHist.filter(h=> ht==='all' || termOf(parseH(h).mi)===ht);
+    const filteredTotal = filteredHist.reduce((s,h)=>s+(Number(h.hours)||0),0);
+    const goal = hoursStats.goal || 36;
+    const hoursView = {
+      ...hoursStats,
+      history: filteredHist,
+      total: filteredTotal,
+      goal,
+      remaining: Math.max(0, goal-filteredTotal),
+      pct: Math.min(100, Math.round(filteredTotal/goal*100)),
+    };
+    const hoursScopeLabel = T('ปีการศึกษา ')+hy+(ht==='all'?T(' · ทั้งปี'):T(' · ภาคเรียนที่ ')+ht);
+    const actByTitle = (label)=>(p.activities||[]).find(a=>a.title===label);
+    const hoursRingDeg = Math.round(Math.min(100, hoursView.pct)/100*360);
+    const hoursRingStyle = `width:150px;height:150px;border-radius:50%;flex-shrink:0;background:conic-gradient(#E97171 0deg,#A774F7 ${hoursRingDeg}deg,rgba(31,41,55,.09) ${hoursRingDeg}deg);display:flex;align-items:center;justify-content:center`;
+    const hoursDone = filteredTotal>=goal;
+    const hoursStatusStyle = `display:inline-flex;align-items:center;gap:6px;padding:5px 13px;border-radius:999px;font-size:11.5px;font-weight:500;background:${hoursDone?'rgba(99,210,161,.18)':'rgba(245,166,35,.16)'};color:${hoursDone?'#0d6e50':'#8a5205'}`;
+    const monthOrder = [5,6,7,8,9,10,11,0,1,2,3,4];
+    const monthSums = monthOrder.map(mi=>({mi, hours: filteredHist.filter(h=>parseH(h).mi===mi).reduce((s,h)=>s+(Number(h.hours)||0),0)}));
+    const maxMonth = Math.max(...monthSums.map(m=>m.hours), 1);
+    const hoursMonthly = monthSums.map(m=>({
+      label: MON[m.mi], hours: m.hours, hasHours: m.hours>0,
+      barStyle: `width:100%;border-radius:7px 7px 3px 3px;height:${m.hours? Math.max(8, Math.round(m.hours/maxMonth*100)) : 3}%;background:${m.hours?'linear-gradient(180deg,#A774F7,#E97171)':'rgba(31,41,55,.08)'};transition:height 300ms ease`,
+    }));
+    const catSum = {};
+    filteredHist.forEach(h=>{
+      const a = actByTitle(h.label);
+      const key = a ? a.cat : 'other';
+      const meta = a ? a.catObj : {label:T('อื่นๆ'), color:'#9CA3AF'};
+      if(!catSum[key]) catSum[key] = {label: meta.label, color: meta.color, hours:0};
+      catSum[key].hours += Number(h.hours)||0;
+    });
+    const catList = Object.values(catSum).sort((a,b)=>b.hours-a.hours);
+    const maxCat = Math.max(...catList.map(c=>c.hours), 1);
+    const hoursByCat = catList.map(c=>({
+      label:c.label, hours:c.hours, color:c.color,
+      barStyle:`height:100%;width:${Math.round(c.hours/maxCat*100)}%;border-radius:5px;background:linear-gradient(90deg,${c.color},${c.color}88);transition:width 300ms ease`,
+    }));
+    const hoursHistoryRows = filteredHist.map(h=>{
+      const a = actByTitle(h.label);
+      const meta = a ? a.catObj : {label:T('อื่นๆ'), color:'#9CA3AF'};
+      return {label:h.label, date:h.date, hours:h.hours, catLabel:meta.label,
+        dotStyle:`width:9px;height:9px;border-radius:50%;flex-shrink:0;background:${meta.color}`,
+        hoursPillStyle:`flex-shrink:0;padding:5px 12px;border-radius:999px;font-size:11.5px;font-weight:500;background:${meta.color}1f;color:#374151`};
+    });
+    const hasHoursHistory = filteredHist.length>0;
+    const wishActivities = (p.activities||[]).filter(a=>wishlist.includes(a.id)).map(a=>{
+      const total = a.seatsTotal||0, filled = a.seatsFilled||0;
+      const pct = total ? Math.round(filled/total*100) : 0;
+      const full = total>0 && filled>=total;
+      const almost = !full && pct>=80;
+      const registered = !!(p.registrations||[]).find(r=>r.activityId===a.id && r.status!=='cancelled');
+      const c = full ? '#C2410C' : almost ? '#B45309' : '#0F8A63';
+      return {...a, catBg:a.catObj.color+'1a', timeSuffix: a.timeStart ? (' · '+a.timeStart+(a.timeEnd?' – '+a.timeEnd:'')+' '+T('น.')) : '', hasTime: !!a.timeStart, timeText: a.timeStart ? (a.timeStart+(a.timeEnd?' – '+a.timeEnd:'')+' '+T('น.')) : '',
+        onRemove: ()=>p.onWishlistRemove(a.id),
+        onDetail: ()=>p.onDetail(a.id),
+        onApply: ()=>{ if(!registered && !full) p.onApply(a.id); },
+        seatPct: pct, capColor: c,
+        capLabel: full ? T('ที่นั่งเต็ม') : almost ? T('ใกล้เต็ม') : T('เปิดรับสมัคร'),
+        capBadgeStyle: `position:absolute;top:12px;left:12px;display:inline-flex;align-items:center;gap:5px;padding:5px 11px;border-radius:999px;font-size:11px;font-weight:500;background:rgba(255,255,255,.92);color:${c};box-shadow:0 4px 14px rgba(31,41,55,.18)`,
+        barStyle: `height:100%;width:${pct}%;border-radius:4px;background:linear-gradient(90deg,${a.catObj.color},${a.catObj.color}88);transition:width 300ms ease`,
+        seatsLabel: filled+'/'+total+T(' ที่นั่ง'),
+        applyLabel: registered ? T('ลงทะเบียนแล้ว') : full ? T('ที่นั่งเต็ม') : T('สมัครเลย'),
+        applyDisabled: registered || full,
+        applyStyle: (registered || full)
+          ? 'flex:1;padding:10px;border-radius:12px;border:1px solid rgba(31,41,55,.08);background:rgba(31,41,55,.05);color:#9CA3AF;font-family:inherit;font-size:12.5px;font-weight:500;cursor:not-allowed'
+          : 'flex:1;padding:10px;border-radius:12px;border:none;background:linear-gradient(135deg,#E97171,#A774F7);color:#fff;font-family:inherit;font-size:12.5px;font-weight:500;cursor:pointer;box-shadow:0 6px 18px rgba(233,113,113,.3);transition:all 220ms ease',
+      };
+    });
+    const wishCountLabel = wishActivities.length+T(' กิจกรรมที่บันทึกไว้');
+    const allNotifs = (p.notifications||[]).map(n=>({...n, dotColor: n.read?'#CBD5E1':'#A774F7'}));
+
+    const threads = p.chatThreads || {};
+    const activeThread = p.activeThread;
+    const AVC = ['#A774F7','#E97171','#63D2A1','#7AB8FF','#F5A623'];
+    const actByTitleC = (title)=>(p.activities||[]).find(a=>a.title===title) || {};
+    const threadList = Object.keys(threads).map((k,i)=>{
+      const th = threads[k]; const last = th.messages[th.messages.length-1];
+      const lastPreview = !last ? '' : (last.delAll ? T('ข้อความนี้ถูกลบแล้ว') : last.text);
+      const act = actByTitleC(th.activityTitle);
+      const active = k===activeThread;
+      const c = AVC[i % AVC.length];
+      const un = ((p.chatUnread||{})[k])||0;
+      return {id:k, title:th.activityTitle,
+        hasUnread: un>0, unreadLabel: un>9 ? '9+' : String(un),
+        unreadStyle: 'flex-shrink:0;min-width:20px;height:20px;padding:0 6px;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;font-size:10.5px;font-weight:600;background:#E4572E;color:#fff;box-shadow:0 2px 6px rgba(228,87,46,.35)', org: act.org||T('ผู้จัดกิจกรรม'),
+        lastMsg: lastPreview, lastTime: last?last.time:'',
+        onClick: ()=>p.onThread(k),
+        initial: String(th.activityTitle||'?').trim().charAt(0),
+        avatarStyle:`display:flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:13px;flex-shrink:0;font-size:14px;font-weight:600;color:#fff;background:linear-gradient(135deg,${c},${c}b3)`,
+        style:`position:relative;display:flex;gap:11px;align-items:center;padding:12px 14px;cursor:pointer;transition:background 180ms ease;border-bottom:1px solid rgba(30,37,48,.05);background:${active?'rgba(167,116,247,.1)':'transparent'}`,
+        hoverStyle: active ? '' : 'background:rgba(31,41,55,.04)',
+        accentStyle:`position:absolute;left:0;top:8px;bottom:8px;width:3px;border-radius:0 3px 3px 0;background:${active?c:'transparent'}`,
+        deleteLabel: T('ลบการสนทนา'),
+        onDelete: (e)=>{ e.stopPropagation(); if(p.askDeleteConv) p.askDeleteConv(k); }};
+    });
+    const activeTh = threads[activeThread];
+    const activeAct = activeTh ? actByTitleC(activeTh.activityTitle) : {};
+    const chatMessages = (activeTh?activeTh.messages:[]).map(m=>{
+      const mine = m.from==='student';
+      const gone = !!m.delAll;
+      return {text:m.text, time:m.time, isTheirs: !mine && !gone,
+        isDeleted: gone, isLive: !gone,
+        deletedLabel: T('ข้อความนี้ถูกลบแล้ว'),
+        deleteLabel: T('ลบข้อความ'),
+        canDelete: mine,
+        onDelete: ()=>p.askDeleteMsg && p.askDeleteMsg(activeThread, m.id),
+        tombStyle: 'max-width:74%;padding:9px 14px;border-radius:14px;background:rgba(31,41,55,.05);border:1px dashed rgba(31,41,55,.16);color:#9CA3AF;font-size:12.5px;font-style:italic;line-height:1.6;margin-left:'+(mine?'auto':'0'),
+        rowStyle: 'display:flex;align-items:flex-end;gap:5px;min-width:0;flex-direction:'+(mine?'row':'row-reverse'),
+        wrapStyle: `display:flex;align-items:flex-end;gap:8px;justify-content:${mine?'flex-end':'flex-start'}`,
+        bubbleStyle: `max-width:74%;padding:10px 14px;font-size:13px;line-height:1.65;box-shadow:0 4px 14px rgba(31,41,55,.07);border-radius:${mine?'16px 16px 5px 16px':'16px 16px 16px 5px'};background:${mine?'linear-gradient(135deg,#E97171,#A774F7)':'rgba(255,255,255,.9)'};color:${mine?'#fff':'#334155'};border:1px solid ${mine?'transparent':'rgba(31,41,55,.06)'}`,
+        timeStyle: `font-size:10px;margin-top:4px;opacity:.65;color:${mine?'#fff':'#94A3B8'}`};
+    });
+
+    const visibleBanners = (p.banners||[]).filter(b=>b.visible);
+    const bannerIdx = visibleBanners.length ? (this.state.bannerIdx % visibleBanners.length) : 0;
+    const bActive = visibleBanners[bannerIdx];
+    const activeBanner = bActive ? {...bActive, hasImage: !!bActive.image, image: bActive.image||'', ctaLabel: bActive.ctaLabel||T('ดูกิจกรรม'), tagLabel:(BANNER_TAG[bActive.type]||BANNER_TAG.general).label, tagBg:(BANNER_TAG[bActive.type]||BANNER_TAG.general).bg, tagColor:(BANNER_TAG[bActive.type]||BANNER_TAG.general).color} : {title:'',desc:'',date:'',tagLabel:'',tagBg:'',tagColor:''};
+    const bannerDots = visibleBanners.map((_,i)=>
+      `width:${i===bannerIdx?30:9}px;height:9px;border-radius:999px;transition:all 320ms ease;background:${i===bannerIdx?'#1F2937':'rgba(31,41,55,.26)'}`);
+
+    return {
+      avatarUrl: p.avatarUrl || '', hasAvatar: !!p.avatarUrl, noAvatar: !p.avatarUrl,
+      isHome: page==='home', isDiscover: page==='discover', isRegistrations: page==='registrations',
+      scanAnyTitle: T('สแกน QR เพื่อเช็กอิน-เช็กเอาต์'),
+      scanAnyHint: T('เปิดกล้องแล้วหันไปที่ QR ที่ผู้จัดกิจกรรมแสดง'),
+      scanAnyBtn: T('เปิดกล้อง'),
+      onOpenScanAny: ()=>{ if(p.onOpenScanAny) p.onOpenScanAny(); },
+      isHours: page==='hours', isCalendar: page==='calendar', isCertificates: page==='certificates',
+      isWishlist: page==='wishlist', isNotifications: page==='notifications', isChat: page==='chat', isProfile: page==='profile',
+      studentName, studentSubtitle: studentProfile.subtitle,
+      studentFaculty: studentProfile.faculty||'', hasStudentFaculty: !!studentProfile.faculty && this.stuSettings().shareFaculty!==false,
+      facultyChipStyle: `display:inline-flex;align-items:center;gap:7px;padding:5px 12px 5px 8px;border-radius:999px;font-size:11.5px;font-weight:500;background:${(studentProfile.facultyColor||'#A774F7')}1f;color:#374151;border:1px solid ${(studentProfile.facultyColor||'#A774F7')}45`,
+      facultyDotStyle: `width:11px;height:11px;border-radius:50%;flex-shrink:0;background:${studentProfile.facultyColor||'#A774F7'};border:1px solid rgba(31,41,55,.16)`,
+      facultyBannerStyle: `position:absolute;inset:0 0 auto;height:80px;background:linear-gradient(135deg,${(this.stuSettings().shareFaculty!==false ? (studentProfile.facultyColor||'#E97171') : '#E97171')}47,rgba(167,116,247,.28))`, hoursStats, statCards, recentActivities,
+      hasBanners: visibleBanners.length>0, activeBanner, bannerDots,
+      onBannerPrev: ()=>this.setState(s=>({bannerIdx:s.bannerIdx-1+visibleBanners.length})),
+      onBannerNext: ()=>this.setState(s=>({bannerIdx:s.bannerIdx+1})),
+      onBannerAction: ()=>p.onNav && p.onNav((bActive && bActive.ctaTarget) || 'discover'),
+      progressKey: 'bar-' + this.state.bannerIdx,
+      progressState: this.state.paused ? 'paused' : 'running',
+      onBannerEnter: ()=>{ this._hover = true; this.setState({paused:true}); },
+      onBannerLeave: ()=>{ this._hover = false; this._sx = null; this.setState({paused:false}); },
+      onBannerTouchStart: (e)=>{ this._hover = true; this.setState({paused:true}); this._sx = e.touches[0].clientX; this._sy = e.touches[0].clientY; },
+      onBannerTouchEnd: (e)=>{
+        this._hover = false; this.setState({paused:false});
+        if(this._sx == null) return;
+        const t = e.changedTouches[0];
+        const dx = t.clientX - this._sx, dy = t.clientY - this._sy;
+        this._sx = null;
+        if(Math.abs(dx) < 45 || Math.abs(dx) < Math.abs(dy)) return;
+        this.setState(s=>({bannerIdx: dx < 0 ? s.bannerIdx + 1 : s.bannerIdx - 1 + visibleBanners.length}));
+      },
+      onBannerDown: (e)=>{ this._mx = e.clientX; },
+      onBannerUp: (e)=>{
+        if(this._mx == null) return;
+        const dx = e.clientX - this._mx;
+        this._mx = null;
+        if(Math.abs(dx) < 60) return;
+        this.setState(s=>({bannerIdx: dx < 0 ? s.bannerIdx + 1 : s.bannerIdx - 1 + visibleBanners.length}));
+      },
+      ...this.profileVals(),
+      ...this.formVals(),
+      ...this.guideVals(),
+      ...this.stuSettingsVals(),
+      ...this.i18nVals(),
+      ...this.calExtraVals(),
+      isGuide: page==='guide',
+      ...this.notifVals(),
+      editingProfile: this.state.editingProfile, editName: this.state.editName,
+      onStartEdit: ()=>this.setState({editingProfile:true, editName:studentName}),
+      onEditNameChange: (e)=>this.setState({editName:e.target.value}),
+      onSaveEdit: ()=>{ p.onSaveProfile(this.state.editName); this.setState({editingProfile:false}); },
+      onCancelEdit: ()=>this.setState({editingProfile:false}),
+      search: p.search||'', onSearchChange: (e)=>{ this.setState({discoverPage:1}); p.onSearch(e.target.value); },
+      chips, discoverActivities: discoverPaged,
+      hasDiscoverResults: discoverTotal>0, availTabs,
+      discoverPager, showDiscoverPager: discoverPageCount>1,
+      discoverCountLabel: T('แสดง ')+discoverRangeFrom+'-'+discoverRangeTo+T(' จาก ')+discoverTotal+T(' กิจกรรม'),
+      onDiscoverPrev: ()=>goPage(discoverPage-1), onDiscoverNext: ()=>goPage(discoverPage+1),
+      discoverPrevStyle: navBtn(discoverPage<=1), discoverNextStyle: navBtn(discoverPage>=discoverPageCount),
+      regRows, hasRegs: regRows.length>0, regTabs,
+      regQuery: this.state.regQuery||'',
+      regSearchPh: T('ค้นหาชื่อกิจกรรม...'),
+      onRegQuery: (e)=>this.setState({regQuery:e.target.value}),
+      onRegQueryClear: ()=>this.setState({regQuery:''}),
+      hasRegQuery: !!(this.state.regQuery||'').length,
+      regSortLabel: T('เรียงตาม'),
+      regSortCurrent: (REG_SORTS.find(x=>x.key===rsort)||REG_SORTS[0]).label,
+      regSortOpen: !!this.state.regSortOpen,
+      onRegSortToggle: ()=>this.setState(st=>({regSortOpen:!st.regSortOpen})),
+      regSortOptions: REG_SORTS.map(x=>({
+        key:x.key, label:x.label, active:x.key===rsort,
+        onClick: ()=>this.setState({regSort:x.key, regSortOpen:false}),
+        style: 'display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;text-align:left;padding:9px 12px;border:none;border-radius:10px;font-family:inherit;font-size:12.5px;cursor:pointer;'
+          + (x.key===rsort ? 'background:rgba(167,116,247,.14);color:#7C2FD9;font-weight:500' : 'background:transparent;color:#4B5563'),
+      })),
+      regNoMatch: regs.filter(r=>regMatch(r.status)).length>0 && regRows.length===0,
+      regNoMatchText: T('ไม่พบรายการที่ตรงกับเงื่อนไข'),
+      regClearFiltersLabel: T('ล้างตัวกรอง'),
+      onRegClearFilters: ()=>this.setState({regQuery:'', regFilter:'all', regSort:'recent'}),
+      recoActivities: hoursStats.recommended||[],
+      calendarData, calDays, calSelected, weekdayLabels, calBlanks,
+      calLegendLabel: T('กรองตามหมวดหมู่'),
+      calLegend: (p.categories||[]).map(c=>{
+        const on = stuCatFilter===c.id;
+        return {label:c.label, color:c.color,
+          onClick:()=>this.setState(st=>({stuCatFilter: st.stuCatFilter===c.id ? null : c.id})),
+          style:`display:inline-flex;align-items:center;gap:7px;padding:6px 13px;border-radius:999px;cursor:pointer;font-size:11.5px;white-space:nowrap;flex:0 0 auto;transition:all 200ms ease;border:1px solid ${on?c.color:'rgba(31,41,55,.08)'};background:${on?c.color+'1f':'rgba(255,255,255,.55)'};color:${on?'#1F2937':'#4B5563'};font-weight:${on?500:400}`};
+      }),
+      hasStuCatFilter: !!stuCatFilter, stuClearFilterLabel: T('ล้างตัวกรอง'),
+      onClearStuCatFilter: ()=>this.setState({stuCatFilter:null}),
+      calViewTabs: [['month',T('รายเดือน'),'calendar_view_month'],['week',T('รายสัปดาห์'),'calendar_view_week']].map(([k,label,icon])=>{
+        const on = stuCalView===k;
+        return {label, icon, onClick:()=>this.setState({stuCalView:k}),
+          style:`display:flex;align-items:center;gap:6px;padding:8px 14px;border-radius:12px;cursor:pointer;font-family:inherit;font-size:12.5px;font-weight:${on?500:400};transition:all 200ms ease;border:1px solid ${on?'transparent':'rgba(31,41,55,.1)'};background:${on?'linear-gradient(135deg,#E97171,#A774F7)':'rgba(255,255,255,.6)'};color:${on?'#fff':'#6B7280'}`};
+      }),
+      isStuMonthView: stuCalView==='month', isStuWeekView: stuCalView==='week',
+      stuWeekDays, hasStuWeekActs: stuWeekTotal>0,
+      stuWeekLabel: T('สัปดาห์ที่')+' '+(wIdx+1),
+      stuWeekRange: stuWeekDays.length ? (stuWeekDays[0].day+'–'+stuWeekDays[stuWeekDays.length-1].day+' '+calendarData.monthLabel) : '',
+      stuWeekEmpty: T('ไม่มีกิจกรรมในสัปดาห์นี้'),
+      stuWeekPrevTitle: T('สัปดาห์ก่อนหน้า'), stuWeekNextTitle: T('สัปดาห์ถัดไป'),
+      onStuWeekPrev: ()=>this.setState(st=>({stuWeekIdx: Math.max(0,(st.stuWeekIdx||0)-1)})),
+      onStuWeekNext: ()=>this.setState(st=>({stuWeekIdx: Math.min(weekChunks.length-1,(st.stuWeekIdx||0)+1)})),
+
+      kyfOn: p.kyfOn !== false,
+      myAppeals: p.appeals || [],
+      rejectedRows: (p.registrations||[])
+        .filter(r=>r.evidenceStatus==='rejected' && !(p.appeals||[]).some(a=>a.regId===r.id))
+        .map(r=>({
+          title: (r.activity||{}).title || '—',
+          note: T('หลักฐานไม่ผ่านการอนุมัติ — ยื่นอุทธรณ์ได้'),
+          onAppeal: ()=>p.onAppeal && p.onAppeal(r.id),
+        })),
+      showAppealBox: ((p.appeals||[]).length + (p.registrations||[]).filter(r=>r.evidenceStatus==='rejected').length) > 0,
+      appealBoxTitle: T('การอุทธรณ์ผลการอนุมัติชั่วโมง'),
+      appealCta: T('ยื่นอุทธรณ์'),
+      calSyncOn: !!this.stuSettings().calendarSync,
+      onExportIcs: ()=>p.onExportIcs && p.onExportIcs(),
+      icsLabel: T('ดาวน์โหลด .ics') + ' (' + (p.icsCount||0) + ')',
+      icsTitle: this.stuSettings().calendarSync ? T('เพิ่มกิจกรรมที่อนุมัติแล้วเข้าปฏิทินอุปกรณ์') : T('เปิด "ซิงก์ปฏิทิน" ในหน้าตั้งค่าเพื่อซิงก์อัตโนมัติ'),
+      calReminderLabel: T('เตือนล่วงหน้า ') + this.stuSettings().reminderDays + T(' วัน'),
+      noSelectedDayActivities: !!calSelected && selectedDayActivities.length===0, hasSelectedDay: !!calSelected, selectedDayActivities,
+      onCalPrev: ()=>p.onCalNav(-1), onCalNext: ()=>p.onCalNav(1),
+      completedRegs, hasCerts: completedRegs.length>0, onDownloadReport: ()=>{}, certSummary,
+      certYearTabs, certActivityOptions, certActivity: ca,
+      onCertActivity:(e)=>this.setState({certActivity:e.target.value}),
+      hoursYearOptions, hoursYear: hy, termTabs, hoursView, hoursScopeLabel, hasHoursHistory,
+      hoursRingStyle, hoursMonthly, hoursByCat, hasHoursByCat: hoursByCat.length>0, hoursHistoryRows,
+      hoursStatusStyle, hoursStatusLabel: hoursDone ? T('ครบเกณฑ์ กยศ. แล้ว') : T('ยังไม่ครบเกณฑ์ กยศ.'),
+      hoursStatusIcon: hoursDone ? 'verified' : 'schedule',
+      hoursPctLabel: hoursView.pct+'%',
+      onHoursYear:(e)=>this.setState({hoursYear:e.target.value}),
+      wishActivities, hasWish: wishActivities.length>0, wishCountLabel,
+      onGoDiscover: ()=>p.onNav && p.onNav('discover'), allNotifs,
+      threadList, hasThreads: threadList.length>0,
+      activeThreadTitle: activeTh ? activeTh.activityTitle : '',
+      activeThreadOrg: activeAct.org || T('ผู้จัดกิจกรรม'),
+      hasActiveThread: !!activeTh,
+      onActiveDetail: ()=>{ if(activeAct.id) p.onDetail(activeAct.id); },
+      onDraftKey: (e)=>{ if(e.key==='Enter' && !e.shiftKey){ e.preventDefault(); p.onSend(); } }, chatMessages, chatDraft: p.chatDraft||'', onDraftChange:(e)=>p.onDraft(e.target.value), onSend: ()=>p.onSend(),
+      initials: studentName.slice(0,1), completedCount: regs.filter(r=>r.status==='completed').length,
+      onContactAdmin: ()=>p.onContact(),
+    };
+  }
+}
+
+</script>
+</body>
+</html>

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+
+<sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px">
+    <sc-for list="{{ statCards }}" as="c" hint-placeholder-count="4">
+      <div style="background:rgba(255,255,255,.75);border:1px solid rgba(255,255,255,.6);border-radius:18px;padding:16px;box-shadow:0 4px 20px rgba(30,37,48,.06)">
+        <div style="font-size:24px;line-height:1.7;font-weight:800;color:{{ c.color }}">{{ c.value }}</div><div style="font-size:12.5px;line-height:1.7;color:#64748B;margin-top:4px">{{ c.label }}</div>
+      </div>
+    </sc-for>
+  </div>
+</sc-if>
+
+<sc-if value="{{ isStudents }}" hint-placeholder-val="{{ false }}">
+  <div style="background:rgba(255,255,255,.78);border:1px solid rgba(255,255,255,.6);border-radius:18px;overflow:hidden">
+    <div style="display:grid;grid-template-columns:1.6fr .9fr .9fr .9fr 1fr;gap:10px;padding:12px 18px;font-size:12px;line-height:1.7;font-weight:700;color:#94A3B8;background:rgba(30,37,48,.03)">
+      <div>ชื่อ-นามสกุล</div><div>ชม.จิตอาสา</div><div>กยศ.</div><div>ใบประกาศ</div><div>สถานะ</div>
+    </div>
+    <sc-if value="{{ !hasStudents }}" hint-placeholder-val="{{ false }}">
+      <div style="text-align:center;padding:20px;color:#94A3B8;font-size:13px;border-top:1px solid rgba(30,37,48,.05)">ไม่มีนิสิตในสังกัด</div>
+    </sc-if>
+    <sc-for list="{{ studentRows }}" as="s" hint-placeholder-count="4">
+      <div style="display:grid;grid-template-columns:1.6fr .9fr .9fr .9fr 1fr;gap:10px;padding:13px 18px;border-top:1px solid rgba(30,37,48,.05);font-size:13px;line-height:1.7;color:#334155;align-items:center">
+        <div style="font-weight:600">{{ s.name }}</div><div>{{ s.hours }}</div><div>{{ s.kyfLabel }}</div><div>{{ s.certs }}</div>
+        <div><span style="padding:4px 10px;border-radius:999px;font-size:11.5px;line-height:1.7;font-weight:700;background:{{ s.statusBg }};color:{{ s.statusColor }}">{{ s.statusLabel }}</span></div>
+      </div>
+    </sc-for>
+  </div>
+</sc-if>
+
+<sc-if value="{{ isApproveHours }}" hint-placeholder-val="{{ false }}">
+  <div style="text-align:center;color:#94A3B8;font-size:13.5px;line-height:1.7;padding:60px">ไม่มีรายการรออนุมัติ</div>
+</sc-if>
+
+<sc-if value="{{ isFacultyActivities }}" hint-placeholder-val="{{ false }}">
+  <sc-if value="{{ !hasActivities }}" hint-placeholder-val="{{ false }}">
+    <div style="text-align:center;padding:60px 20px;color:#94A3B8;font-size:13.5px;background:rgba(255,255,255,.5);border:1px dashed rgba(30,37,48,.14);border-radius:18px">ไม่มีกิจกรรมที่เปิดรับสมัคร</div>
+  </sc-if>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px">
+    <sc-for list="{{ activities }}" as="a" hint-placeholder-count="4">
+      <div style="background:rgba(255,255,255,.78);border:1px solid rgba(255,255,255,.6);border-radius:16px;padding:14px">
+        <div style="display:inline-flex;padding:4px 10px;border-radius:999px;font-size:11px;line-height:1.7;font-weight:700;background:{{ a.catBg }};color:{{ a.catObj.color }}">{{ a.catObj.label }}</div>
+        <div style="font-weight:700;font-size:14px;line-height:1.7;color:#1E2530;margin-top:8px">{{ a.title }}</div>
+        <div style="font-size:12px;line-height:1.7;color:#64748B;margin-top:2px">{{ a.org }} · {{ a.date }}</div>
+        <button onClick="{{ a.onDetail }}" style="margin-top:10px;width:100%;padding:8px;border-radius:10px;border:1px solid rgba(30,37,48,.12);background:#fff;font-size:12.5px;line-height:1.7;font-weight:600;cursor:pointer">ดูรายละเอียด</button>
+      </div>
+    </sc-for>
+  </div>
+</sc-if>
+
+<sc-if value="{{ isReports }}" hint-placeholder-val="{{ false }}">
+  <div style="background:rgba(255,255,255,.78);border:1px solid rgba(255,255,255,.6);border-radius:18px;padding:20px;max-width:520px">
+    <div style="font-weight:700;font-size:14px;line-height:1.7;color:#1E2530;margin-bottom:16px">สถิตินิสิตในสังกัด</div>
+    <div style="display:flex;align-items:flex-end;gap:16px;height:150px">
+      <sc-for list="{{ chartBars }}" as="b" hint-placeholder-count="3">
+        <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;height:100%;justify-content:flex-end;position:relative" onMouseEnter="{{ b.onEnter }}" onMouseLeave="{{ onBarLeave }}">
+          <sc-if value="{{ b.showTip }}" hint-placeholder-val="{{ false }}"><div style="position:absolute;bottom:100%;margin-bottom:6px;background:#1E2530;color:#fff;padding:5px 10px;border-radius:8px;font-size:11.5px;line-height:1.7;font-weight:700;white-space:nowrap;z-index:5">{{ b.value }} คน</div></sc-if>
+          <div style="width:100%;border-radius:6px 6px 0 0;background:{{ b.color }};height:{{ b.pct }}%"></div>
+          <div style="font-size:11px;line-height:1.7;color:#64748B;text-align:center">{{ b.label }}</div>
+          <div style="font-size:13px;line-height:1.7;font-weight:700;color:#1E2530">{{ b.value }}</div>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+</sc-if>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+
+class Component extends DCLogic {
+  state = { hoverBarIdx:null };
+  renderVals(){
+    const p = this.props;
+    const page = p.page;
+    const students = p.students||[];
+    const statCards = [
+      {label:'นิสิตทั้งหมด', value: students.length, color:'#A855F7'},
+      {label:'ผ่านเกณฑ์', value: students.filter(s=>s.pass).length, color:'#12B981'},
+      {label:'รออนุมัติ', value: 0, color:'#F5A623'},
+      {label:'ใบประกาศรวม', value: students.reduce((s,x)=>s+x.certs,0), color:'#4F8EF7'},
+    ];
+    const studentRows = students.map(s=>({
+      ...s, kyfLabel: s.kyf?'มี':'ไม่มี',
+      statusLabel: s.pass?'ผ่านเกณฑ์':'ไม่ผ่านเกณฑ์',
+      statusBg: s.pass?'rgba(18,185,129,.12)':'rgba(250,128,114,.12)',
+      statusColor: s.pass?'#0d8f66':'#c2410c',
+    }));
+    const activities = (p.activities||[]).map(a=>({...a, catBg:a.catObj.color+'1a', onDetail:()=>p.onDetail(a.id)}));
+    return {
+      isHome:page==='home', isStudents:page==='students', isApproveHours:page==='approveHours',
+      isFacultyActivities:page==='facultyActivities', isReports:page==='reports',
+      statCards, studentRows, hasStudents: studentRows.length>0, activities, hasActivities: activities.length>0,
+      chartBars: (p.chartBars||[]).map((b,i)=>({...b, onEnter:()=>this.setState({hoverBarIdx:i}), showTip: this.state.hoverBarIdx===i})),
+      onBarLeave: ()=>this.setState({hoverBarIdx:null}),
+    };
+  }
+}
+
+</script>
+</body>
+</html>

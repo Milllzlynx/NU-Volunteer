@@ -1,0 +1,74 @@
+// NU Volunteer — auth schema
+// dev: sqlite / production: postgresql (เปลี่ยน provider + DATABASE_URL)
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique          // unique constraint จริงในฐานข้อมูล
+  passwordHash String
+  role         String   @default("student") // student | organizer | admin
+  name         String   @default("")
+  studentId    String?
+  faculty      String?
+  loanStatus   String?                    // yes | no  (ผู้กู้ยืม กยศ.)
+  active       Boolean  @default(true)
+  seeded       Boolean  @default(false)
+  // ทุก token ที่ออกก่อนเวลานี้ถือว่าใช้ไม่ได้ (เปลี่ยนรหัสผ่าน / ออกจากทุกอุปกรณ์)
+  tokensValidFrom DateTime @default(now())
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  sessions     Session[]
+  resetTokens  PasswordResetToken[]
+
+  @@index([role])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  refreshHash  String   @unique          // เก็บ hash ของ refresh token ไม่เก็บตัว token
+  userAgent    String   @default("")
+  ip           String   @default("")
+  device       String   @default("")
+  createdAt    DateTime @default(now())
+  lastSeenAt   DateTime @default(now())
+  expiresAt    DateTime
+  revokedAt    DateTime?
+
+  @@index([userId])
+}
+
+model PasswordResetToken {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash  String   @unique           // sha256 ของ token ที่ส่งไปในอีเมล
+  expiresAt  DateTime
+  usedAt     DateTime?
+  createdAt  DateTime @default(now())
+
+  @@index([userId])
+}
+
+// ผูกกับ System Log ฝั่งแอดมิน
+model AuthLog {
+  id        String   @id @default(cuid())
+  event     String   // login.success | login.failed | register | forgot | reset | logout.others | ratelimit.block
+  email     String   @default("")
+  ip        String   @default("")
+  userAgent String   @default("")
+  detail    String   @default("")
+  createdAt DateTime @default(now())
+
+  @@index([event, createdAt])
+  @@index([email, createdAt])
+}

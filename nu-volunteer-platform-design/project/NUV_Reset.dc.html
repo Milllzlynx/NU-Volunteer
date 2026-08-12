@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics><style>
+@media (max-width:900px){
+  .nuv-rs-split{grid-template-columns:1fr !important}
+  .nuv-rs-aside{display:none !important}
+  .nuv-rs-pane{padding:28px 22px !important}
+}
+@media (max-width:520px){
+  .nuv-rs-wrap{padding:14px !important}
+  .nuv-rs-pane{padding:24px 18px !important}
+}
+@keyframes nuvRsIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes nuvRsPop{from{opacity:0;transform:scale(.86)}to{opacity:1;transform:scale(1)}}
+@keyframes nuSpin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+</style></helmet>
+
+<div class="nuv-rs-wrap" style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;font-family:'Mitr','Noto Sans Thai','Inter',sans-serif">
+  <div class="nuv-rs-split" style="width:100%;max-width:880px;display:grid;grid-template-columns:1fr 1fr;border-radius:28px;overflow:hidden;background:rgba(255,255,255,.9);backdrop-filter:blur(30px) saturate(180%);-webkit-backdrop-filter:blur(30px) saturate(180%);border:1px solid rgba(255,255,255,.9);box-shadow:0 30px 70px rgba(31,41,55,.16)">
+
+    <div class="nuv-rs-aside nuv-keep" style="position:relative;min-height:500px;display:flex;flex-direction:column;justify-content:space-between;padding:38px 34px">
+      <img src="https://images.unsplash.com/photo-1552074284-5e88ef1aef18?auto=format&amp;fit=crop&amp;w=1000&amp;q=75" alt="" class="nuv-noinv" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block"/>
+      <div style="position:absolute;inset:0;background:linear-gradient(160deg,rgba(99,210,161,.86) 0%,rgba(167,116,247,.9) 100%)"></div>
+
+      <div style="position:relative;display:flex;align-items:center;gap:11px">
+        <div style="width:40px;height:40px;border-radius:13px;flex-shrink:0;background:rgba(255,255,255,.22);border:1px solid rgba(255,255,255,.35);display:flex;align-items:center;justify-content:center"><svg viewBox="0 0 24 24" fill="none" style="width:23px;height:23px;display:block"><path d="M12 9.4c-1.25-2.6-5.2-2.3-5.2.95 0 2.3 3 4.3 5.2 5.75 2.2-1.45 5.2-3.45 5.2-5.75 0-3.25-3.95-3.55-5.2-.95Z" fill="#fff"/><path d="M3.4 15.2c0 4.2 3.95 6.5 8.6 6.5s8.6-2.3 8.6-6.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round" opacity=".8"/></svg></div>
+        <div style="font-weight:600;font-size:17px;color:#fff">NU Volunteer</div>
+      </div>
+
+      <div style="position:relative">
+        <div style="font-size:29px;font-weight:600;color:#fff;line-height:1.35;text-shadow:0 2px 14px rgba(0,0,0,.22);text-wrap:pretty">{{ L.k12 }}<br/>{{ L.k7 }}</div>
+        <div style="font-size:13.5px;line-height:1.85;color:rgba(255,255,255,.9);margin-top:12px;max-width:320px">{{ L.k1 }}</div>
+        <div style="display:flex;flex-direction:column;gap:12px;margin-top:26px">
+          <sc-for list="{{ tips }}" as="t" hint-placeholder-count="3">
+            <div style="display:flex;align-items:center;gap:10px">
+              <div style="width:28px;height:28px;border-radius:9px;flex-shrink:0;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.3);display:flex;align-items:center;justify-content:center"><span class="msr" style="font-size:16px;color:#fff">{{ t.icon }}</span></div>
+              <span style="font-size:12.5px;color:rgba(255,255,255,.92);line-height:1.6">{{ t.label }}</span>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+
+      <div style="position:relative;font-size:11.5px;color:rgba(255,255,255,.72);line-height:1.7">{{ L.k2 }}</div>
+    </div>
+
+    <div class="nuv-rs-pane" style="padding:40px 38px;display:flex;flex-direction:column;justify-content:center">
+      <sc-if value="{{ !done }}" hint-placeholder-val="{{ true }}">
+        <div key="form" style="animation:nuvRsIn 340ms cubic-bezier(.22,.9,.32,1) both">
+          <div style="width:46px;height:46px;border-radius:15px;display:flex;align-items:center;justify-content:center;background:rgba(99,210,161,.16);margin-bottom:16px"><span class="msr fill" style="font-size:24px;color:#0F8A63">key</span></div>
+          <div style="font-size:23px;font-weight:600;color:#1F2937;line-height:1.4">{{ L.k12 }}</div>
+          <div style="font-size:13px;line-height:1.75;color:#6B7280;margin-top:4px">{{ L.k15 }} <span style="color:#A774F7;font-weight:500">{{ accountEmail }}</span></div>
+
+          <div style="display:flex;flex-direction:column;gap:14px;margin-top:22px">
+            <div>
+              <label style="font-size:12px;color:#6B7280;display:block;margin-bottom:6px">{{ L.k14 }}</label>
+              <div style="position:relative">
+                <span class="msr" style="position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:19px;color:#9CA3AF;pointer-events:none">lock</span>
+                <input type="{{ pwType }}" value="{{ password }}" onChange="{{ onPassword }}" onKeyDown="{{ onKey }}" placeholder="{{ L.k6 }}" style="width:100%;padding:13px 46px 13px 44px;border-radius:13px;border:1px solid rgba(31,41,55,.12);background:rgba(31,41,55,.03);font-family:inherit;font-size:14px;outline:none;color:#1F2937"/>
+                <button onClick="{{ onTogglePw }}" title="{{ pwTitle }}" style-hover="background:rgba(31,41,55,.06)" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:9px;border:none;background:transparent;cursor:pointer;color:#9CA3AF;transition:all 200ms ease"><span class="msr" style="font-size:19px">{{ pwIcon }}</span></button>
+              </div>
+              <div style="display:flex;gap:5px;margin-top:8px">
+                <sc-for list="{{ strengthBars }}" as="b" hint-placeholder-count="4"><div style="{{ b }}"></div></sc-for>
+              </div>
+              <div style="font-size:11.5px;color:{{ strengthColor }};margin-top:5px">{{ strengthLabel }}</div>
+            </div>
+
+            <div>
+              <label style="font-size:12px;color:#6B7280;display:block;margin-bottom:6px">{{ L.k8 }}</label>
+              <div style="position:relative">
+                <span class="msr" style="position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:19px;color:#9CA3AF;pointer-events:none">lock_reset</span>
+                <input type="{{ pwType }}" value="{{ confirm }}" onChange="{{ onConfirm }}" onKeyDown="{{ onKey }}" placeholder="{{ L.k5 }}" style="width:100%;padding:13px 14px 13px 44px;border-radius:13px;border:1px solid {{ confirmBorder }};background:rgba(31,41,55,.03);font-family:inherit;font-size:14px;outline:none;color:#1F2937"/>
+              </div>
+              <sc-if value="{{ showMismatch }}" hint-placeholder-val="{{ false }}">
+                <div style="font-size:11.5px;color:#C2410C;margin-top:5px">{{ L.k10 }}</div>
+              </sc-if>
+            </div>
+
+            <div style="background:rgba(31,41,55,.035);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:8px">
+              <sc-for list="{{ rules }}" as="r" hint-placeholder-count="4">
+                <div style="display:flex;align-items:center;gap:8px">
+                  <span class="msr" style="{{ r.iconStyle }}">{{ r.icon }}</span>
+                  <span style="{{ r.textStyle }}">{{ r.label }}</span>
+                </div>
+              </sc-for>
+            </div>
+
+            <sc-if value="{{ hasError }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;flex-direction:column;gap:9px;padding:12px 14px;border-radius:12px;background:rgba(233,113,113,.1);border:1px solid rgba(233,113,113,.28)">
+                <div style="display:flex;align-items:center;gap:8px">
+                  <span class="msr fill" style="font-size:18px;color:#C2410C;flex-shrink:0">error</span>
+                  <span style="font-size:12.5px;color:#C2410C;line-height:1.6">{{ error }}</span>
+                </div>
+                <sc-if value="{{ tokenBad }}" hint-placeholder-val="{{ false }}">
+                  <button onClick="{{ onAskNewLink }}" style-hover="background:rgba(255,255,255,.95)" style="align-self:flex-start;display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:11px;border:1px solid rgba(233,113,113,.35);background:rgba(255,255,255,.8);font-family:inherit;font-size:12px;color:#C2410C;cursor:pointer"><span class="msr" style="font-size:15px">mail</span>{{ askNewLinkLabel }}</button>
+                </sc-if>
+              </div>
+            </sc-if>
+
+            <button onClick="{{ onSubmit }}" disabled="{{ loading }}" class="nuv-keep" style="{{ submitStyle }}">
+              <sc-if value="{{ notLoading }}" hint-placeholder-val="{{ true }}">
+                <span class="msr" style="font-size:19px">check_circle</span>{{ L.k9 }}
+              </sc-if>
+              <sc-if value="{{ loading }}" hint-placeholder-val="{{ false }}">
+                <span style="width:17px;height:17px;border-radius:50%;border:2px solid rgba(255,255,255,.35);border-top-color:#fff;animation:nuSpin 700ms linear infinite;display:inline-block"></span>{{ L.k13 }}
+              </sc-if>
+            </button>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ done }}" hint-placeholder-val="{{ false }}">
+        <div key="done" style="animation:nuvRsIn 340ms cubic-bezier(.22,.9,.32,1) both;text-align:center">
+          <div style="width:64px;height:64px;border-radius:50%;margin:0 auto 18px;display:flex;align-items:center;justify-content:center;background:rgba(99,210,161,.16);animation:nuvRsPop 420ms cubic-bezier(.34,1.56,.64,1) both"><span class="msr fill" style="font-size:34px;color:#0F8A63">task_alt</span></div>
+          <div style="font-size:21px;font-weight:600;color:#1F2937;line-height:1.4">{{ L.k4 }}</div>
+          <div style="font-size:13px;line-height:1.8;color:#6B7280;margin-top:6px">{{ L.k3 }}</div>
+          <button onClick="{{ onBack }}" class="nuv-keep" style-hover="transform:translateY(-2px);box-shadow:0 14px 32px rgba(167,116,247,.44)" style="margin-top:22px;width:100%;display:flex;align-items:center;justify-content:center;gap:8px;padding:14px;border-radius:14px;border:none;background:linear-gradient(135deg,#E97171,#A774F7);color:#fff;font-family:inherit;font-weight:500;font-size:14.5px;cursor:pointer;box-shadow:0 8px 22px rgba(167,116,247,.34);transition:all 220ms ease">{{ L.k11 }}<span class="msr" style="font-size:19px">arrow_forward</span></button>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ !done }}" hint-placeholder-val="{{ true }}">
+        <div style="text-align:center;margin-top:22px">
+          <a onClick="{{ onBack }}" style="display:inline-flex;align-items:center;gap:5px;font-size:12.5px;cursor:pointer;color:#9CA3AF"><span class="msr" style="font-size:16px">arrow_back</span>{{ L.k11 }}</a>
+        </div>
+      </sc-if>
+    </div>
+  </div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+var RST_LANG = "th";
+const RST_EN = {"ไม่พบโทเคนรีเซ็ต กรุณาขอลิงก์ใหม่":"No reset token found — request a new link","ตั้งรหัสผ่านใหม่ไม่สำเร็จ":"Could not set the new password","ขอลิงก์รีเซ็ตใหม่":"Request a new reset link","ตั้งรหัสผ่านใหม่":"Set a new password","ให้ปลอดภัยกว่าเดิม":"stronger than before","เลือกรหัสผ่านที่คาดเดายาก และไม่ซ้ำกับรหัสผ่านที่คุณใช้ในบริการอื่น":"Choose something hard to guess that you don't use elsewhere.","หลังตั้งรหัสผ่านใหม่ ระบบจะออกจากระบบทุกอุปกรณ์":"After resetting, you'll be signed out on all devices","สำหรับบัญชี":"For account","รหัสผ่านใหม่":"New password","ยืนยันรหัสผ่านใหม่":"Confirm new password","รหัสผ่านไม่ตรงกัน":"Passwords do not match","บันทึกรหัสผ่านใหม่":"Save new password","กำลังบันทึก...":"Saving...","ตั้งรหัสผ่านใหม่สำเร็จ":"Password updated","คุณสามารถเข้าสู่ระบบด้วยรหัสผ่านใหม่ได้ทันที":"You can sign in with your new password now.","ไปหน้าเข้าสู่ระบบ":"Go to sign in","อย่างน้อย 8 ตัวอักษร":"At least 8 characters","พิมพ์รหัสผ่านอีกครั้ง":"Re-enter your password","กรุณากรอกรหัสผ่านใหม่":"Please enter a new password","รหัสผ่านต้องยาวอย่างน้อย 8 ตัวอักษร":"Password must be at least 8 characters","รหัสผ่านทั้งสองช่องไม่ตรงกัน":"The two passwords do not match","ยาวอย่างน้อย 8 ตัวอักษร":"At least 8 characters long","มีตัวพิมพ์ใหญ่หรือตัวอักษรไทย":"Contains a capital or Thai letter","มีตัวเลขอย่างน้อย 1 ตัว":"Contains at least one number","มีอักขระพิเศษ เช่น ! @ # $":"Contains a symbol like ! @ # $","อ่อน — ควรยาวอย่างน้อย 8 ตัว":"Weak — use at least 8 characters","พอใช้ — เพิ่มตัวเลขหรือตัวพิมพ์ใหญ่":"Fair — add numbers or capitals","ดี — ปลอดภัยพอสมควร":"Good — reasonably secure","แข็งแรงมาก":"Very strong","ใช้ตัวอักษรผสมตัวเลขและอักขระพิเศษ":"Mix letters, numbers, and symbols","หลีกเลี่ยงวันเกิดหรือรหัสนิสิต":"Avoid birthdays or your student ID","ระบบจะออกจากระบบทุกอุปกรณ์ที่ค้างอยู่":"You'll be signed out on all devices","ซ่อนรหัสผ่าน":"Hide password","แสดงรหัสผ่าน":"Show password"};
+function T(s){ return RST_LANG === "en" ? (RST_EN[s] || s) : s; }
+class Component extends DCLogic {
+  state = { password:'', confirm:'', showPw:false, error:'', loading:false, done:false, tokenBad:false };
+  tokenFromUrl(){
+    try{ return new URLSearchParams(location.search).get('token') || ''; }catch(e){ return ''; }
+  }
+
+  componentWillUnmount(){ clearTimeout(this._t); }
+
+  submit = ()=>{
+    if(this.state.loading) return;
+    const { password, confirm } = this.state;
+    if(!password) return this.setState({error:T('กรุณากรอกรหัสผ่านใหม่')});
+    if(password.length < 8) return this.setState({error:T('รหัสผ่านต้องยาวอย่างน้อย 8 ตัวอักษร')});
+    if(password !== confirm) return this.setState({error:T('รหัสผ่านทั้งสองช่องไม่ตรงกัน')});
+    this.setState({loading:true, error:''});
+    const doReset = this.props.onResetPassword;
+    const token = this.props.token || this.tokenFromUrl();
+    if(doReset){
+      if(!token){ this.setState({loading:false, error:T('ไม่พบโทเคนรีเซ็ต กรุณาขอลิงก์ใหม่'), tokenBad:true}); return; }
+      Promise.resolve(doReset(token, password)).then(()=>{
+        this.setState({loading:false, done:true});
+      }).catch(err=>{
+        const bad = err && /TOKEN_/.test(err.code||'');
+        this.setState({loading:false, tokenBad:!!bad, error:(err && err.message) || T('ตั้งรหัสผ่านใหม่ไม่สำเร็จ')});
+      });
+      return;
+    }
+    this._t = setTimeout(()=>this.setState({loading:false, done:true}), 1000);
+  };
+
+  i18nVals(){
+    const en = this.props.lang === "en";
+    return {L: {
+      k1: en ? "Choose something hard to guess that you don't use elsewhere." : "เลือกรหัสผ่านที่คาดเดายาก และไม่ซ้ำกับรหัสผ่านที่คุณใช้ในบริการอื่น",
+      k2: en ? "After resetting, you'll be signed out on all devices" : "หลังตั้งรหัสผ่านใหม่ ระบบจะออกจากระบบทุกอุปกรณ์",
+      k3: en ? "You can sign in with your new password now." : "คุณสามารถเข้าสู่ระบบด้วยรหัสผ่านใหม่ได้ทันที",
+      k4: en ? "Password updated" : "ตั้งรหัสผ่านใหม่สำเร็จ",
+      k5: en ? "Re-enter your password" : "พิมพ์รหัสผ่านอีกครั้ง",
+      k6: en ? "At least 8 characters" : "อย่างน้อย 8 ตัวอักษร",
+      k7: en ? "stronger than before" : "ให้ปลอดภัยกว่าเดิม",
+      k8: en ? "Confirm new password" : "ยืนยันรหัสผ่านใหม่",
+      k9: en ? "Save new password" : "บันทึกรหัสผ่านใหม่",
+      k10: en ? "Passwords do not match" : "รหัสผ่านไม่ตรงกัน",
+      k11: en ? "Go to sign in" : "ไปหน้าเข้าสู่ระบบ",
+      k12: en ? "Set a new password" : "ตั้งรหัสผ่านใหม่",
+      k13: en ? "Saving..." : "กำลังบันทึก...",
+      k14: en ? "New password" : "รหัสผ่านใหม่",
+      k15: en ? "For account" : "สำหรับบัญชี",
+    }};
+  }
+  renderVals(){
+    RST_LANG = this.props.lang === 'en' ? 'en' : 'th';
+    const p = this.props;
+    const pw = this.state.password;
+
+    const checks = [
+      {label:T('ยาวอย่างน้อย 8 ตัวอักษร'), ok: pw.length >= 8},
+      {label:T('มีตัวพิมพ์ใหญ่หรือตัวอักษรไทย'), ok: /[A-Z]/.test(pw) || /[ก-๙]/.test(pw)},
+      {label:T('มีตัวเลขอย่างน้อย 1 ตัว'), ok: /[0-9]/.test(pw)},
+      {label:T('มีอักขระพิเศษ เช่น ! @ # $'), ok: /[^A-Za-z0-9ก-๙]/.test(pw)},
+    ];
+    const score = checks.filter(c=>c.ok).length;
+
+    const SC = [
+      {label:'', color:'#9CA3AF', fill:'rgba(31,41,55,.1)'},
+      {label:T('อ่อน — ควรยาวอย่างน้อย 8 ตัว'), color:'#C2410C', fill:'#E97171'},
+      {label:T('พอใช้ — เพิ่มตัวเลขหรือตัวพิมพ์ใหญ่'), color:'#B45309', fill:'#F5A623'},
+      {label:T('ดี — ปลอดภัยพอสมควร'), color:'#1D4ED8', fill:'#7AB8FF'},
+      {label:T('แข็งแรงมาก'), color:'#0F8A63', fill:'#63D2A1'},
+    ];
+    const sc = SC[pw ? score : 0];
+    const strengthBars = [0,1,2,3].map(i=>
+      `flex:1;height:5px;border-radius:4px;transition:background 260ms ease;background:${pw && i < score ? sc.fill : 'rgba(31,41,55,.1)'}`);
+
+    const mismatch = !!(this.state.confirm && pw !== this.state.confirm);
+
+    return {
+      ...this.i18nVals(),
+      accountEmail: p.email || 'student@nu.ac.th',
+      password: pw, confirm: this.state.confirm,
+      tips: [
+        {icon:'lock', label:T('ใช้ตัวอักษรผสมตัวเลขและอักขระพิเศษ')},
+        {icon:'block', label:T('หลีกเลี่ยงวันเกิดหรือรหัสนิสิต')},
+        {icon:'devices', label:T('ระบบจะออกจากระบบทุกอุปกรณ์ที่ค้างอยู่')},
+      ],
+      rules: checks.map(c=>({
+        label: c.label,
+        icon: c.ok ? 'check_circle' : 'radio_button_unchecked',
+        iconStyle: `font-size:17px;flex-shrink:0;color:${c.ok?'#0F8A63':'#CBD5E1'};font-variation-settings:'FILL' ${c.ok?1:0}`,
+        textStyle: `font-size:12px;line-height:1.6;color:${c.ok?'#4B5563':'#9CA3AF'}`,
+      })),
+      strengthBars, strengthLabel: sc.label, strengthColor: sc.color,
+      showMismatch: mismatch,
+      confirmBorder: mismatch ? 'rgba(233,113,113,.5)' : 'rgba(31,41,55,.12)',
+      pwType: this.state.showPw ? 'text' : 'password',
+      pwIcon: this.state.showPw ? 'visibility_off' : 'visibility',
+      pwTitle: this.state.showPw ? T('ซ่อนรหัสผ่าน') : T('แสดงรหัสผ่าน'),
+      onTogglePw: ()=>this.setState(s=>({showPw:!s.showPw})),
+      error: this.state.error, hasError: !!this.state.error,
+      tokenBad: !!this.state.tokenBad,
+      askNewLinkLabel: T('ขอลิงก์รีเซ็ตใหม่'),
+      onAskNewLink: ()=> p.onBack && p.onBack(),
+      loading: this.state.loading, notLoading: !this.state.loading, done: this.state.done,
+      submitStyle: `margin-top:2px;width:100%;display:flex;align-items:center;justify-content:center;gap:8px;padding:14px;border-radius:14px;border:none;background:linear-gradient(135deg,#E97171,#A774F7);color:#fff;font-family:inherit;font-weight:500;font-size:14.5px;box-shadow:0 8px 22px rgba(167,116,247,.34);transition:all 220ms ease;cursor:${this.state.loading?'wait':'pointer'};opacity:${this.state.loading?.72:1}`,
+      onPassword: (e)=>this.setState({password:e.target.value, error:''}),
+      onConfirm: (e)=>this.setState({confirm:e.target.value, error:''}),
+      onKey: (e)=>{ if(e.key === 'Enter') this.submit(); },
+      onSubmit: this.submit,
+      onBack: ()=> p.onBack && p.onBack(),
+    };
+  }
+}
+
+</script>
+</body>
+</html>

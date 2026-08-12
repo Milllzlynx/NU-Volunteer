@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics><style>
+@media (max-width:900px){
+  .nuv-fg-split{grid-template-columns:1fr !important}
+  .nuv-fg-aside{display:none !important}
+  .nuv-fg-pane{padding:28px 22px !important}
+}
+@media (max-width:520px){
+  .nuv-fg-wrap{padding:14px !important}
+  .nuv-fg-pane{padding:24px 18px !important}
+}
+@keyframes nuvFgIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes nuvFgPop{from{opacity:0;transform:scale(.86)}to{opacity:1;transform:scale(1)}}
+@keyframes nuSpin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+</style></helmet>
+
+<div class="nuv-fg-wrap" style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;font-family:'Mitr','Noto Sans Thai','Inter',sans-serif">
+  <div class="nuv-fg-split" style="width:100%;max-width:880px;display:grid;grid-template-columns:1fr 1fr;border-radius:28px;overflow:hidden;background:rgba(255,255,255,.9);backdrop-filter:blur(30px) saturate(180%);-webkit-backdrop-filter:blur(30px) saturate(180%);border:1px solid rgba(255,255,255,.9);box-shadow:0 30px 70px rgba(31,41,55,.16)">
+
+    <div class="nuv-fg-aside nuv-keep" style="position:relative;min-height:480px;display:flex;flex-direction:column;justify-content:space-between;padding:38px 34px">
+      <img src="https://images.unsplash.com/photo-1593113646773-028c64a8f1b8?auto=format&amp;fit=crop&amp;w=1000&amp;q=75" alt="" class="nuv-noinv" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block"/>
+      <div style="position:absolute;inset:0;background:linear-gradient(160deg,rgba(122,184,255,.86) 0%,rgba(167,116,247,.9) 100%)"></div>
+
+      <div style="position:relative;display:flex;align-items:center;gap:11px">
+        <div style="width:40px;height:40px;border-radius:13px;flex-shrink:0;background:rgba(255,255,255,.22);border:1px solid rgba(255,255,255,.35);display:flex;align-items:center;justify-content:center"><svg viewBox="0 0 24 24" fill="none" style="width:23px;height:23px;display:block"><path d="M12 9.4c-1.25-2.6-5.2-2.3-5.2.95 0 2.3 3 4.3 5.2 5.75 2.2-1.45 5.2-3.45 5.2-5.75 0-3.25-3.95-3.55-5.2-.95Z" fill="#fff"/><path d="M3.4 15.2c0 4.2 3.95 6.5 8.6 6.5s8.6-2.3 8.6-6.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round" opacity=".8"/></svg></div>
+        <div style="font-weight:600;font-size:17px;color:#fff">NU Volunteer</div>
+      </div>
+
+      <div style="position:relative">
+        <div style="font-size:29px;font-weight:600;color:#fff;line-height:1.35;text-shadow:0 2px 14px rgba(0,0,0,.22);text-wrap:pretty">{{ L.k13 }}<br/>{{ L.k10 }}</div>
+        <div style="font-size:13.5px;line-height:1.85;color:rgba(255,255,255,.9);margin-top:12px;max-width:320px">{{ L.k1 }}</div>
+        <div style="display:flex;flex-direction:column;gap:12px;margin-top:26px">
+          <sc-for list="{{ tips }}" as="t" hint-placeholder-count="3">
+            <div style="display:flex;align-items:center;gap:10px">
+              <div style="width:28px;height:28px;border-radius:9px;flex-shrink:0;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.3);display:flex;align-items:center;justify-content:center"><span class="msr" style="font-size:16px;color:#fff">{{ t.icon }}</span></div>
+              <span style="font-size:12.5px;color:rgba(255,255,255,.92);line-height:1.6">{{ t.label }}</span>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+
+      <div style="position:relative;font-size:11.5px;color:rgba(255,255,255,.72);line-height:1.7">{{ L.k3 }}</div>
+    </div>
+
+    <div class="nuv-fg-pane" style="padding:40px 38px;display:flex;flex-direction:column;justify-content:center">
+      <sc-if value="{{ !sent }}" hint-placeholder-val="{{ true }}">
+        <div key="form" style="animation:nuvFgIn 340ms cubic-bezier(.22,.9,.32,1) both">
+          <div style="width:46px;height:46px;border-radius:15px;display:flex;align-items:center;justify-content:center;background:rgba(167,116,247,.14);margin-bottom:16px"><span class="msr fill" style="font-size:24px;color:#A774F7">lock_reset</span></div>
+          <div style="font-size:23px;font-weight:600;color:#1F2937;line-height:1.4">{{ L.k12 }}</div>
+          <div style="font-size:13px;line-height:1.75;color:#6B7280;margin-top:4px;margin-bottom:22px">{{ L.k2 }}</div>
+
+          <label style="font-size:12px;color:#6B7280;display:block;margin-bottom:6px">{{ L.k8 }}</label>
+          <div style="position:relative">
+            <span class="msr" style="position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:19px;color:#9CA3AF;pointer-events:none">mail</span>
+            <input value="{{ email }}" onChange="{{ onEmailChange }}" onKeyDown="{{ onKey }}" placeholder="you@nu.ac.th" style="width:100%;padding:13px 14px 13px 44px;border-radius:13px;border:1px solid {{ inputBorder }};background:rgba(31,41,55,.03);font-family:inherit;font-size:14px;outline:none;color:#1F2937"/>
+          </div>
+          <sc-if value="{{ hasError }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;align-items:center;gap:7px;margin-top:9px">
+              <span class="msr fill" style="font-size:16px;color:#C2410C">error</span>
+              <span style="font-size:11.5px;color:#C2410C;line-height:1.6">{{ error }}</span>
+            </div>
+          </sc-if>
+
+          <button onClick="{{ onSend }}" disabled="{{ loading }}" class="nuv-keep" style="{{ sendBtnStyle }}">
+            <sc-if value="{{ notLoading }}" hint-placeholder-val="{{ true }}">
+              <span class="msr" style="font-size:19px">send</span>{{ L.k11 }}
+            </sc-if>
+            <sc-if value="{{ loading }}" hint-placeholder-val="{{ false }}">
+              <span style="width:17px;height:17px;border-radius:50%;border:2px solid rgba(255,255,255,.35);border-top-color:#fff;animation:nuSpin 700ms linear infinite;display:inline-block"></span>{{ L.k14 }}
+            </sc-if>
+          </button>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ sent }}" hint-placeholder-val="{{ false }}">
+        <div key="sent" style="animation:nuvFgIn 340ms cubic-bezier(.22,.9,.32,1) both;text-align:center">
+          <div style="width:64px;height:64px;border-radius:50%;margin:0 auto 18px;display:flex;align-items:center;justify-content:center;background:rgba(99,210,161,.16);animation:nuvFgPop 420ms cubic-bezier(.34,1.56,.64,1) both"><span class="msr fill" style="font-size:34px;color:#0F8A63">mark_email_read</span></div>
+          <div style="font-size:21px;font-weight:600;color:#1F2937;line-height:1.4">{{ L.k6 }}</div>
+          <div style="font-size:13px;line-height:1.8;color:#6B7280;margin-top:6px">{{ L.k4 }}</div>
+          <div style="font-size:13.5px;font-weight:500;color:#A774F7;margin-top:2px;word-break:break-all">{{ sentEmail }}</div>
+
+          <div style="text-align:left;background:rgba(31,41,55,.035);border-radius:16px;padding:16px;margin-top:20px;display:flex;flex-direction:column;gap:9px">
+            <sc-for list="{{ nextSteps }}" as="n" hint-placeholder-count="3">
+              <div style="display:flex;align-items:flex-start;gap:9px">
+                <span class="msr" style="font-size:17px;color:#9CA3AF;flex-shrink:0;margin-top:1px">{{ n.icon }}</span>
+                <span style="font-size:12.5px;color:#4B5563;line-height:1.7">{{ n.label }}</span>
+              </div>
+            </sc-for>
+          </div>
+
+          <button onClick="{{ onOpenLink }}" style-hover="background:#fff;transform:translateY(-2px);box-shadow:0 8px 20px rgba(31,41,55,.1)" style="margin-top:18px;width:100%;display:flex;align-items:center;justify-content:center;gap:7px;padding:13px;border-radius:14px;border:1px solid rgba(31,41,55,.12);background:rgba(255,255,255,.7);color:#1F2937;font-family:inherit;font-weight:500;font-size:13.5px;cursor:pointer;transition:all 220ms ease"><span class="msr" style="font-size:18px">open_in_new</span>{{ L.k5 }}</button>
+          <div style="font-size:12.5px;color:#6B7280;margin-top:14px">{{ L.k9 }} <a onClick="{{ onResend }}" style="{{ resendStyle }}">{{ resendLabel }}</a></div>
+        </div>
+      </sc-if>
+
+      <div style="text-align:center;margin-top:24px">
+        <a onClick="{{ onBack }}" style="display:inline-flex;align-items:center;gap:5px;font-size:12.5px;cursor:pointer;color:#9CA3AF"><span class="msr" style="font-size:16px">arrow_back</span>{{ L.k7 }}</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+var FGT_LANG = "th";
+const FGT_EN = {"ส่งคำขอไม่สำเร็จ กรุณาลองอีกครั้ง":"Could not send the request — please try again","กู้คืนบัญชี":"Recover your account","ของคุณได้ง่ายๆ":"in a few clicks","เราจะส่งลิงก์รีเซ็ตรหัสผ่านไปยังอีเมลมหาวิทยาลัยที่ผูกกับบัญชีของคุณ":"We'll email a reset link to the university address linked to your account.","ต้องการความช่วยเหลือ? ติดต่อกองกิจการนิสิต":"Need help? Contact the Student Affairs Division","ลืมรหัสผ่าน?":"Forgot password?","กรอกอีเมลที่ใช้สมัคร เราจะส่งลิงก์สำหรับตั้งรหัสผ่านใหม่ไปให้":"Enter the email you signed up with and we'll send a reset link.","อีเมลมหาวิทยาลัย":"University email","ส่งลิงก์รีเซ็ต":"Send reset link","กำลังส่ง...":"Sending...","ส่งอีเมลเรียบร้อยแล้ว":"Email sent","เราส่งลิงก์รีเซ็ตรหัสผ่านไปที่":"We sent a password reset link to","เปิดลิงก์รีเซ็ต (จำลอง)":"Open reset link (demo)","ไม่ได้รับอีเมล?":"Didn't get the email?","ไปหน้าเข้าสู่ระบบ":"Go to sign in","กรุณากรอกอีเมลของคุณ":"Please enter your email","รูปแบบอีเมลไม่ถูกต้อง":"Invalid email format","ลิงก์จะส่งไปที่อีเมล @nu.ac.th ของคุณ":"The link goes to your @nu.ac.th email","ลิงก์มีอายุ 30 นาทีนับจากเวลาที่ส่ง":"The link is valid for 30 minutes","หากไม่ได้เป็นผู้ขอ ไม่ต้องดำเนินการใดๆ":"If you didn't request it, no action is needed","เปิดกล่องจดหมายและมองหาอีเมลจาก NU Volunteer":"Check your inbox for an email from NU Volunteer","หากไม่พบ ลองตรวจในโฟลเดอร์จดหมายขยะ":"If it's missing, check your spam folder","ลิงก์จะหมดอายุภายใน 30 นาที":"The link expires in 30 minutes","ส่งอีกครั้งใน ":"Resend in "," วินาที":"s","ส่งอีกครั้ง":"Resend"};
+function T(s){ return FGT_LANG === "en" ? (FGT_EN[s] || s) : s; }
+class Component extends DCLogic {
+  state = { email:'', sent:false, sentEmail:'', error:'', cooldown:0, loading:false };
+
+  componentWillUnmount(){ clearInterval(this._cd); clearTimeout(this._t); }
+
+  startCooldown(){
+    clearInterval(this._cd);
+    this.setState({cooldown:30});
+    this._cd = setInterval(()=>{
+      this.setState(s=>{
+        const n = s.cooldown - 1;
+        if(n <= 0) clearInterval(this._cd);
+        return {cooldown: Math.max(0, n)};
+      });
+    }, 1000);
+  }
+
+  send = ()=>{
+    if(this.state.loading) return;
+    const e = (this.state.email||'').trim();
+    if(!e) return this.setState({error:T('กรุณากรอกอีเมลของคุณ')});
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)) return this.setState({error:T('รูปแบบอีเมลไม่ถูกต้อง')});
+    this.setState({loading:true, error:''});
+    const req = this.props.onRequestReset;
+    if(req){
+      /* ส่งคำขอจริงผ่าน API — ผลลัพธ์ที่แสดงเหมือนกันทุกกรณี ไม่เปิดเผยว่าอีเมลมีบัญชีหรือไม่ */
+      Promise.resolve(req(e)).then(()=>{
+        this.setState({loading:false, sent:true, sentEmail:e});
+        this.startCooldown();
+      }).catch(()=>{
+        this.setState({loading:false, error:T('ส่งคำขอไม่สำเร็จ กรุณาลองอีกครั้ง')});
+      });
+      return;
+    }
+    this._t = setTimeout(()=>{
+      this.setState({loading:false, sent:true, sentEmail:e});
+      this.startCooldown();
+    }, 1100);
+  };
+
+  i18nVals(){
+    const en = this.props.lang === "en";
+    return {L: {
+      k1: en ? "We'll email a reset link to the university address linked to your account." : "เราจะส่งลิงก์รีเซ็ตรหัสผ่านไปยังอีเมลมหาวิทยาลัยที่ผูกกับบัญชีของคุณ",
+      k2: en ? "Enter the email you signed up with and we'll send a reset link." : "กรอกอีเมลที่ใช้สมัคร เราจะส่งลิงก์สำหรับตั้งรหัสผ่านใหม่ไปให้",
+      k3: en ? "Need help? Contact the Student Affairs Division" : "ต้องการความช่วยเหลือ? ติดต่อกองกิจการนิสิต",
+      k4: en ? "We sent a password reset link to" : "เราส่งลิงก์รีเซ็ตรหัสผ่านไปที่",
+      k5: en ? "Open reset link" : "เปิดลิงก์รีเซ็ต",
+      k6: en ? "Email sent" : "ส่งอีเมลเรียบร้อยแล้ว",
+      k7: en ? "Go to sign in" : "ไปหน้าเข้าสู่ระบบ",
+      k8: en ? "University email" : "อีเมลมหาวิทยาลัย",
+      k9: en ? "Didn't get the email?" : "ไม่ได้รับอีเมล?",
+      k10: en ? "in a few clicks" : "ของคุณได้ง่ายๆ",
+      k11: en ? "Send reset link" : "ส่งลิงก์รีเซ็ต",
+      k12: en ? "Forgot password?" : "ลืมรหัสผ่าน?",
+      k13: en ? "Recover your account" : "กู้คืนบัญชี",
+      k14: en ? "Sending..." : "กำลังส่ง...",
+    }};
+  }
+  renderVals(){
+    FGT_LANG = this.props.lang === 'en' ? 'en' : 'th';
+    const p = this.props;
+    const cd = this.state.cooldown;
+    return {
+      ...this.i18nVals(),
+      logoMark: p.logoMark||'NU',
+      email: this.state.email, sent: this.state.sent, sentEmail: this.state.sentEmail,
+      error: this.state.error, hasError: !!this.state.error,
+      inputBorder: this.state.error ? 'rgba(233,113,113,.5)' : 'rgba(31,41,55,.12)',
+      tips: [
+        {icon:'mail', label:T('ลิงก์จะส่งไปที่อีเมล @nu.ac.th ของคุณ')},
+        {icon:'schedule', label:T('ลิงก์มีอายุ 30 นาทีนับจากเวลาที่ส่ง')},
+        {icon:'shield', label:T('หากไม่ได้เป็นผู้ขอ ไม่ต้องดำเนินการใดๆ')},
+      ],
+      nextSteps: [
+        {icon:'inbox', label:T('เปิดกล่องจดหมายและมองหาอีเมลจาก NU Volunteer')},
+        {icon:'folder_open', label:T('หากไม่พบ ลองตรวจในโฟลเดอร์จดหมายขยะ')},
+        {icon:'timer', label:T('ลิงก์จะหมดอายุภายใน 30 นาที')},
+      ],
+      resendLabel: cd > 0 ? (T('ส่งอีกครั้งใน ') + cd + T(' วินาที')) : T('ส่งอีกครั้ง'),
+      resendStyle: cd > 0
+        ? 'color:#9CA3AF;cursor:default'
+        : 'color:#A774F7;font-weight:500;cursor:pointer',
+      onResend: ()=>{ if(this.state.cooldown === 0) this.startCooldown(); },
+      onEmailChange: (e)=> this.setState({email:e.target.value, error:''}),
+      onKey: (e)=>{ if(e.key === 'Enter') this.send(); },
+      loading: this.state.loading, notLoading: !this.state.loading,
+      sendBtnStyle: `margin-top:18px;width:100%;display:flex;align-items:center;justify-content:center;gap:8px;padding:14px;border-radius:14px;border:none;background:linear-gradient(135deg,#E97171,#A774F7);color:#fff;font-family:inherit;font-weight:500;font-size:14.5px;transition:all 220ms ease;box-shadow:0 8px 22px rgba(167,116,247,.34);cursor:${this.state.loading?'wait':'pointer'};opacity:${this.state.loading?.72:1}`,
+      onSend: this.send,
+      onOpenLink: ()=> p.onReset && p.onReset(this.state.sentEmail),
+      onBack: ()=> p.onBack && p.onBack(),
+    };
+  }
+}
+
+</script>
+</body>
+</html>

@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics><style>
+@media (max-width:900px){
+  .nuv-reg-split{grid-template-columns:1fr !important}
+  .nuv-reg-aside{display:none !important}
+  .nuv-reg-pane{padding:28px 22px !important}
+}
+@media (max-width:520px){
+  .nuv-reg-wrap{padding:14px !important}
+  .nuv-reg-pane{padding:24px 18px !important}
+  .nuv-reg-row{grid-template-columns:1fr !important}
+}
+@keyframes nuvStepFwd{from{opacity:0;transform:translateX(26px)}to{opacity:1;transform:translateX(0)}}
+@keyframes nuvStepBack{from{opacity:0;transform:translateX(-26px)}to{opacity:1;transform:translateX(0)}}
+@keyframes nuSpin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+</style></helmet>
+
+<div class="nuv-reg-wrap" style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;font-family:'Mitr','Noto Sans Thai','Inter',sans-serif">
+  <div class="nuv-reg-split" style="width:100%;max-width:940px;display:grid;grid-template-columns:1.05fr 1fr;border-radius:28px;overflow:hidden;background:rgba(255,255,255,.9);backdrop-filter:blur(30px) saturate(180%);-webkit-backdrop-filter:blur(30px) saturate(180%);border:1px solid rgba(255,255,255,.9);box-shadow:0 30px 70px rgba(31,41,55,.16)">
+
+    <div class="nuv-reg-aside nuv-keep" style="position:relative;min-height:560px;display:flex;flex-direction:column;justify-content:space-between;padding:38px 34px">
+      <img src="https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&amp;fit=crop&amp;w=1000&amp;q=75" alt="" class="nuv-noinv" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block"/>
+      <div style="position:absolute;inset:0;background:linear-gradient(160deg,rgba(167,116,247,.88) 0%,rgba(233,113,113,.86) 100%)"></div>
+
+      <div style="position:relative;display:flex;align-items:center;gap:11px">
+        <div style="width:40px;height:40px;border-radius:13px;flex-shrink:0;background:rgba(255,255,255,.22);border:1px solid rgba(255,255,255,.35);display:flex;align-items:center;justify-content:center"><svg viewBox="0 0 24 24" fill="none" style="width:23px;height:23px;display:block"><path d="M12 9.4c-1.25-2.6-5.2-2.3-5.2.95 0 2.3 3 4.3 5.2 5.75 2.2-1.45 5.2-3.45 5.2-5.75 0-3.25-3.95-3.55-5.2-.95Z" fill="#fff"/><path d="M3.4 15.2c0 4.2 3.95 6.5 8.6 6.5s8.6-2.3 8.6-6.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round" opacity=".8"/></svg></div>
+        <div style="font-weight:600;font-size:17px;color:#fff">NU Volunteer</div>
+      </div>
+
+      <div style="position:relative">
+        <div style="font-size:29px;font-weight:600;color:#fff;line-height:1.35;text-shadow:0 2px 14px rgba(0,0,0,.22);text-wrap:pretty">{{ L.k9 }}<br/>{{ L.k12 }}</div>
+        <div style="font-size:13.5px;line-height:1.85;color:rgba(255,255,255,.9);margin-top:12px;max-width:330px">{{ L.k1 }}</div>
+
+        <div style="display:flex;flex-direction:column;gap:16px;margin-top:28px">
+          <sc-for list="{{ asideSteps }}" as="a" hint-placeholder-count="3">
+            <div style="display:flex;align-items:flex-start;gap:12px">
+              <div style="{{ a.dotStyle }}"><span class="msr" style="{{ a.iconStyle }}">{{ a.icon }}</span></div>
+              <div style="{{ a.textStyle }}">
+                <div style="font-size:13.5px;font-weight:500;color:#fff;line-height:1.5">{{ a.title }}</div>
+                <div style="font-size:11.5px;color:rgba(255,255,255,.75);line-height:1.6;margin-top:1px">{{ a.desc }}</div>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+
+      <div style="position:relative;font-size:11.5px;color:rgba(255,255,255,.72);line-height:1.7">{{ L.k2 }}</div>
+    </div>
+
+    <div class="nuv-reg-pane" style="padding:40px 38px;display:flex;flex-direction:column;justify-content:center">
+      <div style="font-size:23px;font-weight:600;color:#1F2937;line-height:1.4">{{ stepTitle }}</div>
+      <div style="font-size:13px;color:#6B7280;margin-top:3px">{{ stepDesc }}</div>
+
+      <div style="display:flex;align-items:center;gap:9px;margin:20px 0 24px">
+        <div style="display:flex;gap:5px;flex:1">
+          <sc-for list="{{ steps }}" as="st" hint-placeholder-count="3">
+            <div style="{{ st.style }}"></div>
+          </sc-for>
+        </div>
+        <div style="font-size:11.5px;color:#9CA3AF;white-space:nowrap">{{ stepCount }}</div>
+      </div>
+
+      <sc-if value="{{ isStep1 }}" hint-placeholder-val="{{ true }}">
+        <div key="{{ stepKey }}" style="animation:{{ stepAnim }} 320ms cubic-bezier(.22,.9,.32,1) both;display:flex;flex-direction:column;gap:14px">
+          <div>
+            <label style="font-size:12px;color:#6B7280;display:block;margin-bottom:6px">{{ L.k13 }}</label>
+            <div style="position:relative">
+              <span class="msr" style="position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:19px;color:#9CA3AF;pointer-events:none">person</span>
+              <input value="{{ form.name }}" onChange="{{ onName }}" placeholder="{{ namePlaceholder }}" style="width:100%;padding:13px 14px 13px 44px;border-radius:13px;border:1px solid rgba(31,41,55,.12);background:rgba(31,41,55,.03);font-family:inherit;font-size:14px;outline:none;color:#1F2937"/>
+            </div>
+          </div>
+          <div class="nuv-reg-row" style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+            <div style="grid-column:1 / -1">
+              <label style="font-size:12px;color:#6B7280;display:block;margin-bottom:6px">{{ L.k16 }}</label>
+              <div style="position:relative">
+                <span class="msr" style="position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:19px;color:#9CA3AF;pointer-events:none">badge</span>
+                <input value="{{ form.studentId }}" onChange="{{ onStudentId }}" placeholder="6410XXXXX" style="width:100%;padding:13px 14px 13px 44px;border-radius:13px;border:1px solid rgba(31,41,55,.12);background:rgba(31,41,55,.03);font-family:inherit;font-size:14px;outline:none;color:#1F2937"/>
+              </div>
+            </div>
+            <div style="grid-column:1 / -1">
+              <label style="font-size:12px;color:#6B7280;display:block;margin-bottom:6px">{{ L.k20 }}</label>
+              <div style="position:relative">
+                <span class="msr" style="position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:19px;color:#9CA3AF;pointer-events:none">school</span>
+                <span class="msr" style="position:absolute;right:14px;top:50%;transform:translateY(-50%);font-size:20px;color:#9CA3AF;pointer-events:none">expand_more</span>
+                <select value="{{ form.faculty }}" onChange="{{ onFaculty }}" style="width:100%;padding:13px 36px 13px 44px;border-radius:13px;border:1px solid rgba(31,41,55,.12);background:rgba(31,41,55,.03);font-family:inherit;font-size:13.5px;text-overflow:ellipsis;color:{{ facultyColor }};outline:none;appearance:none;-webkit-appearance:none;cursor:pointer">
+                  <option value="">{{ facultyPlaceholder }}</option>
+                  <sc-for list="{{ facultyOptions }}" as="f" hint-placeholder-count="6">
+                    <option value="{{ f.value }}">{{ f.label }}</option>
+                  </sc-for>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div>
+            <label style="font-size:12px;color:#6B7280;display:block;margin-bottom:6px">{{ L.k7 }}</label>
+            <div style="position:relative">
+              <span class="msr" style="position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:19px;color:#9CA3AF;pointer-events:none">mail</span>
+              <input value="{{ form.email }}" onChange="{{ onEmailChange }}" placeholder="student@nu.ac.th" style="width:100%;padding:13px 14px 13px 44px;border-radius:13px;border:1px solid {{ emailBorder }};background:rgba(31,41,55,.03);font-family:inherit;font-size:14px;outline:none;color:#1F2937"/>
+            </div>
+            <sc-if value="{{ showEmailDomainErr }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;align-items:center;gap:6px;margin-top:6px;font-size:11.5px;color:#C2410C;line-height:1.6"><span class="msr" style="font-size:15px">error</span>{{ emailDomainErr }}</div>
+            </sc-if>
+            <sc-if value="{{ emailTaken }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:6px;font-size:11.5px;color:#C2410C;line-height:1.6"><span class="msr" style="font-size:15px">person_off</span>{{ emailTakenMsg }}<a href="#" onClick="{{ onGoLogin }}" style="color:#7C2FD9;text-decoration:underline">{{ emailTakenLink }}</a></div>
+            </sc-if>
+            <sc-if value="{{ emailChecking }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;align-items:center;gap:6px;margin-top:6px;font-size:11.5px;color:#9CA3AF;line-height:1.6"><span style="width:12px;height:12px;border-radius:50%;border:2px solid rgba(31,41,55,.15);border-top-color:#A774F7;animation:nuSpin 700ms linear infinite;display:inline-block"></span>{{ emailCheckingMsg }}</div>
+            </sc-if>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isStep2 }}" hint-placeholder-val="{{ false }}">
+        <div key="{{ stepKey }}" style="animation:{{ stepAnim }} 320ms cubic-bezier(.22,.9,.32,1) both;display:flex;flex-direction:column;gap:14px">
+          <div>
+            <label style="font-size:12px;color:#6B7280;display:block;margin-bottom:6px">{{ L.k17 }}</label>
+            <div style="position:relative">
+              <span class="msr" style="position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:19px;color:#9CA3AF;pointer-events:none">lock</span>
+              <input type="{{ pwType }}" value="{{ form.password }}" onChange="{{ onPassword }}" placeholder="{{ L.k4 }}" style="width:100%;padding:13px 46px 13px 44px;border-radius:13px;border:1px solid rgba(31,41,55,.12);background:rgba(31,41,55,.03);font-family:inherit;font-size:14px;outline:none;color:#1F2937"/>
+              <button onClick="{{ onTogglePw }}" title="{{ pwTitle }}" style-hover="background:rgba(31,41,55,.06)" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:9px;border:none;background:transparent;cursor:pointer;color:#9CA3AF;transition:all 200ms ease"><span class="msr" style="font-size:19px">{{ pwIcon }}</span></button>
+            </div>
+            <div style="display:flex;gap:5px;margin-top:8px">
+              <sc-for list="{{ strengthBars }}" as="b" hint-placeholder-count="4"><div style="{{ b }}"></div></sc-for>
+            </div>
+            <div style="font-size:11.5px;color:{{ strengthColor }};margin-top:5px">{{ strengthLabel }}</div>
+          </div>
+          <div>
+            <label style="font-size:12px;color:#6B7280;display:block;margin-bottom:6px">{{ L.k10 }}</label>
+            <div style="position:relative">
+              <span class="msr" style="position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:19px;color:#9CA3AF;pointer-events:none">lock_reset</span>
+              <input type="{{ pwType }}" value="{{ form.confirm }}" onChange="{{ onConfirm }}" placeholder="{{ L.k3 }}" style="width:100%;padding:13px 14px 13px 44px;border-radius:13px;border:1px solid {{ confirmBorder }};background:rgba(31,41,55,.03);font-family:inherit;font-size:14px;outline:none;color:#1F2937"/>
+            </div>
+            <sc-if value="{{ showMismatch }}" hint-placeholder-val="{{ false }}">
+              <div style="font-size:11.5px;color:#C2410C;margin-top:5px">{{ L.k6 }}</div>
+            </sc-if>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isStep3 }}" hint-placeholder-val="{{ false }}">
+        <div key="{{ stepKey }}" style="animation:{{ stepAnim }} 320ms cubic-bezier(.22,.9,.32,1) both;display:flex;flex-direction:column;gap:11px">
+          <sc-for list="{{ kyfOptions }}" as="k" hint-placeholder-count="2">
+            <div onClick="{{ k.onClick }}" style="{{ k.style }}">
+              <div style="{{ k.iconWrap }}"><span class="msr fill" style="font-size:21px;color:{{ k.iconColor }}">{{ k.icon }}</span></div>
+              <div style="flex:1;min-width:0">
+                <div style="font-weight:500;font-size:14px;color:#1F2937;line-height:1.45">{{ k.title }}</div>
+                <div style="font-size:12px;color:#6B7280;line-height:1.65;margin-top:2px">{{ k.desc }}</div>
+              </div>
+              <div style="{{ k.radio }}"><span class="msr" style="{{ k.radioTick }}">check</span></div>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ showFinish }}" hint-placeholder-val="{{ false }}">
+        <div onClick="{{ onToggleConsent }}" style="display:flex;align-items:flex-start;gap:10px;margin-top:22px;padding:13px 15px;border-radius:14px;background:rgba(255,255,255,.66);border:1px solid rgba(31,41,55,.09);cursor:pointer">
+          <div style="{{ consentBoxStyle }}"><span class="msr" style="font-size:15px;color:#fff;opacity:{{ consentCheckOpacity }}">check</span></div>
+          <div style="flex:1;min-width:0;font-size:12.5px;color:#4B5563;line-height:1.75">{{ consentLead }} <a href="#" onClick="{{ onOpenTerms }}" style="color:#7C2FD9;text-decoration:underline">{{ consentTerms }}</a> {{ consentAnd }} <a href="#" onClick="{{ onOpenPrivacy }}" style="color:#7C2FD9;text-decoration:underline">{{ consentPrivacy }}</a></div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ showBlockReason }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;align-items:center;gap:8px;margin-top:16px;padding:11px 14px;border-radius:12px;background:rgba(242,166,90,.12);border:1px solid rgba(242,166,90,.32)">
+          <span class="msr fill" style="font-size:18px;color:#B45309;flex-shrink:0">info</span>
+          <span style="font-size:12.5px;color:#B45309;line-height:1.6">{{ blockReason }}</span>
+        </div>
+      </sc-if>
+      <sc-if value="{{ hasSubmitError }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;align-items:center;gap:8px;margin-top:16px;padding:11px 14px;border-radius:12px;background:rgba(233,113,113,.1);border:1px solid rgba(233,113,113,.28)">
+          <span class="msr fill" style="font-size:18px;color:#C2410C;flex-shrink:0">error</span>
+          <span style="font-size:12.5px;color:#C2410C;line-height:1.6">{{ submitError }}</span>
+        </div>
+      </sc-if>
+      <div style="display:flex;gap:10px;margin-top:20px">
+        <sc-if value="{{ showBack }}" hint-placeholder-val="{{ false }}">
+          <button onClick="{{ onBack }}" style-hover="background:#fff;transform:translateY(-2px);box-shadow:0 8px 20px rgba(31,41,55,.1)" style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:13px;border-radius:14px;border:1px solid rgba(31,41,55,.12);background:rgba(255,255,255,.7);color:#1F2937;font-family:inherit;font-weight:500;font-size:14px;cursor:pointer;transition:all 220ms ease"><span class="msr" style="font-size:18px">arrow_back</span>{{ L.k18 }}</button>
+        </sc-if>
+        <sc-if value="{{ showNext }}" hint-placeholder-val="{{ true }}">
+          <button onClick="{{ onNext }}" disabled="{{ nextDisabled }}" title="{{ nextTitle }}" class="nuv-keep" style="{{ nextStyle }}">{{ L.k19 }}<span class="msr" style="font-size:18px">arrow_forward</span></button>
+        </sc-if>
+        <sc-if value="{{ showFinish }}" hint-placeholder-val="{{ false }}">
+          <button onClick="{{ onFinish }}" title="{{ consentHint }}" disabled="{{ loading }}" class="nuv-keep" style="{{ finishStyle }}">
+            <sc-if value="{{ notLoading }}" hint-placeholder-val="{{ true }}">
+              <span class="msr" style="font-size:18px">how_to_reg</span>{{ L.k14 }}
+            </sc-if>
+            <sc-if value="{{ loading }}" hint-placeholder-val="{{ false }}">
+              <span style="width:16px;height:16px;border-radius:50%;border:2px solid rgba(255,255,255,.35);border-top-color:#fff;animation:nuSpin 700ms linear infinite;display:inline-block"></span>{{ L.k5 }}
+            </sc-if>
+          </button>
+        </sc-if>
+      </div>
+
+      <div style="text-align:center;margin-top:22px;font-size:12.5px;color:#6B7280">{{ L.k8 }} <a onClick="{{ onLogin }}" style="cursor:pointer;color:#A774F7;font-weight:500">{{ L.k15 }}</a></div>
+    </div>
+  </div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+var REG_LANG = "th";
+const REG_EN = {"กรุณาใช้อีเมลมหาวิทยาลัย @nu.ac.th เท่านั้น":"Use your university email @nu.ac.th only","อีเมลนี้มีบัญชีอยู่แล้ว":"This email already has an account —","กำลังตรวจสอบอีเมล...":"Checking email...","ณัฐชา วิริยะกุล":"Natcha Wiriyakul","ฉันได้อ่านและยอมรับ":"I have read and accept the","ข้อกำหนดการใช้งาน":"Terms of use","และ":"and","นโยบายความเป็นส่วนตัว":"Privacy policy","กรุณายอมรับข้อกำหนดก่อนสมัคร":"Please accept the terms before signing up","เลือกคณะของคุณ":"Select your faculty","เริ่มต้นเส้นทาง":"Start your","จิตอาสาของคุณ":"volunteer journey","สมัครเพียงไม่กี่ขั้นตอน แล้วเข้าร่วมกิจกรรมได้ทันที":"Sign up in a few steps and join activities right away","ใช้อีเมล @nu.ac.th ของมหาวิทยาลัยในการสมัคร":"Register with your @nu.ac.th university email","ชื่อ-นามสกุล":"Full name","รหัสนิสิต":"Student ID","คณะ":"Faculty","อีเมลมหาวิทยาลัย":"University email","รหัสผ่าน":"Password","ยืนยันรหัสผ่าน":"Confirm password","รหัสผ่านไม่ตรงกัน":"Passwords do not match","ก่อนหน้า":"Back","ถัดไป":"Next","สมัครสมาชิก":"Create account","กำลังสร้างบัญชี...":"Creating account...","มีบัญชีอยู่แล้ว?":"Already have an account?","เข้าสู่ระบบ":"Sign in","คณะวิทยาศาสตร์":"Faculty of Science","อย่างน้อย 8 ตัวอักษร":"At least 8 characters","พิมพ์รหัสผ่านอีกครั้ง":"Re-enter your password","ข้อมูลส่วนตัว":"Personal info","บอกเราหน่อยว่าคุณคือใคร":"Tell us who you are","ตั้งรหัสผ่าน":"Set a password","เลือกรหัสผ่านที่คาดเดายาก":"Pick something hard to guess","สถานะกู้ยืม กยศ.":"SLF loan status","เพื่อให้ระบบติดตามชั่วโมงได้ถูกต้อง":"So hours are tracked correctly","อ่อน — ควรยาวอย่างน้อย 8 ตัว":"Weak — use at least 8 characters","พอใช้ — เพิ่มตัวเลขหรือตัวพิมพ์ใหญ่":"Fair — add numbers or capitals","ดี — ปลอดภัยพอสมควร":"Good — reasonably secure","แข็งแรงมาก":"Very strong","เป็นผู้กู้ยืม กยศ.":"I am an SLF loan recipient","ระบบจะติดตามชั่วโมงจิตอาสาเทียบเป้าหมาย 36 ชม./ปี":"Your hours are tracked against the 36 hrs/year goal","ไม่ได้เป็นผู้กู้ยืม กยศ.":"Not an SLF loan recipient","เข้าร่วมกิจกรรมและสะสมชั่วโมงได้ตามปกติ":"You can still join activities and earn hours","ขั้นที่ ":"Step "," จาก 3":" of 3","ชื่อ รหัสนิสิต คณะ และอีเมล":"Name, student ID, faculty, and email","สำหรับเข้าสู่ระบบครั้งต่อไป":"For signing in next time","สถานะ กยศ.":"SLF status","เพื่อติดตามเกณฑ์ชั่วโมงจิตอาสา":"To track your volunteer hour requirement","ซ่อนรหัสผ่าน":"Hide password","แสดงรหัสผ่าน":"Show password"};
+function T(s){ return REG_LANG === "en" ? (REG_EN[s] || s) : s; }
+class Component extends DCLogic {
+  state = { showPw:false, loading:false, emailTaken:false, checking:false };
+  componentWillUnmount(){ clearTimeout(this._t); clearTimeout(this._eT); }
+  emailOk(){ return /@nu\.ac\.th$/i.test(String((this.props.form||{}).email||'').trim()); }
+  /* ตรวจอีเมลซ้ำแบบ debounce ทันทีที่พิมพ์ครบโดเมน */
+  checkEmailTaken(email){
+    clearTimeout(this._eT);
+    if(!/@nu\.ac\.th$/i.test(String(email||'').trim())){ this.setState({emailTaken:false, checking:false}); return; }
+    this.setState({checking:true});
+    this._eT = setTimeout(()=>{
+      if(!(window.NUVApi && NUVApi.checkEmail)){ this.setState({checking:false}); return; }
+      NUVApi.checkEmail(email)
+        .then(r=>this.setState({emailTaken:!!r.exists, checking:false}))
+        .catch(()=>this.setState({checking:false}));
+    }, 450);
+  }
+  finish = ()=>{
+    if(this.state.loading) return;
+    if(!this.state.consent || !this.emailOk() || this.state.emailTaken) return;
+    /* ผลจริงมาจาก API ฝั่งแอป — ไม่ตั้ง timer ปลอมอีก */
+    if(this.props.onFinish) this.props.onFinish();
+  };
+  componentDidUpdate(prev){
+    const a = prev.step||1, b = this.props.step||1;
+    if(a !== b) this._dir = b > a ? 'nuvStepFwd' : 'nuvStepBack';
+  }
+  i18nVals(){
+    const en = this.props.lang === "en";
+    return {L: {
+      k1: en ? "Sign up in a few steps and join activities right away" : "สมัครเพียงไม่กี่ขั้นตอน แล้วเข้าร่วมกิจกรรมได้ทันที",
+      k2: en ? "Register with your @nu.ac.th university email" : "ใช้อีเมล @nu.ac.th ของมหาวิทยาลัยในการสมัคร",
+      k3: en ? "Re-enter your password" : "พิมพ์รหัสผ่านอีกครั้ง",
+      k4: en ? "At least 8 characters" : "อย่างน้อย 8 ตัวอักษร",
+      k5: en ? "Creating account..." : "กำลังสร้างบัญชี...",
+      k6: en ? "Passwords do not match" : "รหัสผ่านไม่ตรงกัน",
+      k7: en ? "University email" : "อีเมลมหาวิทยาลัย",
+      k8: en ? "Already have an account?" : "มีบัญชีอยู่แล้ว?",
+      k9: en ? "Start your" : "เริ่มต้นเส้นทาง",
+      k10: en ? "Confirm password" : "ยืนยันรหัสผ่าน",
+      k11: en ? "Faculty of Science" : "คณะวิทยาศาสตร์",
+      k12: en ? "volunteer journey" : "จิตอาสาของคุณ",
+      k13: en ? "Full name" : "ชื่อ-นามสกุล",
+      k14: en ? "Create account" : "สมัครสมาชิก",
+      k15: en ? "Sign in" : "เข้าสู่ระบบ",
+      k16: en ? "Student ID" : "รหัสนิสิต",
+      k17: en ? "Password" : "รหัสผ่าน",
+      k18: en ? "Back" : "ก่อนหน้า",
+      k19: en ? "Next" : "ถัดไป",
+      k20: en ? "Faculty" : "คณะ",
+    }};
+  }
+  renderVals(){
+    REG_LANG = this.props.lang === 'en' ? 'en' : 'th';
+    const p = this.props;
+    const step = p.step || 1;
+    const form = p.form || {};
+    const set = (k)=>(e)=> p.onField && p.onField(k, e.target.value);
+
+    const TITLES = [
+      {t:T('ข้อมูลส่วนตัว'), d:T('บอกเราหน่อยว่าคุณคือใคร')},
+      {t:T('ตั้งรหัสผ่าน'), d:T('เลือกรหัสผ่านที่คาดเดายาก')},
+      {t:T('สถานะกู้ยืม กยศ.'), d:T('เพื่อให้ระบบติดตามชั่วโมงได้ถูกต้อง')},
+    ];
+
+    const pw = form.password || '';
+    let score = 0;
+    if(pw.length >= 8) score++;
+    if(/[A-Z]/.test(pw) || /[ก-๙]/.test(pw)) score++;
+    if(/[0-9]/.test(pw)) score++;
+    if(/[^A-Za-z0-9]/.test(pw)) score++;
+    const SC = [
+      {label:'', color:'#9CA3AF', fill:'rgba(31,41,55,.1)'},
+      {label:T('อ่อน — ควรยาวอย่างน้อย 8 ตัว'), color:'#C2410C', fill:'#E97171'},
+      {label:T('พอใช้ — เพิ่มตัวเลขหรือตัวพิมพ์ใหญ่'), color:'#B45309', fill:'#F5A623'},
+      {label:T('ดี — ปลอดภัยพอสมควร'), color:'#1D4ED8', fill:'#7AB8FF'},
+      {label:T('แข็งแรงมาก'), color:'#0F8A63', fill:'#63D2A1'},
+    ];
+    const sc = SC[pw ? score : 0];
+    const strengthBars = [0,1,2,3].map(i=>
+      `flex:1;height:5px;border-radius:4px;transition:background 260ms ease;background:${pw && i < score ? sc.fill : 'rgba(31,41,55,.1)'}`);
+
+    const mismatch = !!(form.confirm && form.password !== form.confirm);
+
+    const KYF = [
+      {id:'yes', icon:'account_balance', iconColor:'#A774F7', title:T('เป็นผู้กู้ยืม กยศ.'), desc:T('ระบบจะติดตามชั่วโมงจิตอาสาเทียบเป้าหมาย 36 ชม./ปี')},
+      {id:'no', icon:'person', iconColor:'#7AB8FF', title:T('ไม่ได้เป็นผู้กู้ยืม กยศ.'), desc:T('เข้าร่วมกิจกรรมและสะสมชั่วโมงได้ตามปกติ')},
+    ];
+    const kyfOptions = KYF.map(k=>{
+      const on = form.kyf === k.id;
+      return {
+        ...k,
+        style:`display:flex;align-items:center;gap:13px;cursor:pointer;padding:16px;border-radius:16px;transition:all 220ms ease;border:1px solid ${on?'#A774F7':'rgba(31,41,55,.1)'};background:${on?'rgba(167,116,247,.08)':'rgba(255,255,255,.7)'};box-shadow:${on?'0 8px 22px rgba(167,116,247,.16)':'none'}`,
+        iconWrap:`width:40px;height:40px;border-radius:13px;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:${k.iconColor}1f`,
+        radio:`width:22px;height:22px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all 220ms ease;border:1px solid ${on?'transparent':'rgba(31,41,55,.2)'};background:${on?'linear-gradient(135deg,#E97171,#A774F7)':'transparent'}`,
+        radioTick:`font-size:15px;color:#fff;opacity:${on?1:0};transition:opacity 200ms ease`,
+        onClick: ()=> p.onField && p.onField('kyf', k.id),
+      };
+    });
+
+    const emailStr = String((p.form||{}).email||'').trim();
+    const domainBad = !!(emailStr && !this.emailOk());
+    const emailBlocked = !this.emailOk() || this.state.emailTaken || this.state.checking;
+    return {
+      ...this.i18nVals(),
+      logoMark: p.logoMark||'NU', form, step,
+      stepTitle: TITLES[step-1].t, stepDesc: TITLES[step-1].d,
+      stepCount: T('ขั้นที่ ') + step + T(' จาก 3'),
+      stepKey: 'step-' + step, stepAnim: this._dir || 'nuvStepFwd',
+      steps: [1,2,3].map(n=>({
+        style:`flex:1;height:6px;border-radius:4px;transition:background 300ms ease;background:${n<=step?'linear-gradient(90deg,#E97171,#A774F7)':'rgba(31,41,55,.1)'}`,
+      })),
+      asideSteps: [
+        {icon:'person', title:T('ข้อมูลส่วนตัว'), desc:T('ชื่อ รหัสนิสิต คณะ และอีเมล')},
+        {icon:'lock', title:T('ตั้งรหัสผ่าน'), desc:T('สำหรับเข้าสู่ระบบครั้งต่อไป')},
+        {icon:'account_balance', title:T('สถานะ กยศ.'), desc:T('เพื่อติดตามเกณฑ์ชั่วโมงจิตอาสา')},
+      ].map((a,i)=>{
+        const done = i+1 < step, active = i+1 === step;
+        return {
+          ...a,
+          icon: done ? 'check' : a.icon,
+          dotStyle:`width:32px;height:32px;border-radius:11px;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all 260ms ease;background:${active||done?'rgba(255,255,255,.28)':'rgba(255,255,255,.12)'};border:1px solid ${active?'rgba(255,255,255,.65)':'rgba(255,255,255,.2)'}`,
+          iconStyle:`font-size:18px;color:#fff;opacity:${active||done?1:.6}`,
+          textStyle:`transition:opacity 260ms ease;opacity:${active||done?1:.55}`,
+        };
+      }),
+      isStep1: step===1, isStep2: step===2, isStep3: step===3,
+      consent: !!this.state.consent,
+      onToggleConsent: ()=>this.setState(s=>{ const next=!s.consent; if(p.onField) p.onField('acceptTerms', next); return {consent:next}; }),
+      consentBoxStyle: 'width:21px;height:21px;border-radius:7px;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all 200ms ease;border:1.5px solid '
+        + (this.state.consent ? 'transparent' : 'rgba(31,41,55,.25)')
+        + ';background:' + (this.state.consent ? 'linear-gradient(135deg,#E97171,#A774F7)' : 'rgba(255,255,255,.8)'),
+      consentCheckOpacity: this.state.consent ? '1' : '0',
+      consentLead: T('ฉันได้อ่านและยอมรับ'),
+      consentTerms: T('ข้อกำหนดการใช้งาน'),
+      consentAnd: T('และ'),
+      consentPrivacy: T('นโยบายความเป็นส่วนตัว'),
+      consentHint: (this.state.emailTaken || !this.emailOk())
+        ? (this.state.emailTaken ? T('อีเมลนี้มีบัญชีอยู่แล้ว') : T('กรุณาใช้อีเมลมหาวิทยาลัย @nu.ac.th เท่านั้น'))
+        : (this.state.consent ? T('สมัครสมาชิก') : T('กรุณายอมรับข้อกำหนดก่อนสมัคร')),
+      onOpenTerms: (e)=>{ e.preventDefault(); p.onOpenTerms && p.onOpenTerms(); },
+      onOpenPrivacy: (e)=>{ e.preventDefault(); p.onOpenPrivacy && p.onOpenPrivacy(); },
+      showBack: step>1, showNext: step<3, showFinish: step===3,
+      pwType: this.state.showPw ? 'text' : 'password',
+      pwIcon: this.state.showPw ? 'visibility_off' : 'visibility',
+      pwTitle: this.state.showPw ? T('ซ่อนรหัสผ่าน') : T('แสดงรหัสผ่าน'),
+      onTogglePw: ()=>this.setState(s=>({showPw:!s.showPw})),
+      strengthBars, strengthLabel: sc.label, strengthColor: sc.color,
+      showMismatch: mismatch,
+      confirmBorder: mismatch ? 'rgba(233,113,113,.5)' : 'rgba(31,41,55,.12)',
+      kyfOptions,
+      onName:set('name'), onStudentId:set('studentId'), onFaculty:set('faculty'), onEmail:set('email'),
+      onEmailChange:(e)=>{ const v=e.target.value; if(p.onField) p.onField('email', v); this.checkEmailTaken(v); },
+      emailBorder: (this.state.emailTaken || (String((p.form||{}).email||'').trim() && !this.emailOk()))
+        ? 'rgba(233,113,113,.5)' : 'rgba(31,41,55,.12)',
+      showEmailDomainErr: !!(String((p.form||{}).email||'').trim() && !this.emailOk()),
+      emailDomainErr: T('กรุณาใช้อีเมลมหาวิทยาลัย @nu.ac.th เท่านั้น'),
+      emailTaken: !!this.state.emailTaken,
+      emailTakenMsg: T('อีเมลนี้มีบัญชีอยู่แล้ว'),
+      emailTakenLink: T('เข้าสู่ระบบ'),
+      onGoLogin: (e)=>{ e.preventDefault(); p.onLogin && p.onLogin(); },
+      emailChecking: !!this.state.checking,
+      emailCheckingMsg: T('กำลังตรวจสอบอีเมล...'),
+      blockReason: this.state.emailTaken ? T('อีเมลนี้มีบัญชีอยู่แล้ว')
+        : (!this.emailOk() ? T('กรุณาใช้อีเมลมหาวิทยาลัย @nu.ac.th เท่านั้น')
+        : (!this.state.consent ? T('กรุณายอมรับข้อกำหนดก่อนสมัคร') : '')),
+      showBlockReason: step===3 && !p.submitError && !!(this.state.emailTaken || !this.emailOk() || !this.state.consent),
+      submitError: p.submitError||'', hasSubmitError: !!p.submitError,
+      facultyOptions: (this.props.faculties||[]).map(f=>({value:f.name, label:f.label||f.name})),
+      facultyPlaceholder: T('เลือกคณะของคุณ'),
+      namePlaceholder: T('ณัฐชา วิริยะกุล'),
+      facultyColor: (this.props.form||{}).faculty ? '#1F2937' : '#9CA3AF',
+      onPassword:set('password'), onConfirm:set('confirm'),
+      loading: !!p.loading, notLoading: !p.loading,
+      finishStyle: (this.state.consent && this.emailOk() && !this.state.emailTaken && !p.loading)
+        ? 'flex:2;display:flex;align-items:center;justify-content:center;gap:7px;padding:13px;border-radius:14px;border:none;background:linear-gradient(135deg,#E97171,#A774F7);color:#fff;font-family:inherit;font-weight:500;font-size:14px;box-shadow:0 8px 22px rgba(167,116,247,.34);transition:all 220ms ease;cursor:pointer;opacity:1'
+        : 'flex:2;display:flex;align-items:center;justify-content:center;gap:7px;padding:13px;border-radius:14px;border:none;background:rgba(31,41,55,.14);color:#9CA3AF;font-family:inherit;font-weight:500;font-size:14px;transition:all 220ms ease;cursor:' + (this.state.loading?'wait':'not-allowed') + ';opacity:1',
+      onNext: ()=>{ if(step===1 && emailBlocked) return; p.onNext && p.onNext(); },
+      nextStyle: (step===1 && emailBlocked)
+        ? 'flex:2;display:flex;align-items:center;justify-content:center;gap:7px;padding:13px;border-radius:14px;border:none;background:rgba(31,41,55,.14);color:#9CA3AF;font-family:inherit;font-weight:500;font-size:14px;cursor:not-allowed;transition:all 220ms ease'
+        : 'flex:2;display:flex;align-items:center;justify-content:center;gap:7px;padding:13px;border-radius:14px;border:none;background:linear-gradient(135deg,#E97171,#A774F7);color:#fff;font-family:inherit;font-weight:500;font-size:14px;cursor:pointer;box-shadow:0 8px 22px rgba(167,116,247,.34);transition:all 220ms ease',
+      nextDisabled: (step===1 && emailBlocked),
+      nextTitle: (step===1 && emailBlocked) ? (this.state.emailTaken ? T('อีเมลนี้มีบัญชีอยู่แล้ว') : T('กรุณาใช้อีเมลมหาวิทยาลัย @nu.ac.th เท่านั้น')) : T('ถัดไป'), onBack: ()=> p.onBack && p.onBack(), onFinish: this.finish,
+      onLogin: ()=> p.onLogin && p.onLogin(),
+    };
+  }
+}
+
+</script>
+</body>
+</html>

@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+
+<helmet data-dc-atomics><style>
+html{scroll-behavior:smooth}
+.nuv-chip{cursor:pointer;transition:.15s}
+.nuv-card{transition:transform .2s,box-shadow .2s}
+.nuv-card:hover{transform:translateY(-3px);box-shadow:0 10px 30px rgba(30,37,48,.12)}
+@media (max-width:1080px){.nuv-land-links{display:none !important}}
+@media (max-width:820px){.nuv-land-clock{display:none !important}}
+@media (max-width:640px){
+  .nuv-land-authgroup{display:none !important}
+  .nuv-land-burger{display:inline-flex !important}
+}
+@media (max-width:900px){
+  .nuv-slider{height:440px !important}
+  .nuv-slide-panel{left:16px !important;right:16px !important;max-width:none !important;top:auto !important;bottom:80px !important;transform:none !important;padding:22px !important}
+  .nuv-slide-panel > div:nth-child(2){font-size:24px !important}
+  .nuv-hero-grid{grid-template-columns:1fr !important;gap:28px !important}
+  .nuv-why-grid{grid-template-columns:1fr !important;gap:26px !important}
+  .nuv-foot{grid-template-columns:1fr 1fr !important}
+}
+@media (max-width:760px){
+  .nuv-land-navwrap{padding:10px 10px 0 !important}
+  .nuv-land-stats{grid-template-columns:1fr !important}
+  .nuv-why-cards > div{margin-top:0 !important}
+  .nuv-hero-float{left:auto !important;right:12px !important;bottom:-16px !important}
+  .nuv-foot{grid-template-columns:1fr !important;gap:22px !important;padding:26px 20px !important}
+  .nuv-land-nav{padding:9px 10px 9px 12px !important;border-radius:16px !important}
+  .nuv-land-brandtext{display:none !important}
+  .nuv-land-hero{padding:34px 20px 22px !important}
+  .nuv-land-hero h1{font-size:30px !important}
+  .nuv-land-hero p{font-size:14.5px !important;margin-bottom:22px !important}
+  .nuv-land-body{padding:8px 20px 56px !important}
+  .nuv-land-cta{padding:32px 20px 50px !important}
+  .nuv-land-ctacard{padding:26px 22px !important;display:block !important}
+  .nuv-land-authbtn{padding:9px 14px !important;font-size:12.5px !important}
+  .nuv-land-stats{gap:10px !important}
+  .nuv-land-stats > div{min-width:0 !important;flex:1 1 calc(50% - 5px) !important;padding:14px !important;border-radius:18px !important}
+  .nuv-land-stats > div > div:first-child{font-size:22px !important}
+  .nuv-land-stats > div > div:last-child{font-size:11.5px !important}
+  .nuv-land-grid{grid-template-columns:1fr !important;gap:14px !important}
+  .nuv-land-filters{flex-direction:column !important;align-items:stretch !important}
+  .nuv-land-chips{flex-wrap:wrap !important}
+}
+@media (max-width:420px){
+  .nuv-land-hero h1{font-size:25px !important}
+  .nuv-land-authbtn{padding:9px 12px !important}
+  .nuv-land-stats > div{flex:1 1 100% !important}
+}
+</style></helmet>
+<div style="font-family:'Mitr','Noto Sans Thai','Inter',sans-serif">
+  <div ref="{{ sentinelRef }}" style="height:1px;width:100%"></div>
+  <div class="nuv-land-navwrap" style="{{ navWrapStyle }}">
+    <div class="nuv-land-nav" style="{{ navStyle }}">
+      <div style="display:flex;align-items:center;gap:10px;flex-shrink:0">
+        <div class="nuv-keep" style="width:38px;height:38px;border-radius:12px;flex-shrink:0;background:linear-gradient(135deg,#E97171,#A774F7);display:flex;align-items:center;justify-content:center;box-shadow:0 5px 14px rgba(167,116,247,.35)"><svg viewBox="0 0 24 24" fill="none" style="width:22px;height:22px;display:block"><path d="M12 9.4c-1.25-2.6-5.2-2.3-5.2.95 0 2.3 3 4.3 5.2 5.75 2.2-1.45 5.2-3.45 5.2-5.75 0-3.25-3.95-3.55-5.2-.95Z" fill="#fff"/><path d="M3.4 15.2c0 4.2 3.95 6.5 8.6 6.5s8.6-2.3 8.6-6.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round" opacity=".8"/></svg></div>
+        <div class="nuv-land-brandtext" style="font-weight:600;font-size:17px;line-height:1.7;color:#1F2937;white-space:nowrap">NU Volunteer</div>
+      </div>
+      <div style="display:flex;gap:9px;align-items:center;flex-shrink:0">
+        <div class="nuv-land-clock" style="text-align:right;line-height:1.35;margin-right:2px">
+          <div style="font-size:12.5px;color:#4B5563;font-weight:500;white-space:nowrap">{{ clock }}</div>
+          <div style="font-size:10.5px;color:#9CA3AF;white-space:nowrap">{{ dateLabel }}</div>
+        </div>
+        <button onClick="{{ onToggleLang }}" title="{{ langTitle }}" style-hover="background:rgba(31,41,55,.06)" style="display:inline-flex;align-items:center;justify-content:center;min-width:36px;height:36px;padding:0 9px;border-radius:11px;border:1px solid rgba(31,41,55,.1);background:rgba(255,255,255,.6);cursor:pointer;color:#6B7280;font-family:inherit;font-size:12px;font-weight:600;letter-spacing:.03em;transition:all 220ms ease">{{ langLabel }}</button>
+        <button onClick="{{ onToggleTheme }}" title="{{ themeTitle }}" style-hover="background:rgba(31,41,55,.06)" style="display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:11px;border:1px solid rgba(31,41,55,.1);background:rgba(255,255,255,.6);cursor:pointer;color:#6B7280;transition:all 220ms ease;flex-shrink:0"><span class="msr" style="font-size:19px">{{ themeIcon }}</span></button>
+        <div class="nuv-land-authgroup" style="display:flex;gap:9px;align-items:center">
+        <button onClick="{{ onLogin }}" class="nuv-land-authbtn" style="background:rgba(255,255,255,.7);color:#1F2937;border:1px solid rgba(31,41,55,.1);padding:10px 20px;border-radius:13px;font-family:inherit;font-weight:500;font-size:13.5px;line-height:1.7;cursor:pointer;white-space:nowrap;transition:all 220ms ease" style-hover="background:#fff;transform:translateY(-1px);box-shadow:0 6px 16px rgba(31,41,55,.1)">{{ L.k11 }}</button>
+        <button onClick="{{ onRegister }}" class="nuv-land-authbtn nuv-keep" style="background:linear-gradient(135deg,#E97171,#A774F7);color:#fff;border:none;padding:10px 22px;border-radius:13px;font-family:inherit;font-weight:500;font-size:13.5px;line-height:1.7;cursor:pointer;box-shadow:0 6px 18px rgba(167,116,247,.32);white-space:nowrap;transition:all 220ms ease" style-hover="transform:translateY(-1px);box-shadow:0 10px 24px rgba(167,116,247,.42)">{{ L.k12 }}</button>
+        </div>
+        <button onClick="{{ onToggleMenu }}" title="{{ L.k17 }}" class="nuv-land-burger" style-hover="background:rgba(31,41,55,.06)" style="display:none;align-items:center;justify-content:center;width:36px;height:36px;border-radius:11px;border:1px solid rgba(31,41,55,.1);background:rgba(255,255,255,.7);cursor:pointer;color:#4B5563;transition:all 220ms ease;flex-shrink:0"><span class="msr" style="font-size:20px">{{ menuIcon }}</span></button>
+      </div>
+    </div>
+    <sc-if value="{{ menuOpen }}" hint-placeholder-val="{{ false }}">
+      <div style="margin:10px 0 0;padding:14px;border-radius:18px;background:rgba(255,255,255,.96);backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);border:1px solid rgba(31,41,55,.08);box-shadow:0 14px 36px rgba(31,41,55,.16);pointer-events:auto;display:flex;flex-direction:column;gap:9px">
+        <div style="display:flex;justify-content:space-between;align-items:center;font-size:12px;color:#9CA3AF;padding:0 2px 4px">
+          <span>{{ clock }}</span><span>{{ dateLabel }}</span>
+        </div>
+        <button onClick="{{ onLogin }}" style="width:100%;padding:12px;border-radius:13px;border:1px solid rgba(31,41,55,.12);background:rgba(255,255,255,.8);color:#1F2937;font-family:inherit;font-weight:500;font-size:13.5px;cursor:pointer">{{ L.k11 }}</button>
+        <button onClick="{{ onRegister }}" class="nuv-keep" style="width:100%;padding:12px;border-radius:13px;border:none;background:linear-gradient(135deg,#E97171,#A774F7);color:#fff;font-family:inherit;font-weight:500;font-size:13.5px;cursor:pointer;box-shadow:0 6px 18px rgba(167,116,247,.32)">{{ L.k12 }}</button>
+      </div>
+    </sc-if>
+  </div>
+
+  <div class="nuv-land-hero" style="max-width:1180px;margin:0 auto;padding:20px 40px 26px">
+    <div class="nuv-slider nuv-keep" style="position:relative;border-radius:28px;overflow:hidden;height:400px;box-shadow:0 24px 60px rgba(31,41,55,.2)">
+      <sc-for list="{{ slides }}" as="sl" hint-placeholder-count="3">
+        <div style="{{ sl.wrapStyle }}">
+          <img src="{{ sl.photo }}" alt="" class="nuv-noinv" style="width:100%;height:100%;object-fit:cover;display:block"/>
+          <div style="position:absolute;inset:0;background:linear-gradient(100deg,rgba(20,16,28,.72) 0%,rgba(20,16,28,.42) 46%,rgba(20,16,28,.08) 72%)"></div>
+        </div>
+      </sc-for>
+
+      <div class="nuv-slide-panel" style="position:absolute;left:36px;top:50%;transform:translateY(-50%);max-width:400px;padding:28px 30px;border-radius:22px;background:rgba(255,255,255,.14);backdrop-filter:blur(22px) saturate(160%);-webkit-backdrop-filter:blur(22px) saturate(160%);border:1px solid rgba(255,255,255,.28);box-shadow:0 18px 50px rgba(0,0,0,.24)">
+        <div style="display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:999px;background:rgba(255,255,255,.2);color:#fff;font-size:11.5px;font-weight:500;margin-bottom:14px"><span class="msr fill" style="font-size:14px">{{ activeSlide.icon }}</span>{{ activeSlide.tag }}</div>
+        <div style="font-size:30px;font-weight:600;color:#fff;line-height:1.32;text-shadow:0 2px 14px rgba(0,0,0,.35)">{{ activeSlide.title }}</div>
+        <div style="font-size:13.5px;line-height:1.8;color:rgba(255,255,255,.88);margin-top:10px">{{ activeSlide.desc }}</div>
+        <div style="display:flex;gap:10px;margin-top:20px;flex-wrap:wrap">
+          <button onClick="{{ onRegister }}" style="display:flex;align-items:center;gap:7px;background:linear-gradient(135deg,#E97171,#A774F7);color:#fff;border:none;padding:11px 22px;border-radius:13px;font-family:inherit;font-weight:500;font-size:13.5px;cursor:pointer;box-shadow:0 8px 22px rgba(167,116,247,.4);transition:all 220ms ease" style-hover="transform:translateY(-2px);box-shadow:0 14px 30px rgba(167,116,247,.5)">{{ L.k14 }}</button>
+          <a href="#nuv-activities" style="display:flex;align-items:center;gap:6px;padding:11px 20px;border-radius:13px;border:1px solid rgba(255,255,255,.35);background:rgba(255,255,255,.14);color:#fff;font-size:13.5px;transition:all 220ms ease" style-hover="background:rgba(255,255,255,.26)">{{ L.k13 }}</a>
+        </div>
+      </div>
+
+      <button onClick="{{ onSlidePrev }}" title="{{ L.k15 }}" style-hover="background:rgba(255,255,255,.95)" style="position:absolute;right:74px;bottom:26px;display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:50%;border:none;background:rgba(255,255,255,.8);color:#1F2937;cursor:pointer;transition:all 220ms ease;box-shadow:0 6px 18px rgba(0,0,0,.2)"><span class="msr" style="font-size:20px">chevron_left</span></button>
+      <button onClick="{{ onSlideNext }}" title="{{ L.k16 }}" style-hover="background:rgba(255,255,255,.95)" style="position:absolute;right:26px;bottom:26px;display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:50%;border:none;background:rgba(255,255,255,.8);color:#1F2937;cursor:pointer;transition:all 220ms ease;box-shadow:0 6px 18px rgba(0,0,0,.2)"><span class="msr" style="font-size:20px">chevron_right</span></button>
+
+      <div style="position:absolute;left:36px;bottom:26px;display:flex;gap:7px">
+        <sc-for list="{{ slideDots }}" as="d" hint-placeholder-count="3">
+          <div onClick="{{ d.onClick }}" style="{{ d.style }}"></div>
+        </sc-for>
+      </div>
+    </div>
+
+    <div class="nuv-land-stats" style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:26px">
+      <sc-for list="{{ statCards }}" as="s" hint-placeholder-count="3">
+        <div style="background:rgba(255,255,255,.72);backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);border:1px solid rgba(255,255,255,.85);border-radius:24px;box-shadow:0 12px 34px rgba(31,41,55,.09), inset 0 1px 0 rgba(255,255,255,.7);padding:22px;text-align:center;transition:all 300ms ease" style-hover="transform:translateY(-4px);box-shadow:0 24px 56px rgba(31,41,55,.13)">
+          <div style="width:46px;height:46px;border-radius:50%;margin:0 auto;display:flex;align-items:center;justify-content:center;background:{{ s.iconBg }}"><span class="msr fill" style="font-size:23px;color:{{ s.color }}">{{ s.icon }}</span></div>
+          <div style="font-size:27px;font-weight:600;color:#1F2937;margin-top:11px;line-height:1.3">{{ s.value }}</div>
+          <div style="font-size:12.5px;color:#6B7280;margin-top:2px">{{ s.label }}</div>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+
+  <div id="nuv-activities" class="nuv-land-body" style="max-width:1180px;margin:0 auto;padding:34px 40px 20px;scroll-margin-top:90px">
+    <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-bottom:20px">
+      <div>
+        <div style="font-size:22px;font-weight:600;color:#1F2937;line-height:1.4">{{ L.k7 }}</div>
+        <div style="font-size:13px;color:#6B7280;margin-top:2px">{{ L.k4 }}</div>
+      </div>
+      <button onClick="{{ onToggleShowAll }}" style="display:flex;align-items:center;gap:5px;padding:8px 14px;border-radius:11px;border:1px solid rgba(31,41,55,.12);background:rgba(255,255,255,.7);font-family:inherit;font-size:13px;color:#A774F7;cursor:pointer;transition:all 220ms ease" style-hover="background:#fff;transform:translateY(-2px);box-shadow:0 8px 20px rgba(31,41,55,.1)">{{ showAllLabel }}<span class="msr" style="font-size:17px">{{ showAllIcon }}</span></button>
+    </div>
+
+    <div id="nuv-cats" class="nuv-land-filters" style="display:flex;gap:14px;align-items:center;margin-bottom:22px;flex-wrap:wrap;scroll-margin-top:90px">
+      <div style="position:relative;flex:1;min-width:220px">
+        <span class="msr" style="position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:20px;color:#9CA3AF;pointer-events:none">search</span>
+        <input value="{{ search }}" onChange="{{ onSearchChange }}" placeholder="{{ L.k8 }}" style="width:100%;padding:12px 16px 12px 44px;border-radius:14px;border:1px solid rgba(31,41,55,.1);background:rgba(255,255,255,.8);font-family:inherit;font-size:14px;outline:none;color:#1F2937"/>
+      </div>
+      <div class="nuv-land-chips" style="display:flex;gap:8px;flex-wrap:wrap">
+        <sc-for list="{{ chips }}" as="c" hint-placeholder-count="7">
+          <div class="nuv-chip" onClick="{{ c.onClick }}" style="{{ c.style }}">{{ c.label }}</div>
+        </sc-for>
+      </div>
+    </div>
+
+    <sc-if value="{{ !hasActivities }}" hint-placeholder-val="{{ false }}">
+      <div style="text-align:center;padding:56px 20px;background:rgba(255,255,255,.72);backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);border:1px solid rgba(255,255,255,.85);border-radius:24px;box-shadow:0 12px 34px rgba(31,41,55,.09), inset 0 1px 0 rgba(255,255,255,.7)">
+        <span class="msr" style="font-size:42px;color:#CBD5E1">search_off</span>
+        <div style="font-size:13.5px;color:#9CA3AF;margin-top:8px">{{ L.k5 }}</div>
+      </div>
+    </sc-if>
+
+    <div class="nuv-land-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:20px">
+      <sc-for list="{{ activities }}" as="a" hint-placeholder-count="6">
+        <div class="nuv-card" style="background:rgba(255,255,255,.72);backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);border:1px solid rgba(255,255,255,.85);border-radius:22px;box-shadow:0 12px 34px rgba(31,41,55,.09), inset 0 1px 0 rgba(255,255,255,.7);padding:12px;display:flex;flex-direction:column">
+          <div style="position:relative;border-radius:16px;overflow:hidden">
+            <img src="{{ a.photo }}" alt="" style="width:100%;height:165px;object-fit:cover;display:block"/>
+            <div class="nuv-keep" style="position:absolute;top:10px;right:10px;padding:5px 12px;border-radius:999px;font-size:11px;font-weight:500;background:{{ a.catObj.color }};color:#fff;box-shadow:0 5px 14px rgba(31,41,55,.22)">{{ a.catObj.label }}</div>
+          </div>
+          <div style="padding:14px 6px 6px;display:flex;flex-direction:column;gap:9px;flex:1">
+            <div style="display:flex;align-items:center;gap:6px;font-size:11.5px;color:#9CA3AF"><span class="msr" style="font-size:16px">calendar_today</span>{{ a.date }}</div>
+            <div style="font-weight:500;font-size:14.5px;color:#1F2937;line-height:1.5;text-wrap:pretty">{{ a.title }}</div>
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:auto;padding-top:10px">
+              <div style="display:flex;align-items:center">
+                <sc-for list="{{ a.avatars }}" as="av" hint-placeholder-count="3">
+                  <div style="{{ av.style }}">{{ av.initial }}</div>
+                </sc-for>
+                <div style="{{ a.moreStyle }}">{{ a.moreLabel }}</div>
+              </div>
+              <button onClick="{{ a.onView }}" style="padding:9px 18px;border-radius:11px;border:1px solid rgba(31,41,55,.12);background:rgba(255,255,255,.8);color:#1F2937;font-family:inherit;font-weight:500;font-size:12.5px;cursor:pointer;white-space:nowrap;transition:all 220ms ease" style-hover="background:#fff;transform:translateY(-2px);box-shadow:0 8px 20px rgba(31,41,55,.12)">{{ L.k9 }}</button>
+            </div>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+
+  <div id="nuv-about" class="nuv-land-cta" style="max-width:1180px;margin:0 auto;padding:46px 40px 60px;scroll-margin-top:90px">
+    <div class="nuv-why-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:32px;align-items:center">
+      <div class="nuv-why-cards" style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+        <sc-for list="{{ features }}" as="f" hint-placeholder-count="4">
+          <div style="background:rgba(255,255,255,.72);backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);border:1px solid rgba(255,255,255,.85);border-radius:24px;box-shadow:0 12px 34px rgba(31,41,55,.09), inset 0 1px 0 rgba(255,255,255,.7);padding:20px;transition:all 300ms ease;{{ f.offset }}" style-hover="transform:translateY(-4px);box-shadow:0 24px 56px rgba(31,41,55,.13)">
+            <div style="width:42px;height:42px;border-radius:14px;display:flex;align-items:center;justify-content:center;background:{{ f.iconBg }}"><span class="msr fill" style="font-size:21px;color:{{ f.color }}">{{ f.icon }}</span></div>
+            <div style="font-weight:500;font-size:14px;color:#1F2937;margin-top:12px;line-height:1.4">{{ f.title }}</div>
+            <div style="font-size:12px;line-height:1.7;color:#6B7280;margin-top:4px">{{ f.desc }}</div>
+          </div>
+        </sc-for>
+      </div>
+
+      <div>
+        <div style="font-size:24px;font-weight:600;color:#1F2937;line-height:1.4;margin-bottom:10px">{{ L.k10 }}<br/>NU Volunteer?</div>
+        <div style="font-size:14px;line-height:1.85;color:#6B7280;margin-bottom:20px">{{ L.k1 }}</div>
+        <div style="display:flex;flex-direction:column;gap:11px;margin-bottom:24px">
+          <sc-for list="{{ benefits }}" as="b" hint-placeholder-count="4">
+            <div style="display:flex;align-items:center;gap:10px">
+              <span class="msr fill" style="font-size:20px;color:#63D2A1;flex-shrink:0">check_circle</span>
+              <span style="font-size:13.5px;color:#374151;line-height:1.6">{{ b }}</span>
+            </div>
+          </sc-for>
+        </div>
+        <button onClick="{{ onRegister }}" class="nuv-keep" style="display:flex;align-items:center;gap:8px;background:linear-gradient(135deg,#E97171,#A774F7);color:#fff;border:none;padding:13px 28px;border-radius:14px;font-family:inherit;font-weight:500;font-size:14px;cursor:pointer;box-shadow:0 8px 22px rgba(167,116,247,.34);transition:all 220ms ease" style-hover="transform:translateY(-2px);box-shadow:0 14px 30px rgba(167,116,247,.44)"><span class="msr" style="font-size:19px">how_to_reg</span>{{ L.k6 }}</button>
+      </div>
+    </div>
+  </div>
+
+  <div style="border-top:1px solid rgba(31,41,55,.07);background:rgba(255,255,255,.5);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)">
+    <div class="nuv-foot" style="max-width:1180px;margin:0 auto;padding:34px 40px;display:grid;grid-template-columns:1.6fr 1fr 1fr;gap:32px">
+      <div>
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+          <div class="nuv-keep" style="width:34px;height:34px;border-radius:11px;flex-shrink:0;background:linear-gradient(135deg,#E97171,#A774F7);display:flex;align-items:center;justify-content:center"><svg viewBox="0 0 24 24" fill="none" style="width:20px;height:20px;display:block"><path d="M12 9.4c-1.25-2.6-5.2-2.3-5.2.95 0 2.3 3 4.3 5.2 5.75 2.2-1.45 5.2-3.45 5.2-5.75 0-3.25-3.95-3.55-5.2-.95Z" fill="#fff"/><path d="M3.4 15.2c0 4.2 3.95 6.5 8.6 6.5s8.6-2.3 8.6-6.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round" opacity=".8"/></svg></div>
+          <div style="font-weight:600;font-size:15.5px;color:#1F2937">NU Volunteer</div>
+        </div>
+        <div style="font-size:12.5px;line-height:1.85;color:#6B7280;max-width:320px">{{ L.k2 }}</div>
+      </div>
+      <div>
+        <div style="font-size:11.5px;font-weight:500;color:#9CA3AF;letter-spacing:.06em;text-transform:uppercase;margin-bottom:11px">{{ legalColTitle }}</div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <sc-for list="{{ legalLinks }}" as="ll" hint-placeholder-count="3">
+            <a href="#" onClick="{{ ll.onClick }}" style="font-size:12.5px;color:#6B7280;transition:color 220ms ease;cursor:pointer" style-hover="color:#A774F7">{{ ll.label }}</a>
+          </sc-for>
+        </div>
+      </div>
+      <sc-for list="{{ footerCols }}" as="col" hint-placeholder-count="2">
+        <div>
+          <div style="font-size:11.5px;font-weight:500;color:#9CA3AF;letter-spacing:.06em;text-transform:uppercase;margin-bottom:11px">{{ col.title }}</div>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <sc-for list="{{ col.links }}" as="l" hint-placeholder-count="3">
+              <a href="#nuv-activities" style="font-size:12.5px;color:#6B7280;transition:color 220ms ease" style-hover="color:#A774F7">{{ l }}</a>
+            </sc-for>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+    <div style="border-top:1px solid rgba(31,41,55,.06);padding:14px 40px;text-align:center;font-size:11.5px;color:#9CA3AF">{{ L.k3 }}</div>
+  </div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+var LND_LANG = "th";
+const LND_EN = {"ข้อมูลทางกฎหมาย":"Legal","ตรวจสอบใบประกาศ":"Verify a certificate","ข้อกำหนดการใช้งาน":"Terms of use","นโยบายความเป็นส่วนตัว":"Privacy policy","เข้าสู่ระบบ":"Sign in","สมัครสมาชิก":"Sign up","สมัครเลย":"Join now","ดูกิจกรรม":"Browse activities","กิจกรรมที่แนะนำ":"Featured activities","เลือกกิจกรรมที่ตรงกับความสนใจของคุณ":"Find activities that match your interests","ไม่พบกิจกรรมที่ตรงกับการค้นหา":"No activities match your search","ดูรายละเอียด":"View details","ทำไมต้องเป็น":"Why choose","ระบบเดียวที่รวมทุกอย่างสำหรับนิสิตจิตอาสา ตั้งแต่ค้นหากิจกรรม เช็กอินด้วย QR ไปจนถึงรับใบประกาศอัตโนมัติ":"One place for student volunteers — find activities, check in with QR, and get certificates automatically.","สมัครเป็นจิตอาสาวันนี้":"Become a volunteer today","ระบบรวบรวมกิจกรรมจิตอาสาสำหรับนิสิตมหาวิทยาลัยนเรศวร ดูแลโดยกองกิจการนิสิต":"Volunteer activities for Naresuan University students, managed by the Student Affairs Division.","© 2569 มหาวิทยาลัยนเรศวร · สงวนลิขสิทธิ์":"© 2026 Naresuan University · All rights reserved","เมนู":"Menu","ก่อนหน้า":"Previous","ถัดไป":"Next","ค้นหากิจกรรม...":"Search activities...","ทั้งหมด":"All","สิ่งแวดล้อม":"Environment","ชุมชน":"Community","การศึกษา":"Education","สุขภาพและกีฬา":"Health & sports","จิตสาธารณะ":"Public service","ร่วมปลูกต้นไม้และฟื้นฟูพื้นที่สีเขียวรอบมหาวิทยาลัย สร้างระบบนิเวศที่ยั่งยืนไปด้วยกัน":"Plant trees and restore green space around campus for a sustainable ecosystem.","อาสาพัฒนาชุมชน":"Community development","ลงพื้นที่ช่วยเหลือชุมชนรอบมหาวิทยาลัย ทั้งด้านการศึกษา สาธารณสุข และสาธารณูปโภค":"Support nearby communities in education, health, and basic infrastructure.","ค่ายอาสาสอนน้อง":"Teaching camps","แบ่งปันความรู้ให้น้องๆ ในโรงเรียนขยายโอกาส พร้อมสะสมชั่วโมงจิตอาสาไปในตัว":"Share what you know with students in under-resourced schools while earning volunteer hours.","บริจาคโลหิตเพื่อเพื่อนมนุษย์":"Blood donation","ร่วมบริจาคโลหิตกับสภากาชาดไทย หนึ่งการให้ของคุณช่วยชีวิตได้ถึงสามคน":"Donate with the Thai Red Cross — one donation can save three lives.","เก็บขยะคืนความสะอาดให้ธรรมชาติ":"Clean-up drives","ลงมือเก็บขยะชายหาดและพื้นที่สาธารณะ คืนสิ่งแวดล้อมที่ดีให้ชุมชนของเรา":"Collect litter on beaches and public spaces to give our community a cleaner environment.","แสดงน้อยลง":"Show less","ดูทั้งหมด (":"See all (","กิจกรรมทั้งหมด":"Total activities","นิสิตผู้เข้าร่วม":"Student participants","ชั่วโมงจิตอาสาสะสม":"Volunteer hours earned","ค้นหาง่าย":"Easy search","กรองตามหมวดหมู่ 7 ด้าน วันที่ และสถานะเปิดรับ":"Filter by 7 categories, date, and availability","เช็กอินด้วย QR":"QR check-in","สแกนหน้างานได้ทันที ไม่ต้องเซ็นชื่อในกระดาษ":"Scan on site — no paper sign-in sheets","ติดตามชั่วโมง":"Hour tracking","ดูความคืบหน้าเทียบเกณฑ์ กยศ. 36 ชั่วโมงแบบเรียลไทม์":"Track progress toward the 36-hour SLF requirement in real time","ใบประกาศอัตโนมัติ":"Automatic certificates","ดาวน์โหลดได้ทันทีเมื่อผู้จัดอนุมัติชั่วโมง":"Download as soon as the organizer approves your hours","ลงทะเบียนกิจกรรมได้ในคลิกเดียว":"Register for activities in one click","แจ้งเตือนก่อนถึงวันจัดกิจกรรม":"Reminders before each activity","สะสมชั่วโมงครบตามเกณฑ์ กยศ.":"Meet the SLF hour requirement","พูดคุยกับผู้จัดกิจกรรมได้โดยตรง":"Message organizers directly","แพลตฟอร์ม":"Platform","ค้นหากิจกรรม":"Find activities","หมวดหมู่กิจกรรม":"Categories","คู่มือผู้ใช้งาน":"User guide","ติดต่อ":"Contact","กองกิจการนิสิต":"Student Affairs Division","ติดต่อผู้ดูแลระบบ":"Contact the administrator","คำถามที่พบบ่อย":"FAQ","หมวดหมู่":"Categories","เกี่ยวกับเรา":"About us","โหมดสว่าง":"Light mode","โหมดมืด":"Dark mode"};
+function T(s){ return LND_LANG === "en" ? (LND_EN[s] || s) : s; }
+
+class Component extends DCLogic {
+  state = { slideIdx:0, showAll:false, menuOpen:false, navHidden:false, atTop:true };
+  sentinelRef = React.createRef();
+  componentDidMount(){
+    this._sl = setInterval(()=>this.setState(x=>({slideIdx:(x.slideIdx||0)+1})), 6000);
+    // Smart-hide: hide on scroll down, reveal on scroll up. The page may sit in a
+    // host scroll-port, so measure the sentinel's position rather than window.scrollY.
+    const start = ()=>{
+      const el = this.sentinelRef.current;
+      if(!el){ this._tries=(this._tries||0)+1; if(this._tries<40) return setTimeout(start,80); return; }
+      this._last = 0;
+      this._tick = ()=>{
+        const y = -el.getBoundingClientRect().top;
+        const atTop = y < 8;
+        const delta = y - this._last;
+        let hidden = this.state.navHidden;
+        if(atTop) hidden = false;
+        else if(delta > 6) hidden = true;
+        else if(delta < -6) hidden = false;
+        if(hidden !== this.state.navHidden || atTop !== this.state.atTop) this.setState({navHidden:hidden, atTop});
+        this._last = y;
+      };
+      this._poll = setInterval(this._tick, 120);
+      this._tick();
+    };
+    start();
+
+  }
+  componentWillUnmount(){ clearInterval(this._sl); clearInterval(this._poll); }
+  i18nVals(){
+    const en = this.props.lang === "en";
+    return {L: {
+      k1: en ? "One place for student volunteers — find activities, check in with QR, and get certificates automatically." : "ระบบเดียวที่รวมทุกอย่างสำหรับนิสิตจิตอาสา ตั้งแต่ค้นหากิจกรรม เช็กอินด้วย QR ไปจนถึงรับใบประกาศอัตโนมัติ",
+      k2: en ? "Volunteer activities for Naresuan University students, managed by the Student Affairs Division." : "ระบบรวบรวมกิจกรรมจิตอาสาสำหรับนิสิตมหาวิทยาลัยนเรศวร ดูแลโดยกองกิจการนิสิต",
+      k3: en ? "© 2026 Naresuan University · All rights reserved" : "© 2569 มหาวิทยาลัยนเรศวร · สงวนลิขสิทธิ์",
+      k4: en ? "Find activities that match your interests" : "เลือกกิจกรรมที่ตรงกับความสนใจของคุณ",
+      k5: en ? "No activities match your search" : "ไม่พบกิจกรรมที่ตรงกับการค้นหา",
+      k6: en ? "Become a volunteer today" : "สมัครเป็นจิตอาสาวันนี้",
+      k7: en ? "Featured activities" : "กิจกรรมที่แนะนำ",
+      k8: en ? "Search activities..." : "ค้นหากิจกรรม...",
+      k9: en ? "View details" : "ดูรายละเอียด",
+      k10: en ? "Why choose" : "ทำไมต้องเป็น",
+      k11: en ? "Sign in" : "เข้าสู่ระบบ",
+      k12: en ? "Sign up" : "สมัครสมาชิก",
+      k13: en ? "Browse activities" : "ดูกิจกรรม",
+      k14: en ? "Join now" : "สมัครเลย",
+      k15: en ? "Previous" : "ก่อนหน้า",
+      k16: en ? "Next" : "ถัดไป",
+      k17: en ? "Menu" : "เมนู",
+    }};
+  }
+  renderVals(){
+    LND_LANG = this.props.lang === 'en' ? 'en' : 'th';
+    const p = this.props;
+    const search = p.search || '';
+    const catFilter = p.catFilter || 'all';
+    const chips = [{id:'all', label:T('ทั้งหมด')}, ...(p.categories||[])].map(c=>{
+      const active = (c.id||'all') === catFilter;
+      const color = c.color || '#1F2937';
+      return {
+        label: c.label || T('ทั้งหมด'),
+        onClick: ()=> p.onCat && p.onCat(c.id || 'all'),
+        style: `padding:8px 15px;border-radius:999px;font-size:13px;font-weight:600;white-space:nowrap;border:1px solid ${active?color:'rgba(30,37,48,.12)'};background:${active?color:'#fff'};color:${active?'#fff':'#475569'}`,
+      };
+    });
+    const AV = ['#E97171','#A774F7','#7AB8FF','#63D2A1','#F5A623'];
+    const allActs = p.activities || [];
+    const showAll = !!this.state.showAll;
+    const activities = (showAll ? allActs : allActs.slice(0,3)).map(a=>{
+      const n = a.seatsFilled||0;
+      const shown = Math.min(3, n);
+      const avatars = Array.from({length:shown},(_,i)=>({
+        initial: String.fromCharCode(0x0E01 + ((a.id.charCodeAt(1)*7 + i*11) % 44)),
+        style: `width:27px;height:27px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;color:#fff;background:${AV[(i + a.id.length)%AV.length]};border:2px solid #fff;margin-left:${i===0?0:-9}px`,
+      }));
+      const more = n - shown;
+      return {
+        ...a, avatars,
+        moreLabel: more>0 ? '+'+more : '',
+        moreStyle: more>0
+          ? 'width:27px;height:27px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500;color:#6B7280;background:#EEF0F5;border:2px solid #fff;margin-left:-9px'
+          : 'display:none',
+        catBg: (a.catObj.color||'#94A3B8') + '1a',
+        seatPct: a.seatPct !== undefined ? a.seatPct : Math.round((a.seatsFilled/a.seatsTotal)*100),
+        onView: ()=> p.onView && p.onView(a.id),
+      };
+    });
+    const SLIDES = [
+      {tag:T('สิ่งแวดล้อม'), icon:'eco', title:'Green Campus Initiative', desc:T('ร่วมปลูกต้นไม้และฟื้นฟูพื้นที่สีเขียวรอบมหาวิทยาลัย สร้างระบบนิเวศที่ยั่งยืนไปด้วยกัน'), photo:'https://images.unsplash.com/photo-1552074284-5e88ef1aef18?auto=format&fit=crop&w=1400&q=75'},
+      {tag:T('ชุมชน'), icon:'diversity_3', title:T('อาสาพัฒนาชุมชน'), desc:T('ลงพื้นที่ช่วยเหลือชุมชนรอบมหาวิทยาลัย ทั้งด้านการศึกษา สาธารณสุข และสาธารณูปโภค'), photo:'https://images.unsplash.com/photo-1593113646773-028c64a8f1b8?auto=format&fit=crop&w=1400&q=75'},
+      {tag:T('การศึกษา'), icon:'school', title:T('ค่ายอาสาสอนน้อง'), desc:T('แบ่งปันความรู้ให้น้องๆ ในโรงเรียนขยายโอกาส พร้อมสะสมชั่วโมงจิตอาสาไปในตัว'), photo:'https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=1400&q=75'},
+      {tag:T('สุขภาพและกีฬา'), icon:'volunteer_activism', title:T('บริจาคโลหิตเพื่อเพื่อนมนุษย์'), desc:T('ร่วมบริจาคโลหิตกับสภากาชาดไทย หนึ่งการให้ของคุณช่วยชีวิตได้ถึงสามคน'), photo:'https://images.unsplash.com/photo-1615461066841-6116e61058f4?auto=format&fit=crop&w=1400&q=75'},
+      {tag:T('จิตสาธารณะ'), icon:'cleaning_services', title:T('เก็บขยะคืนความสะอาดให้ธรรมชาติ'), desc:T('ลงมือเก็บขยะชายหาดและพื้นที่สาธารณะ คืนสิ่งแวดล้อมที่ดีให้ชุมชนของเรา'), photo:'https://images.unsplash.com/photo-1618477461853-cf6ed80faba5?auto=format&fit=crop&w=1400&q=75'},
+    ];
+    const si = (this.state.slideIdx||0) % SLIDES.length;
+    const slides = SLIDES.map((sl,i)=>({
+      ...sl,
+      wrapStyle: `position:absolute;inset:0;transition:opacity 700ms ease;opacity:${i===si?1:0};pointer-events:none`,
+    }));
+    const slideDots = SLIDES.map((_,i)=>({
+      style: `width:${i===si?24:8}px;height:8px;border-radius:999px;cursor:pointer;transition:all 300ms ease;background:${i===si?'#fff':'rgba(255,255,255,.45)'}`,
+      onClick: ()=>this.setState({slideIdx:i}),
+    }));
+
+    const st = p.stats || {activities:0,participants:0,hours:0};
+    const fmt = (n)=> (n||0).toLocaleString('en-US');
+    return {
+      ...this.i18nVals(),
+      langLabel: this.props.lang==='en' ? 'EN' : 'TH',
+      langTitle: this.props.lang==='en' ? 'Switch to Thai' : 'เปลี่ยนเป็นภาษาอังกฤษ',
+      onToggleLang: ()=> this.props.onToggleLang && this.props.onToggleLang(),
+      chips, activities, search, stats: st, hasActivities: activities.length>0,
+      showAllLabel: showAll ? T('แสดงน้อยลง') : T('ดูทั้งหมด (')+allActs.length+')',
+      showAllIcon: showAll ? 'expand_less' : 'arrow_forward',
+      onToggleShowAll: ()=>this.setState(x=>({showAll:!x.showAll})),
+      slides, slideDots, activeSlide: SLIDES[si],
+      onSlidePrev: ()=>this.setState({slideIdx: si-1+SLIDES.length}),
+      onSlideNext: ()=>this.setState({slideIdx: si+1}),
+      statCards: [
+        {label:T('กิจกรรมทั้งหมด'), value:fmt(st.activities), icon:'campaign', color:'#E97171', iconBg:'rgba(233,113,113,.16)'},
+        {label:T('นิสิตผู้เข้าร่วม'), value:fmt(st.participants), icon:'groups', color:'#A774F7', iconBg:'rgba(167,116,247,.16)'},
+        {label:T('ชั่วโมงจิตอาสาสะสม'), value:fmt(st.hours), icon:'schedule', color:'#63D2A1', iconBg:'rgba(99,210,161,.16)'},
+      ],
+      features: [
+        {title:T('ค้นหาง่าย'), desc:T('กรองตามหมวดหมู่ 7 ด้าน วันที่ และสถานะเปิดรับ'), icon:'travel_explore', color:'#E97171', iconBg:'rgba(233,113,113,.16)', offset:'margin-top:0'},
+        {title:T('เช็กอินด้วย QR'), desc:T('สแกนหน้างานได้ทันที ไม่ต้องเซ็นชื่อในกระดาษ'), icon:'qr_code_2', color:'#A774F7', iconBg:'rgba(167,116,247,.16)', offset:'margin-top:22px'},
+        {title:T('ติดตามชั่วโมง'), desc:T('ดูความคืบหน้าเทียบเกณฑ์ กยศ. 36 ชั่วโมงแบบเรียลไทม์'), icon:'insights', color:'#7AB8FF', iconBg:'rgba(122,184,255,.16)', offset:'margin-top:0'},
+        {title:T('ใบประกาศอัตโนมัติ'), desc:T('ดาวน์โหลดได้ทันทีเมื่อผู้จัดอนุมัติชั่วโมง'), icon:'workspace_premium', color:'#63D2A1', iconBg:'rgba(99,210,161,.16)', offset:'margin-top:22px'},
+      ],
+      benefits: [
+        T('ลงทะเบียนกิจกรรมได้ในคลิกเดียว'),
+        T('แจ้งเตือนก่อนถึงวันจัดกิจกรรม'),
+        T('สะสมชั่วโมงครบตามเกณฑ์ กยศ.'),
+        T('พูดคุยกับผู้จัดกิจกรรมได้โดยตรง'),
+      ],
+      footerCols: [
+        {title:T('แพลตฟอร์ม'), links:[T('ค้นหากิจกรรม'),T('หมวดหมู่กิจกรรม'),T('คู่มือผู้ใช้งาน')]},
+        {title:T('ติดต่อ'), links:[T('กองกิจการนิสิต'),T('ติดต่อผู้ดูแลระบบ'),T('คำถามที่พบบ่อย')]},
+      ],
+      legalColTitle: T('ข้อมูลทางกฎหมาย'),
+      legalLinks: [
+        {label:T('ตรวจสอบใบประกาศ'), onClick:(e)=>{ e.preventDefault(); p.onOpenVerify && p.onOpenVerify(); }},
+        {label:T('ข้อกำหนดการใช้งาน'), onClick:(e)=>{ e.preventDefault(); p.onOpenTerms && p.onOpenTerms(); }},
+        {label:T('นโยบายความเป็นส่วนตัว'), onClick:(e)=>{ e.preventDefault(); p.onOpenPrivacy && p.onOpenPrivacy(); }},
+      ],
+      onSearchChange: (e)=> p.onSearch && p.onSearch(e.target.value),
+      navLinks: [
+        {label:T('กิจกรรมทั้งหมด'), href:'#nuv-activities'},
+        {label:T('หมวดหมู่'), href:'#nuv-cats'},
+        {label:T('เกี่ยวกับเรา'), href:'#nuv-about'},
+      ],
+      navStyle: `display:flex;align-items:center;justify-content:space-between;gap:16px;padding:11px 14px 11px 18px;background:rgba(255,255,255,.93);backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);border:1px solid rgba(31,41,55,.07);border-radius:20px;pointer-events:auto;transition:box-shadow 260ms ease;box-shadow:${this.state.atTop ? '0 4px 16px rgba(31,41,55,.07)' : '0 12px 34px rgba(31,41,55,.18)'}`,
+      sentinelRef: this.sentinelRef,
+      navWrapStyle: `position:sticky;top:0;z-index:100;padding:16px 16px 0;isolation:isolate;pointer-events:none;transition:transform 300ms ease;transform:translateY(${this.state.navHidden && !this.state.menuOpen ? '-140%' : '0'})`,
+      menuOpen: this.state.menuOpen,
+      menuIcon: this.state.menuOpen ? 'close' : 'menu',
+      onToggleMenu: ()=>this.setState(x=>({menuOpen:!x.menuOpen})),
+      clock: p.clock||'', dateLabel: p.dateLabel||'',
+      themeIcon: p.darkMode ? 'light_mode' : 'dark_mode',
+      themeTitle: p.darkMode ? T('โหมดสว่าง') : T('โหมดมืด'),
+      onToggleTheme: ()=> p.onToggleTheme && p.onToggleTheme(),
+      onLogin: ()=> p.onLogin && p.onLogin(),
+      onRegister: ()=> p.onRegister && p.onRegister(),
+      logoMark: p.logoMark || 'NU',
+    };
+  }
+}
+
+</script>
+</body>
+</html>

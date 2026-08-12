@@ -1,0 +1,390 @@
+[
+ [
+  "ภาพรวมกิจกรรมของคุณวันนี้ — อัปเดตล่าสุด",
+  "Your activity overview today — updated"
+ ],
+ [
+  "รีเฟรช",
+  "Refresh"
+ ],
+ [
+  "สร้างกิจกรรมใหม่",
+  "Create activity"
+ ],
+ [
+  "ผู้สมัครใหม่รายวัน (14 วันล่าสุด)",
+  "New applicants per day (last 14 days)"
+ ],
+ [
+  "เปรียบเทียบผู้สมัครกับผู้ที่เช็กอินจริง",
+  "Applicants vs. actual check-ins"
+ ],
+ [
+  "ผู้สมัคร",
+  "Applicants"
+ ],
+ [
+  "เช็กอิน",
+  "Check-in"
+ ],
+ [
+  "วันที่",
+  "Day"
+ ],
+ [
+  "สมัคร",
+  "Applied"
+ ],
+ [
+  "สถานะที่นั่งกิจกรรม",
+  "Activity seat status"
+ ],
+ [
+  "จากทั้งหมด",
+  "of"
+ ],
+ [
+  "กิจกรรม",
+  "activities"
+ ],
+ [
+  "ที่นั่งถูกจอง",
+  "Seats filled"
+ ],
+ [
+  "รายการรออนุมัติ",
+  "Pending approvals"
+ ],
+ [
+  "ดูทั้งหมด",
+  "See all"
+ ],
+ [
+  "ไม่มีรายการรออนุมัติ",
+  "No pending approvals"
+ ],
+ [
+  "กิจกรรมของฉันที่กำลังจะถึง",
+  "My upcoming activities"
+ ],
+ [
+  "ไม่มีกิจกรรมที่กำลังจะถึง",
+  "No upcoming activities"
+ ],
+ [
+  "อนุมัติผู้สมัครอัตโนมัติ",
+  "Auto-approve applicants"
+ ],
+ [
+  "ไม่พบกิจกรรมในสถานะนี้",
+  "No activities with this status"
+ ],
+ [
+  "เรียงตามชื่อ",
+  "Sort by name"
+ ],
+ [
+  "เรียงตามเวลาเข้า",
+  "Sort by check-in time"
+ ],
+ [
+  "เรียงตามสถานะ",
+  "Sort by status"
+ ],
+ [
+  "ยังไม่มีผู้สมัครในกิจกรรมของคุณ",
+  "No applicants for your activities yet"
+ ],
+ [
+  "รออนุมัติ",
+  "Pending"
+ ],
+ [
+  "ชื่อผู้สมัคร",
+  "Applicant"
+ ],
+ [
+  "สถานะ",
+  "Status"
+ ],
+ [
+  "เข้า",
+  "In"
+ ],
+ [
+  "ออก",
+  "Out"
+ ],
+ [
+  "ชม.",
+  "hrs"
+ ],
+ [
+  "หลักฐาน",
+  "Evidence"
+ ],
+ [
+  "จัดการ",
+  "Actions"
+ ],
+ [
+  "ไม่มีผู้สมัครที่ตรงกับตัวกรองนี้",
+  "No applicants match this filter"
+ ],
+ [
+  "ไม่มีคำขอยกเลิกในหมวดนี้",
+  "No cancellation requests in this category"
+ ],
+ [
+  "เหตุผล:",
+  "Reason:"
+ ],
+ [
+  "อนุมัติ",
+  "Approve"
+ ],
+ [
+  "ปฏิเสธ",
+  "Reject"
+ ],
+ [
+  "สแกน QR เช็กอิน / เช็กเอาต์",
+  "QR check-in / check-out"
+ ],
+ [
+  "เลือกกิจกรรมเพื่อสร้างรหัส QR เฉพาะของกิจกรรมนั้น",
+  "Pick an activity to generate its own QR code"
+ ],
+ [
+  "เปลี่ยนกิจกรรม",
+  "Change activity"
+ ],
+ [
+  "เช็กเอาต์",
+  "Check-out"
+ ],
+ [
+  "ให้นิสิตสแกนก่อนหมดเวลาเพื่อ",
+  "Have students scan before it expires to "
+ ],
+ [
+  "จำลองการสแกน",
+  "Simulate scan "
+ ],
+ [
+  "การสแกนล่าสุด",
+  "Recent scans"
+ ],
+ [
+  "ดูผู้เข้าร่วมทั้งหมด",
+  "View all participants"
+ ],
+ [
+  "ยังไม่มีการสแกนในกิจกรรมนี้",
+  "No scans for this activity yet"
+ ],
+ [
+  "มีหลักฐานแนบแล้ว",
+  "Evidence attached"
+ ],
+ [
+  "ผู้เข้าร่วมรายเดือน",
+  "Participants per month"
+ ],
+ [
+  "สัดส่วนตามหมวดหมู่",
+  "Share by category"
+ ],
+ [
+  "อัตราการเข้าร่วมจริง (Attendance rate)",
+  "Attendance rate"
+ ],
+ [
+  "สัดส่วนผู้ที่เช็กอินจริงเทียบกับผู้ลงทะเบียน",
+  "Actual check-ins vs. registrations"
+ ],
+ [
+  "คะแนนรีวิวที่ได้รับ",
+  "Review score"
+ ],
+ [
+  "จาก",
+  "from"
+ ],
+ [
+  "รีวิว",
+  "reviews"
+ ],
+ [
+  "สรุปรายกิจกรรม",
+  "Per-activity summary"
+ ],
+ [
+  "ลงทะเบียน",
+  "Registered"
+ ],
+ [
+  "เต็ม (%)",
+  "Filled (%)"
+ ],
+ [
+  "ชั่วโมงรวม",
+  "Total hours"
+ ],
+ [
+  "ยังไม่มีรีวิวจากผู้เข้าร่วม",
+  "No reviews from participants yet"
+ ],
+ [
+  "ดาวน์โหลดรายงาน",
+  "Download report"
+ ],
+ [
+  "ยังไม่มีการสนทนา นิสิตจะเริ่มแชทจากหน้ารายละเอียดกิจกรรมที่ลงทะเบียน",
+  "No conversations yet. Students start chats from an activity they registered for."
+ ],
+ [
+  "ข้อความจากผู้เข้าร่วม",
+  "Messages from participants"
+ ],
+ [
+  "ส่ง",
+  "Send"
+ ],
+ [
+  "ตั้งค่าผู้จัดกิจกรรม",
+  "Organizer settings"
+ ],
+ [
+  "ค่าตั้งต้นเหล่านี้ใช้กับกิจกรรมที่คุณสร้างใหม่",
+  "These defaults apply to activities you create"
+ ],
+ [
+  "บันทึกอัตโนมัติ",
+  "Saved automatically"
+ ],
+ [
+  "ไม่พบการตั้งค่าที่ตรงกับคำค้น",
+  "No settings match your search"
+ ],
+ [
+  "อ่านทั้งหมด",
+  "Mark all read"
+ ],
+ [
+  "ปิดการแจ้งเตือนบางประเภทไว้",
+  "Some notification types are muted:"
+ ],
+ [
+  "รายการ — ปรับได้ที่หน้าตั้งค่า",
+  "items — adjust in Settings"
+ ],
+ [
+  "ไม่มีการแจ้งเตือนในหมวดนี้",
+  "No notifications in this category"
+ ],
+ [
+  "คู่มือผู้จัดกิจกรรม",
+  "Organizer guide"
+ ],
+ [
+  "ตั้งแต่สร้างกิจกรรมจนออกใบประกาศให้ผู้เข้าร่วม",
+  "From creating an activity to issuing certificates"
+ ],
+ [
+  "ขั้นตอนการจัดกิจกรรม",
+  "Running an activity"
+ ],
+ [
+  "ขั้นที่",
+  "Step"
+ ],
+ [
+  "คำถามที่พบบ่อย",
+  "Frequently asked questions"
+ ],
+ [
+  "คลิกเพื่อดูคำตอบ",
+  "Tap to see the answer"
+ ],
+ [
+  "ไม่พบคำถามที่ตรงกับคำค้น",
+  "No questions match your search"
+ ],
+ [
+  "แนวปฏิบัติที่แนะนำ",
+  "Recommended practices"
+ ],
+ [
+  "ผู้จัดกิจกรรมที่ยืนยันแล้ว",
+  "Verified organizer"
+ ],
+ [
+  "ข้อมูลผู้จัดกิจกรรม",
+  "Organizer information"
+ ],
+ [
+  "ข้อมูลนี้จะแสดงให้นิสิตเห็นในหน้ากิจกรรม",
+  "Students see this on your activity pages"
+ ],
+ [
+  "บันทึกแล้ว",
+  "Saved"
+ ],
+ [
+  "บันทึกข้อมูล",
+  "Save"
+ ],
+ [
+  "ประกาศก่อนหน้า",
+  "Previous announcement"
+ ],
+ [
+  "ประกาศถัดไป",
+  "Next announcement"
+ ],
+ [
+  "แก้ไข",
+  "Edit"
+ ],
+ [
+  "ลบ",
+  "Delete"
+ ],
+ [
+  "ค้นหาชื่อผู้สมัคร...",
+  "Search applicant name..."
+ ],
+ [
+  "ดูหลักฐาน",
+  "View evidence"
+ ],
+ [
+  "ดูผู้เข้าร่วมกิจกรรมนี้",
+  "View participants of this activity"
+ ],
+ [
+  "ตอบกลับผู้เข้าร่วม... (กด Enter เพื่อส่ง)",
+  "Reply to participants... (press Enter to send)"
+ ],
+ [
+  "ส่งข้อความ",
+  "Send message"
+ ],
+ [
+  "ค้นหาการตั้งค่า...",
+  "Search settings..."
+ ],
+ [
+  "ค้นหาคำถาม...",
+  "Search questions..."
+ ],
+ [
+  "โลโก้หน่วยงาน",
+  "Organization logo"
+ ],
+ [
+  "เปลี่ยนโลโก้ (ลากรูปมาวาง)",
+  "Change logo (drag an image here)"
+ ]
+]

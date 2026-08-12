@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+
+<helmet data-dc-atomics><style>
+@keyframes nuvTipIn{from{opacity:0;transform:translateX(-50%) translateY(3px)}to{opacity:1;transform:translateX(-50%)}}
+@media (max-width:900px){.nuv-sidebar-desktop{display:none !important}.nuv-collapse-btn{display:none !important}}
+</style></helmet>
+<sc-if value="{{ mobileOpen }}" hint-placeholder-val="{{ false }}">
+  <div onClick="{{ onClose }}" style="position:fixed;inset:0;background:rgba(30,37,48,.4);z-index:40"></div>
+</sc-if>
+<div class="{{ sidebarClass }}" style="{{ sidebarStyle }}">
+  <div style="{{ brandStyle }}">
+    <div style="width:36px;height:36px;border-radius:11px;flex-shrink:0;background:linear-gradient(135deg,#E97171,#A774F7);display:flex;align-items:center;justify-content:center;box-shadow:0 5px 14px rgba(167,116,247,.35)"><svg viewBox="0 0 24 24" fill="none" style="width:21px;height:21px;display:block"><path d="M12 9.4c-1.25-2.6-5.2-2.3-5.2.95 0 2.3 3 4.3 5.2 5.75 2.2-1.45 5.2-3.45 5.2-5.75 0-3.25-3.95-3.55-5.2-.95Z" fill="#fff"/><path d="M3.4 15.2c0 4.2 3.95 6.5 8.6 6.5s8.6-2.3 8.6-6.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round" opacity=".8"/></svg></div>
+    <sc-if value="{{ !collapsed }}" hint-placeholder-val="{{ true }}">
+      <div style="font-weight:600;font-size:16px;line-height:1.7;color:#1F2937;white-space:nowrap;flex:1;min-width:0">NU Volunteer</div>
+    </sc-if>
+  </div>
+  <button onClick="{{ onToggleCollapse }}" title="{{ collapseTitle }}" class="nuv-collapse-btn" style-hover="background:rgba(255,255,255,1);transform:translateY(-50%) scale(1.08)" style="{{ collapseBtnStyle }}"><span class="msr" style="font-size:17px">{{ collapseIcon }}</span></button>
+  <div style="padding:0 12px;display:flex;flex-direction:column;overflow-y:auto">
+    <sc-for list="{{ sections }}" as="sec" hint-placeholder-count="3">
+      <div style="{{ sec.wrapStyle }}">
+        <sc-if value="{{ !collapsed }}" hint-placeholder-val="{{ true }}">
+          <div style="{{ sec.labelStyle }}">{{ sec.label }}</div>
+        </sc-if>
+        <div style="display:flex;flex-direction:column;gap:3px">
+          <sc-for list="{{ sec.items }}" as="item" hint-placeholder-count="5">
+            <div onClick="{{ item.onClick }}" onMouseEnter="{{ item.onEnter }}" onMouseLeave="{{ item.onLeave }}" style-hover="{{ item.hoverStyle }}" style="{{ item.style }}">
+              <sc-if value="{{ item.showTip }}" hint-placeholder-val="{{ false }}">
+                <div style="position:absolute;bottom:calc(100% + 7px);left:50%;transform:translateX(-50%);z-index:60;padding:6px 11px;border-radius:9px;background:#1F2937;color:#fff;font-size:11.5px;font-weight:400;line-height:1.5;white-space:nowrap;pointer-events:none;box-shadow:0 8px 20px rgba(31,41,55,.28);animation:nuvTipIn 140ms ease">{{ item.label }}<span style="position:absolute;top:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:#1F2937"></span></div>
+              </sc-if>
+              <span class="msr" style="{{ item.iconStyle }}">{{ item.icon }}</span>
+              <sc-if value="{{ !collapsed }}" hint-placeholder-val="{{ true }}">
+                <span style="line-height:1.6;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ item.label }}</span>
+              </sc-if>
+              <sc-if value="{{ item.hasBadge }}" hint-placeholder-val="{{ false }}">
+                <span style="{{ item.badgeStyle }}">{{ item.badge }}</span>
+              </sc-if>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </sc-for>
+  </div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+
+const ROLE_ACCENT = {student:'#E97171', organizer:'#A774F7', admin:'#1F2937'};
+class Component extends DCLogic {
+  state = { collapsed:false, tipKey:null };
+  componentWillUnmount(){ clearTimeout(this._tipT); }
+  componentDidMount(){
+    try{ const v = localStorage.getItem('nuv-sidebar-collapsed'); if(v==='1') this.setState({collapsed:true}); }catch(e){}
+  }
+  renderVals(){
+    const p = this.props;
+    const accent = ROLE_ACCENT[p.role] || '#1F2937';
+    const collapsed = this.state.collapsed && !p.mobileOpen;
+    const ICONS = {
+      home:'home', discover:'travel_explore', planner:'event_note', registrations:'groups',
+      calendar:'calendar_month', hours:'schedule', certificates:'workspace_premium', wishlist:'favorite',
+      notifications:'notifications', chat:'forum', profile:'account_circle', guide:'help_center',
+      activities:'campaign', cancellations:'event_busy', qr:'qr_code_2',
+      hoursApproval:'fact_check', stats:'insights', feedback:'reviews', reports:'summarize',
+      users:'manage_accounts', roles:'admin_panel_settings', categories:'category',
+      faculties:'school', newsBanners:'newspaper', logs:'receipt_long', ops:'hub', contact:'mail', settings:'settings',
+    };
+    const EN_GROUP = {
+      'กิจกรรมของฉัน':'My Activities', 'ทั่วไป':'General', 'จัดการกิจกรรม':'Manage Activities',
+      'ข้อมูลเชิงลึก':'Insights', 'จัดการระบบ':'System', 'สื่อสารและตรวจสอบ':'Communication & Audit', 'อื่นๆ':'Other', 'เมนู':'Menu',
+    };
+    const tr = (label)=> p.lang==='en' ? (EN_GROUP[label]||label) : label;
+    const GROUPS = {
+      student: [
+        {label:'กิจกรรมของฉัน', keys:['home','discover','registrations','calendar','hours','certificates']},
+        {label:'ทั่วไป', keys:['wishlist','notifications','chat','profile','settings','guide']},
+      ],
+      organizer: [
+        {label:'จัดการกิจกรรม', keys:['home','activities','calendar','registrations','cancellations','qr','hoursApproval']},
+        {label:'ข้อมูลเชิงลึก', keys:['stats','feedback','reports']},
+        {label:'ทั่วไป', keys:['notifications','chat','profile','settings','guide']},
+      ],
+      admin: [
+        {label:'จัดการระบบ', keys:['home','users','activities','calendar','categories','faculties']},
+        {label:'สื่อสารและตรวจสอบ', keys:['newsBanners','reports','logs','ops','contact']},
+        {label:'ทั่วไป', keys:['notifications','profile','guide','settings']},
+      ],
+    };
+    const badges = p.navBadges || {};
+    const navItems = p.navItems || [];
+    const byKey = {}; navItems.forEach(it=>{ byKey[it.key]=it; });
+
+    const mkItem = (it)=>{
+      const active = it.key === p.page;
+      const count = badges[it.key] || 0;
+      return {
+        label: it.label,
+        icon: ICONS[it.key] || 'circle',
+        onClick: ()=> p.onNav && p.onNav(it.key),
+        hoverStyle: active ? '' : 'background:linear-gradient(135deg,rgba(233,113,113,.11),rgba(167,116,247,.13));color:#C2410C',
+        showTip: collapsed && this.state.tipKey===it.key,
+        onEnter: ()=>{
+          clearTimeout(this._tipT);
+          if(!collapsed) return;
+          this._tipT = setTimeout(()=>this.setState({tipKey:it.key}), 480);
+        },
+        onLeave: ()=>{ clearTimeout(this._tipT); if(this.state.tipKey) this.setState({tipKey:null}); },
+        hasBadge: count > 0, badge: count > 99 ? '99+' : count,
+        /* บนเมนูที่ active พื้นเป็นเฉดคอรัล — ป้ายต้องสลับเป็นพื้นขาวตัวอักษรเข้ม ไม่งั้นสีกลืนกันจนอ่านไม่ออก */
+        badgeStyle: collapsed
+          ? `position:absolute;top:3px;right:3px;min-width:17px;height:17px;padding:0 4px;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;font-size:9.5px;font-weight:600;background:${active?'#fff':'#E4572E'};color:${active?'#B23A17':'#fff'};box-shadow:${active?'0 2px 6px rgba(31,41,55,.3)':'0 0 0 2px #fff,0 2px 6px rgba(228,87,46,.4)'}`
+          : `flex-shrink:0;flex-grow:0;margin-left:auto;min-width:21px;height:21px;padding:0 7px;box-sizing:border-box;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;font-size:10.5px;font-weight:600;background:${active?'#fff':'#E4572E'};color:${active?'#B23A17':'#fff'};box-shadow:${active?'0 2px 8px rgba(31,41,55,.28)':'0 2px 6px rgba(228,87,46,.35)'}`,
+        style: `position:relative;display:flex;align-items:center;gap:11px;padding:11px ${collapsed?'0':'14px'};${collapsed?'justify-content:center;':''}border-radius:14px;cursor:pointer;font-size:14px;transition:background 180ms ease,color 180ms ease,box-shadow 180ms ease;font-weight:${active?500:300};color:${active?'#fff':'#4B5563'};background:${active?'linear-gradient(135deg,#E97171,#F0918B)':'transparent'};box-shadow:${active?'0 8px 22px rgba(233,113,113,.32), inset 0 1px 0 rgba(255,255,255,.35)':'none'}`,
+        iconStyle: `font-size:19px;flex-shrink:0;transition:color 180ms ease,opacity 180ms ease;color:${active?'#fff':'currentColor'};opacity:${active?1:.8};font-variation-settings:'FILL' 0,'wght' ${active?400:300},'GRAD' 0,'opsz' 24`,
+      };
+    };
+
+    const groupDefs = GROUPS[p.role] || [{label:'เมนู', keys:navItems.map(i=>i.key)}];
+    const used = new Set();
+    const sections = groupDefs.map((g,gi)=>{
+      const its = g.keys.filter(k=>byKey[k]).map(k=>{ used.add(k); return mkItem(byKey[k]); });
+      return {
+        label: tr(g.label), items: its,
+        wrapStyle: `margin-top:${gi===0?4:18}px;${gi>0?'padding-top:14px;border-top:1px solid rgba(31,41,55,.07);':''}`,
+        labelStyle: 'padding:0 14px 8px;font-size:10.5px;font-weight:500;letter-spacing:.08em;color:#9CA3AF;text-transform:uppercase',
+      };
+    }).filter(s=>s.items.length>0);
+    const leftover = navItems.filter(it=>!used.has(it.key));
+    if(leftover.length) sections.push({
+      label: tr('อื่นๆ'), items:leftover.map(mkItem),
+      wrapStyle:'margin-top:18px;padding-top:14px;border-top:1px solid rgba(31,41,55,.07);',
+      labelStyle:'padding:0 14px 8px;font-size:10.5px;font-weight:500;letter-spacing:.08em;color:#9CA3AF;text-transform:uppercase',
+    });
+    const base = `width:${collapsed?76:250}px;flex-shrink:0;transition:width 260ms ease;background:rgba(255,255,255,.82);backdrop-filter:blur(30px) saturate(180%);-webkit-backdrop-filter:blur(30px) saturate(180%);border:1px solid rgba(255,255,255,.9);border-radius:20px;padding-bottom:16px;display:flex;flex-direction:column;box-shadow:0 8px 30px rgba(31,41,55,.09), inset 0 1px 0 rgba(255,255,255,.8)`;
+    const sidebarStyle = p.mobileOpen
+      ? `position:fixed;top:16px;left:16px;bottom:16px;${base};z-index:50;box-shadow:0 20px 50px rgba(31,41,55,.22)`
+      : `position:sticky;top:16px;height:calc(100vh - 32px);${base};`;
+    return {
+      logoMark: p.logoMark||'NU', sections, collapsed,
+      brandStyle: `display:flex;align-items:center;gap:10px;padding:22px ${collapsed?'0':'20px'} 18px;${collapsed?'justify-content:center;':''}`,
+      collapseIcon: collapsed ? 'chevron_right' : 'chevron_left',
+      collapseTitle: p.lang==='en' ? (collapsed ? 'Expand menu' : 'Collapse menu') : (collapsed ? 'ขยายเมนู' : 'ยุบเมนู'),
+      collapseBtnStyle: `position:absolute;top:34px;right:-13px;z-index:2;display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;border:1px solid rgba(31,41,55,.1);background:rgba(255,255,255,.95);color:#6B7280;cursor:pointer;transition:all 220ms ease;transform:translateY(-50%);box-shadow:0 4px 12px rgba(31,41,55,.14)`,
+      onToggleCollapse: ()=>this.setState(st=>{
+        const next = !st.collapsed;
+        try{ localStorage.setItem('nuv-sidebar-collapsed', next?'1':'0'); }catch(e){}
+        return {collapsed: next};
+      }),
+      mobileOpen: p.mobileOpen,
+      onClose: ()=> p.onClose && p.onClose(),
+      sidebarStyle,
+      sidebarClass: (p.mobileOpen ? '' : 'nuv-sidebar-desktop') + ' nuv-noprint',
+    };
+  }
+}
+
+</script>
+</body>
+</html>

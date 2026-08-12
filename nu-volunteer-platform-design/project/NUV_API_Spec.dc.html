@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="./doc-page.js"></script>
+<style>
+doc-page:not(:defined){visibility:hidden}
+body{margin:0;font-family:'Noto Sans Thai',system-ui,sans-serif}
+code,.mono{font-family:'IBM Plex Mono',ui-monospace,monospace}
+</style>
+</helmet>
+
+<doc-page margin="0.7in">
+
+<div style="display:flex;align-items:flex-start;gap:14px;border-bottom:3px solid #A774F7;padding-bottom:16px;margin-bottom:26px">
+  <div style="width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,#E97171,#A774F7);flex-shrink:0"></div>
+  <div style="flex:1">
+    <div style="font-size:22px;font-weight:700;color:#1F2937;line-height:1.35">NU Volunteer — API Integration Spec</div>
+    <div style="font-size:12px;color:#6B7280;line-height:1.7;margin-top:3px">เอกสารสัญญา API ระหว่างทีม Frontend และ Backend · เวอร์ชัน 1.0 · สิงหาคม 2569</div>
+  </div>
+</div>
+
+<h2 style="font-size:15px;font-weight:700;color:#7C2FD9;margin:0 0 8px;line-height:1.5">0. ข้อตกลงร่วม</h2>
+<table style="width:100%;border-collapse:collapse;font-size:11.5px;line-height:1.65;margin-bottom:20px">
+  <tbody>
+    <tr><td style="padding:7px 10px;border:1px solid #E5E7EB;background:#FAFAFB;width:150px;font-weight:600;color:#4B5563">Base URL</td><td style="padding:7px 10px;border:1px solid #E5E7EB"><code>https://api.nuvolunteer.nu.ac.th/v1</code></td></tr>
+    <tr><td style="padding:7px 10px;border:1px solid #E5E7EB;background:#FAFAFB;font-weight:600;color:#4B5563">Auth</td><td style="padding:7px 10px;border:1px solid #E5E7EB">Session cookie <code>nuv_sid</code> (HttpOnly, SameSite=Lax) · งาน server-to-server ใช้ <code>Authorization: Bearer &lt;service-token&gt;</code></td></tr>
+    <tr><td style="padding:7px 10px;border:1px solid #E5E7EB;background:#FAFAFB;font-weight:600;color:#4B5563">Content-Type</td><td style="padding:7px 10px;border:1px solid #E5E7EB"><code>application/json; charset=utf-8</code> ทุก request/response ยกเว้น <code>.ics</code> และ <code>.pdf</code></td></tr>
+    <tr><td style="padding:7px 10px;border:1px solid #E5E7EB;background:#FAFAFB;font-weight:600;color:#4B5563">รูปแบบเวลา</td><td style="padding:7px 10px;border:1px solid #E5E7EB">ISO 8601 UTC เสมอ (<code>2026-08-02T01:26:34Z</code>) — ฝั่ง UI แปลงเป็น พ.ศ. / Asia/Bangkok เอง</td></tr>
+    <tr><td style="padding:7px 10px;border:1px solid #E5E7EB;background:#FAFAFB;font-weight:600;color:#4B5563">Error envelope</td><td style="padding:7px 10px;border:1px solid #E5E7EB"><code>{ "error": { "code": "STRING_CODE", "message": "ข้อความภาษาไทย", "retryable": true } }</code></td></tr>
+    <tr><td style="padding:7px 10px;border:1px solid #E5E7EB;background:#FAFAFB;font-weight:600;color:#4B5563">Idempotency</td><td style="padding:7px 10px;border:1px solid #E5E7EB">ทุก POST ที่สร้างของ (อีเมล, backup, ใบประกาศ) รับ header <code>Idempotency-Key</code></td></tr>
+    <tr><td style="padding:7px 10px;border:1px solid #E5E7EB;background:#FAFAFB;font-weight:600;color:#4B5563">จุดสลับใน frontend</td><td style="padding:7px 10px;border:1px solid #E5E7EB">ฟังก์ชัน <code>transport()</code> ในไฟล์ <code>nuv-api.js</code> — เปลี่ยนเป็น <code>fetch()</code> จุดเดียว โค้ดหน้าจอไม่ต้องแก้</td></tr>
+  </tbody>
+</table>
+
+<h2 style="font-size:15px;font-weight:700;color:#7C2FD9;margin:22px 0 8px;line-height:1.5">1. แจ้งเตือนทางอีเมล</h2>
+<p style="font-size:11.5px;color:#4B5563;line-height:1.75;margin:0 0 12px">Backend เป็นผู้ตัดสินใจส่งจริงเสมอ — ตรวจ <code>settings.emailNotif</code> ฝั่งเซิร์ฟเวอร์ก่อนคิวงาน แม้ client จะเรียกมา ถ้า toggle ปิดต้องตอบ <code>202</code> พร้อม <code>skipped: true</code> และไม่ส่งอีเมล</p>
+
+<div style="break-inside:avoid;margin-bottom:14px">
+<div style="font-size:12.5px;font-weight:600;color:#1F2937;line-height:1.6;margin-bottom:5px"><code style="background:#EDE9FE;padding:2px 7px;border-radius:5px;color:#7C2FD9">POST</code> /notifications/email</div>
+<pre style="margin:0;padding:11px 13px;background:#F8F8FB;border:1px solid #E5E7EB;border-radius:9px;font-size:10.5px;line-height:1.65;white-space:pre-wrap;break-inside:avoid" class="mono">Request  { "event": "registration.created", "to": "organizer@nu.ac.th",
+           "lang": "th", "vars": { "student": "…", "activity": "…", "date": "…", "seatsLeft": 12 } }
+201      { "id": "em-9f2a1c", "status": "queued", "provider": "sendgrid", "createdAt": "…" }
+202      { "skipped": true, "reason": "EMAIL_NOTIFICATIONS_OFF" }
+422      error.code = "UNKNOWN_EVENT" | "INVALID_RECIPIENT"</pre>
+</div>
+
+<div style="break-inside:avoid;margin-bottom:14px">
+<div style="font-size:12.5px;font-weight:600;color:#1F2937;line-height:1.6;margin-bottom:5px"><code style="background:#DBEAFE;padding:2px 7px;border-radius:5px;color:#1D4ED8">GET</code> /notifications/email?status=&amp;event=&amp;limit=50&amp;cursor=</div>
+<pre style="margin:0;padding:11px 13px;background:#F8F8FB;border:1px solid #E5E7EB;border-radius:9px;font-size:10.5px;line-height:1.65;white-space:pre-wrap" class="mono">200      { "items": [ { "id","event","to","lang","subject","status","attempts",
+                        "createdAt","sentAt","error" } ], "nextCursor": null }
+status ∈ queued | sending | retrying | sent | failed | skipped</pre>
+</div>
+
+<div style="break-inside:avoid;margin-bottom:14px">
+<div style="font-size:12.5px;font-weight:600;color:#1F2937;line-height:1.6;margin-bottom:5px"><code style="background:#EDE9FE;padding:2px 7px;border-radius:5px;color:#7C2FD9">POST</code> /notifications/email/{id}/retry</div>
+<pre style="margin:0;padding:11px 13px;background:#F8F8FB;border:1px solid #E5E7EB;border-radius:9px;font-size:10.5px;line-height:1.65;white-space:pre-wrap" class="mono">200      { "id": "em-9f2a1c", "status": "queued", "attempts": 4 }
+409      error.code = "NOT_RETRYABLE"   (รายการที่ status = sent หรือ skipped)</pre>
+</div>
+
+<p style="font-size:11.5px;color:#4B5563;line-height:1.75;margin:0 0 8px"><strong>Retry policy:</strong> exponential backoff 4 ครั้ง (0s / 30s / 2m / 10m) แล้วตั้ง <code>failed</code> · เก็บ log ไม่น้อยกว่า 90 วัน · webhook ของผู้ให้บริการ (<code>POST /webhooks/sendgrid</code>) อัปเดต <code>delivered</code> / <code>bounced</code> ย้อนกลับเข้า log</p>
+
+<div style="break-inside:avoid">
+<p style="font-size:11.5px;color:#4B5563;line-height:1.75;margin:0 0 6px"><strong>เหตุการณ์และ template</strong> — ทุก template มีคู่ th/en เลือกตาม <code>users.language</code> ของผู้รับ:</p>
+<table style="width:100%;border-collapse:collapse;font-size:11px;line-height:1.6;margin-bottom:18px">
+  <thead><tr>
+    <th style="padding:6px 9px;border:1px solid #E5E7EB;background:#F3F0FA;text-align:left;color:#4B5563">event</th>
+    <th style="padding:6px 9px;border:1px solid #E5E7EB;background:#F3F0FA;text-align:left;color:#4B5563">ผู้รับ</th>
+    <th style="padding:6px 9px;border:1px solid #E5E7EB;background:#F3F0FA;text-align:left;color:#4B5563">ตัวแปรใน template</th>
+  </tr></thead>
+  <tbody>
+    <tr><td style="padding:6px 9px;border:1px solid #E5E7EB"><code>registration.created</code></td><td style="padding:6px 9px;border:1px solid #E5E7EB">ผู้จัด</td><td style="padding:6px 9px;border:1px solid #E5E7EB">student, activity, date, seatsLeft</td></tr>
+    <tr><td style="padding:6px 9px;border:1px solid #E5E7EB"><code>cancellation.requested</code></td><td style="padding:6px 9px;border:1px solid #E5E7EB">ผู้จัด</td><td style="padding:6px 9px;border:1px solid #E5E7EB">student, activity, reason</td></tr>
+    <tr><td style="padding:6px 9px;border:1px solid #E5E7EB"><code>approval.changed</code></td><td style="padding:6px 9px;border:1px solid #E5E7EB">นิสิต</td><td style="padding:6px 9px;border:1px solid #E5E7EB">activity, status</td></tr>
+    <tr><td style="padding:6px 9px;border:1px solid #E5E7EB"><code>hours.approved</code></td><td style="padding:6px 9px;border:1px solid #E5E7EB">นิสิต</td><td style="padding:6px 9px;border:1px solid #E5E7EB">activity, hours</td></tr>
+    <tr><td style="padding:6px 9px;border:1px solid #E5E7EB"><code>certificate.issued</code></td><td style="padding:6px 9px;border:1px solid #E5E7EB">นิสิต</td><td style="padding:6px 9px;border:1px solid #E5E7EB">activity, ref</td></tr>
+    <tr><td style="padding:6px 9px;border:1px solid #E5E7EB"><code>password.changed</code></td><td style="padding:6px 9px;border:1px solid #E5E7EB">เจ้าของบัญชี</td><td style="padding:6px 9px;border:1px solid #E5E7EB">time, device</td></tr>
+    <tr><td style="padding:6px 9px;border:1px solid #E5E7EB"><code>backup.failed</code></td><td style="padding:6px 9px;border:1px solid #E5E7EB">แอดมิน</td><td style="padding:6px 9px;border:1px solid #E5E7EB">freq, time, error</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h2 style="font-size:15px;font-weight:700;color:#7C2FD9;margin:22px 0 8px;line-height:1.5">1.9 ลบข้อความแชท</h2>
+<div style="break-inside:avoid;margin-bottom:14px">
+<pre style="margin:0;padding:11px 13px;background:#F8F8FB;border:1px solid #E5E7EB;border-radius:9px;font-size:10.5px;line-height:1.65;white-space:pre-wrap" class="mono">DELETE /messages/{id}       { "scope": "me" | "all" }
+       200  { "id","scope","deletedAt" }
+       403  error.code = "DELETE_WINDOW_EXPIRED"   (scope=all เกิน 24 ชม. และไม่ใช่แอดมิน)
+       403  error.code = "NOT_MESSAGE_OWNER"       (ไม่ใช่เจ้าของ และไม่ใช่แอดมิน)
+       scope=all ของแอดมิน → บันทึก audit log (actor, target, conversationId)
+
+DELETE /conversations/{id}   200 { "id","scope":"me","deletedAt" }
+       ซ่อนเฉพาะฝั่งผู้เรียก (เก็บ hidden_at) — ข้อความใหม่ที่ ts > hidden_at ทำให้ห้องกลับมา
+
+POST   /messages/bulk-delete { "olderThanMonths": 6, "dryRun": true }
+       200  { "deleted", "conversations", "olderThanMonths", "runAt" }
+       dryRun=true คืนจำนวนที่จะลบเพื่อยืนยันก่อน (ไม่ลบจริง)
+       เฉพาะบทบาท admin · บันทึก audit log ทุกครั้ง</pre>
+</div>
+<p style="font-size:11.5px;color:#4B5563;line-height:1.75;margin:0 0 18px"><strong>ลบเฉพาะฝั่งฉันเป็น soft delete</strong> — เก็บ <span class="mono">deleted_for[]</span> ต่อข้อความ ไม่ลบแถวจริง เพื่อให้อีกฝ่ายยังเห็น · <strong>ลบสำหรับทุกคน</strong> เก็บ tombstone (<span class="mono">deleted_all=true</span>) ไม่ลบแถว เพื่อคงลำดับ/จำนวนข้อความไว้ · ปุ่ม "เลิกทำ" ฝั่ง client หน่วง commit 5 วินาที ควรส่ง request จริงหลังหมดเวลาเท่านั้น</p>
+
+<h2 style="font-size:15px;font-weight:700;color:#7C2FD9;margin:22px 0 8px;line-height:1.5">2. สำรองข้อมูลอัตโนมัติ</h2>
+<div style="break-inside:avoid;margin-bottom:14px">
+<pre style="margin:0;padding:11px 13px;background:#F8F8FB;border:1px solid #E5E7EB;border-radius:9px;font-size:10.5px;line-height:1.65;white-space:pre-wrap" class="mono">POST   /backups            { "trigger": "manual" | "scheduled" }
+       201  { "id","createdAt","trigger","sizeMb","status":"success",
+              "location":"s3://nuv-backups/2026-08-02/","checksum":"sha256:…" }
+       503  error.code = "STORAGE_UNAVAILABLE"   (retryable: true)
+GET    /backups?limit=10    200 { "items":[…], "retention": 7, "nextRunAt": "…" }
+GET    /backups/{id}/download   302 → pre-signed URL (หมดอายุ 15 นาที)
+GET    /backups/schedule    200 { "enabled": true, "freq": "daily", "retention": 7,
+                                  "lastRunAt": "…", "nextRunAt": "…" }
+PUT    /backups/schedule    { "enabled": true, "freq": "weekly", "retention": 4 }</pre>
+</div>
+<p style="font-size:11.5px;color:#4B5563;line-height:1.75;margin:0 0 18px"><strong>ต้องรันเป็น scheduled job จริง</strong> (cron / background worker) ไม่ใช่แค่บันทึกค่า config · freq: <code>daily</code> 02:00, <code>weekly</code> อาทิตย์ 02:00, <code>monthly</code> วันที่ 1 เวลา 02:00 (Asia/Bangkok) · retention policy ลบชุดเก่าเกินจำนวนที่ตั้งไว้อัตโนมัติ · ข้อความ “สำรองข้อมูลล่าสุด …” ในหน้าตั้งค่าอ่านจาก <code>lastRunAt</code> เท่านั้น · ปุ่ม “สำรองข้อมูลก่อน” ในโซนอันตรายต้องได้ <code>201</code> ก่อน จึงปลดล็อกปุ่มรีเซ็ตข้อมูล และ backend ต้องปฏิเสธ <code>POST /admin/reset</code> ด้วย <code>409 BACKUP_REQUIRED</code> หากไม่มี backup สำเร็จภายใน 15 นาทีล่าสุด</p>
+
+<h2 style="font-size:15px;font-weight:700;color:#7C2FD9;margin:22px 0 8px;line-height:1.5">3. ซิงก์ปฏิทินอุปกรณ์</h2>
+<div style="break-inside:avoid;margin-bottom:14px">
+<pre style="margin:0;padding:11px 13px;background:#F8F8FB;border:1px solid #E5E7EB;border-radius:9px;font-size:10.5px;line-height:1.65;white-space:pre-wrap" class="mono">GET    /me/calendar.ics?token=&lt;calendar-token&gt;
+       200  text/calendar — VCALENDAR ของกิจกรรมที่ status ≠ pending
+            VEVENT: UID reg-&lt;id&gt;@nuvolunteer.nu.ac.th · SEQUENCE เพิ่มทุกครั้งที่แก้เวลา
+            STATUS: CONFIRMED | CANCELLED · VALARM TRIGGER:-P1D
+POST   /me/calendar/token/rotate    200 { "token": "…", "url": "webcal://…" }
+GET    /me/calendar/sync-state      200 { "enabled": true, "lastSyncAt": "…" }</pre>
+</div>
+<p style="font-size:11.5px;color:#4B5563;line-height:1.75;margin:0 0 18px"><strong>เว็บ:</strong> ปุ่ม “ดาวน์โหลด .ics” สร้างไฟล์ทันที และให้ subscribe URL (<code>webcal://</code>) สำหรับปฏิทินที่อัปเดตเองอัตโนมัติ — ต้องใช้ subscribe เท่านั้นถึงจะสะท้อนการยกเลิก/เปลี่ยนเวลา เพราะไฟล์ที่ดาวน์โหลดแล้วไม่อัปเดตย้อนหลัง · <strong>แอปเนทีฟ:</strong> bridge ไป EventKit (iOS) / CalendarContract (Android) โดยเก็บ <code>calendarEventId</code> คู่กับ <code>registrationId</code> เพื่อ update/delete ได้ · เมื่อกิจกรรมถูกยกเลิกหรือเลื่อน ให้ยิง <code>SEQUENCE+1</code> และ <code>STATUS:CANCELLED</code> พร้อมอัปเดต event ที่ผูกไว้</p>
+
+<h2 style="font-size:15px;font-weight:700;color:#7C2FD9;margin:22px 0 8px;line-height:1.5">4. ใบประกาศอัตโนมัติ + เกณฑ์ กยศ.</h2>
+<div style="break-inside:avoid;margin-bottom:14px">
+<pre style="margin:0;padding:11px 13px;background:#F8F8FB;border:1px solid #E5E7EB;border-radius:9px;font-size:10.5px;line-height:1.65;white-space:pre-wrap" class="mono">POST   /certificates       { "registrationId": "r12", "activityId": "a2" }
+       201  { "ref": "NUV-2569-K7Q2M", "issuedAt": "…",
+              "url": "/v1/certificates/NUV-2569-K7Q2M.pdf",
+              "verifyUrl": "https://nuvolunteer.nu.ac.th/verify?ref=NUV-2569-K7Q2M" }
+       202  { "skipped": true, "reason": "AUTO_CERT_OFF" }
+       409  error.code = "HOURS_NOT_APPROVED"
+GET    /certificates/{ref}.pdf      200 application/pdf
+GET    /certificates/verify?ref=    200 { "valid": true, "student","activity","hours","issuedAt" }
+
+GET    /settings/slf       200 { "enabled": true, "goalHoursPerYear": 36, "evidenceDays": 7 }
+PUT    /settings/slf       { "goalHoursPerYear": 40 }   → invalidate cache ทุกนิสิตทันที
+GET    /students/{id}/hours?year=2569
+       200  { "goal": 36, "approved": 22, "pending": 6, "remaining": 14,
+              "pct": 61, "breakdown": [ { "activityId","title","hours","approvedAt" } ] }</pre>
+</div>
+<p style="font-size:11.5px;color:#4B5563;line-height:1.75;margin:0 0 18px">ชั่วโมงสะสมต้อง <strong>คำนวณจากฐานข้อมูลทุกครั้ง</strong> (นับเฉพาะรายการที่ <code>hoursApprovedAt IS NOT NULL</code>) ไม่เก็บเป็นค่าคงที่ · เมื่อแอดมิน <code>PUT /settings/slf</code> ให้ล้างแคช progress ของนิสิตทุกคนและ broadcast ผ่าน WebSocket <code>slf.goal.changed</code> เพื่อให้หน้าจอที่เปิดอยู่อัปเดตทันที · ใบประกาศออกอัตโนมัติหลัง <code>hours.approved</code> เมื่อ <code>settings.autoCert = true</code> แล้วยิง <code>certificate.issued</code> ทั้งอีเมลและ in-app notification</p>
+
+<h2 style="font-size:15px;font-weight:700;color:#7C2FD9;margin:22px 0 8px;line-height:1.5">5. เปลี่ยนรหัสผ่าน</h2>
+<div style="break-inside:avoid;margin-bottom:14px">
+<pre style="margin:0;padding:11px 13px;background:#F8F8FB;border:1px solid #E5E7EB;border-radius:9px;font-size:10.5px;line-height:1.65;white-space:pre-wrap" class="mono">POST   /auth/password      { "currentPassword": "…", "newPassword": "…" }
+       200  { "changedAt": "…", "sessionsRevoked": 2 }
+       401  error.code = "INVALID_CREDENTIALS"   (รหัสผ่านปัจจุบันไม่ถูกต้อง)
+       422  error.code = "WEAK_PASSWORD" | "SAME_PASSWORD"
+       429  error.code = "TOO_MANY_ATTEMPTS"     (5 ครั้ง / 15 นาที ต่อบัญชี)</pre>
+</div>
+<p style="font-size:11.5px;color:#4B5563;line-height:1.75;margin:0 0 18px">เก็บด้วย <code>bcrypt</code> cost 12 (หรือ argon2id) · เทียบรหัสเดิมด้วย constant-time compare · เกณฑ์ขั้นต่ำ 8 ตัวอักษร มีทั้งตัวอักษรและตัวเลข · เมื่อสำเร็จ: invalidate ทุก session ยกเว้นอุปกรณ์ปัจจุบัน, ออก session id ใหม่ (ป้องกัน fixation), ส่ง <code>password.changed</code> ทางอีเมล และเขียน audit log</p>
+
+<h2 style="font-size:15px;font-weight:700;color:#7C2FD9;margin:22px 0 8px;line-height:1.5">6. ออกจากระบบอัตโนมัติเมื่อไม่มีการใช้งาน</h2>
+<div style="break-inside:avoid;margin-bottom:14px">
+<pre style="margin:0;padding:11px 13px;background:#F8F8FB;border:1px solid #E5E7EB;border-radius:9px;font-size:10.5px;line-height:1.65;white-space:pre-wrap" class="mono">GET    /auth/sessions              200 { "items":[{ "id","device","ip","current","lastSeenAt" }] }
+DELETE /auth/session               204  (ปิดเซสชันปัจจุบัน — ต้องล้าง cookie ฝั่งเซิร์ฟเวอร์จริง)
+POST   /auth/sessions/revoke-others 200 { "revoked": 2 }
+POST   /auth/heartbeat             204  (ต่ออายุ session ตอนผู้ใช้กด “ใช้งานต่อ”)
+GET    /settings/security          200 { "idleTimeoutMinutes": 60 }</pre>
+</div>
+<p style="font-size:11.5px;color:#4B5563;line-height:1.75;margin:0 0 18px">Client จับ <code>mousemove / mousedown / keydown / touchstart / wheel / scroll</code> · เมื่อเหลือ 60 วินาทีก่อนครบเวลา แสดง modal นับถอยหลังพร้อมปุ่ม “ใช้งานต่อ” (ยิง <code>heartbeat</code>) · ครบเวลาแล้วยิง <code>DELETE /auth/session</code> แล้วจึงพาไปหน้า login พร้อมข้อความเหตุผล — ห้าม redirect เฉย ๆ โดยไม่ปิด session · <strong>เซิร์ฟเวอร์ต้องบังคับหมดอายุเองด้วย</strong> (absolute + idle TTL) เพราะ timer ฝั่ง client ปลอมได้</p>
+
+<h2 style="font-size:15px;font-weight:700;color:#7C2FD9;margin:22px 0 8px;line-height:1.5">7. Error codes ที่ frontend จัดการเป็นการเฉพาะ</h2>
+<table style="width:100%;border-collapse:collapse;font-size:11px;line-height:1.6;margin-bottom:18px">
+  <thead><tr>
+    <th style="padding:6px 9px;border:1px solid #E5E7EB;background:#F3F0FA;text-align:left;color:#4B5563">code</th>
+    <th style="padding:6px 9px;border:1px solid #E5E7EB;background:#F3F0FA;text-align:left;color:#4B5563">HTTP</th>
+    <th style="padding:6px 9px;border:1px solid #E5E7EB;background:#F3F0FA;text-align:left;color:#4B5563">พฤติกรรม UI</th>
+  </tr></thead>
+  <tbody>
+    <tr><td style="padding:6px 9px;border:1px solid #E5E7EB"><code>UPSTREAM_UNAVAILABLE</code></td><td style="padding:6px 9px;border:1px solid #E5E7EB">503</td><td style="padding:6px 9px;border:1px solid #E5E7EB">retry อัตโนมัติ แล้วแสดงปุ่ม “ส่งซ้ำ”</td></tr>
+    <tr><td style="padding:6px 9px;border:1px solid #E5E7EB"><code>STORAGE_UNAVAILABLE</code></td><td style="padding:6px 9px;border:1px solid #E5E7EB">503</td><td style="padding:6px 9px;border:1px solid #E5E7EB">แถบแดงในหน้า backup + อีเมลแจ้งแอดมิน</td></tr>
+    <tr><td style="padding:6px 9px;border:1px solid #E5E7EB"><code>BACKUP_REQUIRED</code></td><td style="padding:6px 9px;border:1px solid #E5E7EB">409</td><td style="padding:6px 9px;border:1px solid #E5E7EB">ล็อกปุ่มรีเซ็ต พร้อมข้อความให้สำรองก่อน</td></tr>
+    <tr><td style="padding:6px 9px;border:1px solid #E5E7EB"><code>INVALID_CREDENTIALS</code></td><td style="padding:6px 9px;border:1px solid #E5E7EB">401</td><td style="padding:6px 9px;border:1px solid #E5E7EB">error ใต้ช่อง “รหัสผ่านปัจจุบัน”</td></tr>
+    <tr><td style="padding:6px 9px;border:1px solid #E5E7EB"><code>SESSION_EXPIRED</code></td><td style="padding:6px 9px;border:1px solid #E5E7EB">401</td><td style="padding:6px 9px;border:1px solid #E5E7EB">พาไปหน้า login พร้อมเหตุผล “หมดเวลาใช้งาน”</td></tr>
+    <tr><td style="padding:6px 9px;border:1px solid #E5E7EB"><code>HOURS_NOT_APPROVED</code></td><td style="padding:6px 9px;border:1px solid #E5E7EB">409</td><td style="padding:6px 9px;border:1px solid #E5E7EB">toast อธิบายว่าต้องอนุมัติชั่วโมงก่อน</td></tr>
+  </tbody>
+</table>
+
+<h2 style="font-size:15px;font-weight:700;color:#7C2FD9;margin:22px 0 8px;line-height:1.5">8. เช็กลิสต์ automated tests</h2>
+<div style="font-size:11.5px;color:#4B5563;line-height:1.85;break-inside:avoid">
+<div style="display:grid;grid-template-columns:1fr;gap:5px">
+<div>· อีเมล — toggle เปิด: เกิด event → มี 1 record status <code>sent</code>; toggle ปิด: ไม่มี record ใด ๆ ที่ status ≠ <code>skipped</code></div>
+<div>· อีเมล — provider ตอบ 503 สามครั้งแล้วสำเร็จ: attempts = 4, status = <code>sent</code>; ล้มเหลวครบ: status = <code>failed</code> และปุ่มส่งซ้ำทำงาน</div>
+<div>· อีเมล — ผู้รับ <code>language = en</code> ได้ subject/body ภาษาอังกฤษ</div>
+<div>· Backup — scheduled job รันตามรอบจริงที่ตั้ง; retention เกินจำนวนแล้วชุดเก่าถูกลบ</div>
+<div>· Backup — ล้มเหลว → record status <code>failed</code> + ส่ง <code>backup.failed</code> + <code>POST /admin/reset</code> ตอบ 409</div>
+<div>· ปฏิทิน — ไฟล์ .ics ผ่าน validator RFC 5545; ยกเลิกกิจกรรม → SEQUENCE เพิ่มและ STATUS = CANCELLED</div>
+<div>· กยศ. — เปลี่ยน goal 36 → 40 แล้ว <code>GET /students/{id}/hours</code> ของทุกคนสะท้อนค่าใหม่ทันที</div>
+<div>· ใบประกาศ — autoCert เปิด: อนุมัติชั่วโมง → มี PDF + ref ไม่ซ้ำ; ปิด: ไม่สร้างไฟล์</div>
+<div>· รหัสผ่าน — รหัสเดิมผิด 401; รหัสใหม่อ่อน 422; สำเร็จ → session อื่นถูก revoke และมีอีเมลแจ้ง</div>
+<div>· Idle — ครบเวลา → session id เดิมใช้เรียก API ไม่ได้ (401); กด “ใช้งานต่อ” → heartbeat ต่ออายุสำเร็จ</div>
+</div>
+</div>
+
+<h2 style="font-size:15px;font-weight:700;color:#7C2FD9;margin:26px 0 8px;line-height:1.5">9. เช็กลิสต์ปุ่ม → endpoint (ทุกการกระทำในระบบ)</h2>
+<div style="font-size:11.5px;color:#6B7280;line-height:1.7;margin-bottom:10px">ทุกแถวคือปุ่ม/การกระทำหนึ่งจุดใน UI ที่ต้องมี endpoint จริงรองรับ · คอลัมน์ "ตอนนี้" บอกว่าโค้ดปัจจุบันเรียกผ่าน <code>NUVApi</code> แล้ว (<b>A</b>) หรือยังเป็น state ในเครื่อง (<b>L</b>) ที่ต้องต่อ backend เพิ่ม</div>
+
+<table style="width:100%;border-collapse:collapse;font-size:10.5px;line-height:1.6;margin-bottom:18px">
+  <thead><tr>
+    <th style="padding:6px 8px;border:1px solid #E5E7EB;background:#F3F0FA;text-align:left;color:#4B5563;width:26%">ปุ่ม / การกระทำ</th>
+    <th style="padding:6px 8px;border:1px solid #E5E7EB;background:#F3F0FA;text-align:left;color:#4B5563;width:11%">หน้าจอ</th>
+    <th style="padding:6px 8px;border:1px solid #E5E7EB;background:#F3F0FA;text-align:left;color:#4B5563">Endpoint</th>
+    <th style="padding:6px 8px;border:1px solid #E5E7EB;background:#F3F0FA;text-align:left;color:#4B5563;width:7%">ตอนนี้</th>
+  </tr></thead>
+  <tbody>
+    <tr><td colspan="4" style="padding:6px 8px;border:1px solid #E5E7EB;background:#FAFAFB;font-weight:700;color:#7C2FD9">บัญชีและการเข้าใช้งาน</td></tr>
+    <tr><td style="padding:5px 8px;border:1px solid #E5E7EB">เข้าสู่ระบบ</td><td style="padding:5px 8px;border:1px solid #E5E7EB">Login</td><td style="padding:5px 8px;border:1px solid #E5E7EB"><code>POST /auth/login</code> → <code>{user, roles, needs2fa}</code></td><td style="padding:5px 8px;border:1px solid #E5E7EB">L</td></tr>
+    <tr><td style="padding:5px 8px;border:1px solid #E5E7EB">ยืนยันรหัส 2FA ตอนล็อกอิน</td><td style="padding:5px 8px;border:1px solid #E5E7EB">Login</td><td style="padding:5px 8px;border:1px solid #E5E7EB"><code>POST /auth/2fa/verify</code></td><td style="padding:5px 8px;border:1px solid #E5E7EB">L</td></tr>
+    <tr><td style="padding:5px 8px;border:1px solid #E5E7EB">สมัครสมาชิก (3 ขั้นตอน)</td><td style="padding:5px 8px;border:1px solid #E5E7EB">Register</td><td style="padding:5px 8px;border:1px solid #E5E7EB"><code>POST /auth/register</code> · ต้องมี <code>acceptedTerms</code>, <code>facultyId</code></td><td style="padding:5px 8px;border:1px solid #E5E7EB">L</td></tr>
+    <tr><td style="padding:5px 8px;border:1px solid #E5E7EB">โหลดรายชื่อคณะในฟอร์มสมัคร</td><td style="padding:5px 8px;border:1px solid #E5E7EB">Register</td><td style="padding:5px 8px;border:1px solid #E5E7EB"><code>GET /faculties</code> → <code>[{id, name, nameEn, color}]</code></td><td style="padding:5px 8px;border:1px solid #E5E7EB">L</td></tr>
+    <tr><td style="padding:5px 8px;border:1px solid #E5E7EB">ขอลิงก์รีเซ็ตรหัสผ่าน / ตั้งรหัสใหม่</td><td style="padding:5px 8px;border:1px solid #E5E7EB">Forgot, Reset</td><td style="padding:5px 8px;border:1px solid #E5E7EB"><code>POST /auth/forgot</code> · <code>POST /auth/reset</code></td><td style="padding:5px 8px;border:1px solid #E5E7EB">L</td></tr>
+    <tr><td style="padding:5px 8px;border:1px solid #E5E7EB">เปลี่ยนรหัสผ่าน · ออกจากทุกอุปกรณ์</td><td style="padding:5px 8px;border:1px solid #E5E7EB">ตั้งค่า</td><td style="padding:5px 8px;border:1px solid #E5E7EB"><code>POST /auth/password</code> · <code>POST /auth/sessions/revoke-others</code></td><td style="padding:5px 8px;border:1px solid #E5E7EB">A</td></tr>
+    <tr><td style="padding:5px 8px;border:1px solid #E5E7EB">เปิด / ปิด 2FA · ดาวน์โหลดรหัสสำรอง</td><td style="padding:5px 8px;border:1px solid #E5E7EB">ตั้งค่า</td><td style="padding:5px 8px;border:1px solid #E5E7EB"><code>POST /auth/2fa/enable</code> · <code>/disable</code> · <code>GET /auth/2fa/backup-codes</code></td><td style="padding:5px 8px;border:1px solid #E5E7EB">A</td></tr>
+    <tr><td style="padding:5px 8px;border:1px solid #E5E7EB">สลับบทบาท · ออกจากระบบ</td><td style="padding:5px 8px;border:1px solid #E5E7EB">Header</td><td style="padding:5px 8px;border:1px solid #E5E7EB"><code>POST /auth/switch-role</code> · <code>POST /auth/logout</code></td><td style="padding:5px 8px;border:1px solid #E5E7EB">L</td></tr>
+    <tr><td style="padding:5px 8px;border:1px solid #E5E7EB">heartbeat ต่ออายุเซสชัน (idle timeout)</td><td style="padding:5px 8px;border:1px solid #E5E7EB">ทั้งระบบ</td><td style="padding:5px 8px;border:1px solid #E5E7EB"><code>POST /auth/heartbeat</code> ทุก 60 วิ ขณะมีการใช้งาน</td><td style="padding:5px 8px;border:1px solid #E5E7EB">A</td></tr>
+
+    <tr><td colspan="4" style="padding:6px 8px;border:1px solid #E5E7EB;background:#FAFAFB;font-weight:700;color:#7C2FD9">นิสิต — กิจกรรมและการสมัคร</td></tr>
+    <tr><td style="padding:5px 8px;border:1px solid #E5E7EB">รายการกิจกรรม · ค้นหา · ตัวกรอง</td><td style="padding:5px 8px;border:1px solid #E5E7EB">หน้าหลัก</td><td style="padding:5px 8px;border:1px solid #E5E7EB"><code>GET /activities?q&amp;category&amp;faculty&amp;from&amp;to&amp;page</code></td><td style="padding:5px 8px;border:1px solid #E5E7EB">L</td></tr>
+    <tr><td style="padding:5px 8px;border:1px solid #E5E7EB">เปิดรายละเอียดกิจกรรม</td><td style="padding:5px 8px;border:1px solid #E5E7EB">หน้าหลัก</td><td style="padding:5px 8px;border:1px solid #E5E7EB"><code>GET /activities/{id}</code></td><td style="padding:5px 8px;border:1px solid #E5E7EB">L</td></tr>
+    <tr><td style="padding:5px 8px;border:1px solid #E5E7EB">สมัครเข้าร่วม · ยกเลิกการสมัคร</td><td style="padding:5px 8px;border:1px solid #E5E7EB">รายละเอียด</td><td style="padding:5px 8px;border:1px solid #E5E7EB"><code>POST /activities/{id}/register</code> · <code>POST /registrations/{id}/cancel</code></td><td style="padding:5px 8px;border:1px solid #E5E7EB">L</td></tr>
+    <tr><td style="padding:5px 8px;border:1px solid #E5E7EB">บันทึก / เอาออกจากรายการที่สนใจ</td><td style="padding:5px 8px;border:1px solid #E5E7EB">การ์ดกิจกรรม</td><td style="padding:5px 8px;border:1px solid #E5E7EB"><code>PUT /me/wishlist/{activityId}</code> · <code>DELETE</code></td><td style="padding:5px 8px;border:1px solid #E5E7EB">L</td></tr>
+    <tr><td style="padding:5px 8px;border:1px solid #E5E7EB">แชร์กิจกรรม (LINE, Facebook, X, SMS, QR)</td><td style="padding:5px 8px;border:1px solid #E5E7EB">รายละเอียด</td><td style="padding:5px 8px;border:1px solid #E5E7EB">ไม่ต้องมี endpoint — ใช้ URL สาธารณะ <code>/activities/{id}</code> · ต้องมี OG meta ฝั่ง server</td><td style="padding:5px 8px;border:1px solid #E5E7EB">—</td></tr>
+    <tr><td style="padding:5px 8px;border:1px solid #E5E7EB">สแกน QR เช็กอิน / เช็กเอาต์</td><td style="padding:5px 8px;border:1px solid #E5E7EB">สแกน QR</td><td style="padding:5px 8px;border:1px solid #E5E7EB"><code>POST /checkin</code> body <code>{activityId, token, mode, lat, lng}</code> → 409 ถ้า token หมดอายุ</td><td style="padding:5px 8px;border:1px solid #E5E7EB">A</td></tr>
+    <tr><td style="padding:5px 8px;border:1px solid #E5E7EB">อัปโหลดหลักฐานการเข้าร่วม</td><td style="padding:5px 8px;border:1px solid #E5E7EB">กิจกรรมของฉัน</td><td style="padding:5px 8px;border:1px solid #E5E7EB"><code>POST /registrations/{id}/evidence</code> (multipart, ≤6 MB)</td><td style="padding:5px 8px;border:1px solid #E5E7EB">L</td></tr>
+    <tr><td style="padding:5px 8px;border:1px solid #E5E7EB">ยื่นอุทธรณ์ผลชั่วโมง</td><td style="padding:5px 8px;border:1px solid #E5E7EB">ชั่วโมงของฉัน</td><td style="padding:5px 8px;border:1px solid #E5E7EB"><code>POST /registrations/{id}/appeal</code> <code>{reason, file}</code></td><td style="padding:5px 8px;border:1px solid #E5E7EB">L</td></tr>
+    <tr><td style="padding:5px 8px;border:1px solid #E5E7EB">ดาวน์โหลดใบประกาศ · ดาวน์โหลด .ics</td><td style="padding:5px 8px;border:1px solid #E5E7EB">ใบประกาศ</td><td style="padding:5px 8px;border:1px solid #E5E7EB"><code>GET /certificates/{id}.pdf</code> · <code>GET /me/calendar.ics</code></td><td style="padding:5px 8px;border:1px solid #E5E7EB">A</td></tr>
+    <tr><td style="padding:5px 8px;border:1px solid #E5E7EB">ตรวจสอบใบประกาศด้วยรหัสอ้างอิง</td><td style="padding:5px 8px;border:1px solid #E5E7EB">Verify (สาธารณะ)</td><td style="padding:5px 8px;border:1px solid #E5E7EB"><code>GET /verify/{ref}</code> — ไม่ต้องล็อกอิน คืนเฉพาะฟิลด์ที่จำเป็น</td><td style="padding:5px 8px;border:1px solid #E5E7EB">A</td></tr>
+    <tr><td style="padding:5px 8px;border:1px solid #E5E7EB">ส่งข้อความถึงแอดมิน / ผู้จัดกิจกรรม</td><td style="padding:5px 8px;border:1px solid #E5E7EB">ติดต่อ</td><td style="padding:5px 8px;border:1px solid #E5E7EB"><code>POST /messages</code> <code>{target:"admin"|activityId, text}</code></td><td style="padding:5px 8px;border:1px solid #E5E7EB">L</td></tr>
+
+    <tr><td colspan="4" style="padding:6px 8px;border:1px solid #E5E7EB;background:#FAFAFB;font-weight:700;color:#7C2FD9">ผู้จัดกิจกรรม</td></tr>
+    <tr><td style="padding:5px 8px;border:1px solid #E5E7EB">สร้าง / แก้ไข / ลบกิจกรรม</td><td style="padding:5px 8px;border:1px solid #E5E7EB">กิจกรรมของฉัน</td><td style="padding:5px 8px;border:1px solid #E5E7EB"><code>POST /activities</code> · <code>PATCH /activities/{id}</code> · <code>DELETE</code></td><td style="padding:5px 8px;border:1px solid #E5E7EB">L</td></tr>
+    <tr><td style="padding:5px 8px;border:1px solid #E5E7EB">รายชื่อผู้เข้าร่วมของกิจกรรม</td><td style="padding:5px 8px;border:1px solid #E5E7EB">ผู้เข้าร่วม</td><td style="padding:5px 8px;border:1px solid #E5E7EB"><code>GET /activities/{id}/registrations?status&amp;q&amp;sort</code></td><td style="padding:5px 8px;border:1px solid #E5E7EB">L</td></tr>
+    <tr><td style="padding:5px 8px;border:1px solid #E5E7EB">อนุมัติ / ปฏิเสธผู้สมัคร (เดี่ยวและเป็นชุด)</td><td style="padding:5px 8px;border:1px solid #E5E7EB">ผู้เข้าร่วม</td><td style="padding:5px 8px;border:1px solid #E5E7EB"><code>POST /registrations/bulk</code> <code>{ids[], action:"approve"|"reject"}</code></td><td style="padding:5px 8px;border:1px solid #E5E7EB">L</td></tr>
+    <tr><td style="padding:5px 8px;border:1px solid #E5E7EB">เช็กอิน / เช็กเอาต์ให้ผู้เข้าร่วมเป็นชุด</td><td style="padding:5px 8px;border:1px solid #E5E7EB">ผู้เข้าร่วม</td><td style="padding:5px 8px;border:1px solid #E5E7EB"><code>POST /registrations/bulk</code> <code>{action:"checkin"|"checkout"}</code></td><td style="padding:5px 8px;border:1px solid #E5E7EB">L</td></tr>
+    <tr><td style="padding:5px 8px;border:1px solid #E5E7EB">อนุมัติ / ปฏิเสธหลักฐานและชั่วโมง</td><td style="padding:5px 8px;border:1px solid #E5E7EB">อนุมัติชั่วโมง</td><td style="padding:5px 8px;border:1px solid #E5E7EB"><code>POST /registrations/{id}/hours</code> <code>{approved, hours, note}</code></td><td style="padding:5px 8px;border:1px solid #E5E7EB">L</td></tr>
+    <tr><td style="padding:5px 8px;border:1px solid #E5E7EB">ตัดสินคำขออุทธรณ์</td><td style="padding:5px 8px;border:1px solid #E5E7EB">อุทธรณ์</td><td style="padding:5px 8px;border:1px solid #E5E7EB"><code>POST /appeals/{id}/decide</code> <code>{approved, note}</code></td><td style="padding:5px 8px;border:1px solid #E5E7EB">L</td></tr>
+    <tr><td style="padding:5px 8px;border:1px solid #E5E7EB">อนุมัติ / ปฏิเสธคำขอยกเลิก</td><td style="padding:5px 8px;border:1px solid #E5E7EB">คำขอยกเลิก</td><td style="padding:5px 8px;border:1px solid #E5E7EB"><code>POST /cancellations/{id}/decide</code></td><td style="padding:5px 8px;border:1px solid #E5E7EB">L</td></tr>
+    <tr><td style="padding:5px 8px;border:1px solid #E5E7EB">สร้าง QR เช็กอิน (token หมุนเวียน)</td><td style="padding:5px 8px;border:1px solid #E5E7EB">QR</td><td style="padding:5px 8px;border:1px solid #E5E7EB"><code>POST /activities/{id}/qr-session</code> → <code>{token, expiresAt}</code> รีเฟรชทุก 30 วิ</td><td style="padding:5px 8px;border:1px solid #E5E7EB">A</td></tr>
+    <tr><td style="padding:5px 8px;border:1px solid #E5E7EB">ส่งข้อความถึงผู้ที่เลือก · ตอบกลับในแชท</td><td style="padding:5px 8px;border:1px solid #E5E7EB">ผู้เข้าร่วม, แชท</td><td style="padding:5px 8px;border:1px solid #E5E7EB"><code>POST /activities/{id}/broadcast</code> · <code>POST /threads/{id}/messages</code></td><td style="padding:5px 8px;border:1px solid #E5E7EB">L</td></tr>
+    <tr><td style="padding:5px 8px;border:1px solid #E5E7EB">ส่งออก CSV · พิมพ์รายชื่อ / PDF</td><td style="padding:5px 8px;border:1px solid #E5E7EB">รายงาน</td><td style="padding:5px 8px;border:1px solid #E5E7EB"><code>GET /activities/{id}/registrations.csv</code> · พิมพ์ทำฝั่ง client</td><td style="padding:5px 8px;border:1px solid #E5E7EB">L</td></tr>
+
+    <tr><td colspan="4" style="padding:6px 8px;border:1px solid #E5E7EB;background:#FAFAFB;font-weight:700;color:#7C2FD9">แอดมิน</td></tr>
+    <tr><td style="padding:5px 8px;border:1px solid #E5E7EB">จัดการผู้ใช้ (เพิ่ม/แก้บทบาท/ระงับ)</td><td style="padding:5px 8px;border:1px solid #E5E7EB">ผู้ใช้</td><td style="padding:5px 8px;border:1px solid #E5E7EB"><code>GET|POST /admin/users</code> · <code>PATCH /admin/users/{id}</code></td><td style="padding:5px 8px;border:1px solid #E5E7EB">L</td></tr>
+    <tr><td style="padding:5px 8px;border:1px solid #E5E7EB">จัดการคณะ · หมวดหมู่ · ข่าว · แบนเนอร์</td><td style="padding:5px 8px;border:1px solid #E5E7EB">เนื้อหา</td><td style="padding:5px 8px;border:1px solid #E5E7EB"><code>CRUD /admin/faculties|categories|news|banners</code></td><td style="padding:5px 8px;border:1px solid #E5E7EB">L</td></tr>
+    <tr><td style="padding:5px 8px;border:1px solid #E5E7EB">บันทึกการตั้งค่าระบบทุกตัว</td><td style="padding:5px 8px;border:1px solid #E5E7EB">ตั้งค่า</td><td style="padding:5px 8px;border:1px solid #E5E7EB"><code>PUT /admin/settings</code> — ค่าเดียวกับที่ UI ใช้ควบคุมพฤติกรรม</td><td style="padding:5px 8px;border:1px solid #E5E7EB">A</td></tr>
+    <tr><td style="padding:5px 8px;border:1px solid #E5E7EB">ส่งอีเมลทดสอบ · ส่งซ้ำจากบันทึกการส่ง</td><td style="padding:5px 8px;border:1px solid #E5E7EB">ตั้งค่า</td><td style="padding:5px 8px;border:1px solid #E5E7EB"><code>POST /admin/email/test</code> · <code>POST /admin/email/{id}/resend</code></td><td style="padding:5px 8px;border:1px solid #E5E7EB">A</td></tr>
+    <tr><td style="padding:5px 8px;border:1px solid #E5E7EB">สำรองข้อมูลเดี๋ยวนี้ · คืนค่าข้อมูล</td><td style="padding:5px 8px;border:1px solid #E5E7EB">ตั้งค่า</td><td style="padding:5px 8px;border:1px solid #E5E7EB"><code>POST /admin/backup</code> · <code>POST /admin/reset</code> (409 ถ้ายังไม่มี backup สำเร็จ)</td><td style="padding:5px 8px;border:1px solid #E5E7EB">A</td></tr>
+    <tr><td style="padding:5px 8px;border:1px solid #E5E7EB">ตอบกล่องข้อความ · ทำเครื่องหมายอ่านแล้ว</td><td style="padding:5px 8px;border:1px solid #E5E7EB">ข้อความ</td><td style="padding:5px 8px;border:1px solid #E5E7EB"><code>POST /threads/{id}/messages</code> · <code>POST /threads/{id}/read</code></td><td style="padding:5px 8px;border:1px solid #E5E7EB">L</td></tr>
+    <tr><td style="padding:5px 8px;border:1px solid #E5E7EB">ดูบันทึกระบบ (audit log)</td><td style="padding:5px 8px;border:1px solid #E5E7EB">บันทึกระบบ</td><td style="padding:5px 8px;border:1px solid #E5E7EB"><code>GET /admin/logs?level&amp;from&amp;to&amp;page</code></td><td style="padding:5px 8px;border:1px solid #E5E7EB">L</td></tr>
+
+    <tr><td colspan="4" style="padding:6px 8px;border:1px solid #E5E7EB;background:#FAFAFB;font-weight:700;color:#7C2FD9">การแจ้งเตือน (ทุกบทบาท)</td></tr>
+    <tr><td style="padding:5px 8px;border:1px solid #E5E7EB">โหลดรายการแจ้งเตือน · ตัวกรองตามประเภท</td><td style="padding:5px 8px;border:1px solid #E5E7EB">แจ้งเตือน</td><td style="padding:5px 8px;border:1px solid #E5E7EB"><code>GET /notifications?group&amp;since</code> — เรียง <code>createdAt</code> desc ฝั่ง server</td><td style="padding:5px 8px;border:1px solid #E5E7EB">L</td></tr>
+    <tr><td style="padding:5px 8px;border:1px solid #E5E7EB">คลิกรายการ → มาร์คอ่านแล้ว · อ่านทั้งหมด</td><td style="padding:5px 8px;border:1px solid #E5E7EB">แจ้งเตือน</td><td style="padding:5px 8px;border:1px solid #E5E7EB"><code>POST /notifications/{id}/read</code> · <code>POST /notifications/read-all</code></td><td style="padding:5px 8px;border:1px solid #E5E7EB">L</td></tr>
+    <tr><td style="padding:5px 8px;border:1px solid #E5E7EB">ตัวเลข badge ที่ระฆังและเมนูแชท</td><td style="padding:5px 8px;border:1px solid #E5E7EB">Header, Sidebar</td><td style="padding:5px 8px;border:1px solid #E5E7EB"><code>GET /notifications/summary</code> → <code>{unread, byGroup{}}</code> — แหล่งเดียวกับลิสต์</td><td style="padding:5px 8px;border:1px solid #E5E7EB">L</td></tr>
+  </tbody>
+</table>
+
+<div style="border:1px solid #E5E7EB;border-left:3px solid #A774F7;border-radius:8px;padding:11px 14px;font-size:11px;line-height:1.75;color:#4B5563;margin-bottom:8px">
+  <b style="color:#1F2937">เกณฑ์ผ่านของเช็กลิสต์นี้</b> — ทุกแถวที่ยัง <b>L</b> ต้องเปลี่ยนเป็น <b>A</b> โดยแก้เฉพาะไฟล์ <code>nuv-api.js</code> ห้ามแก้ไฟล์หน้าจอ · ทุกการกระทำที่เปลี่ยนข้อมูลต้องคืน entity เวอร์ชันใหม่กลับมาให้ UI ใช้แทนที่ state เดิม ไม่ใช่คืนแค่ <code>{ok:true}</code> · การกระทำเป็นชุดต้องเป็น atomic — ถ้ามีรายการใดล้มเหลว ให้ตอบ 207 พร้อมผลรายตัวใน <code>results[]</code>
+</div>
+
+</doc-page>
+</x-dc>
+</body>
+</html>

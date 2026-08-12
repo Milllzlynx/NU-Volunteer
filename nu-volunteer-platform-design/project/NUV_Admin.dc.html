@@ -1,0 +1,2040 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+
+<helmet><script src="./image-slot.js"></script><style>
+@media (max-width:1000px){ .nuv-prof-grid{grid-template-columns:1fr !important} }
+@media (max-width:1000px){ .nuv-week-grid{grid-template-columns:repeat(2,minmax(0,1fr)) !important} }
+@media (max-width:1000px){ .nuv-inbox{grid-template-columns:1fr !important} }
+@media (max-width:1100px){
+  .nuv-fac-row{grid-template-columns:26px 12px minmax(0,1fr) 60px 34px !important}
+  .nuv-fac-row .nuv-fac-bar, .nuv-fac-row .nuv-fac-nums{display:none !important}
+}
+@media (max-width:900px){ .nuv-form-grid{grid-template-columns:1fr !important} .nuv-guide-row{grid-template-columns:1fr !important} }
+@media (max-width:640px){
+  .nuv-bannerhead{align-items:flex-start !important}
+  .nuv-banneracts{width:100%;order:3;margin-top:4px}
+  .nuv-banneracts > button{min-height:44px}
+  .nuv-cal-grid{gap:4px !important}
+  .nuv-cal-grid > div{padding:6px 5px !important;border-radius:11px !important}
+}
+/* แถวการ์ดเลื่อนแนวนอน: สกอลล์บาร์บางกลมกลืน โผล่เฉพาะตอน hover */
+.nuv-rail{overflow-x:auto;overflow-y:hidden;scrollbar-width:thin;scrollbar-color:transparent transparent;scroll-behavior:smooth;-webkit-overflow-scrolling:touch}
+.nuv-rail::-webkit-scrollbar{height:7px}
+.nuv-rail::-webkit-scrollbar-track{background:transparent}
+.nuv-rail::-webkit-scrollbar-thumb{background:transparent;border-radius:999px}
+.nuv-railwrap:hover .nuv-rail{scrollbar-color:rgba(31,41,55,.18) transparent}
+.nuv-railwrap:hover .nuv-rail::-webkit-scrollbar-thumb{background:rgba(31,41,55,.18)}
+.nuv-rail::-webkit-scrollbar-thumb:hover{background:rgba(31,41,55,.3)}
+.nuv-railnext{opacity:.9;transition:opacity 200ms ease, transform 200ms ease}
+.nuv-railwrap:hover .nuv-railnext{opacity:1}
+@media (hover:none){ .nuv-railnext, .nuv-railfade{display:none !important} }
+@media (max-width:820px){ .nuv-railnext{display:none !important} }
+</style></helmet>
+<sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
+  <div style="display:flex;flex-direction:column;gap:20px">
+
+    <sc-if value="{{ maintenanceOn }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;align-items:center;gap:13px;padding:15px 18px;border-radius:18px;border:1px solid rgba(245,166,35,.42);background:rgba(245,166,35,.13);box-shadow:0 12px 30px rgba(245,166,35,.14)">
+        <span class="msr fill" style="font-size:23px;color:#c2740a;flex-shrink:0">engineering</span>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:13.5px;font-weight:500;color:#8a5205;line-height:1.6">{{ L.k3 }}</div>
+          <div style="font-size:11.5px;color:#a06a10;margin-top:2px">{{ L.k5 }}</div>
+        </div>
+        <button onClick="{{ onGoSettings }}" style-hover="background:rgba(255,255,255,.95);transform:translateY(-2px)" style="display:flex;align-items:center;gap:6px;padding:9px 15px;border-radius:12px;cursor:pointer;transition:all 200ms ease;border:1px solid rgba(31,41,55,.1);background:rgba(255,255,255,.8);color:#4B5563;font-family:inherit;font-size:12.5px;flex-shrink:0"><span class="msr" style="font-size:17px">tune</span>{{ L.k54 }}</button>
+      </div>
+    </sc-if>
+    <sc-if value="{{ hasPolicyChips }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <sc-for list="{{ policyChips }}" as="c" hint-placeholder-count="2">
+          <span style="{{ c.style }}"><span class="msr" style="font-size:15px">{{ c.icon }}</span>{{ c.label }}</span>
+        </sc-for>
+      </div>
+    </sc-if>
+
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap">
+      <div>
+        <div style="font-size:22px;font-weight:600;color:#1F2937;line-height:1.5">{{ greeting }}, {{ adminRoleName }}</div>
+        <div style="font-size:12.5px;color:#6B7280;margin-top:2px">{{ L.k12 }} {{ lastUpdated }}</div>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <button onClick="{{ onRefresh }}" style="display:flex;align-items:center;gap:7px;padding:11px 18px;border-radius:13px;cursor:pointer;transition:all 220ms ease;border:1px solid rgba(31,41,55,.1);background:rgba(255,255,255,.6);backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);color:#4B5563;font-family:inherit;font-size:13px" title="{{ L.k80 }}" aria-label="{{ L.k80 }}" class="nuv-iconbtn" style-hover="background:rgba(255,255,255,.9);transform:translateY(-2px)"><span class="msr" style="font-size:18px">refresh</span><span class="nuv-blabel">{{ L.k80 }}</span></button>
+        <button onClick="{{ onAddUser }}" style="display:flex;align-items:center;gap:7px;padding:11px 20px;border-radius:13px;border:none;background:linear-gradient(135deg,#E97171,#A774F7);color:#fff;font-family:inherit;font-weight:500;font-size:13px;cursor:pointer;box-shadow:0 6px 18px rgba(167,116,247,.32)"><span class="msr" style="font-size:18px">person_add</span>{{ L.k43 }}</button>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px">
+      <sc-for list="{{ metricCards }}" as="c" hint-placeholder-count="4">
+        <div style="position:relative;overflow:hidden;background:rgba(255,255,255,.62);backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);border:1px solid rgba(255,255,255,.75);border-radius:24px;box-shadow:0 15px 45px rgba(31,41,55,.10), inset 0 1px 0 rgba(255,255,255,.6);padding:20px;transition:all 300ms ease" style-hover="transform:translateY(-4px);box-shadow:0 24px 60px rgba(31,41,55,.14)">
+          <div style="position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,{{ c.color }},{{ c.accentTo }})"></div>
+          <div style="width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:{{ c.iconBg }}"><span class="msr fill" style="font-size:22px;color:{{ c.color }}">{{ c.icon }}</span></div>
+          <div style="font-size:12.5px;color:#6B7280;margin-top:12px">{{ c.label }}</div>
+          <div style="font-size:28px;font-weight:600;color:#1F2937;line-height:1.35">{{ c.value }}</div>
+          <div style="display:flex;align-items:center;gap:5px;margin-top:4px">
+            <span class="msr" style="font-size:16px;color:{{ c.trendColor }}">{{ c.trendIcon }}</span>
+            <span style="font-size:11.5px;font-weight:500;color:{{ c.trendColor }}">{{ c.trendValue }}</span>
+            <span style="font-size:11.5px;color:#9CA3AF">{{ c.trendNote }}</span>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+
+    <div style="display:grid;grid-template-columns:2fr 1fr;gap:18px" class="nuv-chartrow">
+      <div style="background:rgba(255,255,255,.62);backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);border:1px solid rgba(255,255,255,.75);border-radius:24px;box-shadow:0 15px 45px rgba(31,41,55,.10), inset 0 1px 0 rgba(255,255,255,.6);padding:22px">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-bottom:18px">
+          <div>
+            <div style="font-weight:500;font-size:15px;color:#1F2937">{{ L.k10 }}</div>
+            <div style="font-size:11.5px;color:#9CA3AF;margin-top:2px">{{ L.k9 }}</div>
+          </div>
+          <div style="display:flex;gap:14px">
+            <div style="display:flex;align-items:center;gap:6px;font-size:11.5px;color:#4B5563"><span style="width:10px;height:10px;border-radius:3px;background:#A774F7"></span>{{ L.k77 }}</div>
+            <div style="display:flex;align-items:center;gap:6px;font-size:11.5px;color:#4B5563"><span style="width:10px;height:10px;border-radius:3px;background:#63D2A1"></span>{{ L.k70 }}</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:10px">
+          <div style="display:flex;flex-direction:column;justify-content:space-between;font-size:10.5px;color:#9CA3AF;height:190px;text-align:right;padding-bottom:22px;flex-shrink:0">
+            <sc-for list="{{ dailyAxis }}" as="ax" hint-placeholder-count="5"><div>{{ ax }}</div></sc-for>
+          </div>
+          <div style="flex:1;min-width:0;position:relative;height:190px">
+            <div style="position:absolute;inset:0 0 22px 0;display:flex;flex-direction:column;justify-content:space-between;pointer-events:none">
+              <sc-for list="{{ dailyAxis }}" as="ax" hint-placeholder-count="5"><div style="border-top:1px solid rgba(31,41,55,.07)"></div></sc-for>
+            </div>
+            <div style="position:absolute;inset:0;display:flex;align-items:flex-end;gap:6px">
+              <sc-for list="{{ dailyBars }}" as="d" hint-placeholder-count="14">
+                <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;height:100%;justify-content:flex-end;position:relative" onMouseEnter="{{ d.onEnter }}" onMouseLeave="{{ onDailyLeave }}">
+                  <sc-if value="{{ d.showTip }}" hint-placeholder-val="{{ false }}">
+                    <div style="position:absolute;bottom:100%;margin-bottom:4px;background:#1F2937;color:#fff;padding:6px 10px;border-radius:9px;font-size:11px;line-height:1.6;white-space:nowrap;z-index:5;text-align:left">{{ d.label }}<br/>{{ L.k77 }} {{ d.inV }} · {{ L.k70 }} {{ d.outV }}</div>
+                  </sc-if>
+                  <div style="width:100%;display:flex;gap:2px;align-items:flex-end;height:calc(100% - 22px)">
+                    <div style="flex:1;border-radius:4px 4px 0 0;background:#A774F7;height:{{ d.inPct }}%;transition:height 300ms ease"></div>
+                    <div style="flex:1;border-radius:4px 4px 0 0;background:#63D2A1;height:{{ d.outPct }}%;transition:height 300ms ease"></div>
+                  </div>
+                  <div style="font-size:9.5px;color:#9CA3AF;height:16px">{{ d.label }}</div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="background:rgba(255,255,255,.62);backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);border:1px solid rgba(255,255,255,.75);border-radius:24px;box-shadow:0 15px 45px rgba(31,41,55,.10), inset 0 1px 0 rgba(255,255,255,.6);padding:22px">
+        <div style="font-weight:500;font-size:15px;color:#1F2937">{{ L.k21 }}</div>
+        <div style="font-size:11.5px;color:#9CA3AF;margin-top:2px;margin-bottom:16px">{{ L.k62 }} {{ donutTotal }} {{ L.k78 }}</div>
+        <div style="display:flex;justify-content:center;margin-bottom:18px">
+          <div style="position:relative;width:168px;height:168px">
+            <div style="position:absolute;inset:0;border-radius:50%;background:{{ donutGradient }}"></div>
+            <div style="position:absolute;inset:26px;border-radius:50%;background:rgba(255,255,255,.92);display:flex;flex-direction:column;align-items:center;justify-content:center">
+              <div style="font-size:26px;font-weight:600;color:#1F2937;line-height:1.3">{{ donutTotal }}</div>
+              <div style="font-size:11px;color:#9CA3AF">{{ L.k78 }}</div>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <sc-for list="{{ donutLegend }}" as="dl" hint-placeholder-count="7">
+            <div style="display:flex;align-items:center;gap:8px;font-size:11.5px">
+              <span style="width:9px;height:9px;border-radius:3px;flex-shrink:0;background:{{ dl.color }}"></span>
+              <span style="flex:1;min-width:0;color:#4B5563;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ dl.label }}</span>
+              <span style="color:#1F2937;font-weight:500">{{ dl.pct }}%</span>
+              <span style="color:#9CA3AF;width:24px;text-align:right">{{ dl.count }}</span>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px" class="nuv-chartrow">
+      <div style="background:rgba(255,255,255,.62);backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);border:1px solid rgba(255,255,255,.75);border-radius:24px;box-shadow:0 15px 45px rgba(31,41,55,.10), inset 0 1px 0 rgba(255,255,255,.6);padding:22px">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:14px">
+          <div style="display:flex;align-items:center;gap:9px">
+            <div style="font-weight:500;font-size:15px;color:#1F2937">{{ L.k24 }}</div>
+            <span style="padding:2px 9px;border-radius:999px;font-size:11px;font-weight:500;background:rgba(245,166,35,.18);color:#B45309">{{ closingCount }}</span>
+          </div>
+          <button onClick="{{ onSeeActivities }}" style="border:none;background:none;color:#A774F7;font-family:inherit;font-size:12px;cursor:pointer">{{ L.k71 }}</button>
+        </div>
+        <sc-if value="{{ !hasClosing }}" hint-placeholder-val="{{ false }}">
+          <div style="font-size:12.5px;color:#9CA3AF;padding:14px 0">{{ L.k16 }}</div>
+        </sc-if>
+        <sc-for list="{{ closingSoon }}" as="cs" hint-placeholder-count="4">
+          <div style="display:flex;gap:11px;align-items:center;padding:10px 0;border-top:1px solid rgba(31,41,55,.05)">
+            <img src="{{ cs.photo }}" alt="" style="width:44px;height:36px;border-radius:10px;object-fit:cover;flex-shrink:0;display:block"/>
+            <div style="flex:1;min-width:0">
+              <div style="font-size:12.5px;color:#1F2937;line-height:1.5;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ cs.title }}</div>
+              <div style="font-size:11px;color:#9CA3AF">{{ cs.date }} · {{ cs.seatsLeftLabel }}</div>
+            </div>
+            <div style="padding:4px 10px;border-radius:999px;font-size:10.5px;font-weight:500;background:{{ cs.capBg }};color:{{ cs.capColor }};white-space:nowrap">{{ cs.capLabel }}</div>
+          </div>
+        </sc-for>
+      </div>
+
+      <div style="background:rgba(255,255,255,.62);backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);border:1px solid rgba(255,255,255,.75);border-radius:24px;box-shadow:0 15px 45px rgba(31,41,55,.10), inset 0 1px 0 rgba(255,255,255,.6);padding:22px">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:14px">
+          <div style="display:flex;align-items:center;gap:8px">
+            <span style="width:8px;height:8px;border-radius:50%;background:#63D2A1;box-shadow:0 0 0 4px rgba(99,210,161,.2)"></span>
+            <div style="font-weight:500;font-size:15px;color:#1F2937">{{ L.k30 }}</div>
+          </div>
+          <button onClick="{{ onSeeLogs }}" style="border:none;background:none;color:#A774F7;font-family:inherit;font-size:12px;cursor:pointer">{{ L.k71 }}</button>
+        </div>
+        <sc-if value="{{ !hasRecentLogs }}" hint-placeholder-val="{{ false }}">
+          <div style="font-size:12.5px;color:#9CA3AF;padding:14px 0">{{ L.k26 }}</div>
+        </sc-if>
+        <sc-for list="{{ recentLogs }}" as="lg" hint-placeholder-count="5">
+          <div style="display:flex;gap:11px;align-items:flex-start;padding:9px 0;border-top:1px solid rgba(31,41,55,.05)">
+            <div style="width:30px;height:30px;border-radius:10px;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:{{ lg.bg }}"><span class="msr fill" style="font-size:16px;color:{{ lg.color }}">{{ lg.icon }}</span></div>
+            <div style="flex:1;min-width:0">
+              <div style="font-size:12.5px;color:#374151;line-height:1.5">{{ lg.text }}</div>
+              <div style="font-size:11px;color:#9CA3AF;margin-top:1px">{{ lg.time }}</div>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </div>
+</sc-if>
+
+<sc-if value="{{ isUsers }}" hint-placeholder-val="{{ false }}">
+  <div style="display:flex;flex-direction:column;gap:16px">
+    <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center">
+      <div style="position:relative;flex:1;min-width:220px">
+        <span class="msr" style="position:absolute;left:13px;top:50%;transform:translateY(-50%);font-size:19px;color:#9CA3AF">search</span>
+        <input value="{{ userSearch }}" onChange="{{ onUserSearch }}" placeholder="{{ L.k27 }}" style="width:100%;padding:12px 14px 12px 42px;border-radius:14px;border:1px solid rgba(255,255,255,.75);background:rgba(255,255,255,.62);backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);font-size:13.5px;outline:none;color:#1F2937"/>
+      </div>
+      <button onClick="{{ onAddUser }}" style="display:flex;align-items:center;gap:7px;padding:12px 20px;border-radius:14px;border:none;background:linear-gradient(135deg,#E97171,#A774F7);color:#fff;font-weight:500;font-size:13.5px;cursor:pointer;box-shadow:0 6px 18px rgba(167,116,247,.32);white-space:nowrap"><span class="msr" style="font-size:19px">person_add</span>{{ L.k58 }}</button>
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px">
+      <sc-for list="{{ roleFilterCards }}" as="rc" hint-placeholder-count="4">
+        <div onClick="{{ rc.onClick }}" style="{{ rc.cardStyle }}">
+          <div style="position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,{{ rc.color }},{{ rc.accentTo }})"></div>
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+            <div style="font-size:24px;font-weight:600;color:#1F2937;line-height:1.4">{{ rc.count }}</div>
+            <div style="width:38px;height:38px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:{{ rc.iconBg }}"><span class="msr fill" style="font-size:19px;color:{{ rc.color }}">{{ rc.icon }}</span></div>
+          </div>
+          <div style="font-size:12.5px;color:#6B7280;margin-top:2px">{{ rc.label }}</div>
+          <div style="font-size:10.5px;color:#9CA3AF;line-height:1.6;margin-top:4px">{{ rc.perms }}</div>
+        </div>
+      </sc-for>
+    </div>
+
+    <sc-if value="{{ hasLegacyRoleWarning }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;gap:11px;align-items:flex-start;background:rgba(245,166,35,.12);border:1px solid rgba(245,166,35,.32);border-radius:16px;padding:14px 16px">
+        <span class="msr fill" style="font-size:20px;color:#B45309;flex-shrink:0">warning</span>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:13px;font-weight:500;color:#92400E">{{ L.k7 }}</div>
+          <div style="font-size:12px;color:#B45309;line-height:1.7;margin-top:2px">{{ legacyRoleNames }} — กรุณาเปลี่ยน{{ L.k85 }}ให้เรียบร้อย ระบบจะจำกัดสิทธิ์เป็น{{ L.k88 }}{{ L.k86 }}ชั่วคราว</div>
+        </div>
+      </div>
+    </sc-if>
+
+    <div style="background:rgba(255,255,255,.62);backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);border:1px solid rgba(255,255,255,.75);border-radius:24px;box-shadow:0 15px 45px rgba(31,41,55,.10), inset 0 1px 0 rgba(255,255,255,.6);overflow:hidden">
+      <div class="nuv-trow nuv-cardhead" style="display:grid;grid-template-columns:1.6fr 1.6fr 1fr 1.3fr .8fr;gap:10px;padding:12px 20px;font-size:11.5px;font-weight:500;color:#9CA3AF;background:rgba(31,41,55,.025)">
+        <div>{{ L.k89 }}</div><div>{{ L.k84 }}</div><div>{{ L.k85 }}</div><div>{{ L.k81 }}</div><div></div>
+      </div>
+      <sc-if value="{{ !hasUsers }}" hint-placeholder-val="{{ false }}">
+        <div style="text-align:center;padding:34px 20px;border-top:1px solid rgba(31,41,55,.05)">
+          <span class="msr" style="font-size:38px;color:#CBD5E1">person_off</span>
+          <div style="font-size:13px;color:#9CA3AF;margin-top:6px">{{ L.k13 }}</div>
+        </div>
+      </sc-if>
+      <sc-for list="{{ userRows }}" as="u" hint-placeholder-count="5">
+        <div class="nuv-trow nuv-cardify" style="display:grid;grid-template-columns:1.6fr 1.6fr 1fr 1.3fr .8fr;gap:10px;padding:13px 20px;border-top:1px solid rgba(31,41,55,.05);font-size:12.5px;color:#374151;align-items:center">
+          <div data-th="{{ L.k89 }}" style="font-weight:500;color:#1F2937;min-width:0;overflow:hidden;text-overflow:ellipsis">{{ u.name }}</div>
+          <div data-th="{{ L.k84 }}" style="min-width:0;overflow:hidden;text-overflow:ellipsis">{{ u.email }}</div>
+          <div data-th="{{ L.k85 }}"><span style="display:inline-block;padding:4px 10px;border-radius:999px;font-size:11px;font-weight:500;background:{{ u.roleBg }};color:{{ u.roleColor }};white-space:nowrap">{{ u.roleLabel }}</span></div>
+          <div data-th="{{ L.k81 }}" style="min-width:0;overflow:hidden;text-overflow:ellipsis">{{ u.faculty }}</div>
+          <div style="display:flex;gap:6px;justify-content:flex-end">
+            <button onClick="{{ u.onEdit }}" title="{{ L.k87 }}" style-hover="background:rgba(255,255,255,.85);transform:translateY(-2px);box-shadow:0 6px 16px rgba(31,41,55,.14)" style="display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:11px;cursor:pointer;transition:all 220ms ease;border:1px solid rgba(31,41,55,.10);background:rgba(255,255,255,.55);color:#4B5563"><span class="msr" style="font-size:18px">edit</span></button>
+            <button onClick="{{ u.onDelete }}" title="{{ L.k91 }}" style-hover="background:rgba(233,113,113,.22);transform:translateY(-2px);box-shadow:0 6px 16px rgba(233,113,113,.28)" style="display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:11px;cursor:pointer;transition:all 220ms ease;border:1px solid rgba(233,113,113,.28);background:rgba(233,113,113,.10);color:#C2410C"><span class="msr" style="font-size:18px">delete</span></button>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+</sc-if>
+
+<sc-if value="{{ isActivitiesPage }}" hint-placeholder-val="{{ false }}">
+  <div style="display:flex;flex-direction:column;gap:12px">
+    <div class="nuv-tabs" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:2px;-webkit-overflow-scrolling:touch">
+      <sc-for list="{{ actTabs }}" as="tb" hint-placeholder-count="5">
+        <button onClick="{{ tb.onClick }}" style="{{ tb.style }}">{{ tb.label }}<span style="opacity:.65">{{ tb.count }}</span></button>
+      </sc-for>
+    </div>
+    <sc-if value="{{ !hasActivities }}" hint-placeholder-val="{{ false }}">
+      <div style="text-align:center;padding:50px 20px;background:rgba(255,255,255,.62);backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);border:1px solid rgba(255,255,255,.75);border-radius:24px">
+        <span class="msr" style="font-size:40px;color:#CBD5E1">event_busy</span>
+        <div style="font-size:13px;color:#9CA3AF;margin-top:6px">{{ L.k25 }}</div>
+      </div>
+    </sc-if>
+    <sc-for list="{{ activities }}" as="a" hint-placeholder-count="6">
+      <div style="display:flex;align-items:center;gap:14px;background:rgba(255,255,255,.62);backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);border:1px solid rgba(255,255,255,.6);border-radius:16px;padding:12px 18px 12px 12px">
+        <img src="{{ a.photo }}" alt="" style="width:72px;height:56px;border-radius:12px;object-fit:cover;flex-shrink:0;display:block"/>
+        <div style="display:inline-flex;padding:4px 10px;border-radius:999px;font-size:11px;line-height:1.7;font-weight:500;background:{{ a.catBg }};color:{{ a.catObj.color }}">{{ a.catObj.label }}</div>
+        <div style="flex:1;min-width:0">
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><div style="font-weight:500;font-size:14px;line-height:1.7;color:#1F2937">{{ a.title }}</div><div style="display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:999px;font-size:10.5px;font-weight:500;background:{{ a.capBg }};color:{{ a.capColor }}"><span style="width:6px;height:6px;border-radius:50%;background:{{ a.capDot }}"></span>{{ a.capLabel }}</div></div>
+          <div style="font-size:12px;line-height:1.7;color:#6B7280">{{ a.org }} · {{ a.date }} · {{ a.seatsLeftLabel }}</div>
+        </div>
+      </div>
+    </sc-for>
+  </div>
+</sc-if>
+
+<sc-if value="{{ isCategories }}" hint-placeholder-val="{{ false }}">
+  <div style="display:flex;flex-direction:column;gap:16px">
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px">
+      <sc-for list="{{ catSummary }}" as="cs" hint-placeholder-count="3">
+        <div style="background:rgba(255,255,255,.62);backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);border:1px solid rgba(255,255,255,.75);border-radius:24px;box-shadow:0 15px 45px rgba(31,41,55,.10), inset 0 1px 0 rgba(255,255,255,.6);padding:18px">
+          <div style="display:flex;align-items:center;gap:8px"><span class="msr fill" style="font-size:19px;color:{{ cs.color }}">{{ cs.icon }}</span><span style="font-size:12px;color:#6B7280">{{ cs.label }}</span></div>
+          <div style="font-size:24px;font-weight:600;color:#1F2937;margin-top:6px">{{ cs.value }}</div>
+        </div>
+      </sc-for>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+      <div style="font-size:12.5px;color:#6B7280">{{ L.k44 }} {{ categoryCount }} {{ L.k6 }}</div>
+      <button onClick="{{ onAddCategory }}" style="display:flex;align-items:center;gap:7px;padding:11px 20px;border-radius:13px;border:none;background:linear-gradient(135deg,#E97171,#A774F7);color:#fff;font-family:inherit;font-weight:500;font-size:13px;cursor:pointer;box-shadow:0 6px 18px rgba(167,116,247,.32)"><span class="msr" style="font-size:18px">add</span>{{ L.k50 }}</button>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px">
+      <sc-for list="{{ categoryRows }}" as="c" hint-placeholder-count="7">
+        <div style="position:relative;overflow:hidden;background:rgba(255,255,255,.62);backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);border:1px solid rgba(255,255,255,.75);border-radius:24px;box-shadow:0 15px 45px rgba(31,41,55,.10), inset 0 1px 0 rgba(255,255,255,.6);padding:18px;transition:all 300ms ease" style-hover="transform:translateY(-3px);box-shadow:0 22px 52px rgba(31,41,55,.13)">
+          <div style="position:absolute;top:0;left:0;right:0;height:4px;background:{{ c.color }}"></div>
+          <div style="display:flex;align-items:center;gap:11px">
+            <div style="width:38px;height:38px;border-radius:12px;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:{{ c.softBg }}"><span class="msr fill" style="font-size:20px;color:{{ c.color }}">{{ c.icon }}</span></div>
+            <div style="flex:1;min-width:0">
+              <div style="font-weight:500;font-size:13.5px;color:#1F2937;line-height:1.4">{{ c.label }}</div>
+              <div style="font-size:11px;color:#9CA3AF">{{ c.count }} {{ L.k78 }} · {{ c.hours }} {{ L.k69 }}</div>
+            </div>
+            <div style="display:flex;gap:6px">
+              <button onClick="{{ c.onEdit }}" title="{{ L.k87 }}" style-hover="background:rgba(255,255,255,.9);transform:translateY(-2px)" style="display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:10px;cursor:pointer;transition:all 220ms ease;border:1px solid rgba(31,41,55,.1);background:rgba(255,255,255,.6);color:#4B5563"><span class="msr" style="font-size:17px">edit</span></button>
+              <button onClick="{{ c.onDelete }}" title="{{ L.k91 }}" style-hover="background:rgba(233,113,113,.22);transform:translateY(-2px)" style="display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:10px;cursor:pointer;transition:all 220ms ease;border:1px solid rgba(233,113,113,.28);background:rgba(233,113,113,.10);color:#C2410C"><span class="msr" style="font-size:17px">delete</span></button>
+            </div>
+          </div>
+          <div style="height:7px;border-radius:5px;background:rgba(31,41,55,.07);overflow:hidden;margin-top:14px"><div style="height:100%;width:{{ c.pct }}%;background:{{ c.color }};transition:width 300ms ease"></div></div>
+          <div style="display:flex;justify-content:space-between;font-size:11px;color:#9CA3AF;margin-top:5px"><span>{{ L.k51 }}</span><span>{{ c.pct }}%</span></div>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+</sc-if>
+
+<sc-if value="{{ isFaculties }}" hint-placeholder-val="{{ false }}">
+  <div style="display:flex;flex-direction:column;gap:16px">
+    <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center">
+      <div style="position:relative;flex:1;min-width:220px">
+        <span class="msr" style="position:absolute;left:13px;top:50%;transform:translateY(-50%);font-size:19px;color:#9CA3AF">search</span>
+        <input value="{{ facSearch }}" onChange="{{ onFacSearch }}" placeholder="{{ L.k61 }}" style="width:100%;padding:12px 14px 12px 42px;border-radius:14px;border:1px solid rgba(255,255,255,.75);background:rgba(255,255,255,.62);backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);font-family:inherit;font-size:13.5px;outline:none;color:#1F2937"/>
+      </div>
+      <div class="nuv-tabs" style="display:flex;gap:8px;flex-wrap:wrap">
+        <sc-for list="{{ facSortTabs }}" as="tb" hint-placeholder-count="3">
+          <button onClick="{{ tb.onClick }}" style="{{ tb.style }}">{{ tb.label }}</button>
+        </sc-for>
+      </div>
+      <button onClick="{{ onExportFaculties }}" title="{{ exportCsvLabel }}" aria-label="{{ exportCsvLabel }}" class="nuv-iconbtn" style-hover="background:rgba(255,255,255,.95);transform:translateY(-2px)" style="display:flex;align-items:center;gap:7px;padding:12px 18px;border-radius:14px;border:1px solid rgba(31,41,55,.12);background:rgba(255,255,255,.62);backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);color:#4B5563;font-family:inherit;font-size:13px;font-weight:500;cursor:pointer;transition:all 220ms ease"><span class="msr" style="font-size:18px">download</span><span class="nuv-blabel">{{ exportCsvLabel }}</span></button>
+      <button onClick="{{ onCompareAll }}" style-hover="transform:translateY(-2px);box-shadow:0 12px 28px rgba(167,116,247,.35)" style="display:flex;align-items:center;gap:7px;padding:12px 18px;border-radius:14px;border:none;background:linear-gradient(135deg,#1F2937,#A774F7);color:#fff;font-family:inherit;font-size:13px;font-weight:500;cursor:pointer;transition:all 220ms ease;box-shadow:0 8px 22px rgba(31,41,55,.25)"><span class="msr" style="font-size:18px">bar_chart</span>{{ facCompareAll }}</button>
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(168px,1fr));gap:12px">
+      <sc-for list="{{ facSummary }}" as="fs" hint-placeholder-count="5">
+        <div style="background:rgba(255,255,255,.62);backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);border:1px solid rgba(255,255,255,.75);border-radius:22px;box-shadow:0 15px 45px rgba(31,41,55,.09), inset 0 1px 0 rgba(255,255,255,.6);padding:16px 18px">
+          <div style="display:flex;align-items:center;gap:8px"><span class="msr fill" style="font-size:18px;color:{{ fs.color }}">{{ fs.icon }}</span><span style="font-size:11.5px;color:#6B7280">{{ fs.label }}</span></div>
+          <div style="font-size:23px;font-weight:600;color:#1F2937;margin-top:5px">{{ fs.value }}</div>
+          <div style="font-size:10.5px;color:#9CA3AF;line-height:1.4;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ fs.sub }}</div>
+        </div>
+      </sc-for>
+    </div>
+
+    <sc-if value="{{ !hasFaculties }}" hint-placeholder-val="{{ false }}">
+      <div style="text-align:center;padding:50px 20px;background:rgba(255,255,255,.62);backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);border:1px solid rgba(255,255,255,.75);border-radius:24px;box-shadow:0 15px 45px rgba(31,41,55,.10), inset 0 1px 0 rgba(255,255,255,.6)">
+        <span class="msr" style="font-size:40px;color:#CBD5E1">school</span>
+        <div style="font-size:13px;color:#9CA3AF;margin-top:6px">{{ L.k18 }}</div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ hasFaculties }}" hint-placeholder-val="{{ true }}">
+      <div style="background:rgba(255,255,255,.62);backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);border:1px solid rgba(255,255,255,.75);border-radius:24px;box-shadow:0 15px 45px rgba(31,41,55,.10), inset 0 1px 0 rgba(255,255,255,.6);padding:20px">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:14px">
+          <div style="font-weight:500;font-size:14px;color:#1F2937">{{ facRankTitle }}</div>
+          <div style="display:flex;gap:14px;flex-wrap:wrap;font-size:11px;color:#9CA3AF">
+            <div style="display:flex;align-items:center;gap:6px"><span style="width:9px;height:9px;border-radius:3px;background:#63D2A1"></span>{{ facColPassed }}</div>
+            <div style="display:flex;align-items:center;gap:6px"><span style="width:9px;height:9px;border-radius:3px;background:#7AB8FF"></span>{{ facColJoined }}</div>
+            <div style="display:flex;align-items:center;gap:6px"><span style="width:9px;height:9px;border-radius:3px;background:#E97171"></span>{{ facColNot }}</div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:9px">
+          <sc-for list="{{ facultyRows }}" as="f" hint-placeholder-count="8">
+            <div class="nuv-fac-row" style-hover="background:rgba(255,255,255,.95);box-shadow:0 10px 26px rgba(31,41,55,.08)" style="display:grid;grid-template-columns:28px 12px minmax(0,1fr) 160px 130px 62px 36px;gap:12px;align-items:center;padding:12px 16px;border-radius:16px;background:rgba(255,255,255,.6);border:1px solid rgba(255,255,255,.8);transition:all 200ms ease">
+              <div style="{{ f.rankStyle }}">{{ f.rank }}</div>
+              <div style="{{ f.dotStyle }}"></div>
+              <div style="min-width:0">
+                <div style="font-size:13px;font-weight:500;color:#1F2937;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ f.name }}</div>
+                <div style="font-size:11px;color:#9CA3AF;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ f.colorName }} · {{ L.k86 }} {{ f.total }} {{ L.k90 }}</div>
+              </div>
+              <div class="nuv-fac-bar" style="min-width:0">
+                <div style="height:9px;border-radius:5px;background:rgba(31,41,55,.08);overflow:hidden"><div style="{{ f.barFillStyle }}"></div></div>
+                <div style="font-size:10.5px;color:#9CA3AF;margin-top:4px">{{ f.rateLabel }}</div>
+              </div>
+              <div class="nuv-fac-nums" style="display:flex;gap:10px;justify-content:flex-end">
+                <div style="text-align:center"><div style="font-size:13.5px;font-weight:600;color:#7AB8FF">{{ f.joined }}</div><div style="font-size:9.5px;color:#CBD5E1">{{ facColJoined }}</div></div>
+                <div style="text-align:center"><div style="font-size:13.5px;font-weight:600;color:#63D2A1">{{ f.passed }}</div><div style="font-size:9.5px;color:#CBD5E1">{{ facColPassed }}</div></div>
+                <div style="text-align:center"><div style="font-size:13.5px;font-weight:600;color:#E97171">{{ f.notPassed }}</div><div style="font-size:9.5px;color:#CBD5E1">{{ facColNot }}</div></div>
+              </div>
+              <div style="text-align:right;font-size:14.5px;font-weight:600;color:{{ f.rateColor }}">{{ f.passPct }}%</div>
+              <button onClick="{{ f.onGraph }}" title="{{ facColGraph }}" style-hover="background:rgba(255,255,255,.95);transform:translateY(-2px)" style="display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:11px;border:1px solid rgba(31,41,55,.1);background:rgba(255,255,255,.65);color:#6B7280;cursor:pointer;transition:all 200ms ease"><span class="msr" style="font-size:18px">bar_chart</span></button>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </sc-if>
+  </div>
+</sc-if>
+
+<sc-if value="{{ isAdminCalendar }}" hint-placeholder-val="{{ false }}">
+  <div style="display:flex;flex-direction:column;gap:16px">
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px">
+      <sc-for list="{{ calSummary }}" as="cs" hint-placeholder-count="4">
+        <div style="background:rgba(255,255,255,.62);backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);border:1px solid rgba(255,255,255,.75);border-radius:24px;box-shadow:0 15px 45px rgba(31,41,55,.10), inset 0 1px 0 rgba(255,255,255,.6);padding:16px 18px">
+          <div style="display:flex;align-items:center;gap:8px"><span class="msr fill" style="font-size:18px;color:{{ cs.color }}">{{ cs.icon }}</span><span style="font-size:11.5px;color:#6B7280">{{ cs.label }}</span></div>
+          <div style="font-size:22px;font-weight:600;color:#1F2937;margin-top:5px">{{ cs.value }}</div>
+        </div>
+      </sc-for>
+    </div>
+
+    <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-start;background:rgba(255,255,255,.62);backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);border:1px solid rgba(255,255,255,.75);border-radius:24px;box-shadow:0 15px 45px rgba(31,41,55,.10), inset 0 1px 0 rgba(255,255,255,.6);padding:14px 18px">
+      <div style="font-size:11.5px;color:#9CA3AF;padding-top:7px;white-space:nowrap;flex-shrink:0">{{ calFilterLabel }}</div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;flex:1;min-width:0">
+        <sc-for list="{{ calLegend }}" as="cl" hint-placeholder-count="7">
+          <div onClick="{{ cl.onClick }}" style="{{ cl.style }}"><span style="width:9px;height:9px;border-radius:50%;background:{{ cl.color }};flex-shrink:0"></span>{{ cl.label }}</div>
+        </sc-for>
+      </div>
+      <sc-if value="{{ hasCalFilter }}" hint-placeholder-val="{{ false }}">
+        <button onClick="{{ onClearCalFilter }}" style-hover="background:rgba(31,41,55,.08)" style="display:flex;align-items:center;gap:5px;padding:6px 12px;border-radius:999px;border:1px solid rgba(31,41,55,.1);background:transparent;color:#6B7280;font-family:inherit;font-size:11.5px;cursor:pointer;transition:background 160ms ease"><span class="msr" style="font-size:15px">close</span>{{ calClearLabel }}</button>
+      </sc-if>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:18px">
+      <div style="background:rgba(255,255,255,.62);backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);border:1px solid rgba(255,255,255,.75);border-radius:24px;box-shadow:0 15px 45px rgba(31,41,55,.10), inset 0 1px 0 rgba(255,255,255,.6);padding:22px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+          <div style="display:flex;gap:7px;margin-right:auto">
+            <sc-for list="{{ calViewTabs }}" as="v" hint-placeholder-count="2">
+              <button onClick="{{ v.onClick }}" style="{{ v.style }}"><span class="msr" style="font-size:16px">{{ v.icon }}</span>{{ v.label }}</button>
+            </sc-for>
+          </div>
+          <button onClick="{{ onAdminCalPrev }}" title="{{ L.k52 }}" style-hover="background:rgba(255,255,255,.9);transform:translateY(-2px)" style="border:1px solid rgba(31,41,55,.1);background:rgba(255,255,255,.6);width:36px;height:36px;border-radius:12px;cursor:pointer;font-size:15px;transition:all 220ms ease">‹</button>
+          <div style="font-weight:500;font-size:16px;color:#1F2937">{{ adminCalendarData.monthLabel }}</div>
+          <button onClick="{{ onAdminCalNext }}" title="{{ L.k67 }}" style-hover="background:rgba(255,255,255,.9);transform:translateY(-2px)" style="border:1px solid rgba(31,41,55,.1);background:rgba(255,255,255,.6);width:36px;height:36px;border-radius:12px;cursor:pointer;font-size:15px;transition:all 220ms ease">›</button>
+        </div>
+        <sc-if value="{{ isMonthView }}" hint-placeholder-val="{{ true }}">
+        <div class="nuv-cal-grid" style="display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:6px">
+          <sc-for list="{{ weekdayLabels }}" as="wd" hint-placeholder-count="7"><div style="text-align:center;font-size:11px;color:#9CA3AF;padding:4px 0">{{ wd }}</div></sc-for>
+        </div>
+        <div class="nuv-cal-grid" style="display:grid;grid-template-columns:repeat(7,1fr);gap:6px">
+          <sc-for list="{{ adminCalDays }}" as="d" hint-placeholder-count="30">
+            <div onClick="{{ d.onClick }}" style="{{ d.style }}">
+              <div style="font-size:12.5px;font-weight:500">{{ d.day }}</div>
+              <div style="display:flex;gap:3px;margin-top:5px;justify-content:center;min-height:6px">
+                <sc-for list="{{ d.dots }}" as="dot" hint-placeholder-count="0"><div style="width:5px;height:5px;border-radius:50%;background:{{ dot }}"></div></sc-for>
+              </div>
+              <sc-if value="{{ d.hasCount }}" hint-placeholder-val="{{ false }}">
+                <div style="{{ d.countStyle }}">{{ d.count }}</div>
+              </sc-if>
+            </div>
+          </sc-for>
+        </div>
+        </sc-if>
+
+        <sc-if value="{{ isWeekView }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px">
+            <button onClick="{{ onWeekPrev }}" title="{{ weekPrevTitle }}" style-hover="background:rgba(255,255,255,.9)" style="border:1px solid rgba(31,41,55,.1);background:rgba(255,255,255,.6);width:32px;height:32px;border-radius:10px;cursor:pointer;font-size:14px;color:#4B5563;transition:all 200ms ease">‹</button>
+            <div style="text-align:center">
+              <div style="font-size:13px;font-weight:500;color:#1F2937">{{ weekLabel }}</div>
+              <div style="font-size:11px;color:#9CA3AF">{{ weekRangeLabel }}</div>
+            </div>
+            <button onClick="{{ onWeekNext }}" title="{{ weekNextTitle }}" style-hover="background:rgba(255,255,255,.9)" style="border:1px solid rgba(31,41,55,.1);background:rgba(255,255,255,.6);width:32px;height:32px;border-radius:10px;cursor:pointer;font-size:14px;color:#4B5563;transition:all 200ms ease">›</button>
+          </div>
+          <sc-if value="{{ !hasWeekActs }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;align-items:center;gap:9px;padding:14px;border-radius:14px;background:rgba(31,41,55,.03);color:#9CA3AF;font-size:12.5px;margin-bottom:12px"><span class="msr" style="font-size:20px;color:#CBD5E1">event_available</span>{{ weekEmptyLabel }}</div>
+          </sc-if>
+          <div class="nuv-week-grid" style="display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px">
+            <sc-for list="{{ weekDays }}" as="wd" hint-placeholder-count="7">
+              <div onClick="{{ wd.onClick }}" style="{{ wd.colStyle }}">
+                <div style="display:flex;align-items:center;gap:7px">
+                  <div style="{{ wd.dayNumStyle }}">{{ wd.day }}</div>
+                  <div style="font-size:11px;color:#9CA3AF">{{ wd.weekdayLabel }}</div>
+                </div>
+                <sc-for list="{{ wd.items }}" as="it" hint-placeholder-count="0">
+                  <div style="{{ it.style }}">
+                    <div style="font-size:11.5px;font-weight:500;color:#1F2937;line-height:1.4">{{ it.title }}</div>
+                    <sc-if value="{{ it.hasTime }}" hint-placeholder-val="{{ false }}">
+                      <div style="font-size:10px;color:#6B7280;margin-top:1px">{{ it.timeText }}</div>
+                    </sc-if>
+                    <div style="font-size:10px;color:#9CA3AF;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ it.org }}</div>
+                  </div>
+                </sc-for>
+              </div>
+            </sc-for>
+          </div>
+        </sc-if>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:18px">
+        <div style="background:rgba(255,255,255,.62);backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);border:1px solid rgba(255,255,255,.75);border-radius:24px;box-shadow:0 15px 45px rgba(31,41,55,.10), inset 0 1px 0 rgba(255,255,255,.6);padding:20px">
+          <div style="font-weight:500;font-size:14px;color:#1F2937;margin-bottom:12px">{{ L.k28 }}</div>
+          <sc-if value="{{ !hasUpcoming }}" hint-placeholder-val="{{ false }}">
+            <div style="font-size:12.5px;color:#9CA3AF">{{ L.k19 }}</div>
+          </sc-if>
+          <div class="nuv-railwrap" style="position:relative;min-width:0">
+          <div class="nuv-rail" style="display:grid;grid-auto-flow:column;grid-auto-columns:minmax(262px,1fr);gap:12px;overflow-x:auto;padding:2px 60px 8px 2px">
+            <sc-for list="{{ upcomingActs }}" as="u" hint-placeholder-count="4">
+              <div style-hover="background:rgba(255,255,255,.95);transform:translateY(-2px);box-shadow:0 12px 26px rgba(31,41,55,.12)" style="display:flex;gap:11px;align-items:flex-start;padding:12px 14px;border-radius:16px;border:1px solid rgba(31,41,55,.07);background:rgba(255,255,255,.6);cursor:pointer;transition:all 200ms ease">
+                <div style="width:44px;height:44px;flex:0 0 44px;box-sizing:border-box;text-align:center;background:{{ u.dateBg }};border-radius:11px;padding:5px 0;display:flex;flex-direction:column;justify-content:center">
+                  <div style="font-size:15px;font-weight:600;color:{{ u.catColor }};line-height:1.2">{{ u.dayNum }}</div>
+                  <div style="font-size:9.5px;color:#9CA3AF">{{ u.monthShort }}</div>
+                </div>
+                <div style="flex:1;min-width:0">
+                  <div style="font-size:12.5px;color:#1F2937;line-height:1.45;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ u.title }}</div>
+                  <div style="font-size:11px;color:#9CA3AF;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ u.org }}</div>
+                  <div style="font-size:10.5px;color:{{ u.capColor }};margin-top:2px">{{ u.distLabel }}</div>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+            <div class="nuv-railfade" aria-hidden="true" style="position:absolute;top:0;bottom:8px;right:0;width:56px;pointer-events:none;border-radius:0 16px 16px 0;background:linear-gradient(to right,rgba(255,255,255,0),rgba(255,255,255,.92))"></div>
+            <button class="nuv-railnext" onClick="{{ onRailNext }}" title="{{ railNextLabel }}" aria-label="{{ railNextLabel }}" style-hover="background:#fff;transform:translateY(-50%) translateX(-2px)" style="position:absolute;right:6px;top:50%;transform:translateY(-50%);display:flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;border:1px solid rgba(31,41,55,.1);background:rgba(255,255,255,.94);color:#4B5563;font-size:15px;cursor:pointer;box-shadow:0 4px 14px rgba(31,41,55,.14)">›</button>
+          </div>
+        </div>
+
+        <sc-if value="{{ hasAdminSelectedDay }}" hint-placeholder-val="{{ false }}">
+          <div style="background:rgba(255,255,255,.62);backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);border:1px solid rgba(255,255,255,.75);border-radius:24px;box-shadow:0 15px 45px rgba(31,41,55,.10), inset 0 1px 0 rgba(255,255,255,.6);padding:20px">
+            <div style="font-weight:500;font-size:14px;color:#1F2937;margin-bottom:10px">{{ L.k82 }} {{ adminSelectedDay }} {{ adminCalendarData.monthLabel }}</div>
+            <sc-if value="{{ !hasSelectedDayActs }}" hint-placeholder-val="{{ false }}">
+              <div style="font-size:12.5px;color:#9CA3AF">{{ L.k29 }}</div>
+            </sc-if>
+            <sc-for list="{{ adminSelectedDayActivities }}" as="a" hint-placeholder-count="1">
+              <div style="display:flex;gap:11px;align-items:center;padding:10px 0;border-top:1px solid rgba(31,41,55,.05)">
+                <img src="{{ a.photo }}" alt="" style="width:52px;height:40px;border-radius:10px;object-fit:cover;flex-shrink:0;display:block"/>
+                <div style="flex:1;min-width:0">
+                  <div style="font-size:12.5px;color:#1F2937;font-weight:500;line-height:1.45">{{ a.title }}</div>
+                  <div style="display:flex;align-items:center;gap:6px;margin-top:2px"><span style="width:7px;height:7px;border-radius:50%;background:{{ a.catObj.color }}"></span><span style="font-size:11px;color:#9CA3AF">{{ a.org }}</span></div>
+                  <sc-if value="{{ a.hasTime }}" hint-placeholder-val="{{ false }}">
+                    <div style="display:flex;align-items:center;gap:5px;margin-top:3px"><span class="msr" style="font-size:13px;color:#A774F7">access_time</span><span style="font-size:11px;color:#6B7280">{{ a.timeText }}</span></div>
+                  </sc-if>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+        </sc-if>
+      </div>
+    </div>
+  </div>
+</sc-if>
+
+<sc-if value="{{ isNewsBanners }}" hint-placeholder-val="{{ false }}">
+  <div style="display:flex;flex-direction:column;gap:22px">
+    <div>
+      <div style="font-weight:500;font-size:14.5px;line-height:1.7;color:#1F2937;margin-bottom:10px">{{ L.k83 }}</div>
+      <div class="nuv-tabs" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;-webkit-overflow-scrolling:touch">
+        <sc-for list="{{ newsTabs }}" as="tb" hint-placeholder-count="3">
+          <button onClick="{{ tb.onClick }}" style="{{ tb.style }}">{{ tb.label }}<span style="opacity:.65">{{ tb.count }}</span></button>
+        </sc-for>
+      </div>
+      <sc-if value="{{ !hasNews }}" hint-placeholder-val="{{ false }}">
+        <div style="text-align:center;padding:20px;color:#94A3B8;font-size:13px">{{ L.k48 }}</div>
+      </sc-if>
+      <sc-for list="{{ newsRows }}" as="n" hint-placeholder-count="3">
+        <div style="display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.62);backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);border:1px solid rgba(255,255,255,.6);border-radius:14px;padding:12px 16px;margin-bottom:8px">
+          <div style="flex:1;font-size:13.5px;line-height:1.7;font-weight:600;color:#1F2937">{{ n.title }}</div>
+          <button onClick="{{ n.onToggle }}" style="padding:6px 12px;border-radius:9px;border:1px solid rgba(30,37,48,.1);background:{{ n.toggleBg }};color:{{ n.toggleColor }};font-size:11.5px;line-height:1.7;font-weight:500;cursor:pointer">{{ n.toggleLabel }}</button>
+          <button onClick="{{ n.onDelete }}" title="{{ L.k91 }}" style-hover="background:rgba(233,113,113,.22);transform:translateY(-2px);box-shadow:0 6px 16px rgba(233,113,113,.28)" style="display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:11px;cursor:pointer;transition:all 300ms ease;border:1px solid rgba(233,113,113,.28);background:rgba(233,113,113,.10);color:#C2410C"><span class="msr" style="font-size:18px">delete</span></button>
+        </div>
+      </sc-for>
+    </div>
+    <div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <div style="font-weight:500;font-size:14.5px;line-height:1.7;color:#1F2937">{{ L.k75 }}</div>
+        <button onClick="{{ onAddBanner }}" style="padding:8px 16px;border-radius:10px;border:none;background:#1F2937;color:#fff;font-weight:500;font-size:12.5px;cursor:pointer">{{ L.k45 }}</button>
+      </div>
+      <sc-if value="{{ !hasBanners }}" hint-placeholder-val="{{ false }}">
+        <div style="text-align:center;padding:20px;color:#94A3B8;font-size:13px">{{ L.k41 }}</div>
+      </sc-if>
+      <sc-for list="{{ bannerRows }}" as="b" hint-placeholder-count="2">
+        <div style="background:rgba(255,255,255,.62);backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);border:1px solid rgba(255,255,255,.6);border-radius:14px;padding:12px 16px;margin-bottom:8px">
+          <div class="nuv-bannerhead" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+            <div style="display:inline-flex;padding:3px 9px;border-radius:999px;font-size:10.5px;font-weight:500;background:{{ b.typeBg }};color:{{ b.typeColor }}">{{ b.typeLabel }}</div>
+            <div style="flex:1;min-width:180px;font-size:13.5px;line-height:1.6;font-weight:600;color:#1F2937;text-wrap:pretty">{{ b.title }}</div>
+            <div class="nuv-banneracts" style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+            <button onClick="{{ b.onEdit }}" title="{{ L.k87 }}" style-hover="background:rgba(255,255,255,.85);transform:translateY(-2px);box-shadow:0 6px 16px rgba(31,41,55,.14)" style="display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:11px;cursor:pointer;transition:all 300ms ease;border:1px solid rgba(31,41,55,.10);background:rgba(255,255,255,.55);color:#4B5563"><span class="msr" style="font-size:18px">edit</span></button>
+            <button onClick="{{ b.onToggle }}" style="padding:6px 12px;border-radius:9px;border:1px solid rgba(30,37,48,.1);background:{{ b.toggleBg }};color:{{ b.toggleColor }};font-size:11.5px;line-height:1.7;font-weight:500;cursor:pointer">{{ b.toggleLabel }}</button>
+            <button onClick="{{ b.onDelete }}" title="{{ L.k91 }}" style-hover="background:rgba(233,113,113,.22);transform:translateY(-2px);box-shadow:0 6px 16px rgba(233,113,113,.28)" style="display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:11px;cursor:pointer;transition:all 300ms ease;border:1px solid rgba(233,113,113,.28);background:rgba(233,113,113,.10);color:#C2410C"><span class="msr" style="font-size:18px">delete</span></button>
+            </div>
+          </div>
+          <div style="font-size:12px;color:#6B7280;margin-top:6px">{{ b.desc }}</div>
+          <div style="font-size:11px;color:#94A3B8;margin-top:3px">{{ b.date }}</div>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+</sc-if>
+
+<sc-if value="{{ isReportsPage }}" hint-placeholder-val="{{ false }}">
+  <div style="display:flex;flex-direction:column;gap:18px">
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <sc-for list="{{ topicChips }}" as="t" hint-placeholder-count="6">
+        <div onClick="{{ t.onClick }}" style="{{ t.style }};cursor:pointer;white-space:nowrap;flex-shrink:0">{{ t.label }}</div>
+      </sc-for>
+    </div>
+    <div class="nuv-tabs" style="display:flex;gap:8px;flex-wrap:wrap">
+      <sc-for list="{{ reportPeriodTabs }}" as="tb" hint-placeholder-count="4">
+        <button onClick="{{ tb.onClick }}" style="{{ tb.style }}">{{ tb.label }}</button>
+      </sc-for>
+    </div>
+    <div style="font-size:11.5px;color:#9CA3AF;margin-top:-6px">{{ L.k64 }}{{ reportPeriodLabel }}</div>
+
+    <div style="background:rgba(255,255,255,.62);backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);border:1px solid rgba(255,255,255,.75);border-radius:24px;padding:22px;box-shadow:0 15px 45px rgba(31,41,55,.10), inset 0 1px 0 rgba(255,255,255,.6)">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px">
+        <span class="msr fill" style="font-size:21px;color:#A774F7">download</span>
+        <div style="font-weight:500;font-size:15px;color:#1F2937">{{ L.k55 }}</div>
+      </div>
+      <div style="font-size:12px;color:#6B7280;margin-bottom:16px">{{ L.k2 }}</div>
+
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px">
+        <sc-for list="{{ exportOptions }}" as="ex" hint-placeholder-count="4">
+          <div onClick="{{ ex.onExport }}" style="display:flex;gap:12px;align-items:center;cursor:pointer;background:rgba(255,255,255,.55);border:1px solid rgba(31,41,55,.08);border-radius:18px;padding:14px 16px;transition:all 300ms ease" style-hover="transform:translateY(-3px);box-shadow:0 12px 30px rgba(31,41,55,.10)">
+            <div style="width:38px;height:38px;border-radius:12px;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:{{ ex.iconBg }}"><span class="msr fill" style="font-size:20px;color:{{ ex.color }}">{{ ex.icon }}</span></div>
+            <div style="flex:1;min-width:0">
+              <div style="font-size:13px;font-weight:500;color:#1F2937">{{ ex.label }}</div>
+              <div style="font-size:11px;color:#9CA3AF">{{ ex.rowsLabel }}</div>
+            </div>
+            <span class="msr" style="font-size:19px;color:#9CA3AF">file_download</span>
+          </div>
+        </sc-for>
+      </div>
+
+      <div style="display:flex;gap:10px;margin-top:16px;flex-wrap:wrap">
+        <button onClick="{{ onExportAll }}" style="display:flex;align-items:center;gap:7px;padding:12px 22px;border-radius:14px;border:none;background:linear-gradient(135deg,#E97171,#A774F7);color:#fff;font-weight:500;font-size:13.5px;cursor:pointer;box-shadow:0 6px 18px rgba(167,116,247,.32)"><span class="msr" style="font-size:19px">summarize</span>{{ L.k22 }}</button>
+        <button onClick="{{ onPrintReport }}" style="display:flex;align-items:center;gap:7px;padding:12px 22px;border-radius:14px;border:1px solid rgba(31,41,55,.12);background:rgba(255,255,255,.55);color:#374151;font-weight:400;font-size:13.5px;cursor:pointer"><span class="msr" style="font-size:19px">print</span>{{ L.k34 }}</button>
+      </div>
+
+      <sc-if value="{{ hasExportMsg }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;align-items:center;gap:8px;background:rgba(99,210,161,.14);border-radius:12px;padding:10px 14px;margin-top:14px">
+          <span class="msr fill" style="font-size:18px;color:#0F8A63">check_circle</span>
+          <div style="font-size:12.5px;color:#0F8A63">{{ exportMsg }}</div>
+        </div>
+      </sc-if>
+    </div>
+    <div style="background:rgba(255,255,255,.62);backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);border:1px solid rgba(255,255,255,.6);border-radius:22px;padding:20px;max-width:600px">
+      <div style="display:flex;align-items:flex-end;gap:10px;height:150px">
+        <sc-for list="{{ reportBars }}" as="b" hint-placeholder-count="7">
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;height:100%;justify-content:flex-end;position:relative" onMouseEnter="{{ b.onEnter }}" onMouseLeave="{{ onBarLeave }}">
+            <sc-if value="{{ b.showTip }}" hint-placeholder-val="{{ false }}"><div style="position:absolute;bottom:100%;margin-bottom:6px;background:#1F2937;color:#fff;padding:5px 10px;border-radius:8px;font-size:11.5px;line-height:1.7;font-weight:500;white-space:nowrap;z-index:5">{{ b.value }}</div></sc-if>
+            <div style="width:100%;border-radius:6px 6px 0 0;background:linear-gradient(180deg,#A774F7,#E97171);height:{{ b.pct }}%"></div>
+            <div style="font-size:10.5px;line-height:1.7;color:#94A3B8">{{ b.label }}</div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </div>
+</sc-if>
+
+<sc-if value="{{ isLogs }}" hint-placeholder-val="{{ false }}">
+  <div style="display:flex;flex-direction:column;gap:10px">
+    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:4px">
+      <div class="nuv-tabs" style="display:flex;gap:8px;flex-wrap:wrap">
+        <sc-for list="{{ logTabs }}" as="tb" hint-placeholder-count="4">
+          <button onClick="{{ tb.onClick }}" style="{{ tb.style }}">{{ tb.label }}<span style="opacity:.65">{{ tb.count }}</span></button>
+        </sc-for>
+      </div>
+      <div class="nuv-tabs" style="display:flex;gap:8px;flex-wrap:wrap">
+        <sc-for list="{{ logRangeTabs }}" as="tb" hint-placeholder-count="4">
+          <button onClick="{{ tb.onClick }}" style="{{ tb.style }}">{{ tb.label }}</button>
+        </sc-for>
+      </div>
+    </div>
+    <sc-if value="{{ !hasLogs }}" hint-placeholder-val="{{ false }}">
+      <div style="text-align:center;padding:60px 20px;color:#94A3B8;font-size:13.5px;background:rgba(255,255,255,.5);border:1px dashed rgba(30,37,48,.14);border-radius:22px">{{ L.k46 }}</div>
+    </sc-if>
+    <sc-for list="{{ logRows }}" as="l" hint-placeholder-count="5">
+      <div style="display:flex;gap:10px;align-items:center;background:rgba(255,255,255,.62);backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);border:1px solid rgba(255,255,255,.6);border-radius:12px;padding:11px 16px">
+        <span style="padding:4px 9px;border-radius:999px;font-size:10.5px;line-height:1.7;font-weight:500;background:{{ l.bg }};color:{{ l.color }}">{{ l.levelLabel }}</span>
+        <span style="flex:1;font-size:13px;line-height:1.7;color:#334155">{{ l.text }}</span>
+        <span style="font-size:11.5px;line-height:1.7;color:#94A3B8">{{ l.time }}</span>
+      </div>
+    </sc-for>
+  </div>
+</sc-if>
+
+<sc-if value="{{ isContact }}" hint-placeholder-val="{{ false }}">
+  <div class="nuv-inbox" style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.25fr);gap:16px;align-items:start">
+    <div style="display:flex;flex-direction:column;gap:12px;background:rgba(255,255,255,.62);backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);border:1px solid rgba(255,255,255,.75);border-radius:24px;box-shadow:0 15px 45px rgba(31,41,55,.10), inset 0 1px 0 rgba(255,255,255,.6);padding:18px">
+      <div style="font-weight:500;font-size:14px;color:#1F2937">{{ contactListTitle }}</div>
+      <div style="position:relative">
+        <span class="msr" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:18px;color:#9CA3AF">search</span>
+        <input value="{{ contactSearch }}" onChange="{{ onContactSearch }}" placeholder="{{ contactSearchPh }}" style="width:100%;padding:10px 12px 10px 39px;border-radius:13px;border:1px solid rgba(31,41,55,.1);background:rgba(255,255,255,.7);font-family:inherit;font-size:12.5px;color:#1F2937;outline:none"/>
+      </div>
+      <div class="nuv-tabs" style="display:flex;gap:8px;flex-wrap:wrap">
+        <sc-for list="{{ contactTabs }}" as="tb" hint-placeholder-count="3">
+          <button onClick="{{ tb.onClick }}" style="{{ tb.style }}">{{ tb.label }}<span style="opacity:.65">{{ tb.count }}</span></button>
+        </sc-for>
+      </div>
+      <sc-if value="{{ !hasContacts }}" hint-placeholder-val="{{ false }}">
+        <div style="text-align:center;padding:44px 16px;color:#94A3B8;font-size:13px;background:rgba(31,41,55,.03);border-radius:16px">{{ L.k56 }}</div>
+      </sc-if>
+      <div style="display:flex;flex-direction:column;gap:8px;max-height:460px;overflow-y:auto">
+        <sc-for list="{{ contactRows }}" as="c" hint-placeholder-count="3">
+          <div onClick="{{ c.onSelect }}" style="{{ c.rowStyle }}">
+            <div style="{{ c.avatarStyle }}">{{ c.initial }}</div>
+            <div style="flex:1;min-width:0">
+              <div style="display:flex;align-items:center;gap:7px">
+                <div style="flex:1;min-width:0;font-size:13px;font-weight:{{ c.nameWeight }};color:#1F2937;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ c.from }}</div>
+                <sc-if value="{{ c.unread }}" hint-placeholder-val="{{ false }}">
+                  <div style="width:8px;height:8px;border-radius:50%;background:#E4572E;flex-shrink:0"></div>
+                </sc-if>
+              </div>
+              <div style="font-size:12px;color:#6B7280;line-height:1.55;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ c.text }}</div>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+
+    <div style="background:rgba(255,255,255,.62);backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);border:1px solid rgba(255,255,255,.75);border-radius:24px;box-shadow:0 15px 45px rgba(31,41,55,.10), inset 0 1px 0 rgba(255,255,255,.6);padding:20px;min-width:0">
+      <sc-if value="{{ !hasSelContact }}" hint-placeholder-val="{{ true }}">
+        <div style="text-align:center;padding:60px 20px">
+          <span class="msr" style="font-size:38px;color:#CBD5E1">mark_email_unread</span>
+          <div style="font-size:13px;color:#9CA3AF;margin-top:8px">{{ contactEmptyDetail }}</div>
+        </div>
+      </sc-if>
+      <sc-if value="{{ hasSelContact }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;align-items:center;gap:12px;padding-bottom:16px;border-bottom:1px solid rgba(31,41,55,.07)">
+          <div style="display:flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:14px;flex-shrink:0;font-size:16px;font-weight:600;color:#fff;background:linear-gradient(135deg,#1F2937,#A774F7)">{{ selContactInitial }}</div>
+          <div style="flex:1;min-width:0">
+            <div style="font-size:14.5px;font-weight:500;color:#1F2937">{{ selContactFrom }}</div>
+            <div style="font-size:11.5px;color:#9CA3AF;margin-top:2px">{{ selContactStatus }}</div>
+          </div>
+        </div>
+        <div style="margin-top:16px;padding:15px 17px;border-radius:16px;background:rgba(31,41,55,.04);font-size:13.5px;line-height:1.8;color:#334155;text-wrap:pretty">{{ selContactText }}</div>
+        <sc-if value="{{ hasSentReply }}" hint-placeholder-val="{{ false }}">
+          <div style="margin-top:14px">
+            <div style="font-size:11.5px;color:#9CA3AF;margin-bottom:6px">{{ sentReplyTitle }}</div>
+            <div style="padding:14px 16px;border-radius:16px;background:rgba(167,116,247,.1);border:1px solid rgba(167,116,247,.28);font-size:13px;line-height:1.75;color:#334155;text-wrap:pretty">{{ sentReply }}</div>
+            <div style="display:flex;align-items:center;gap:6px;margin-top:7px;font-size:11.5px;color:#0d6e50"><span class="msr fill" style="font-size:15px;color:#0F8A63">check_circle</span>{{ replySentLabel }}</div>
+          </div>
+        </sc-if>
+        <div style="margin-top:18px">
+          <div style="font-size:12px;font-weight:500;color:#4B5563;margin-bottom:7px">{{ contactReplyLabel }}</div>
+          <div style="display:flex;gap:9px;align-items:flex-end">
+            <textarea value="{{ contactReplyDraft }}" onChange="{{ onContactReplyChange }}" onKeyDown="{{ onContactReplyKey }}" placeholder="{{ contactReplyPh }}" rows="3" style="flex:1;min-width:0;padding:12px 14px;border-radius:14px;border:1px solid rgba(31,41,55,.1);background:rgba(255,255,255,.72);font-family:inherit;font-size:13px;line-height:1.7;color:#1F2937;outline:none;resize:vertical"></textarea>
+            <button onClick="{{ onContactReplySend }}" style-hover="transform:translateY(-2px);box-shadow:0 12px 28px rgba(167,116,247,.35)" style="display:flex;align-items:center;gap:7px;padding:12px 18px;border-radius:14px;border:none;background:linear-gradient(135deg,#1F2937,#A774F7);color:#fff;font-family:inherit;font-size:13px;font-weight:500;cursor:pointer;transition:all 220ms ease;flex-shrink:0" title="{{ contactReplyLabel }}" aria-label="{{ contactReplyLabel }}"><span class="msr" style="font-size:18px">reply</span><span class="nuv-blabel">{{ contactReplyLabel }}</span></button>
+          </div>
+        </div>
+      </sc-if>
+    </div>
+  </div>
+</sc-if>
+
+<sc-if value="{{ isSettings }}" hint-placeholder-val="{{ false }}">
+  <div style="max-width:820px;display:flex;flex-direction:column;gap:18px">
+
+    <div style="position:relative;overflow:hidden;background:rgba(255,255,255,.62);backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);border:1px solid rgba(255,255,255,.75);border-radius:24px;box-shadow:0 15px 45px rgba(31,41,55,.10), inset 0 1px 0 rgba(255,255,255,.6);padding:24px">
+      <div style="position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,#1F2937,#A774F7)"></div>
+      <div style="display:flex;align-items:center;gap:13px">
+        <div style="width:44px;height:44px;border-radius:14px;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:rgba(31,41,55,.08)"><span class="msr" style="font-size:23px;color:#1F2937">tune</span></div>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:17px;font-weight:600;color:#1F2937;line-height:1.4">{{ L.k59 }}</div>
+          <div style="font-size:12px;color:#9CA3AF;margin-top:2px">{{ L.k8 }}</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:16px">
+        <sc-for list="{{ statusChips }}" as="c" hint-placeholder-count="4">
+          <span style="{{ c.style }}"><span class="msr" style="font-size:15px">{{ c.icon }}</span>{{ c.label }}</span>
+        </sc-for>
+      </div>
+      <div style="position:relative;margin-top:16px">
+        <span class="msr" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:18px;color:#9CA3AF">search</span>
+        <input value="{{ settingSearch }}" onChange="{{ onSettingSearch }}" placeholder="{{ L.k37 }}" style="width:100%;padding:11px 14px 11px 40px;border-radius:13px;border:1px solid rgba(31,41,55,.12);background:rgba(255,255,255,.8);font-family:inherit;font-size:13px;color:#1F2937;outline:none"/>
+      </div>
+    </div>
+
+    <sc-if value="{{ !hasSettingResults }}" hint-placeholder-val="{{ false }}">
+      <div style="text-align:center;padding:40px 20px;background:rgba(255,255,255,.55);border:1px dashed rgba(31,41,55,.14);border-radius:22px;color:#9CA3AF;font-size:12.5px">{{ L.k15 }}</div>
+    </sc-if>
+
+    <sc-for list="{{ settingSections }}" as="sec" hint-placeholder-count="4">
+      <div style="background:rgba(255,255,255,.62);backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);border:1px solid rgba(255,255,255,.75);border-radius:24px;box-shadow:0 15px 45px rgba(31,41,55,.10), inset 0 1px 0 rgba(255,255,255,.6);padding:22px">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px">
+          <div style="width:36px;height:36px;border-radius:12px;display:flex;align-items:center;justify-content:center;background:{{ sec.iconBg }}"><span class="msr fill" style="font-size:19px;color:{{ sec.color }}">{{ sec.icon }}</span></div>
+          <div>
+            <div style="font-weight:500;font-size:15px;color:#1F2937">{{ sec.title }}</div>
+            <div style="font-size:11.5px;color:#9CA3AF">{{ sec.desc }}</div>
+          </div>
+        </div>
+        <div style="margin-top:14px;display:flex;flex-direction:column">
+          <sc-for list="{{ sec.toggles }}" as="tg" hint-placeholder-count="3">
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:14px;padding:13px 0;border-top:1px solid rgba(31,41,55,.05)">
+              <div style="flex:1;min-width:0">
+                <div style="font-size:13px;color:#1F2937">{{ tg.label }}</div>
+                <div style="font-size:11.5px;color:#9CA3AF;line-height:1.6;margin-top:1px">{{ tg.hint }}</div>
+              </div>
+              <div onClick="{{ tg.onToggle }}" style="{{ tg.trackStyle }}"><div style="{{ tg.knobStyle }}"></div></div>
+            </div>
+          </sc-for>
+          <sc-for list="{{ sec.fields }}" as="fd" hint-placeholder-count="0">
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:14px;padding:13px 0;border-top:1px solid rgba(31,41,55,.05)">
+              <div style="flex:1;min-width:0">
+                <div style="font-size:13px;color:#1F2937">{{ fd.label }}</div>
+                <div style="font-size:11.5px;color:#9CA3AF;line-height:1.6;margin-top:1px">{{ fd.hint }}</div>
+              </div>
+              <input value="{{ fd.value }}" onChange="{{ fd.onChange }}" style="width:110px;flex-shrink:0;padding:9px 12px;border-radius:11px;border:1px solid rgba(31,41,55,.12);background:rgba(255,255,255,.7);font-family:inherit;font-size:13px;text-align:center;outline:none;color:#1F2937"/>
+            </div>
+          </sc-for>
+          <sc-for list="{{ sec.selects }}" as="sl" hint-placeholder-count="0">
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:14px;padding:13px 0;border-top:1px solid rgba(31,41,55,.05)">
+              <div style="flex:1;min-width:0">
+                <div style="font-size:13px;color:#1F2937">{{ sl.label }}</div>
+                <div style="font-size:11.5px;color:#9CA3AF;line-height:1.6;margin-top:1px">{{ sl.hint }}</div>
+              </div>
+              <select value="{{ sl.value }}" onChange="{{ sl.onChange }}" style="flex-shrink:0;padding:9px 12px;border-radius:11px;border:1px solid rgba(31,41,55,.12);background:rgba(255,255,255,.7);font-family:inherit;font-size:13px;outline:none;color:#374151;cursor:pointer">
+                <sc-for list="{{ sl.options }}" as="op" hint-placeholder-count="3"><option value="{{ op.id }}">{{ op.label }}</option></sc-for>
+              </select>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </sc-for>
+
+    <div style="background:rgba(233,113,113,.08);border:1px solid rgba(233,113,113,.3);border-radius:24px;padding:22px">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px">
+        <span class="msr fill" style="font-size:22px;color:#C2410C">warning</span>
+        <div style="font-weight:500;font-size:15px;color:#C2410C">{{ L.k65 }}</div>
+      </div>
+      <div style="font-size:12.5px;line-height:1.7;color:#6B7280;margin:8px 0 14px">{{ L.k1 }}</div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <button onClick="{{ onDangerBackup }}" disabled="{{ backupBusy }}" title="{{ backupNowLabel }}" aria-label="{{ backupNowLabel }}" class="nuv-iconbtn" style="display:flex;align-items:center;gap:7px;padding:11px 18px;border-radius:12px;cursor:pointer;border:1px solid rgba(31,41,55,.12);background:rgba(255,255,255,.7);color:#374151;font-family:inherit;font-size:13px"><span class="msr" style="font-size:18px">backup</span><span class="nuv-blabel">{{ backupNowLabel }}</span></button>
+        <button onClick="{{ onChatCleanup }}" title="{{ chatCleanupBtn }}" aria-label="{{ chatCleanupBtn }}" style-hover="background:rgba(233,113,113,.18)" style="display:flex;align-items:center;gap:7px;padding:11px 18px;border-radius:12px;border:1px solid rgba(233,113,113,.35);background:rgba(233,113,113,.1);font-family:inherit;font-weight:500;font-size:13px;color:#A93226;cursor:pointer;transition:all 180ms ease"><span class="msr" style="font-size:18px">auto_delete</span><span class="nuv-blabel">{{ chatCleanupBtn }}</span></button>
+        <button onClick="{{ onReset }}" disabled="{{ resetLocked }}" style="{{ resetBtnStyle }}"><span class="msr" style="font-size:18px">restart_alt</span>{{ L.k32 }}</button>
+      </div>
+      <div style="margin-top:10px;font-size:11.5px;line-height:1.7;color:#9CA3AF">{{ chatCleanupHint }}</div>
+      <div style="margin-top:12px;padding:11px 14px;border-radius:13px;font-size:12px;line-height:1.65;{{ backupGateStyle }}">{{ backupGateText }}</div>
+    </div>
+  </div>
+</sc-if>
+
+<sc-if value="{{ isAdminNotifications }}" hint-placeholder-val="{{ false }}">
+  <div style="display:flex;flex-direction:column;gap:14px;max-width:760px">
+    <div style="display:flex;align-items:center;gap:9px;font-size:13px;color:#4B5563">
+      <span class="msr fill" style="font-size:19px;color:#A774F7">notifications</span>{{ admNotifSummary }}
+    </div>
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+      <div class="nuv-tabs" style="display:flex;gap:8px;flex-wrap:wrap">
+        <sc-for list="{{ admNotifFilters }}" as="f" hint-placeholder-count="5">
+          <button onClick="{{ f.onClick }}" style="{{ f.style }}"><span class="msr" style="font-size:16px">{{ f.icon }}</span>{{ f.label }}<span style="opacity:.6">{{ f.count }}</span></button>
+        </sc-for>
+      </div>
+      <button onClick="{{ onAdmMarkAllRead }}" style-hover="background:rgba(255,255,255,.9);transform:translateY(-2px)" style="display:flex;align-items:center;gap:6px;padding:8px 14px;border-radius:11px;border:1px solid rgba(30,37,48,.1);background:rgba(255,255,255,.6);backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);font-family:inherit;font-size:12.5px;color:#475569;cursor:pointer;transition:all 200ms ease"><span class="msr" style="font-size:17px">done_all</span>{{ L.k60 }}</button>
+    </div>
+
+    <sc-if value="{{ !hasAdmNotifs }}" hint-placeholder-val="{{ false }}">
+      <div style="text-align:center;padding:56px 20px;background:rgba(255,255,255,.62);backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);border:1px dashed rgba(30,37,48,.14);border-radius:24px">
+        <span class="msr" style="font-size:44px;color:#CBD5E1">notifications_off</span>
+        <div style="font-size:13.5px;color:#94A3B8;margin-top:8px">{{ L.k17 }}</div>
+      </div>
+    </sc-if>
+
+    <sc-for list="{{ admNotifGroups }}" as="g" hint-placeholder-count="2">
+      <div>
+        <div style="display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:9px">
+          <div style="font-size:11.5px;font-weight:500;color:#94A3B8;letter-spacing:.05em">{{ g.label }}</div>
+          <div style="font-size:11px;color:#CBD5E1">{{ g.countLabel }}</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:9px">
+          <sc-for list="{{ g.items }}" as="n" hint-placeholder-count="3">
+            <div onClick="{{ n.onOpen }}" style="{{ n.cardStyle }}" style-hover="background:rgba(255,255,255,.82);transform:translateY(-2px);box-shadow:0 12px 30px rgba(30,37,48,.12)">
+              <div style="{{ n.accentStyle }}"></div>
+              <div style="width:38px;height:38px;border-radius:12px;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:{{ n.iconBg }}"><span class="msr fill" style="font-size:20px;color:{{ n.color }}">{{ n.icon }}</span></div>
+              <div style="flex:1;min-width:0">
+                <div style="font-size:13px;line-height:1.65;color:#334155;font-weight:{{ n.weight }}">{{ n.text }}</div>
+                <div style="display:flex;align-items:center;gap:6px;margin-top:3px">
+                  <div style="padding:2px 8px;border-radius:999px;font-size:10.5px;font-weight:500;background:{{ n.iconBg }};color:{{ n.color }}">{{ n.typeLabel }}</div>
+                  <div style="font-size:11px;color:#94A3B8">{{ n.time }}</div>
+                </div>
+              </div>
+              <span class="msr" style="flex-shrink:0;font-size:18px;color:#CBD5E1;margin-top:8px">chevron_right</span>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </sc-for>
+  </div>
+</sc-if>
+
+<sc-if value="{{ isAdminGuide }}" hint-placeholder-val="{{ false }}">
+  <div style="display:flex;flex-direction:column;gap:18px;max-width:960px">
+    <div style="position:relative;overflow:hidden;background:rgba(255,255,255,.62);backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);border:1px solid rgba(255,255,255,.75);border-radius:24px;box-shadow:0 15px 45px rgba(31,41,55,.10), inset 0 1px 0 rgba(255,255,255,.6);padding:28px 30px">
+      <div style="position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,#1F2937,#A774F7)"></div>
+      <div style="display:flex;align-items:center;gap:14px">
+        <div style="width:52px;height:52px;border-radius:16px;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:rgba(31,41,55,.1)"><span class="msr fill" style="font-size:28px;color:#1F2937">help_center</span></div>
+        <div>
+          <div style="font-size:21px;font-weight:600;color:#1F2937;line-height:1.4">{{ L.k39 }}</div>
+          <div style="font-size:12.5px;color:#6B7280;margin-top:2px">{{ L.k4 }}</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:9px;flex-wrap:wrap;margin-top:18px">
+        <sc-for list="{{ admGuideLinks }}" as="l" hint-placeholder-count="4">
+          <button onClick="{{ l.onClick }}" style-hover="background:rgba(255,255,255,.95);transform:translateY(-2px);box-shadow:0 8px 20px rgba(31,41,55,.1)" style="display:flex;align-items:center;gap:7px;padding:9px 15px;border-radius:12px;cursor:pointer;transition:all 200ms ease;border:1px solid rgba(31,41,55,.09);background:rgba(255,255,255,.7);color:#4B5563;font-family:inherit;font-size:12.5px"><span class="msr" style="font-size:17px;color:{{ l.color }}">{{ l.icon }}</span>{{ l.label }}</button>
+        </sc-for>
+      </div>
+    </div>
+
+    <div>
+      <div style="font-size:12px;font-weight:500;color:#9CA3AF;letter-spacing:.06em;text-transform:uppercase;margin-bottom:12px">{{ L.k35 }}</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px">
+        <sc-for list="{{ admGuideSteps }}" as="g" hint-placeholder-count="5">
+          <div style="position:relative;overflow:hidden;background:rgba(255,255,255,.62);backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);border:1px solid rgba(255,255,255,.75);border-radius:24px;box-shadow:0 15px 45px rgba(31,41,55,.10), inset 0 1px 0 rgba(255,255,255,.6);padding:20px;transition:all 300ms ease" style-hover="transform:translateY(-4px);box-shadow:0 24px 60px rgba(31,41,55,.14)">
+            <div style="position:absolute;top:0;left:0;right:0;height:4px;background:{{ g.color }}"></div>
+            <div style="display:flex;align-items:center;gap:11px">
+              <div style="width:40px;height:40px;border-radius:13px;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:{{ g.iconBg }}"><span class="msr fill" style="font-size:21px;color:{{ g.color }}">{{ g.icon }}</span></div>
+              <div style="display:flex;align-items:center;gap:7px"><span style="{{ g.stepBadgeStyle }}">{{ g.step }}</span><span style="font-size:11px;font-weight:500;color:{{ g.color }};letter-spacing:.06em">{{ L.k79 }} {{ g.step }}</span></div>
+            </div>
+            <div style="font-weight:500;font-size:14.5px;color:#1F2937;margin-top:12px;line-height:1.4">{{ g.title }}</div>
+            <div style="font-size:12.5px;line-height:1.75;color:#6B7280;margin-top:5px">{{ g.desc }}</div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+
+    <div class="nuv-guide-row" style="display:grid;grid-template-columns:1.3fr 1fr;gap:18px;align-items:start">
+      <div style="background:rgba(255,255,255,.62);backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);border:1px solid rgba(255,255,255,.75);border-radius:24px;box-shadow:0 15px 45px rgba(31,41,55,.10), inset 0 1px 0 rgba(255,255,255,.6);padding:24px">
+        <div style="font-weight:500;font-size:15px;color:#1F2937;margin-bottom:4px">{{ L.k49 }}</div>
+        <div style="font-size:11.5px;color:#9CA3AF;margin-bottom:12px">{{ L.k42 }}</div>
+        <div style="position:relative;margin-bottom:6px">
+          <span class="msr" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:18px;color:#9CA3AF">search</span>
+          <input value="{{ admFaqSearch }}" onChange="{{ onAdmFaqSearch }}" placeholder="{{ L.k53 }}" style="width:100%;padding:11px 14px 11px 40px;border-radius:13px;border:1px solid rgba(31,41,55,.12);background:rgba(255,255,255,.78);font-family:inherit;font-size:13px;color:#1F2937;outline:none"/>
+        </div>
+        <sc-if value="{{ !hasAdmFaqResults }}" hint-placeholder-val="{{ false }}">
+          <div style="text-align:center;padding:26px 14px;color:#9CA3AF;font-size:12.5px">{{ L.k20 }}</div>
+        </sc-if>
+        <sc-for list="{{ admFaqItems }}" as="f" hint-placeholder-count="6">
+          <div style="border-top:1px solid rgba(31,41,55,.06)">
+            <div onClick="{{ f.onToggle }}" style="display:flex;align-items:center;gap:10px;padding:14px 0;cursor:pointer">
+              <span class="msr" style="font-size:19px;color:{{ f.chevColor }};transition:transform 240ms ease;transform:{{ f.chevRotate }}">chevron_right</span>
+              <div style="flex:1;min-width:0;font-size:13.5px;color:#1F2937;line-height:1.5">{{ f.q }}</div>
+            </div>
+            <sc-if value="{{ f.open }}" hint-placeholder-val="{{ false }}">
+              <div style="font-size:12.5px;line-height:1.85;color:#6B7280;padding:0 0 14px 29px">{{ f.a }}</div>
+            </sc-if>
+          </div>
+        </sc-for>
+      </div>
+
+      <div style="background:rgba(255,255,255,.62);backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);border:1px solid rgba(255,255,255,.75);border-radius:24px;box-shadow:0 15px 45px rgba(31,41,55,.10), inset 0 1px 0 rgba(255,255,255,.6);padding:22px">
+        <div style="font-weight:500;font-size:15px;color:#1F2937;margin-bottom:12px">{{ L.k36 }}</div>
+        <sc-for list="{{ admGuideRules }}" as="r" hint-placeholder-count="4">
+          <div style="display:flex;gap:10px;align-items:flex-start;padding:9px 0;border-top:1px solid rgba(31,41,55,.05)">
+            <span class="msr fill" style="font-size:17px;color:{{ r.color }};flex-shrink:0;margin-top:1px">{{ r.icon }}</span>
+            <div style="flex:1;min-width:0">
+              <div style="font-size:12.5px;color:#1F2937;line-height:1.5">{{ r.label }}</div>
+              <div style="font-size:11.5px;color:#9CA3AF;line-height:1.6;margin-top:1px">{{ r.hint }}</div>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </div>
+</sc-if>
+
+<sc-if value="{{ isAdminProfile }}" hint-placeholder-val="{{ false }}">
+  <div class="nuv-prof-grid" style="display:grid;grid-template-columns:320px minmax(0,1fr);gap:18px;align-items:start">
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <div style="position:relative;overflow:hidden;background:rgba(255,255,255,.62);backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);border:1px solid rgba(255,255,255,.75);border-radius:24px;box-shadow:0 15px 45px rgba(31,41,55,.10), inset 0 1px 0 rgba(255,255,255,.6);padding:26px 22px;text-align:center">
+        <div style="position:absolute;inset:0 0 auto;height:82px;background:linear-gradient(135deg,rgba(31,41,55,.32),rgba(167,116,247,.24))"></div>
+        <div style="position:relative">
+          <div style="position:relative;width:104px;margin:22px auto 0">
+            <div style="width:104px;height:104px;border-radius:50%;background:#fff;padding:5px;box-shadow:0 10px 26px rgba(30,37,48,.18)">
+              <sc-if value="{{ hasAvatar }}" hint-placeholder-val="{{ false }}">
+                <img src="{{ avatarUrl }}" alt="" style="width:94px;height:94px;border-radius:50%;object-fit:cover;display:block"/>
+              </sc-if>
+              <sc-if value="{{ noAvatar }}" hint-placeholder-val="{{ true }}">
+                <image-slot id="admin-avatar" shape="circle" placeholder="{{ L.k68 }}" style="width:94px;height:94px;display:block;border-radius:50%"></image-slot>
+              </sc-if>
+            </div>
+            <div title="{{ L.k14 }}" style="position:absolute;right:0;bottom:0;display:flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#1F2937,#A774F7);color:#fff;border:2px solid #fff;box-shadow:0 6px 16px rgba(31,41,55,.32);cursor:pointer"><span class="msr" style="font-size:16px">photo_camera</span></div>
+          </div>
+          <div style="font-weight:600;font-size:17px;color:#1F2937;margin-top:14px;line-height:1.5">{{ adminProfileName }}</div>
+          <div style="font-size:12.5px;color:#6B7280;margin-top:3px">{{ adminProfileSubtitle }}</div>
+          <div style="display:inline-flex;align-items:center;gap:6px;margin-top:12px;padding:5px 13px;border-radius:999px;background:rgba(31,41,55,.1);color:#1F2937;font-size:11.5px;font-weight:500"><span class="msr fill" style="font-size:15px">shield</span>{{ L.k23 }}</div>
+        </div>
+      </div>
+      <div style="background:rgba(255,255,255,.62);backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);border:1px solid rgba(255,255,255,.75);border-radius:24px;box-shadow:0 15px 45px rgba(31,41,55,.10), inset 0 1px 0 rgba(255,255,255,.6);padding:20px">
+        <div style="font-size:12px;font-weight:500;color:#94A3B8;letter-spacing:.04em;margin-bottom:12px">{{ L.k33 }}</div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <sc-for list="{{ adminAccessRows }}" as="r" hint-placeholder-count="3">
+            <div style="display:flex;align-items:center;gap:10px">
+              <span class="msr" style="font-size:18px;color:{{ r.color }}">{{ r.icon }}</span>
+              <div style="flex:1;min-width:0">
+                <div style="font-size:12.5px;color:#374151;line-height:1.5">{{ r.label }}</div>
+                <div style="font-size:11px;color:#9CA3AF">{{ r.value }}</div>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:18px">
+      <div style="position:sticky;top:0;z-index:5;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;padding:14px 18px;border-radius:20px;background:rgba(255,255,255,.86);backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);border:1px solid rgba(255,255,255,.85);box-shadow:0 10px 30px rgba(31,41,55,.10)">
+        <div>
+          <div style="font-size:15px;font-weight:500;color:#1F2937">{{ L.k40 }}</div>
+          <div style="font-size:11.5px;color:#9CA3AF;margin-top:2px">{{ L.k11 }}</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+          <sc-if value="{{ adminProfileSaved }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:#0d6e50"><span class="msr fill" style="font-size:17px;color:#0F8A63">check_circle</span>{{ L.k66 }}</div>
+          </sc-if>
+          <button onClick="{{ onSaveAdminProfile }}" style="{{ adminProfileSaveStyle }}" title="{{ L.k57 }}" aria-label="{{ L.k57 }}"><span class="msr" style="font-size:19px">save</span><span class="nuv-blabel">{{ L.k57 }}</span></button>
+        </div>
+      </div>
+      <sc-for list="{{ adminProfileSections }}" as="sec" hint-placeholder-count="2">
+        <div style="background:rgba(255,255,255,.62);backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);border:1px solid rgba(255,255,255,.75);border-radius:24px;box-shadow:0 15px 45px rgba(31,41,55,.10), inset 0 1px 0 rgba(255,255,255,.6);padding:22px">
+          <div style="display:flex;align-items:center;gap:11px;margin-bottom:18px">
+            <div style="display:flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:12px;background:{{ sec.color }}24;color:{{ sec.color }}"><span class="msr" style="font-size:20px">{{ sec.icon }}</span></div>
+            <div style="font-size:15px;font-weight:500;color:#1F2937">{{ sec.title }}</div>
+          </div>
+          <div class="nuv-form-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+            <sc-for list="{{ sec.fields }}" as="f" hint-placeholder-count="4">
+              <div style="{{ f.wrapStyle }}">
+                <label style="display:flex;align-items:center;gap:3px;font-size:12px;font-weight:500;color:#4B5563;margin-bottom:6px">{{ f.label }}<sc-if value="{{ f.isRequired }}" hint-placeholder-val="{{ false }}"><span style="color:#E97171">*</span></sc-if></label>
+                <sc-if value="{{ f.isInput }}" hint-placeholder-val="{{ true }}">
+                  <input value="{{ f.value }}" onChange="{{ f.onChange }}" type="{{ f.type }}" placeholder="{{ f.placeholder }}" style="{{ f.inputStyle }}"/>
+                </sc-if>
+                <sc-if value="{{ f.isReadonly }}" hint-placeholder-val="{{ false }}">
+                  <div style="display:flex;align-items:center;gap:7px;padding:11px 13px;border-radius:12px;background:rgba(31,41,55,.05);border:1px solid rgba(31,41,55,.06);font-size:13px;color:#6B7280"><span class="msr" style="font-size:16px;color:#9CA3AF">lock</span>{{ f.value }}</div>
+                </sc-if>
+                <sc-if value="{{ f.hasError }}" hint-placeholder-val="{{ false }}">
+                  <div style="display:flex;align-items:center;gap:5px;font-size:11.5px;color:#c2410c;margin-top:6px"><span class="msr" style="font-size:14px">error</span>{{ f.error }}</div>
+                </sc-if>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+</sc-if>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+var ADM_LANG = "th";
+const MONTH_FULL = ['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
+const TODAY_CAL = {m:6, d:10};
+const ADM_EN = {"ล้างข้อความแชทเก่า":"Clear old chat messages","ปัจจุบันมีข้อความเก่ากว่า 6 เดือนอยู่ ":"Messages older than 6 months: ","จาก":"across","ห้องสนทนา":"conversations","เลื่อนดูถัดไป":"Scroll for more","มี ":"","สำรองข้อมูลล่าสุด ":"Last backup ","ยังไม่เคยสำรอง":"No backup yet","คืนค่าข้อมูลตัวอย่าง":"Restore sample data","ลบข้อมูลที่บันทึกไว้ในเครื่องนี้ แล้วกลับไปใช้ข้อมูลตั้งต้น":"Clear the data saved on this device and return to the starting dataset","คืนค่าข้อมูลทั้งหมด":"Reset all data","กำลังสำรองข้อมูล…":"Backing up…","กำลังสำรองข้อมูล — โปรดรอจนเสร็จก่อนดำเนินการต่อ":"Backup in progress — please wait until it finishes","สำรองข้อมูลสำเร็จเมื่อ ":"Backup completed at "," — ดำเนินการรีเซ็ตได้":" — you can now reset","ต้องสำรองข้อมูลให้สำเร็จก่อน จึงจะรีเซ็ตข้อมูลได้":"A successful backup is required before resetting","น.":"","กล่องข้อความ":"Inbox","ค้นหาผู้ส่งหรือข้อความ...":"Search sender or message...","เลือกข้อความเพื่ออ่านและตอบกลับ":"Select a message to read and reply","ตอบกลับ":"Reply","พิมพ์คำตอบ... (กด Enter เพื่อส่ง)":"Type your reply... (press Enter to send)","ส่งคำตอบแล้ว":"Reply sent","ทำเป็นยังไม่อ่าน":"Mark as unread","ทำเป็นอ่านแล้ว":"Mark as read","ไม่พบข้อความที่ตรงกับคำค้น":"No messages match your search","ข้อความจากผู้ใช้":"Messages from users","คำตอบของคุณ":"Your reply","ยังไม่อ่าน":"Unread","อ่านแล้ว":"Read","รายเดือน":"Month","รายสัปดาห์":"Week","สัปดาห์ที่":"Week","สัปดาห์ก่อนหน้า":"Previous week","สัปดาห์ถัดไป":"Next week","ไม่มีกิจกรรมในสัปดาห์นี้":"No activities this week","กรองตามหมวดหมู่":"Filter by category","ทุกหมวด":"All categories","วันนี้":"Today","กิจกรรม":"activities","ล้างตัวกรอง":"Clear filter","รายงานรายคณะ":"Faculty report","ส่งออก CSV":"Export CSV","ชื่อคณะ":"Faculty","สีประจำคณะ":"Faculty color","นิสิตทั้งหมด":"Total students","เข้าร่วมกิจกรรม":"Participated","ผ่านเกณฑ์ กยศ.":"Met SLF requirement","ยังไม่ผ่านเกณฑ์":"Not yet met","อัตราผ่านเกณฑ์ (%)":"Pass rate (%)","ระดับ":"Level","อันดับอัตราผ่านเกณฑ์ กยศ.":"SLF pass-rate ranking","เปรียบเทียบทุกคณะ":"Compare all faculties","อัตราเฉลี่ยทั้งมหาวิทยาลัย":"University average","สูงสุด":"Highest","ต่ำสุด":"Lowest","อันดับ":"Rank","ดูกราฟ":"View chart","ยังไม่ผ่าน":"Not yet","ระบบอยู่ในโหมดปิดปรับปรุง — ผู้ใช้ทั่วไปเข้าใช้งานไม่ได้":"The system is in maintenance mode — regular users cannot sign in","ปิดโหมดนี้ได้ที่หน้าตั้งค่า &gt; ระบบทั่วไป":"Turn it off in Settings &gt; General","ไปที่ตั้งค่า":"Go to Settings","ภาพรวมระบบวันนี้ — อัปเดตล่าสุด":"System overview today — updated","รีเฟรช":"Refresh","เพิ่มผู้ใช้ใหม่":"Add user","ความเคลื่อนไหวรายวัน (14 วันล่าสุด)":"Daily activity (last 14 days)","เปรียบเทียบผู้เช็กอินกับผู้เช็กเอาต์":"Check-ins vs. check-outs","เช็กอิน":"Check-in","เช็กเอาต์":"Check-out","สัดส่วนกิจกรรมตามประเภท":"Activities by type","จากทั้งหมด":"of","กิจกรรม":"activities","กิจกรรมใกล้ปิดรับสมัคร":"Closing soon","ดูทั้งหมด":"See all","ยังไม่มีกิจกรรมที่ใกล้ปิดรับ":"No activities closing soon","กิจกรรมล่าสุดในระบบ":"Recent system activity","ยังไม่มีบันทึกกิจกรรม":"No activity records yet","เพิ่มผู้ใช้":"Add user","พบผู้ใช้ที่ยังผูกกับบทบาทที่ถูกยกเลิก":"Users still linked to a removed role","ชื่อ":"Name","อีเมล":"Email","บทบาท":"Role","สังกัด":"Affiliation","ไม่พบผู้ใช้งานที่ตรงกับเงื่อนไข":"No users match these filters","ไม่พบกิจกรรมในสถานะนี้":"No activities with this status","หมวดหมู่ทั้งหมด":"Total categories","ด้าน — คลิกที่การ์ดเพื่อแก้ไขชื่อหรือสี":"categories — tap a card to edit its name or color","เพิ่มหมวดหมู่":"Add category","สัดส่วนในระบบ":"Share of system","ไม่พบคณะที่ตรงกับการค้นหา":"No faculties match your search","นิสิต":"Student","คน":"students","เข้าร่วม":"Participated","ผ่านเกณฑ์":"Met requirement","ยังไม่ผ่าน":"Not yet met","อัตราผ่านเกณฑ์ กยศ.":"SLF pass rate","ดูกราฟเปรียบเทียบ":"View comparison chart","หมวดหมู่:":"Category:","กิจกรรมที่กำลังจะถึง":"Upcoming activities","ไม่มีกิจกรรมที่กำลังจะถึง":"No upcoming activities","วันที่":"Date","ไม่มีกิจกรรมในวันนี้":"No activities on this day","ประกาศ":"Announcements","ยังไม่มีประกาศ":"No announcements yet","แบนเนอร์":"Banners","+ เพิ่มแบนเนอร์":"+ Add banner","ยังไม่มีแบนเนอร์":"No banners yet","แสดงข้อมูล":"Showing data ","ส่งออกรายงาน":"Export report","เลือกชุดข้อมูลที่ต้องการดาวน์โหลดเป็นไฟล์ CSV เปิดได้ด้วย Excel":"Pick a dataset to download as CSV, openable in Excel","ส่งออกรายงานสรุปทั้งหมด":"Export full summary","พิมพ์ / บันทึก PDF":"Print / Save as PDF","ไม่มีบันทึกระบบ":"No system logs","ไม่มีข้อความ":"No messages","ตั้งค่าระบบ":"System settings","การเปลี่ยนแปลงมีผลทันทีกับผู้ใช้ทุกคน":"Changes apply to all users immediately","ไม่พบการตั้งค่าที่ตรงกับคำค้น":"No settings match your search","โซนอันตราย":"Danger zone","การกระทำในส่วนนี้ไม่สามารถย้อนกลับได้ กรุณาตรวจสอบให้แน่ใจก่อนดำเนินการ":"Actions here cannot be undone. Please double-check before proceeding.","สำรองข้อมูลก่อน":"Back up first","รีเซ็ตข้อมูลทั้งหมด":"Reset all data","อ่านทั้งหมด":"Mark all read","ไม่มีการแจ้งเตือนในหมวดนี้":"No notifications in this category","คู่มือผู้ดูแลระบบ":"Administrator guide","ตั้งค่าระบบ ดูแลผู้ใช้ และติดตามภาพรวมทั้งมหาวิทยาลัย":"Configure the system, manage users, and monitor the whole university","ขั้นตอนการดูแลระบบ":"Administration steps","ขั้นที่":"Step","คำถามที่พบบ่อย":"Frequently asked questions","คลิกเพื่อดูคำตอบ":"Tap to see the answer","ไม่พบคำถามที่ตรงกับคำค้น":"No questions match your search","แนวปฏิบัติที่แนะนำ":"Recommended practices","สิทธิ์ผู้ดูแลระบบสูงสุด":"Full administrator access","การเข้าใช้งานล่าสุด":"Recent sign-in","ข้อมูลผู้ดูแลระบบ":"Administrator details","แก้ไขข้อมูลบัญชีและรหัสผ่านของคุณ":"Edit your account details and password","บันทึกแล้ว":"Saved","บันทึกข้อมูล":"Save","ค้นหาชื่อหรืออีเมล...":"Search name or email...","แก้ไข":"Edit","ลบ":"Delete","ค้นหาคณะ...":"Search faculties...","เดือนก่อนหน้า":"Previous month","เดือนถัดไป":"Next month","ค้นหาการตั้งค่า...":"Search settings...","ค้นหาคำถาม...":"Search questions...","รูปโปรไฟล์":"Profile photo","เปลี่ยนรูปโปรไฟล์ (ลากรูปมาวาง)":"Change profile photo (drag an image here)","ผู้จัด":"Organizer","แอดมิน":"Admin","ทั้งหมด":"All","ผู้ใช้ทุกบทบาทในระบบ":"All user roles in the system","ลงทะเบียน สะสมชั่วโมง รับใบประกาศ":"Register, earn hours, get certificates","สร้างกิจกรรม อนุมัติผู้สมัคร ออก QR":"Create activities, approve applicants, issue QR codes","จัดการผู้ใช้ทั้งระบบ ตั้งค่าระบบ":"Manage all users and system settings","ชั่วโมงรวม":"Total hours","ผู้เข้าร่วม":"Participants","แยกตามคณะ":"By faculty","แยกตามหมวดหมู่":"By category","ความพึงพอใจ":"Satisfaction","อัพเดทระบบ":"System update","เตือนความจำ":"Reminder","ประกาศทั่วไป":"General announcement","ข้อความใหม่":"New message","ข้อผิดพลาดระบบ":"System error","คำเตือนระบบ":"System warning","ผู้ใช้งานใหม่":"New user","กิจกรรมใหม่":"New activity","ผู้ใช้":"User"," ส่งข้อความ: ":" sent a message: ","วันนี้":"Today","เพิ่มผู้ใช้ ":"Added user ","สัปดาห์นี้":"This week","\" เปิดรับสมัคร ":"\" opened registration for "," ที่นั่ง":" seats","ยังไม่อ่าน":"Unread","ข้อความ":"Messages","ข้อผิดพลาด":"Errors","คำเตือน":"Warnings","ล่าสุด":"Recent","ก่อนหน้านี้":"Earlier"," รายการ":" items"," รายการที่ยังไม่อ่าน":" unread","อ่านครบทุกรายการแล้ว":"Everything has been read","จัดการผู้ใช้งาน":"Manage users","เพิ่มผู้ใช้ กำหนดบทบาท (นิสิต/ผู้จัด/แอดมิน) และแก้ไขข้อมูลสังกัดคณะได้ที่หน้าผู้ใช้งาน":"Add users, set roles (student/organizer/admin), and edit faculty affiliation on the Users page.","ตั้งค่าหมวดหมู่และคณะ":"Set up categories and faculties","กำหนดหมวดหมู่กิจกรรม 7 ด้านและข้อมูลคณะพร้อมสีประจำคณะ ก่อนเปิดให้ผู้จัดสร้างกิจกรรม":"Define the 7 activity categories and faculty data with colors before organizers create activities.","ประชาสัมพันธ์":"Announcements","สร้างแบนเนอร์และข่าวสารที่หน้าข่าวสารประชาสัมพันธ์ แบนเนอร์จะแสดงบนหน้าหลักของนิสิตและผู้จัด":"Create banners and news on the Announcements page; banners appear on student and organizer home pages.","ติดตามภาพรวม":"Monitor the big picture","ดูปฏิทินกิจกรรมทั้งระบบ รายงานชั่วโมงแยกตามคณะ และ System Log เพื่อตรวจสอบการใช้งาน":"Review the system-wide calendar, hours by faculty, and the system log.","ดูแลระบบ":"Maintain the system","ตั้งค่าระบบ เปิด/ปิดโหมดปรับปรุง สำรองข้อมูล และตอบข้อความที่ส่งเข้ามาจากผู้ใช้":"Configure settings, toggle maintenance mode, back up data, and answer user messages.","เพิ่มผู้จัดกิจกรรมใหม่อย่างไร?":"How do I add a new organizer?","ไปที่หน้าผู้ใช้งาน กด \"เพิ่มผู้ใช้\" กรอกชื่อ อีเมล และเลือกบทบาท \"ผู้จัดกิจกรรม\" ระบบจะส่งอีเมลตั้งรหัสผ่านให้ผู้ใช้เอง":"On the Users page, tap \"Add user\", enter the name and email, and pick the \"Organizer\" role — the system emails them a password setup link.","เปลี่ยนเกณฑ์ชั่วโมง กยศ. ได้ไหม?":"Can I change the SLF hour requirement?","ได้ที่หน้าตั้งค่า เปิดหัวข้อระบบ กยศ. แล้วปรับจำนวนชั่วโมงเกณฑ์ต่อปีการศึกษา การเปลี่ยนแปลงมีผลกับการคำนวณของนิสิตทุกคน":"Yes — in Settings, open the SLF section and adjust the required hours per academic year. It applies to every student's calculation.","แบนเนอร์แสดงที่ไหนบ้าง?":"Where do banners appear?","แบนเนอร์ที่ตั้งสถานะ \"แสดง\" จะขึ้นเป็นสไลด์บนหน้าหลักของนิสิตและผู้จัด เลื่อนอัตโนมัติทุก 7 วินาที และกดปุ่มไปยังหน้าที่กำหนดได้":"Banners set to \"Visible\" appear as a slideshow on student and organizer home pages, rotating every 7 seconds with a link button.","ลบกิจกรรมของผู้จัดได้หรือไม่?":"Can I delete an organizer's activity?","แอดมินลบได้จากหน้ากิจกรรม แต่ควรแจ้งผู้จัดก่อน เพราะผู้ที่สมัครไว้จะได้รับการแจ้งเตือนยกเลิกทันที":"Admins can delete from the Activities page, but tell the organizer first — applicants are notified of the cancellation immediately.","System Log เก็บอะไรไว้บ้าง?":"What does the system log keep?","บันทึกการเข้าสู่ระบบ การอนุมัติ การแก้ไขข้อมูลสำคัญ และข้อผิดพลาดของระบบ กรองตามระดับความรุนแรงได้":"Sign-ins, approvals, critical data edits, and system errors — filterable by severity.","สำรองข้อมูลบ่อยแค่ไหน?":"How often should I back up?","ระบบสำรองอัตโนมัติทุกวันหากเปิดใช้งานที่หน้าตั้งค่า และควรกดสำรองข้อมูลด้วยตนเองก่อนดำเนินการที่มีผลกระทบวงกว้าง":"Daily automatic backups if enabled in Settings — and back up manually before any wide-reaching change.","ตรวจข้อความผู้ใช้ทุกวันทำการ":"Check user messages every business day","ข้อความใหม่แสดงตัวเลขที่เมนูข้อความ":"New messages show a count on the Messages menu","ตรวจ System Log สัปดาห์ละครั้ง":"Review the system log weekly","ดูรายการระดับ error และ warning เป็นอันดับแรก":"Look at error and warning entries first","สำรองข้อมูลก่อนแก้ไขโครงสร้าง":"Back up before structural changes","เช่น ก่อนลบคณะหรือหมวดหมู่กิจกรรม":"For example, before deleting a faculty or category","ปิดโหมดปรับปรุงทันทีเมื่อเสร็จงาน":"Turn maintenance mode off as soon as you're done","ผู้ใช้จะไม่สามารถเข้าระบบได้ระหว่างเปิดโหมดนี้":"Users cannot sign in while it is on","ผู้ใช้งาน":"Users","หมวดหมู่":"Categories","ข่าวสารประชาสัมพันธ์":"Announcements","นักวิชาการคอมพิวเตอร์":"IT officer","กองกิจการนิสิต":"Student Affairs Division","กรอกเบอร์โทร 10 หลัก":"Enter a 10-digit phone number","รูปแบบอีเมลไม่ถูกต้อง":"Invalid email format","รหัสผ่านต้องยาวอย่างน้อย 8 ตัวอักษร":"Password must be at least 8 characters","รหัสผ่านยืนยันไม่ตรงกัน":"Passwords do not match","กรอกรหัสผ่านปัจจุบันเพื่อยืนยัน":"Enter your current password to confirm","เข้าสู่ระบบครั้งล่าสุด":"Last sign-in","อุปกรณ์ที่ใช้":"Device","สิทธิ์การเข้าถึง":"Access rights","จัดการผู้ใช้ · กิจกรรม · ตั้งค่าระบบ":"Users · Activities · System settings","ชื่อ-นามสกุล":"Full name","ตำแหน่ง":"Position","หน่วยงาน":"Unit","ชื่อผู้ใช้":"Username","เบอร์โทรศัพท์":"Phone number","ความปลอดภัย":"Security","รหัสผ่านปัจจุบัน":"Current password","รหัสผ่านใหม่":"New password","อย่างน้อย 8 ตัวอักษร":"At least 8 characters","ยืนยันรหัสผ่านใหม่":"Confirm new password","พิมพ์รหัสผ่านใหม่อีกครั้ง":"Re-enter the new password","ดาวน์โหลด ":"Downloaded "," เรียบร้อยแล้ว":" successfully","รหัส":"ID","ชื่อกิจกรรม":"Activity","สถานที่":"Venue","ชั่วโมง":"Hours","ลงทะเบียน":"Registered","ที่นั่งทั้งหมด":"Total seats","สถานะ":"Status","ชื่อ-สกุล":"Full name","คณะ/หน่วยงาน":"Faculty / unit","จำนวนกิจกรรม":"Activities","ชั่วโมงจิตอาสารวม":"Total volunteer hours","เวลา":"Time","ระดับ":"Level","รายการ":"Item","รายงานกิจกรรม":"Activities report","รายงานผู้ใช้งาน":"Users report","สรุปตามหมวดหมู่":"Category summary","บันทึกระบบ":"System log","ระบบทั่วไป":"General","การเข้าถึงและสถานะโดยรวมของระบบ":"Overall access and system status","โหมดปิดปรับปรุงระบบ":"Maintenance mode","ผู้ใช้ทั่วไปจะเข้าใช้งานไม่ได้ชั่วคราว":"Regular users temporarily cannot sign in","เปิดให้สมัครสมาชิกใหม่":"Allow new sign-ups","อนุญาตให้นิสิตสร้างบัญชีเองได้":"Let students create their own accounts","เปิดหน้ากิจกรรมสาธารณะ":"Public activity page","ผู้ที่ยังไม่เข้าสู่ระบบดูรายการกิจกรรมได้":"Visitors can browse activities without signing in","ภาษาเริ่มต้น":"Default language","ภาษาที่แสดงเมื่อเข้าใช้งานครั้งแรก":"Language shown on first visit","ไทย":"Thai","การลงทะเบียนกิจกรรม":"Activity registration","กติกาการสมัครและการอนุมัติ":"Application and approval rules","อนุมัติผู้สมัครอัตโนมัติ":"Auto-approve applicants","ข้ามขั้นตอนรออนุมัติจากผู้จัด":"Skips organizer approval","เปิดรายชื่อสำรองเมื่อที่นั่งเต็ม":"Enable waitlist when full","นิสิตจองคิวได้แม้ที่นั่งเต็มแล้ว":"Students can queue even when seats are full","ให้นิสิตขอยกเลิกเองได้":"Let students request cancellation","ต้องระบุเหตุผลและรอผู้จัดอนุมัติ":"A reason is required and the organizer must approve","จำนวนผู้ลงทะเบียนสูงสุดต่อกิจกรรม":"Max registrations per activity","ค่าเริ่มต้นเมื่อผู้จัดสร้างกิจกรรมใหม่":"Default when organizers create an activity","ปิดรับคำขอยกเลิกก่อนวันงาน (วัน)":"Close cancellations before the event (days)","หลังจากนี้จะยกเลิกไม่ได้":"No cancellations after this point","ชั่วโมงจิตอาสาและใบประกาศ":"Volunteer hours & certificates","เกณฑ์ กยศ. และการออกเอกสาร":"SLF requirements and document issuing","เปิดใช้ระบบเกณฑ์ กยศ.":"Enable SLF requirement tracking","ติดตามชั่วโมงจิตอาสาของผู้กู้ยืม":"Track loan recipients' volunteer hours","ออกใบประกาศอัตโนมัติ":"Issue certificates automatically","ออกให้ทันทีเมื่อกิจกรรมเสร็จสิ้นและอนุมัติแล้ว":"Issued as soon as an activity is completed and approved","บังคับอัปโหลดหลักฐาน":"Require evidence upload","ต้องมีหลักฐานก่อนอนุมัติชั่วโมง":"Evidence is required before hours are approved","เป้าหมายชั่วโมงต่อปีการศึกษา":"Hour goal per academic year","เกณฑ์ขั้นต่ำสำหรับผู้กู้ยืม กยศ.":"Minimum for SLF loan recipients","กำหนดส่งหลักฐานหลังเช็กเอาต์ (วัน)":"Evidence deadline after check-out (days)","เกินกำหนดระบบจะแจ้งเตือนนิสิต":"Students are notified when overdue","การแจ้งเตือน":"Notifications","ช่องทางและความถี่ในการแจ้งเตือน":"Notification channels and frequency","แจ้งเตือนทางอีเมล":"Email notifications","ส่งอีเมลเมื่อมีการอนุมัติหรือเปลี่ยนแปลง":"Email on approvals or changes","แจ้งเตือนในระบบ":"In-app notifications","แสดงในเมนูการแจ้งเตือนของนิสิต":"Shown in the student notifications menu","เตือนก่อนถึงวันกิจกรรม":"Remind before the activity","อิงตามปฏิทินส่วนตัวของนิสิต":"Based on each student's calendar","แจ้งเตือนล่วงหน้า (วัน)":"Advance notice (days)","จำนวนวันก่อนวันจัดกิจกรรม":"Days before the activity date","ความปลอดภัยและข้อมูล":"Security & data","การสำรองข้อมูลและการเข้าถึง":"Backups and access","สำรองข้อมูลอัตโนมัติ":"Automatic backups","สำรองฐานข้อมูลตามรอบที่กำหนด":"Back up the database on a schedule","บันทึก System Log":"Keep a system log","เก็บประวัติการกระทำของผู้ดูแลระบบ":"Records administrator actions","ออกจากระบบอัตโนมัติ (นาที)":"Auto sign-out (minutes)","เมื่อไม่มีการใช้งาน":"When idle","ความถี่การสำรองข้อมูล":"Backup frequency","รอบการสำรองฐานข้อมูลอัตโนมัติ":"Automatic database backup cycle","ทุกวัน":"Daily","ทุกสัปดาห์":"Weekly","ทุกเดือน":"Monthly","ปิดปรับปรุงระบบ":"Maintenance mode","ระบบทำงานปกติ":"System operating normally","ผู้ใช้งาน ":"Users "," บัญชี":" accounts","สำรองข้อมูลล่าสุด 28 ก.ค. 2569":"Last backup 28 Jul 2026","เวอร์ชัน 1.4.2":"Version 1.4.2","สวัสดีตอนเช้า":"Good morning","สวัสดีตอนบ่าย":"Good afternoon","สวัสดีตอนเย็น":"Good evening","เมื่อสักครู่":"just now"," นาทีที่แล้ว":" min ago","อนุมัติผู้สมัครอัตโนมัติทั้งระบบ":"System-wide auto-approval","ปิดรับสมัครสมาชิกใหม่":"Sign-ups closed","ปิดหน้ากิจกรรมสาธารณะ":"Public activity page off","ปิดระบบเกณฑ์ กยศ.":"SLF tracking off","ผู้ใช้งานทั้งหมด":"Total users","จากเดือนก่อน":"vs. last month","กิจกรรมที่เปิดอยู่":"Open activities","กิจกรรมใหม่สัปดาห์นี้":"new this week","คำขอยกเลิกค้าง":"Pending cancellations","ไม่มีค้าง":"Nothing pending","รอผู้จัดพิจารณา":"awaiting organizers","รายการที่ต้องตรวจสอบ":"Items to review"," ข้อความ":" messages","ยังไม่ได้อ่าน":"unread"," นิสิต":" students","กิจกรรมในระบบ":"Activities in system"," หมวดหมู่":" categories","ยอดลงทะเบียนรวม":"Total registrations","จาก ":"of ","ทั้งมหาวิทยาลัย":"university-wide","ประกาศที่แสดงอยู่":"Visible announcements","ข้อความยังไม่ได้อ่าน":"Unread messages","กิจกรรมใกล้เต็ม":"Almost full","กิจกรรมที่นั่งเต็มแล้ว":"Full activities","สถานะระบบ":"System status","ปิดปรับปรุง":"Maintenance","ทำงานปกติ":"Normal","อัตราที่นั่งถูกจอง":"Seat fill rate","เปิดใช้งาน":"Enabled","ปิดอยู่":"Disabled","กิจกรรมทั้งหมด":"All activities","คณะ":"Faculty","กำลังเปิดรับ":"Open","ที่นั่งเต็ม":"Full","ปิดรับแล้ว":"Closed","หมวดที่มีกิจกรรม":"Categories in use","หมวดยอดนิยม":"Most popular","เรียงตามชื่อ":"Sort by name","จำนวนนิสิต":"Students","อัตราผ่านเกณฑ์":"Pass rate","ผ่านเกณฑ์ดี":"Good","ปานกลาง":"Moderate","ต้องติดตาม":"Needs attention","จำนวนคณะ":"Faculties","นิสิตทั้งหมด":"All students","ผ่านเกณฑ์ กยศ.":"SLF requirement met","เผยแพร่แล้ว":"Published","ร่าง":"Draft","เผยแพร่อยู่":"Published","ปิดเผยแพร่":"Unpublished","แสดงอยู่":"Visible","ซ่อนอยู่":"Hidden","อา":"Sun","จ":"Mon","อ":"Tue","พ":"Wed","พฤ":"Thu","ศ":"Fri","ส":"Sat","กิจกรรมทั้งระบบ":"All system activities","ในเดือนนี้":"this month","วันที่มีกิจกรรม":"Days with activities"," วัน":" days","ผ่านไปแล้ว":"Past","ข้อมูล":"Info","ย้อนหลัง 1 เดือน":"Last 1 month","ย้อนหลัง 3 เดือน":"Last 3 months","ย้อนหลัง 6 เดือน":"Last 6 months","ย้อนหลัง 1 ปี":"Last 1 year","1 เดือน":"1 month","3 เดือน":"3 months","6 เดือน":"6 months","1 ปี":"1 year","ทุกช่วงเวลา":"All time","7 วัน":"7 days","30 วัน":"30 days","อ่านแล้ว":"Read","โหมดบำรุงรักษา":"Maintenance mode","ระบบ กยศ.":"SLF system"};
+function T(s){ return ADM_LANG === "en" ? (ADM_EN[s] || s) : s; }
+
+const ROLE_COLORS = {student:'#E97171', organizer:'#A774F7', admin:'#1F2937'};
+const ROLE_LABELS = {student:T('นิสิต'), organizer:T('ผู้จัด'), admin:T('แอดมิน')};
+const ROLE_META = {
+  all:{label:T('ทั้งหมด'), color:'#7AB8FF', accentTo:'#AED5FF', iconBg:'rgba(122,184,255,.16)', icon:'groups', perms:T('ผู้ใช้ทุกบทบาทในระบบ')},
+  student:{label:T('นิสิต'), color:'#E97171', accentTo:'#F5A9A0', iconBg:'rgba(233,113,113,.16)', icon:'school', perms:T('ลงทะเบียน สะสมชั่วโมง รับใบประกาศ')},
+  organizer:{label:T('ผู้จัด'), color:'#A774F7', accentTo:'#C9A5FA', iconBg:'rgba(167,116,247,.16)', icon:'campaign', perms:T('สร้างกิจกรรม อนุมัติผู้สมัคร ออก QR')},
+  admin:{label:T('แอดมิน'), color:'#1F2937', accentTo:'#6B7280', iconBg:'rgba(31,41,55,.10)', icon:'admin_panel_settings', perms:T('จัดการผู้ใช้ทั้งระบบ ตั้งค่าระบบ')},
+};
+const LEVEL_COLORS = {info:['rgba(122,184,255,.12)','#3268c9'], success:['rgba(99,210,161,.12)','#0d8f66'], warning:['rgba(245,166,35,.12)','#c2760f'], error:['rgba(233,113,113,.12)','#c2410c']};
+const REPORT_TOPICS = [['hours',T('ชั่วโมงรวม')],['participants',T('ผู้เข้าร่วม')],['activities',T('กิจกรรม')],['faculty',T('แยกตามคณะ')],['category',T('แยกตามหมวดหมู่')],['satisfaction',T('ความพึงพอใจ')]];
+const BANNER_TYPE = {update:{label:T('อัพเดทระบบ'),bg:'rgba(122,184,255,.14)',color:'#3268c9'}, reminder:{label:T('เตือนความจำ'),bg:'rgba(245,166,35,.14)',color:'#c2760f'}, general:{label:T('ประกาศทั่วไป'),bg:'rgba(167,116,247,.14)',color:'#8b2fe0'}};
+class Component extends DCLogic {
+  componentDidMount(){ this._watchAvatar(); }
+  componentWillUnmount(){ clearInterval(this._avT); }
+  _watchAvatar(){
+    /* image-slot ตั้งค่า data-filled เมื่อผู้ใช้วางรูป — เฝ้าดูแล้วส่งค่าไปบันทึกจริง */
+    clearInterval(this._avT);
+    const grab = ()=>{
+      try{
+        const el = document.getElementById('admin-avatar');
+        if(!el || !el.hasAttribute('data-filled') || !el.shadowRoot) return;
+        const im = el.shadowRoot.querySelector('img');
+        if(im && im.src && /^data:image\//.test(im.src) && im.src !== this._lastAv){
+          this._lastAv = im.src;
+          if(this.props.onAvatarChange) this.props.onAvatarChange(im.src);
+        }
+      }catch(e){}
+    };
+    this._avT = setInterval(grab, 700);
+  }
+  i18nVals(){
+    const en = this.props.lang === "en";
+    return {L: {
+      k1: en ? "Actions here cannot be undone. Please double-check before proceeding." : "การกระทำในส่วนนี้ไม่สามารถย้อนกลับได้ กรุณาตรวจสอบให้แน่ใจก่อนดำเนินการ",
+      k2: en ? "Pick a dataset to download as CSV, openable in Excel" : "เลือกชุดข้อมูลที่ต้องการดาวน์โหลดเป็นไฟล์ CSV เปิดได้ด้วย Excel",
+      k3: en ? "The system is in maintenance mode — regular users cannot sign in" : "ระบบอยู่ในโหมดปิดปรับปรุง — ผู้ใช้ทั่วไปเข้าใช้งานไม่ได้",
+      k4: en ? "Configure the system, manage users, and monitor the whole university" : "ตั้งค่าระบบ ดูแลผู้ใช้ และติดตามภาพรวมทั้งมหาวิทยาลัย",
+      k5: en ? "Turn it off in Settings &gt; General" : "ปิดโหมดนี้ได้ที่หน้าตั้งค่า &gt; ระบบทั่วไป",
+      k6: en ? "categories — tap a card to edit its name or color" : "ด้าน — คลิกที่การ์ดเพื่อแก้ไขชื่อหรือสี",
+      k7: en ? "Users still linked to a removed role" : "พบผู้ใช้ที่ยังผูกกับบทบาทที่ถูกยกเลิก",
+      k8: en ? "Changes apply to all users immediately" : "การเปลี่ยนแปลงมีผลทันทีกับผู้ใช้ทุกคน",
+      k9: en ? "Check-ins vs. check-outs" : "เปรียบเทียบผู้เช็กอินกับผู้เช็กเอาต์",
+      k10: en ? "Daily activity (last 14 days)" : "ความเคลื่อนไหวรายวัน (14 วันล่าสุด)",
+      k11: en ? "Edit your account details and password" : "แก้ไขข้อมูลบัญชีและรหัสผ่านของคุณ",
+      k12: en ? "System overview today — updated" : "ภาพรวมระบบวันนี้ — อัปเดตล่าสุด",
+      k13: en ? "No users match these filters" : "ไม่พบผู้ใช้งานที่ตรงกับเงื่อนไข",
+      k14: en ? "Change profile photo (drag an image here)" : "เปลี่ยนรูปโปรไฟล์ (ลากรูปมาวาง)",
+      k15: en ? "No settings match your search" : "ไม่พบการตั้งค่าที่ตรงกับคำค้น",
+      k16: en ? "No activities closing soon" : "ยังไม่มีกิจกรรมที่ใกล้ปิดรับ",
+      k17: en ? "No notifications in this category" : "ไม่มีการแจ้งเตือนในหมวดนี้",
+      k18: en ? "No faculties match your search" : "ไม่พบคณะที่ตรงกับการค้นหา",
+      k19: en ? "No upcoming activities" : "ไม่มีกิจกรรมที่กำลังจะถึง",
+      k20: en ? "No questions match your search" : "ไม่พบคำถามที่ตรงกับคำค้น",
+      k21: en ? "Activities by type" : "สัดส่วนกิจกรรมตามประเภท",
+      k22: en ? "Export full summary" : "ส่งออกรายงานสรุปทั้งหมด",
+      k23: en ? "Full administrator access" : "สิทธิ์ผู้ดูแลระบบสูงสุด",
+      k24: en ? "Closing soon" : "กิจกรรมใกล้ปิดรับสมัคร",
+      k25: en ? "No activities with this status" : "ไม่พบกิจกรรมในสถานะนี้",
+      k26: en ? "No activity records yet" : "ยังไม่มีบันทึกกิจกรรม",
+      k27: en ? "Search name or email..." : "ค้นหาชื่อหรืออีเมล...",
+      k28: en ? "Upcoming activities" : "กิจกรรมที่กำลังจะถึง",
+      k29: en ? "No activities on this day" : "ไม่มีกิจกรรมในวันนี้",
+      k30: en ? "Recent system activity" : "กิจกรรมล่าสุดในระบบ",
+      k31: en ? "SLF pass rate" : "อัตราผ่านเกณฑ์ กยศ.",
+      k32: en ? "Reset all data" : "รีเซ็ตข้อมูลทั้งหมด",
+      k33: en ? "Recent sign-in" : "การเข้าใช้งานล่าสุด",
+      k34: en ? "Print / Save as PDF" : "พิมพ์ / บันทึก PDF",
+      k35: en ? "Administration steps" : "ขั้นตอนการดูแลระบบ",
+      k36: en ? "Recommended practices" : "แนวปฏิบัติที่แนะนำ",
+      k37: en ? "Search settings..." : "ค้นหาการตั้งค่า...",
+      k38: en ? "View comparison chart" : "ดูกราฟเปรียบเทียบ",
+      k39: en ? "Administrator guide" : "คู่มือผู้ดูแลระบบ",
+      k40: en ? "Administrator details" : "ข้อมูลผู้ดูแลระบบ",
+      k41: en ? "No banners yet" : "ยังไม่มีแบนเนอร์",
+      k42: en ? "Tap to see the answer" : "คลิกเพื่อดูคำตอบ",
+      k43: en ? "Add user" : "เพิ่มผู้ใช้ใหม่",
+      k44: en ? "Total categories" : "หมวดหมู่ทั้งหมด",
+      k45: en ? "+ Add banner" : "+ เพิ่มแบนเนอร์",
+      k46: en ? "No system logs" : "ไม่มีบันทึกระบบ",
+      k47: en ? "Back up first" : "สำรองข้อมูลก่อน",
+      k48: en ? "No announcements yet" : "ยังไม่มีประกาศ",
+      k49: en ? "Frequently asked questions" : "คำถามที่พบบ่อย",
+      k50: en ? "Add category" : "เพิ่มหมวดหมู่",
+      k51: en ? "Share of system" : "สัดส่วนในระบบ",
+      k52: en ? "Previous month" : "เดือนก่อนหน้า",
+      k53: en ? "Search questions..." : "ค้นหาคำถาม...",
+      k54: en ? "Go to Settings" : "ไปที่ตั้งค่า",
+      k55: en ? "Export report" : "ส่งออกรายงาน",
+      k56: en ? "No messages" : "ไม่มีข้อความ",
+      k57: en ? "Save" : "บันทึกข้อมูล",
+      k58: en ? "Add user" : "เพิ่มผู้ใช้",
+      k59: en ? "System settings" : "ตั้งค่าระบบ",
+      k60: en ? "Mark all read" : "อ่านทั้งหมด",
+      k61: en ? "Search faculties..." : "ค้นหาคณะ...",
+      k62: en ? "of" : "จากทั้งหมด",
+      k63: en ? "Not yet met" : "ยังไม่ผ่าน",
+      k64: en ? "Showing data " : "แสดงข้อมูล",
+      k65: en ? "Danger zone" : "โซนอันตราย",
+      k66: en ? "Saved" : "บันทึกแล้ว",
+      k67: en ? "Next month" : "เดือนถัดไป",
+      k68: en ? "Profile photo" : "รูปโปรไฟล์",
+      k69: en ? "Total hours" : "ชั่วโมงรวม",
+      k70: en ? "Check-out" : "เช็กเอาต์",
+      k71: en ? "See all" : "ดูทั้งหมด",
+      k72: en ? "Met requirement" : "ผ่านเกณฑ์",
+      k73: en ? "Category:" : "หมวดหมู่:",
+      k74: en ? "Participated" : "เข้าร่วม",
+      k75: en ? "Banners" : "แบนเนอร์",
+      k76: en ? "Maintain the system" : "ดูแลระบบ",
+      k77: en ? "Check-in" : "เช็กอิน",
+      k78: en ? "activities" : "กิจกรรม",
+      k79: en ? "Step" : "ขั้นที่",
+      k80: en ? "Refresh" : "รีเฟรช",
+      k81: en ? "Affiliation" : "สังกัด",
+      k82: en ? "Date" : "วันที่",
+      k83: en ? "Announcements" : "ประกาศ",
+      k84: en ? "Email" : "อีเมล",
+      k85: en ? "Role" : "บทบาท",
+      k86: en ? "Student" : "นิสิต",
+      k87: en ? "Edit" : "แก้ไข",
+      k88: en ? "Level" : "ระดับ",
+      k89: en ? "Name" : "ชื่อ",
+      k90: en ? "students" : "คน",
+      k91: en ? "Delete" : "ลบ",
+    }};
+  }
+  adminNotifVals(){
+    const p = this.props;
+    const TYPES = {
+      contact:{label:T('ข้อความใหม่'), icon:'mail', color:'#7AB8FF', bg:'rgba(122,184,255,.14)', target:'contact'},
+      error:{label:T('ข้อผิดพลาดระบบ'), icon:'error', color:'#E97171', bg:'rgba(233,113,113,.14)', target:'logs'},
+      warning:{label:T('คำเตือนระบบ'), icon:'warning', color:'#F5A623', bg:'rgba(245,166,35,.14)', target:'logs'},
+      user:{label:T('ผู้ใช้งานใหม่'), icon:'person_add', color:'#A774F7', bg:'rgba(167,116,247,.14)', target:'users'},
+      activity:{label:T('กิจกรรมใหม่'), icon:'campaign', color:'#63D2A1', bg:'rgba(99,210,161,.14)', target:'activities'},
+    };
+    const raw = [];
+    (p.contactMsgs||[]).filter(c=>!c.read).forEach(c=>{
+      raw.push({key:'contact', text:(c.name||T('ผู้ใช้'))+T(' ส่งข้อความ: ')+(c.subject||c.message||'').slice(0,60), time:T('วันนี้'), recent:true, id:'ct-'+c.id});
+    });
+    (p.logs||[]).filter(l=>l.level==='error').forEach(l=>{
+      raw.push({key:'error', text:l.text, time:l.time, recent:true, id:'lg-'+l.id});
+    });
+    (p.logs||[]).filter(l=>l.level==='warning').forEach(l=>{
+      raw.push({key:'warning', text:l.text, time:l.time, recent:true, id:'lg-'+l.id});
+    });
+    (p.users||[]).slice(-3).forEach(u=>{
+      raw.push({key:'user', text:T('เพิ่มผู้ใช้ ')+(u.name||'')+' ('+(u.faculty||'-')+')', time:T('สัปดาห์นี้'), recent:false, id:'us-'+u.id});
+    });
+    (p.activities||[]).slice(0,3).forEach(a=>{
+      raw.push({key:'activity', text:'"'+a.title+T('" เปิดรับสมัคร ')+(a.seatsFilled||0)+'/'+(a.seatsTotal||0)+T(' ที่นั่ง'), time:T('สัปดาห์นี้'), recent:false, id:'ac-'+a.id});
+    });
+    const readSet = this.state.admNotifRead || {};
+    const allRead = !!this.state.admNotifAllRead;
+    const all = raw.map(n=>{
+      const t = TYPES[n.key];
+      const unread = allRead ? false : !readSet[n.id];
+      return {...n, typeLabel:t.label, icon:t.icon, color:t.color, iconBg:t.bg, unread, weight: unread?500:300,
+        accentStyle:`position:absolute;left:0;top:12px;bottom:12px;width:3px;border-radius:0 3px 3px 0;background:${unread?t.color:'transparent'}`,
+        cardStyle:`position:relative;overflow:hidden;cursor:pointer;transition:all 200ms ease;display:flex;gap:12px;align-items:flex-start;background:rgba(255,255,255,${unread?'.62':'.4'});backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);border:1px solid rgba(255,255,255,${unread?'.75':'.5'});border-radius:16px;padding:14px 16px;box-shadow:0 10px 34px rgba(30,37,48,${unread?'.11':'.06'}), inset 0 1px 0 rgba(255,255,255,.6)`,
+        onOpen: ()=>{
+          this.setState(s=>({admNotifRead:{...(s.admNotifRead||{}), [n.id]:true}}));
+          if(p.onNav) p.onNav(t.target);
+        }};
+    });
+    const filter = this.state.admNotifFilter || 'all';
+    const fdefs = [
+      {key:'all', label:T('ทั้งหมด'), icon:'inbox', count:all.length},
+      {key:'unread', label:T('ยังไม่อ่าน'), icon:'mark_email_unread', count:all.filter(n=>n.unread).length},
+      {key:'contact', label:T('ข้อความ'), icon:'mail', count:all.filter(n=>n.key==='contact').length},
+      {key:'error', label:T('ข้อผิดพลาด'), icon:'error', count:all.filter(n=>n.key==='error').length},
+      {key:'warning', label:T('คำเตือน'), icon:'warning', count:all.filter(n=>n.key==='warning').length},
+    ];
+    const admNotifFilters = fdefs.map(f=>({...f,
+      onClick: ()=>this.setState({admNotifFilter:f.key}),
+      style:`display:flex;align-items:center;gap:6px;padding:8px 14px;border-radius:11px;cursor:pointer;font-size:12.5px;font-family:inherit;transition:all 200ms ease;border:1px solid ${filter===f.key?'transparent':'rgba(30,37,48,.1)'};background:${filter===f.key?'#1F2937':'rgba(255,255,255,.6)'};color:${filter===f.key?'#fff':'#475569'};font-weight:${filter===f.key?500:400}`}));
+    const shown = all.filter(n=> filter==='all' ? true : filter==='unread' ? n.unread : n.key===filter);
+    const groups = [
+      {label:T('ล่าสุด'), items: shown.filter(n=>n.recent)},
+      {label:T('ก่อนหน้านี้'), items: shown.filter(n=>!n.recent)},
+    ].filter(g=>g.items.length>0).map(g=>({...g, countLabel:g.items.length+T(' รายการ')}));
+    const unreadCount = all.filter(n=>n.unread).length;
+    return {
+      isAdminNotifications: p.page==='notifications',
+      admNotifFilters, admNotifGroups: groups, hasAdmNotifs: shown.length>0,
+      admNotifSummary: unreadCount>0 ? T('มี ')+unreadCount+T(' รายการที่ยังไม่อ่าน') : T('อ่านครบทุกรายการแล้ว'),
+      onAdmMarkAllRead: ()=>{ this.setState({admNotifAllRead:true, admNotifRead:{}}); if(this.props.onMarkAllNotifRead) this.props.onMarkAllNotifRead(); },
+    };
+  }
+  adminGuideVals(){
+    const p = this.props;
+    const steps = [
+      {step:1, title:T('จัดการผู้ใช้งาน'), desc:T('เพิ่มผู้ใช้ กำหนดบทบาท (นิสิต/ผู้จัด/แอดมิน) และแก้ไขข้อมูลสังกัดคณะได้ที่หน้าผู้ใช้งาน'), icon:'manage_accounts', color:'#E97171', iconBg:'rgba(233,113,113,.16)'},
+      {step:2, title:T('ตั้งค่าหมวดหมู่และคณะ'), desc:T('กำหนดหมวดหมู่กิจกรรม 7 ด้านและข้อมูลคณะพร้อมสีประจำคณะ ก่อนเปิดให้ผู้จัดสร้างกิจกรรม'), icon:'category', color:'#A774F7', iconBg:'rgba(167,116,247,.16)'},
+      {step:3, title:T('ประชาสัมพันธ์'), desc:T('สร้างแบนเนอร์และข่าวสารที่หน้าข่าวสารประชาสัมพันธ์ แบนเนอร์จะแสดงบนหน้าหลักของนิสิตและผู้จัด'), icon:'campaign', color:'#7AB8FF', iconBg:'rgba(122,184,255,.16)'},
+      {step:4, title:T('ติดตามภาพรวม'), desc:T('ดูปฏิทินกิจกรรมทั้งระบบ รายงานชั่วโมงแยกตามคณะ และ System Log เพื่อตรวจสอบการใช้งาน'), icon:'insights', color:'#63D2A1', iconBg:'rgba(99,210,161,.16)'},
+      {step:5, title:T('ดูแลระบบ'), desc:T('ตั้งค่าระบบ เปิด/ปิดโหมดปรับปรุง สำรองข้อมูล และตอบข้อความที่ส่งเข้ามาจากผู้ใช้'), icon:'settings', color:'#F5A623', iconBg:'rgba(245,166,35,.16)'},
+    ];
+    const FAQ = [
+      {q:T('เพิ่มผู้จัดกิจกรรมใหม่อย่างไร?'), a:T('ไปที่หน้าผู้ใช้งาน กด "เพิ่มผู้ใช้" กรอกชื่อ อีเมล และเลือกบทบาท "ผู้จัดกิจกรรม" ระบบจะส่งอีเมลตั้งรหัสผ่านให้ผู้ใช้เอง')},
+      {q:T('เปลี่ยนเกณฑ์ชั่วโมง กยศ. ได้ไหม?'), a:T('ได้ที่หน้าตั้งค่า เปิดหัวข้อระบบ กยศ. แล้วปรับจำนวนชั่วโมงเกณฑ์ต่อปีการศึกษา การเปลี่ยนแปลงมีผลกับการคำนวณของนิสิตทุกคน')},
+      {q:T('แบนเนอร์แสดงที่ไหนบ้าง?'), a:T('แบนเนอร์ที่ตั้งสถานะ "แสดง" จะขึ้นเป็นสไลด์บนหน้าหลักของนิสิตและผู้จัด เลื่อนอัตโนมัติทุก 7 วินาที และกดปุ่มไปยังหน้าที่กำหนดได้')},
+      {q:T('ลบกิจกรรมของผู้จัดได้หรือไม่?'), a:T('แอดมินลบได้จากหน้ากิจกรรม แต่ควรแจ้งผู้จัดก่อน เพราะผู้ที่สมัครไว้จะได้รับการแจ้งเตือนยกเลิกทันที')},
+      {q:T('System Log เก็บอะไรไว้บ้าง?'), a:T('บันทึกการเข้าสู่ระบบ การอนุมัติ การแก้ไขข้อมูลสำคัญ และข้อผิดพลาดของระบบ กรองตามระดับความรุนแรงได้')},
+      {q:T('สำรองข้อมูลบ่อยแค่ไหน?'), a:T('ระบบสำรองอัตโนมัติทุกวันหากเปิดใช้งานที่หน้าตั้งค่า และควรกดสำรองข้อมูลด้วยตนเองก่อนดำเนินการที่มีผลกระทบวงกว้าง')},
+    ];
+    const fq = (this.state.admFaqSearch||'').trim();
+    const open = this.state.admFaqOpen;
+    const items = FAQ.map((f,i)=>({...f, open:open===i,
+      chevColor: open===i ? '#A774F7' : '#9CA3AF',
+      chevRotate: open===i ? 'rotate(90deg)' : 'rotate(0deg)',
+      onToggle: ()=>this.setState(st=>({admFaqOpen: st.admFaqOpen===i ? null : i})),
+    }));
+    const shown = fq ? items.filter(f=>f.q.includes(fq)||f.a.includes(fq)) : items;
+    return {
+      isAdminGuide: p.page==='guide',
+      admGuideSteps: steps.map(g=>({...g, stepBadgeStyle:`display:flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;font-size:11px;font-weight:600;color:#fff;background:${g.color};box-shadow:0 4px 10px ${g.color}59`})),
+      admFaqItems: shown, hasAdmFaqResults: shown.length>0,
+      admFaqSearch: this.state.admFaqSearch||'',
+      onAdmFaqSearch: (e)=>this.setState({admFaqSearch:e.target.value}),
+      admGuideRules: [
+        {label:T('ตรวจข้อความผู้ใช้ทุกวันทำการ'), hint:T('ข้อความใหม่แสดงตัวเลขที่เมนูข้อความ'), icon:'mark_email_unread', color:'#E97171'},
+        {label:T('ตรวจ System Log สัปดาห์ละครั้ง'), hint:T('ดูรายการระดับ error และ warning เป็นอันดับแรก'), icon:'receipt_long', color:'#A774F7'},
+        {label:T('สำรองข้อมูลก่อนแก้ไขโครงสร้าง'), hint:T('เช่น ก่อนลบคณะหรือหมวดหมู่กิจกรรม'), icon:'backup', color:'#7AB8FF'},
+        {label:T('ปิดโหมดปรับปรุงทันทีเมื่อเสร็จงาน'), hint:T('ผู้ใช้จะไม่สามารถเข้าระบบได้ระหว่างเปิดโหมดนี้'), icon:'engineering', color:'#F5A623'},
+      ],
+      admGuideLinks: [
+        {label:T('ผู้ใช้งาน'), icon:'manage_accounts', color:'#E97171', onClick:()=>p.onNav && p.onNav('users')},
+        {label:T('หมวดหมู่'), icon:'category', color:'#A774F7', onClick:()=>p.onNav && p.onNav('categories')},
+        {label:T('ข่าวสารประชาสัมพันธ์'), icon:'campaign', color:'#63D2A1', onClick:()=>p.onNav && p.onNav('newsBanners')},
+        {label:T('ตั้งค่าระบบ'), icon:'settings', color:'#7AB8FF', onClick:()=>p.onNav && p.onNav('settings')},
+      ],
+    };
+  }
+  adminProfileVals(){
+    const p = this.props;
+    const base = {name:'สมชาย ผู้ดูแล', position:T('นักวิชาการคอมพิวเตอร์'), unit:T('กองกิจการนิสิต'),
+      email:'admin@nu.ac.th', phone:'0855556666', username:'nuv-admin',
+      curPass:'', newPass:'', confirmPass:''};
+    const v = {...base, ...(this.state.adminForm||{})};
+    const set = (k)=>(e)=>this.setState(s=>({adminForm:{...(s.adminForm||{}), [k]:e.target.value}, adminProfileSaved:false}));
+    const digits = (x)=>String(x||'').replace(/\D/g,'');
+    const err = {};
+    if(v.phone && digits(v.phone).length!==10) err.phone=T('กรอกเบอร์โทร 10 หลัก');
+    if(v.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.email)) err.email=T('รูปแบบอีเมลไม่ถูกต้อง');
+    if(v.newPass && v.newPass.length<8) err.newPass=T('รหัสผ่านต้องยาวอย่างน้อย 8 ตัวอักษร');
+    if(v.confirmPass && v.confirmPass!==v.newPass) err.confirmPass=T('รหัสผ่านยืนยันไม่ตรงกัน');
+    if(v.newPass && !v.curPass) err.curPass=T('กรอกรหัสผ่านปัจจุบันเพื่อยืนยัน');
+    const mk = (key,label,o)=>{
+      o = o||{};
+      const bad = !!err[key];
+      return {key, label, isRequired:!!o.required, value:v[key]||'', onChange:set(key),
+        type:o.type||'text', isReadonly:!!o.readonly, isInput:!o.readonly,
+        placeholder:o.placeholder||'', hasError:bad, error:err[key]||'',
+        wrapStyle:o.full?'grid-column:1/-1':'',
+        inputStyle:`width:100%;padding:11px 13px;border-radius:12px;border:1px solid ${bad?'rgba(233,113,113,.7)':'rgba(31,41,55,.12)'};background:rgba(255,255,255,.78);font-family:inherit;font-size:13px;color:#1F2937;outline:none;transition:border-color 180ms ease`};
+    };
+    const hasErr = Object.keys(err).length>0;
+    return {
+      isAdminProfile: p.page==='profile',
+      adminProfileName: v.name, adminProfileSubtitle: [v.position, v.unit].filter(Boolean).join(' · '),
+      adminAccessRows: [
+        {label:T('เข้าสู่ระบบครั้งล่าสุด'), value:'28 ก.ค. 2569 · 14:32', icon:'login', color:'#7AB8FF'},
+        {label:T('อุปกรณ์ที่ใช้'), value:'Chrome · Windows 11', icon:'devices', color:'#A774F7'},
+        {label:T('สิทธิ์การเข้าถึง'), value:T('จัดการผู้ใช้ · กิจกรรม · ตั้งค่าระบบ'), icon:'key', color:'#63D2A1'},
+      ],
+      adminProfileSections: [
+        {title:T('ข้อมูลผู้ดูแลระบบ'), icon:'admin_panel_settings', color:'#1F2937', fields:[
+          mk('name',T('ชื่อ-นามสกุล'),{required:true}),
+          mk('position',T('ตำแหน่ง')),
+          mk('unit',T('หน่วยงาน')),
+          mk('username',T('ชื่อผู้ใช้'),{readonly:true}),
+          mk('email',T('อีเมล'),{required:true}),
+          mk('phone',T('เบอร์โทรศัพท์'),{required:true, placeholder:'0855556666'}),
+        ]},
+        {title:T('ความปลอดภัย'), icon:'lock', color:'#E97171', fields:[
+          mk('curPass',T('รหัสผ่านปัจจุบัน'),{type:'password', placeholder:'••••••••'}),
+          mk('newPass',T('รหัสผ่านใหม่'),{type:'password', placeholder:T('อย่างน้อย 8 ตัวอักษร')}),
+          mk('confirmPass',T('ยืนยันรหัสผ่านใหม่'),{type:'password', full:true, placeholder:T('พิมพ์รหัสผ่านใหม่อีกครั้ง')}),
+        ]},
+      ],
+      adminProfileSaved: !!this.state.adminProfileSaved,
+      adminProfileSaveStyle: `display:flex;align-items:center;justify-content:center;gap:8px;padding:13px;border-radius:14px;border:none;font-family:inherit;font-weight:500;font-size:13.5px;color:#fff;transition:all 220ms ease;cursor:${hasErr?'not-allowed':'pointer'};background:${hasErr?'#CBD5E1':'linear-gradient(135deg,#1F2937,#A774F7)'};box-shadow:${hasErr?'none':'0 10px 24px rgba(31,41,55,.28)'}`,
+      onSaveAdminProfile: ()=>{
+        if(hasErr) return;
+        this.setState({adminProfileSaved:true, adminForm:{...(this.state.adminForm||{}), curPass:'', newPass:'', confirmPass:''}});
+        clearTimeout(this._admSaveT);
+        this._admSaveT = setTimeout(()=>this.setState({adminProfileSaved:false}), 3000);
+      },
+    };
+  }
+  state = { hoverLineIdx:null, hoverBarIdx:null, adminCalSelected:null, exportMsg:'', hoverDaily:null, refreshedAgo:null, facSearch:'', facSort:'name', actFilter:'all', newsFilter:'all', contactFilter:'all', reportPeriod:'6m', logRange:'all', logFilter:'all', userFilter:'all', userSearch:'' };
+  downloadCsv(name, rows){
+    const esc = (v)=>{ const s = String(v==null?'':v); return /[",\n]/.test(s) ? '"'+s.replace(/"/g,'""')+'"' : s; };
+    const csv = '\uFEFF' + rows.map(r=>r.map(esc).join(',')).join('\r\n');
+    const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = name; document.body.appendChild(a); a.click();
+    document.body.removeChild(a); setTimeout(()=>URL.revokeObjectURL(url), 1000);
+    this.setState({exportMsg:T('ดาวน์โหลด ')+name+T(' เรียบร้อยแล้ว')});
+    clearTimeout(this._expT); this._expT = setTimeout(()=>this.setState({exportMsg:''}), 4000);
+  }
+
+  exportVals(){
+    const p = this.props;
+    const acts = p.activities || [];
+    const users = p.users || [];
+    const cats = p.categories || [];
+    const logs = p.logs || [];
+
+    const actRows = ()=>[
+      [T('รหัส'),T('ชื่อกิจกรรม'),T('หมวดหมู่'),T('ผู้จัด'),T('วันที่'),T('สถานที่'),T('ชั่วโมง'),T('ลงทะเบียน'),T('ที่นั่งทั้งหมด'),T('สถานะ')],
+      ...acts.map(a=>[a.id,a.title,(a.catObj||{}).label||a.cat,a.org,a.date,a.location,a.hours,a.seatsFilled,a.seatsTotal,a.capLabel||'']),
+    ];
+    const userRows = ()=>[
+      [T('รหัส'),T('ชื่อ-สกุล'),T('อีเมล'),T('บทบาท'),T('คณะ/หน่วยงาน')],
+      ...users.map(u=>[u.id,u.name,u.email,u.role,u.faculty]),
+    ];
+    const catRows = ()=>{
+      const c = {}; acts.forEach(a=>{ c[a.cat]=(c[a.cat]||0)+1; });
+      const h = {}; acts.forEach(a=>{ h[a.cat]=(h[a.cat]||0)+(a.hours||0)*(a.seatsFilled||0); });
+      return [[T('หมวดหมู่'),T('จำนวนกิจกรรม'),T('ชั่วโมงจิตอาสารวม')], ...cats.map(x=>[x.label, c[x.id]||0, h[x.id]||0])];
+    };
+    const logRows = ()=>[
+      [T('เวลา'),T('ระดับ'),T('รายการ')],
+      ...logs.map(l=>[l.time||l.date||'', l.level||'', l.action||l.text||l.message||'']),
+    ];
+
+    const facultyCsvRows = ()=>{
+      const list = (p.faculties||[]).map(f=>{
+        const pct = f.total ? Math.round((f.passed||0)/f.total*100) : 0;
+        return {...f, pct, level: pct>=60 ? T('ผ่านเกณฑ์ดี') : pct>=35 ? T('ปานกลาง') : T('ต้องติดตาม')};
+      }).sort((x,y)=>y.pct-x.pct);
+      const rows = [[T('อันดับ'),T('ชื่อคณะ'),T('สีประจำคณะ'),T('นิสิตทั้งหมด'),T('เข้าร่วมกิจกรรม'),T('ผ่านเกณฑ์ กยศ.'),T('ยังไม่ผ่านเกณฑ์'),T('อัตราผ่านเกณฑ์ (%)'),T('ระดับ')]];
+      list.forEach((f,i)=>rows.push([i+1, f.name, f.colorName, f.total||0, f.joined||0, f.passed||0, Math.max(0,(f.total||0)-(f.passed||0)), f.pct, f.level]));
+      const tot = list.reduce((s,f)=>s+(f.total||0),0), joi = list.reduce((s,f)=>s+(f.joined||0),0), pas = list.reduce((s,f)=>s+(f.passed||0),0);
+      rows.push([]);
+      rows.push(['', T('ทั้งหมด'), '', tot, joi, pas, Math.max(0,tot-pas), tot?Math.round(pas/tot*100):0, '']);
+      return rows;
+    };
+    const defs = [
+      {key:'activities', label:T('รายงานกิจกรรม'), icon:'campaign', color:'#E97171', iconBg:'rgba(233,113,113,.16)', count:acts.length, file:'nu-volunteer-activities.csv', build:actRows},
+      {key:'users', label:T('รายงานผู้ใช้งาน'), icon:'group', color:'#7AB8FF', iconBg:'rgba(122,184,255,.16)', count:users.length, file:'nu-volunteer-users.csv', build:userRows},
+      {key:'categories', label:T('สรุปตามหมวดหมู่'), icon:'category', color:'#63D2A1', iconBg:'rgba(99,210,161,.16)', count:cats.length, file:'nu-volunteer-categories.csv', build:catRows},
+      {key:'faculties', label:T('รายงานรายคณะ'), icon:'school', color:'#F5A623', iconBg:'rgba(245,166,35,.16)', count:(p.faculties||[]).length, file:'nu-volunteer-faculties.csv', build:facultyCsvRows},
+      {key:'logs', label:T('บันทึกระบบ'), icon:'receipt_long', color:'#A774F7', iconBg:'rgba(167,116,247,.16)', count:logs.length, file:'nu-volunteer-logs.csv', build:logRows},
+    ];
+
+    const exportOptions = defs.map(d=>({
+      ...d, rowsLabel: d.count+T(' รายการ'),
+      onExport: ()=>this.downloadCsv(d.file, d.build()),
+    }));
+
+    const onExportAll = ()=>{
+      const rows = [];
+      defs.forEach((d,i)=>{ if(i) rows.push([]); rows.push(['# '+d.label]); d.build().forEach(r=>rows.push(r)); });
+      this.downloadCsv('nu-volunteer-report.csv', rows);
+    };
+
+    return {
+      exportOptions, onExportAll,
+      onExportFaculties: ()=>this.downloadCsv('nu-volunteer-faculties.csv', facultyCsvRows()),
+      exportCsvLabel: T('ส่งออก CSV'),
+      onPrintReport: ()=>window.print(),
+      exportMsg: this.state.exportMsg||'', hasExportMsg: !!this.state.exportMsg,
+    };
+  }
+
+  tabStyle(active){ return `display:flex;align-items:center;gap:7px;padding:9px 16px;border-radius:12px;cursor:pointer;font-family:inherit;font-size:12.5px;white-space:nowrap;flex-shrink:0;transition:all 300ms ease;border:1px solid ${active?'transparent':'rgba(31,41,55,.1)'};background:${active?'linear-gradient(135deg,#E97171,#A774F7)':'rgba(255,255,255,.55)'};backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);color:${active?'#fff':'#4B5563'};font-weight:${active?500:300};box-shadow:${active?'0 6px 18px rgba(167,116,247,.3)':'none'}`; }
+
+  settingsVals(){
+    const p = this.props;
+    const st = p.settings || {};
+    const val = (k, dflt)=> st[k]===undefined ? dflt : st[k];
+    const set = (k,v)=>p.onSetting && p.onSetting(k, v);
+    const tg = (k, label, hint, dflt)=>{
+      const on = !!val(k, dflt);
+      return {
+        label, hint, onToggle: ()=>set(k, !on),
+        trackStyle: `width:46px;height:26px;border-radius:999px;flex-shrink:0;cursor:pointer;padding:3px;transition:all 260ms ease;display:flex;justify-content:${on?'flex-end':'flex-start'};background:${on?'linear-gradient(135deg,#E97171,#A774F7)':'rgba(31,41,55,.15)'}`,
+        knobStyle: 'width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 2px 6px rgba(31,41,55,.25);transition:all 260ms ease',
+      };
+    };
+    const fd = (k, label, hint, dflt)=>({label, hint, value: val(k, dflt), onChange:(e)=>set(k, e.target.value)});
+    const sl = (k, label, hint, dflt, options)=>({label, hint, value: val(k, dflt), options, onChange:(e)=>set(k, e.target.value)});
+
+    const q = (this.state.settingSearch||'').trim();
+    const settingSections = [
+      {title:T('ระบบทั่วไป'), desc:T('การเข้าถึงและสถานะโดยรวมของระบบ'), icon:'settings', color:'#A774F7', iconBg:'rgba(167,116,247,.16)',
+       toggles:[
+         tg('maintenance',T('โหมดปิดปรับปรุงระบบ'),T('ผู้ใช้ทั่วไปจะเข้าใช้งานไม่ได้ชั่วคราว'), false),
+         tg('allowRegister',T('เปิดให้สมัครสมาชิกใหม่'),T('อนุญาตให้นิสิตสร้างบัญชีเองได้'), true),
+         tg('publicCatalog',T('เปิดหน้ากิจกรรมสาธารณะ'),T('ผู้ที่ยังไม่เข้าสู่ระบบดูรายการกิจกรรมได้'), true),
+       ],
+       fields:[], selects:[
+         sl('language',T('ภาษาเริ่มต้น'),T('ภาษาที่แสดงเมื่อเข้าใช้งานครั้งแรก'),'th',[{id:'th',label:T('ไทย')},{id:'en',label:'English'}]),
+       ]},
+
+      {title:T('การลงทะเบียนกิจกรรม'), desc:T('กติกาการสมัครและการอนุมัติ'), icon:'how_to_reg', color:'#E97171', iconBg:'rgba(233,113,113,.16)',
+       toggles:[
+         tg('autoApprove',T('อนุมัติผู้สมัครอัตโนมัติ'),T('ข้ามขั้นตอนรออนุมัติจากผู้จัด'), false),
+         tg('allowWaitlist',T('เปิดรายชื่อสำรองเมื่อที่นั่งเต็ม'),T('นิสิตจองคิวได้แม้ที่นั่งเต็มแล้ว'), true),
+         tg('allowSelfCancel',T('ให้นิสิตขอยกเลิกเองได้'),T('ต้องระบุเหตุผลและรอผู้จัดอนุมัติ'), true),
+       ],
+       fields:[
+         fd('maxRegistrants',T('จำนวนผู้ลงทะเบียนสูงสุดต่อกิจกรรม'),T('ค่าเริ่มต้นเมื่อผู้จัดสร้างกิจกรรมใหม่'), 200),
+         fd('cancelDeadline',T('ปิดรับคำขอยกเลิกก่อนวันงาน (วัน)'),T('หลังจากนี้จะยกเลิกไม่ได้'), 3),
+       ], selects:[]},
+
+      {title:T('ชั่วโมงจิตอาสาและใบประกาศ'), desc:T('เกณฑ์ กยศ. และการออกเอกสาร'), icon:'workspace_premium', color:'#63D2A1', iconBg:'rgba(99,210,161,.16)',
+       toggles:[
+         tg('kyfSystem',T('เปิดใช้ระบบเกณฑ์ กยศ.'),T('ติดตามชั่วโมงจิตอาสาของผู้กู้ยืม'), true),
+         tg('autoCert',T('ออกใบประกาศอัตโนมัติ'),T('ออกให้ทันทีเมื่อกิจกรรมเสร็จสิ้นและอนุมัติแล้ว'), false),
+         tg('requireEvidence',T('บังคับอัปโหลดหลักฐาน'),T('ต้องมีหลักฐานก่อนอนุมัติชั่วโมง'), true),
+       ],
+       fields:[
+         fd('kyfGoal',T('เป้าหมายชั่วโมงต่อปีการศึกษา'),T('เกณฑ์ขั้นต่ำสำหรับผู้กู้ยืม กยศ.'), 36),
+         fd('evidenceDays',T('กำหนดส่งหลักฐานหลังเช็กเอาต์ (วัน)'),T('เกินกำหนดระบบจะแจ้งเตือนนิสิต'), 7),
+       ], selects:[]},
+
+      {title:T('การแจ้งเตือน'), desc:T('ช่องทางและความถี่ในการแจ้งเตือน'), icon:'notifications', color:'#7AB8FF', iconBg:'rgba(122,184,255,.16)',
+       toggles:[
+         tg('emailNotif',T('แจ้งเตือนทางอีเมล'),T('ส่งอีเมลเมื่อมีการอนุมัติหรือเปลี่ยนแปลง'), true),
+         tg('pushNotif',T('แจ้งเตือนในระบบ'),T('แสดงในเมนูการแจ้งเตือนของนิสิต'), true),
+         tg('reminderNotif',T('เตือนก่อนถึงวันกิจกรรม'),T('อิงตามปฏิทินส่วนตัวของนิสิต'), true),
+       ],
+       fields:[
+         fd('reminderDays',T('แจ้งเตือนล่วงหน้า (วัน)'),T('จำนวนวันก่อนวันจัดกิจกรรม'), 3),
+       ], selects:[]},
+
+      {title:T('ความปลอดภัยและข้อมูล'), desc:T('การสำรองข้อมูลและการเข้าถึง'), icon:'shield', color:'#1F2937', iconBg:'rgba(31,41,55,.10)',
+       toggles:[
+         tg('autoBackup',T('สำรองข้อมูลอัตโนมัติ'),T('สำรองฐานข้อมูลตามรอบที่กำหนด'), true),
+         tg('auditLog',T('บันทึก System Log'),T('เก็บประวัติการกระทำของผู้ดูแลระบบ'), true),
+       ],
+       fields:[
+         fd('sessionTimeout',T('ออกจากระบบอัตโนมัติ (นาที)'),T('เมื่อไม่มีการใช้งาน'), 60),
+       ], selects:[
+         sl('backupFreq',T('ความถี่การสำรองข้อมูล'),T('รอบการสำรองฐานข้อมูลอัตโนมัติ'),'daily',[{id:'daily',label:T('ทุกวัน')},{id:'weekly',label:T('ทุกสัปดาห์')},{id:'monthly',label:T('ทุกเดือน')}]),
+       ]},
+    ];
+    const match = (o)=> !q || (o.label||'').includes(q) || (o.hint||'').includes(q);
+    const filtered = settingSections.map(s=>({
+      ...s,
+      toggles: s.toggles.filter(match), fields: (s.fields||[]).filter(match), selects: (s.selects||[]).filter(match),
+    })).filter(s=> !q || s.toggles.length || s.fields.length || s.selects.length || s.title.includes(q));
+    const maint = !!val('maintenance', false);
+    const chipBase = 'display:inline-flex;align-items:center;gap:6px;padding:6px 13px;border-radius:999px;font-size:11.5px;font-weight:500;';
+    const statusChips = [
+      {label: maint ? T('ปิดปรับปรุงระบบ') : T('ระบบทำงานปกติ'), icon: maint ? 'engineering' : 'check_circle',
+       style: chipBase + (maint ? 'background:rgba(245,166,35,.16);color:#8a5205' : 'background:rgba(99,210,161,.16);color:#0d6e50')},
+      {label:T('ผู้ใช้งาน ') + ((p.users||[]).length) + T(' บัญชี'), icon:'group',
+       style: chipBase + 'background:rgba(167,116,247,.14);color:#7C2FD9'},
+      {label:T('สำรองข้อมูลล่าสุด ') + (p.lastBackupLabel || T('ยังไม่เคยสำรอง')), icon:'backup',
+       style: chipBase + 'background:rgba(122,184,255,.16);color:#3268c9'},
+      {label:T('เวอร์ชัน 1.4.2'), icon:'tag',
+       style: chipBase + 'background:rgba(31,41,55,.07);color:#4B5563'},
+    ];
+    return {settingSections: filtered, hasSettingResults: filtered.length>0,
+      resetDataTitle: T('ล้างข้อมูลทั้งหมด'),
+      resetDataDesc: T('ลบข้อมูลที่บันทึกไว้ในเครื่องนี้ แล้วกลับไปใช้ข้อมูลตั้งต้น'),
+      resetDataBtn: T('ล้างข้อมูลทั้งหมด'),
+      onResetData: ()=>{ if(p.onResetData) p.onResetData(); },
+      chatCleanupBtn: T('ล้างข้อความแชทเก่า'),
+      chatCleanupHint: (()=>{
+        const c = p.chatCleanupCount ? p.chatCleanupCount(6) : null;
+        return c ? T('ปัจจุบันมีข้อความเก่ากว่า 6 เดือนอยู่ ') + c.msgs + ' ' + T('ข้อความ') + ' ' + T('จาก') + ' ' + c.convs + ' ' + T('ห้องสนทนา') : '';
+      })(),
+      onChatCleanup: ()=>{ if(p.askChatCleanup) p.askChatCleanup(); },
+      settingSearch: this.state.settingSearch||'',
+      onSettingSearch: (e)=>this.setState({settingSearch:e.target.value}),
+      backupBusy: !!p.backupBusy,
+      backupNowLabel: p.backupBusy ? T('กำลังสำรองข้อมูล…') : T('สำรองข้อมูลก่อน'),
+      onDangerBackup: ()=>{ if(p.onRunBackup) p.onRunBackup(); },
+      resetLocked: !p.backupFresh || !!p.backupBusy,
+      resetBtnStyle: 'display:flex;align-items:center;gap:7px;padding:11px 18px;border-radius:12px;border:none;font-family:inherit;font-weight:500;font-size:13px;'
+        + ((!p.backupFresh || p.backupBusy)
+          ? 'background:rgba(31,41,55,.12);color:#9CA3AF;cursor:not-allowed'
+          : 'background:#E97171;color:#fff;cursor:pointer;box-shadow:0 6px 18px rgba(233,113,113,.3)'),
+      backupGateText: p.backupBusy ? T('กำลังสำรองข้อมูล — โปรดรอจนเสร็จก่อนดำเนินการต่อ')
+        : p.backupFresh ? T('สำรองข้อมูลสำเร็จเมื่อ ') + (p.lastBackupLabel||'') + T(' — ดำเนินการรีเซ็ตได้')
+        : T('ต้องสำรองข้อมูลให้สำเร็จก่อน จึงจะรีเซ็ตข้อมูลได้'),
+      backupGateStyle: p.backupFresh && !p.backupBusy
+        ? 'background:rgba(99,210,161,.14);border:1px solid rgba(99,210,161,.26);color:#0d6e50'
+        : 'background:rgba(245,166,35,.14);border:1px solid rgba(245,166,35,.26);color:#8a5205',
+      statusChips};
+  }
+
+  dashboardVals(){
+    const p = this.props;
+    const acts = p.activities || [];
+    const users = p.users || [];
+    const cats = p.categories || [];
+    const contacts = p.contactMsgs || [];
+
+    const h = new Date().getHours();
+    const greeting = h<12 ? T('สวัสดีตอนเช้า') : h<17 ? T('สวัสดีตอนบ่าย') : T('สวัสดีตอนเย็น');
+    const mins = this.state.refreshedAgo==null ? 3 : this.state.refreshedAgo;
+    const lastUpdated = mins===0 ? T('เมื่อสักครู่') : mins+T(' นาทีที่แล้ว');
+
+    const stx = p.settings || {};
+    const sval = (k,d)=> stx[k]===undefined ? d : stx[k];
+    const chipB = 'display:inline-flex;align-items:center;gap:6px;padding:6px 13px;border-radius:999px;font-size:11.5px;font-weight:500;';
+    const policyChips = [];
+    if(sval('autoApprove',false)) policyChips.push({label:T('อนุมัติผู้สมัครอัตโนมัติทั้งระบบ'), icon:'bolt', style:chipB+'background:rgba(99,210,161,.16);color:#0d6e50'});
+    if(!sval('allowRegister',true)) policyChips.push({label:T('ปิดรับสมัครสมาชิกใหม่'), icon:'person_off', style:chipB+'background:rgba(233,113,113,.14);color:#c2410c'});
+    if(!sval('publicCatalog',true)) policyChips.push({label:T('ปิดหน้ากิจกรรมสาธารณะ'), icon:'visibility_off', style:chipB+'background:rgba(233,113,113,.14);color:#c2410c'});
+    if(!sval('kyfSystem',true)) policyChips.push({label:T('ปิดระบบเกณฑ์ กยศ.'), icon:'do_not_disturb_on', style:chipB+'background:rgba(245,166,35,.16);color:#8a5205'});
+    const openCount = acts.filter(a=>a.capKey==='open'||a.capKey==='almost').length;
+    const pendingCancels = (p.cancellations||[]).filter(c=>c.status==='pending').length;
+    const unread = contacts.filter(c=>!c.read).length;
+    const needsReview = unread + pendingCancels + acts.filter(a=>a.capKey==='almost').length;
+
+    const trend = (up, val, note)=>({trendIcon: up?'trending_up':'trending_down', trendColor: up?'#0F8A63':'#C2410C', trendValue: val, trendNote: note});
+    const metricCards = [
+      {label:T('ผู้ใช้งานทั้งหมด'), value:users.length, color:'#7AB8FF', accentTo:'#AED5FF', iconBg:'rgba(122,184,255,.16)', icon:'group', ...trend(true,'+12%',T('จากเดือนก่อน'))},
+      {label:T('กิจกรรมที่เปิดอยู่'), value:openCount, color:'#63D2A1', accentTo:'#9BE5C6', iconBg:'rgba(99,210,161,.16)', icon:'event_available', ...trend(true,'+'+Math.max(1,Math.round(openCount*0.2)),T('กิจกรรมใหม่สัปดาห์นี้'))},
+      {label:T('คำขอยกเลิกค้าง'), value:pendingCancels, color:'#A774F7', accentTo:'#C9A5FA', iconBg:'rgba(167,116,247,.16)', icon:'event_busy', ...trend(pendingCancels===0,pendingCancels===0?T('ไม่มีค้าง'):pendingCancels+T(' รายการ'),T('รอผู้จัดพิจารณา'))},
+      {label:T('รายการที่ต้องตรวจสอบ'), value:needsReview, color:'#E97171', accentTo:'#F5A9A0', iconBg:'rgba(233,113,113,.16)', icon:'priority_high', ...trend(false,unread+T(' ข้อความ'),T('ยังไม่ได้อ่าน'))},
+    ];
+
+    const seed = acts.length + users.length;
+    const dailyRaw = Array.from({length:14},(_,i)=>{
+      const base = 6 + ((seed*7 + i*13) % 11);
+      return {i, inV: base, outV: Math.max(1, base - 1 - ((i*5)%4))};
+    });
+    const maxDaily = Math.max(...dailyRaw.map(d=>d.inV), 1);
+    const axisTop = Math.ceil(maxDaily/5)*5;
+    const dailyAxis = [axisTop, Math.round(axisTop*0.75), Math.round(axisTop*0.5), Math.round(axisTop*0.25), 0];
+    const dailyBars = dailyRaw.map(d=>({
+      label: (d.i+1)+'',
+      inV: d.inV, outV: d.outV,
+      inPct: Math.round(d.inV/axisTop*100), outPct: Math.round(d.outV/axisTop*100),
+      onEnter: ()=>this.setState({hoverDaily:d.i}),
+      showTip: this.state.hoverDaily===d.i,
+    }));
+
+    const counts = {}; acts.forEach(a=>{ counts[a.cat]=(counts[a.cat]||0)+1; });
+    const donutTotal = acts.length || 1;
+    let acc = 0;
+    const segs = cats.map(c=>{
+      const n = counts[c.id]||0;
+      const start = acc/donutTotal*360; acc += n;
+      return {label:c.label, color:c.color, count:n, pct: Math.round(n/donutTotal*100), start, end: acc/donutTotal*360};
+    }).filter(sg=>sg.count>0);
+    const donutGradient = segs.length
+      ? 'conic-gradient('+segs.map(sg=>`${sg.color} ${sg.start.toFixed(1)}deg ${sg.end.toFixed(1)}deg`).join(',')+')'
+      : 'conic-gradient(#E5E7EB 0deg 360deg)';
+    const donutLegend = segs.sort((a,b)=>b.count-a.count);
+
+    const closingSoon = acts.filter(a=>a.capKey==='almost'||a.capKey==='full').slice(0,4);
+
+    return {
+      greeting, lastUpdated, adminRoleName: ADM_LANG==='en' ? 'Administrator' : 'ผู้ดูแลระบบ',
+      maintenanceOn: !!sval('maintenance', false),
+      policyChips, hasPolicyChips: policyChips.length>0,
+      onGoSettings: ()=>p.onNav && p.onNav('settings'), metricCards,
+      onRefresh: ()=>this.setState({refreshedAgo:0, hoverDaily:null}),
+      dailyAxis, dailyBars, onDailyLeave: ()=>this.setState({hoverDaily:null}),
+      donutGradient, donutLegend, donutTotal: acts.length,
+      closingSoon, hasClosing: closingSoon.length>0, closingCount: closingSoon.length,
+      onSeeActivities: ()=>p.onNav && p.onNav('activities'),
+      onSeeLogs: ()=>p.onNav && p.onNav('logs'),
+    };
+  }
+
+  adminHomeVals(){
+    const p = this.props;
+    const acts = p.activities || [];
+    const users = p.users || [];
+    const logs = p.logs || [];
+    const contacts = p.contactMsgs || [];
+    const cats = p.categories || [];
+    const banners = p.banners || [];
+
+    const totalSeats = acts.reduce((s,a)=>s+(a.seatsTotal||0),0);
+    const totalFilled = acts.reduce((s,a)=>s+(a.seatsFilled||0),0);
+    const totalHours = acts.reduce((s,a)=>s+(a.hours||0)*(a.seatsFilled||0),0);
+    const students = users.filter(u=>u.role==='student').length;
+
+    const adminKpis = [
+      {label:T('ผู้ใช้งานทั้งหมด'), sub:students+T(' นิสิต'), value:users.length, color:'#E97171', accentTo:'#F5A9A0', iconBg:'rgba(233,113,113,.16)', icon:'group'},
+      {label:T('กิจกรรมในระบบ'), sub:cats.length+T(' หมวดหมู่'), value:acts.length, color:'#A774F7', accentTo:'#C9A5FA', iconBg:'rgba(167,116,247,.16)', icon:'campaign'},
+      {label:T('ยอดลงทะเบียนรวม'), sub:T('จาก ')+totalSeats+T(' ที่นั่ง'), value:totalFilled, color:'#7AB8FF', accentTo:'#AED5FF', iconBg:'rgba(122,184,255,.16)', icon:'how_to_reg'},
+      {label:T('ชั่วโมงจิตอาสารวม'), sub:T('ทั้งมหาวิทยาลัย'), value:totalHours, color:'#63D2A1', accentTo:'#9BE5C6', iconBg:'rgba(99,210,161,.16)', icon:'schedule'},
+      {label:T('ประกาศที่แสดงอยู่'), sub:T('จาก ')+banners.length+T(' รายการ'), value:banners.filter(b=>b.visible).length, color:'#F5A623', accentTo:'#FBCE7E', iconBg:'rgba(245,166,35,.16)', icon:'newspaper'},
+    ];
+
+    const unread = contacts.filter(c=>!c.read).length;
+    const nearFull = acts.filter(a=>a.capKey==='almost').length;
+    const full = acts.filter(a=>a.capKey==='full').length;
+    const alertDefs = [
+      {count:unread, label:T('ข้อความยังไม่ได้อ่าน'), icon:'mark_email_unread', color:'#B45309', bg:'rgba(245,166,35,.12)', border:'rgba(245,166,35,.3)', page:'contact'},
+      {count:nearFull, label:T('กิจกรรมใกล้เต็ม'), icon:'hourglass_bottom', color:'#C2410C', bg:'rgba(233,113,113,.10)', border:'rgba(233,113,113,.28)', page:'activities'},
+      {count:full, label:T('กิจกรรมที่นั่งเต็มแล้ว'), icon:'event_busy', color:'#7C2FD9', bg:'rgba(167,116,247,.10)', border:'rgba(167,116,247,.28)', page:'activities'},
+    ];
+    const adminAlerts = alertDefs.filter(a=>a.count>0).map(a=>({...a, onClick:()=>p.onNav && p.onNav(a.page)}));
+
+    const counts = {};
+    acts.forEach(a=>{ counts[a.cat]=(counts[a.cat]||0)+1; });
+    const maxCat = Math.max(...Object.values(counts), 1);
+    const catBreakdown = cats.map(c=>({
+      label:c.label, color:c.color, count:counts[c.id]||0,
+      pct: Math.round((counts[c.id]||0)/maxCat*100),
+    })).sort((a,b)=>b.count-a.count);
+
+    const fillRate = totalSeats ? Math.round(totalFilled/totalSeats*100) : 0;
+    const st = p.settings || {};
+    const systemHealth = [
+      {label:T('สถานะระบบ'), value: st.maintenance ? T('ปิดปรับปรุง') : T('ทำงานปกติ'), color: st.maintenance ? '#C2410C' : '#0F8A63'},
+      {label:T('อัตราที่นั่งถูกจอง'), value: fillRate+'%', color: fillRate>=80 ? '#B45309' : '#0F8A63'},
+      {label:T('สำรองข้อมูลอัตโนมัติ'), value: st.autoBackup ? T('เปิดใช้งาน') : T('ปิดอยู่'), color: st.autoBackup ? '#0F8A63' : '#9CA3AF'},
+      {label:T('แจ้งเตือนทางอีเมล'), value: st.emailNotif ? T('เปิดใช้งาน') : T('ปิดอยู่'), color: st.emailNotif ? '#0F8A63' : '#9CA3AF'},
+    ];
+
+    const logIcon = (t)=>{
+      if(/สร้าง|เพิ่ม/.test(t)) return {icon:'add_circle', color:'#0F8A63', bg:'rgba(99,210,161,.14)'};
+      if(/ลบ/.test(t)) return {icon:'delete', color:'#C2410C', bg:'rgba(233,113,113,.14)'};
+      if(/แก้ไข|อัปเดต/.test(t)) return {icon:'edit', color:'#7C2FD9', bg:'rgba(167,116,247,.14)'};
+      if(/เข้าสู่ระบบ|ล็อกอิน/.test(t)) return {icon:'login', color:'#1D4ED8', bg:'rgba(122,184,255,.16)'};
+      return {icon:'bolt', color:'#6B7280', bg:'rgba(107,114,128,.12)'};
+    };
+    const recentLogs = logs.slice(0,5).map(l=>{
+      const text = l.action || l.text || l.message || '';
+      return {...logIcon(text), text, time: l.time || l.date || ''};
+    });
+
+    return {adminKpis, adminAlerts, hasAdminAlerts:adminAlerts.length>0, catBreakdown, systemHealth, recentLogs, hasRecentLogs:recentLogs.length>0};
+  }
+
+  renderVals(){
+    ADM_LANG = this.props.lang === 'en' ? 'en' : 'th';
+    const p = this.props;
+    const page = p.page;
+    const users = p.users||[];
+    const statCards = [
+      {label:T('ผู้ใช้งานทั้งหมด'), value: users.length, color:'#A774F7'},
+      {label:T('กิจกรรมทั้งหมด'), value: 8, color:'#E97171'},
+      {label:T('คณะ'), value: (p.faculties||[]).length, color:'#0D9488'},
+      {label:T('ข้อความใหม่'), value: (p.contactMsgs||[]).filter(c=>!c.read).length, color:'#7AB8FF'},
+    ];
+    const uSearch = ((this.state.userSearch||'') || (p.globalSearch||'')).trim();
+    const userRows = users.filter(u=>
+      (this.state.userFilter==='all' || !this.state.userFilter || u.role===this.state.userFilter) &&
+      (!uSearch || u.name.toLowerCase().includes(uSearch.toLowerCase()) || (u.email||'').toLowerCase().includes(uSearch.toLowerCase()))
+    ).map(u=>({
+      ...u, roleLabel: ROLE_LABELS[u.role]||u.role, roleBg: (ROLE_COLORS[u.role]||'#1F2937')+'1a', roleColor: ROLE_COLORS[u.role]||'#1F2937',
+      onEdit: ()=>p.onEditUser(u.id), onDelete: ()=>p.onDeleteUser(u.id),
+    }));
+    const activeRole = this.state.userFilter||'all';
+    const roleFilterCards = ['all','student','organizer','admin'].map(k=>{
+      const M = ROLE_META[k];
+      const active = k===activeRole;
+      return {
+        ...M, key:k,
+        count: k==='all' ? users.length : users.filter(u=>u.role===k).length,
+        onClick: ()=>this.setState({userFilter:k}),
+        cardStyle: `position:relative;overflow:hidden;cursor:pointer;transition:all 300ms ease;padding:18px 16px 16px;border-radius:22px;backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);background:${active?'rgba(255,255,255,.88)':'rgba(255,255,255,.5)'};border:1.5px solid ${active?M.color:'rgba(255,255,255,.6)'};box-shadow:${active?'0 18px 44px '+M.color+'33, inset 0 1px 0 rgba(255,255,255,.7)':'0 10px 26px rgba(31,41,55,.07), inset 0 1px 0 rgba(255,255,255,.5)'};transform:${active?'translateY(-3px)':'none'}`,
+      };
+    });
+    const legacy = users.filter(u=>!ROLE_LABELS[u.role]);
+    const legacyRoleNames = legacy.map(u=>u.name).join(', ');
+
+    const allActs = p.activities||[];
+    const af = this.state.actFilter||'all';
+    const actKeyOf = (a)=> a.capKey==='closed' ? 'closed' : a.capKey==='full' ? 'full' : 'open';
+    const actTabs = [
+      {key:'all', label:T('ทั้งหมด'), count:allActs.length},
+      {key:'open', label:T('กำลังเปิดรับ'), count:allActs.filter(a=>actKeyOf(a)==='open').length},
+      {key:'full', label:T('ที่นั่งเต็ม'), count:allActs.filter(a=>actKeyOf(a)==='full').length},
+      {key:'closed', label:T('ปิดรับแล้ว'), count:allActs.filter(a=>actKeyOf(a)==='closed').length},
+    ].map(t=>({...t, style:this.tabStyle(t.key===af), onClick:()=>this.setState({actFilter:t.key})}));
+    const activities = allActs.filter(a=>af==='all'||actKeyOf(a)===af).map(a=>({...a, catBg:a.catObj.color+'1a'}));
+    const CAT_ICON = {acad:'menu_book', service:'volunteer_activism', morality:'self_improvement', arts:'palette', health:'fitness_center', recreation:'celebration', public:'diversity_3'};
+    const catCounts = {}; const catHours = {};
+    allActs.forEach(a=>{ catCounts[a.cat]=(catCounts[a.cat]||0)+1; catHours[a.cat]=(catHours[a.cat]||0)+(a.hours||0)*(a.seatsFilled||0); });
+    const catTotal = allActs.length || 1;
+    const cList = p.categories||[];
+    const categoryRows = cList.map(c=>({
+      label:c.label, color:c.color, softBg:c.color+'26', icon: CAT_ICON[c.id]||'category',
+      count: catCounts[c.id]||0, hours: catHours[c.id]||0,
+      pct: Math.round((catCounts[c.id]||0)/catTotal*100),
+      onEdit: ()=>p.onEditCategory(c.id),
+      onDelete: ()=>p.onDeleteCategory && p.onDeleteCategory(c.id),
+    }));
+    const usedCats = cList.filter(c=>(catCounts[c.id]||0)>0).length;
+    const topCat = [...categoryRows].sort((a,b)=>b.count-a.count)[0];
+    const catSummary = [
+      {label:T('หมวดหมู่ทั้งหมด'), value:cList.length, color:'#A774F7', icon:'category'},
+      {label:T('หมวดที่มีกิจกรรม'), value:usedCats+' / '+cList.length, color:'#63D2A1', icon:'check_circle'},
+      {label:T('หมวดยอดนิยม'), value:topCat?topCat.label:'—', color:'#E97171', icon:'local_fire_department'},
+    ];
+    const categoryCount = cList.length;
+
+    const fSearch = (this.state.facSearch||'').trim();
+    const fSort = this.state.facSort||'name';
+    const facSortTabs = [
+      {key:'name', label:T('เรียงตามชื่อ')},{key:'total', label:T('จำนวนนิสิต')},{key:'rate', label:T('อัตราผ่านเกณฑ์')},
+    ].map(x=>({...x, style:this.tabStyle(x.key===fSort), onClick:()=>this.setState({facSort:x.key})}));
+    const rawFacs = (p.faculties||[]).map(f=>{
+      const passPct = f.total ? Math.round(f.passed/f.total*100) : 0;
+      const good = passPct>=60, mid = passPct>=35;
+      return {
+        ...f, passPct, notPassed: Math.max(0,(f.total||0)-(f.passed||0)),
+        rateLabel: good?T('ผ่านเกณฑ์ดี'):mid?T('ปานกลาง'):T('ต้องติดตาม'),
+        rateBg: good?'rgba(99,210,161,.18)':mid?'rgba(245,166,35,.18)':'rgba(233,113,113,.18)',
+        rateColor: good?'#0F8A63':mid?'#B45309':'#C2410C',
+        rateColorTo: good?'#9BE5C6':mid?'#FBCE7E':'#F5A9A0',
+        onGraph:()=>p.onFacultyGraph(f.id),
+        cardStyle: `position:relative;overflow:hidden;border-radius:24px;padding:20px;transition:all 300ms ease;background:linear-gradient(160deg,${f.color}26,rgba(255,255,255,.72) 58%);backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);border:1px solid ${f.color}59;box-shadow:0 15px 45px ${f.color}26, inset 0 1px 0 rgba(255,255,255,.65)`,
+        cardHoverStyle: `transform:translateY(-3px);box-shadow:0 24px 54px ${f.color}3d`,
+        stripeStyle: `position:absolute;top:0;left:0;right:0;height:5px;background:linear-gradient(90deg,${f.color},${f.color}55)`,
+        colorChipStyle: `flex-shrink:0;width:26px;height:26px;border-radius:9px;margin-top:1px;background:${f.color};border:1px solid rgba(31,41,55,.16);box-shadow:0 4px 12px ${f.color}59`,
+      };
+    });
+    const rankOrder = [...rawFacs].sort((x,y)=>y.passPct-x.passPct).map(f=>f.id);
+    const facultyRows0 = rawFacs
+      .filter(f=>!fSearch || f.name.includes(fSearch))
+      .sort((a,b)=> fSort==='total' ? b.total-a.total : fSort==='rate' ? b.passPct-a.passPct : a.name.localeCompare(b.name,'th'));
+    const facultyRows = facultyRows0.map(f=>{
+      const rk = rankOrder.indexOf(f.id)+1;
+      return {...f, rank: rk,
+        rankStyle: `display:flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:9px;flex-shrink:0;font-size:11.5px;font-weight:600;background:${rk<=3?'rgba(245,166,35,.2)':'rgba(31,41,55,.05)'};color:${rk<=3?'#B45309':'#9CA3AF'}`,
+        dotStyle: `width:11px;height:11px;border-radius:50%;flex-shrink:0;background:${f.color};border:1px solid rgba(31,41,55,.18);box-shadow:0 2px 6px ${f.color}66`,
+        barFillStyle: `height:100%;width:${f.passPct}%;border-radius:5px;background:linear-gradient(90deg,${f.rateColor},${f.rateColorTo})`,
+      };
+    });
+    const facBest = [...rawFacs].sort((x,y)=>y.passPct-x.passPct)[0];
+    const facWorst = [...rawFacs].sort((x,y)=>x.passPct-y.passPct)[0];
+    const facTotalStudents = rawFacs.reduce((s,f)=>s+(f.total||0),0);
+    const facTotalPassed = rawFacs.reduce((s,f)=>s+(f.passed||0),0);
+    const facSummary = [
+      {label:T('จำนวนคณะ'), value:rawFacs.length, color:'#7AB8FF', icon:'school', sub:''},
+      {label:T('นิสิตทั้งหมด'), value:facTotalStudents.toLocaleString(), color:'#A774F7', icon:'group', sub:''},
+      {label:T('อัตราเฉลี่ยทั้งมหาวิทยาลัย'), value:(facTotalStudents?Math.round(facTotalPassed/facTotalStudents*100):0)+'%', color:'#63D2A1', icon:'verified', sub:''},
+      {label:T('สูงสุด'), value:(facBest?facBest.passPct+'%':'—'), color:'#0F8A63', icon:'trending_up', sub:(facBest?facBest.name:'')},
+      {label:T('ต่ำสุด'), value:(facWorst?facWorst.passPct+'%':'—'), color:'#C2410C', icon:'trending_down', sub:(facWorst?facWorst.name:'')},
+    ];
+    const selFacId = p.facultyGraphId;
+    const selFac = (p.faculties||[]).find(f=>f.id===selFacId);
+    const facultyGraphBars = selFac ? [
+      {label:T('นิสิตทั้งหมด'), value:selFac.total, color:'#A774F7'},
+      {label:T('เข้าร่วม'), value:selFac.joined, color:'#7AB8FF'},
+      {label:T('ผ่านเกณฑ์'), value:selFac.passed, color:'#63D2A1'},
+    ] : [];
+    const maxFac = Math.max(...facultyGraphBars.map(b=>b.value),1);
+    const facultyGraphBarsPct = facultyGraphBars.map(b=>({...b, pct: Math.round(b.value/maxFac*100)}));
+
+    const allNews = p.newsItems||[];
+    const nf = this.state.newsFilter||'all';
+    const newsTabs = [
+      {key:'all', label:T('ทั้งหมด'), count:allNews.length},
+      {key:'published', label:T('เผยแพร่แล้ว'), count:allNews.filter(n=>n.published).length},
+      {key:'draft', label:T('ร่าง'), count:allNews.filter(n=>!n.published).length},
+    ].map(x=>({...x, style:this.tabStyle(x.key===nf), onClick:()=>this.setState({newsFilter:x.key})}));
+    const newsRows = allNews.filter(n=> nf==='all' ? true : nf==='published' ? n.published : !n.published).map(n=>({...n, toggleLabel: n.published?T('เผยแพร่อยู่'):T('ปิดเผยแพร่'), toggleBg: n.published?'rgba(99,210,161,.1)':'rgba(30,37,48,.05)', toggleColor: n.published?'#0d8f66':'#6B7280', onToggle:()=>p.onToggleNews(n.id), onDelete:()=>p.onDeleteNews(n.id)}));
+    const bannerRows = (p.banners||[]).map(b=>{
+      const bt = BANNER_TYPE[b.type]||BANNER_TYPE.general;
+      return {...b, typeLabel:bt.label, typeBg:bt.bg, typeColor:bt.color, toggleLabel: b.visible?T('แสดงอยู่'):T('ซ่อนอยู่'), toggleBg: b.visible?'rgba(99,210,161,.1)':'rgba(30,37,48,.05)', toggleColor: b.visible?'#0d8f66':'#6B7280', onToggle:()=>p.onToggleBanner(b.id), onDelete:()=>p.onDeleteBanner(b.id), onEdit:()=>p.onEditBanner(b.id)};
+    });
+
+    const adminCalendarData = p.adminCalendar || {days:[],monthLabel:'',year:0};
+    const adminCalSelected = this.state.adminCalSelected;
+    const calFilter = this.state.calCatFilter || null;
+    const calView = this.state.calView || 'month';
+    const weekIdx = this.state.calWeekIdx || 0;
+    const catColorOf = (act)=>((p.categories||[]).find(c=>c.id===act.cat)||{}).color||'#9CA3AF';
+    const dayActs = (d)=>((d.activities)||[]).filter(x=> !calFilter || x.cat===calFilter);
+    const isTodayCell = (d)=> !!d.isToday;
+    const timeTextOf = (a)=> a.timeStart ? (a.timeStart+(a.timeEnd?' – '+a.timeEnd:'')+' '+T('น.')) : '';
+    const adminCalDays = adminCalendarData.days.map(d=>{
+      const acts = dayActs(d);
+      const sel = adminCalSelected===d.day;
+      const today = isTodayCell(d);
+      return {
+        day:d.day, dots: acts.slice(0,4).map(catColorOf),
+        count: acts.length, hasCount: acts.length>0,
+        onClick:()=>this.setState({adminCalSelected:d.day}),
+        countStyle:`margin-top:5px;display:inline-block;padding:1px 7px;border-radius:999px;font-size:9.5px;font-weight:500;background:${sel?'rgba(255,255,255,.22)':'rgba(31,41,55,.06)'};color:${sel?'#fff':'#6B7280'}`,
+        style:`position:relative;padding:10px 8px;min-height:66px;border-radius:13px;background:${sel?'#1F2937':(today?'rgba(167,116,247,.12)':'rgba(255,255,255,.7)')};color:${sel?'#fff':'#334155'};border:1px solid ${today&&!sel?'rgba(167,116,247,.5)':'rgba(255,255,255,.6)'};cursor:pointer;text-align:center;transition:all 200ms ease`,
+      };
+    });
+    const weekChunks = [];
+    for(let i=0;i<adminCalDays.length;i+=7) weekChunks.push(adminCalendarData.days.slice(i,i+7));
+    const wIdx = Math.min(Math.max(0, weekIdx), Math.max(0, weekChunks.length-1));
+    const WD = [T('อา'),T('จ'),T('อ'),T('พ'),T('พฤ'),T('ศ'),T('ส')];
+    const weekDays = (weekChunks[wIdx]||[]).map((d,i)=>{
+      const acts = dayActs(d);
+      const today = isTodayCell(d);
+      return {
+        day:d.day, weekdayLabel: WD[(( (weekChunks.slice(0,wIdx).reduce((s,c)=>s+c.length,0)) + i) % 7)],
+        hasActs: acts.length>0, actCount: acts.length,
+        colStyle:`display:flex;flex-direction:column;gap:8px;padding:12px 11px;border-radius:16px;min-height:180px;background:${today?'rgba(167,116,247,.1)':'rgba(255,255,255,.62)'};border:1px solid ${today?'rgba(167,116,247,.45)':'rgba(255,255,255,.8)'}`,
+        dayNumStyle:`display:flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:9px;font-size:12.5px;font-weight:600;background:${today?'#A774F7':'rgba(31,41,55,.05)'};color:${today?'#fff':'#4B5563'}`,
+        onClick:()=>this.setState({adminCalSelected:d.day}),
+        items: acts.map(x=>{
+          const col = catColorOf(x);
+          return {title:x.title, org:x.org, color:col, timeText: timeTextOf(x), hasTime: !!x.timeStart,
+            style:`padding:7px 9px;border-radius:10px;background:${col}1a;border-left:3px solid ${col};cursor:pointer`};
+        }),
+      };
+    });
+    const weekActTotal = weekDays.reduce((s,d)=>s+d.actCount,0);
+    const weekRangeLabel = weekDays.length ? (weekDays[0].day+'–'+weekDays[weekDays.length-1].day+' '+adminCalendarData.monthLabel) : '';
+    const adminSelectedDayActivities = (adminCalSelected ? dayActs(adminCalendarData.days.find(d=>d.day===adminCalSelected)||{activities:[]}) : []).map(a=>({...a, timeText: timeTextOf(a), hasTime: !!a.timeStart}));
+    const weekdayLabels = [T('อา'),T('จ'),T('อ'),T('พ'),T('พฤ'),T('ศ'),T('ส')];
+    const calActs = p.activities||[];
+    const monthDayCount = adminCalendarData.days.filter(d=>d.activities && d.activities.length>0).length;
+    const monthActCount = adminCalendarData.days.reduce((s,d)=>s+((d.activities||[]).length),0);
+    const calSummary = [
+      {label:T('กิจกรรมทั้งระบบ'), value:calActs.length, color:'#A774F7', icon:'event'},
+      {label:T('ในเดือนนี้'), value:monthActCount, color:'#7AB8FF', icon:'calendar_month'},
+      {label:T('วันที่มีกิจกรรม'), value:monthDayCount+T(' วัน'), color:'#63D2A1', icon:'today'},
+      {label:T('กำลังเปิดรับ'), value:calActs.filter(a=>a.capKey==='open'||a.capKey==='almost').length, color:'#E97171', icon:'how_to_reg'},
+    ];
+    const calLegend = (p.categories||[]).map(c=>{
+      const on = calFilter === c.id;
+      return {label:c.label, color:c.color,
+        onClick:()=>this.setState(s=>({calCatFilter: s.calCatFilter===c.id ? null : c.id})),
+        style:`display:inline-flex;align-items:center;gap:7px;padding:6px 13px;border-radius:999px;cursor:pointer;font-size:11.5px;white-space:nowrap;flex:0 0 auto;transition:all 200ms ease;border:1px solid ${on?c.color:'rgba(31,41,55,.08)'};background:${on?c.color+'1f':'rgba(255,255,255,.5)'};color:${on?'#1F2937':'#4B5563'};font-weight:${on?500:400}`};
+    });
+    const MSHORT = ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+    const _nowD = new Date();
+    const TODAY = {m:_nowD.getMonth(), d:_nowD.getDate()};
+    const MSHORT_EN2 = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    const _adNow = new Date(); _adNow.setHours(0,0,0,0);
+    const upcomingActs = calActs.map(a=>{
+      /* ใช้ dateISO ที่ไม่ผูกกับภาษา — เดิม parse สตริงเดือนไทยจึงพังเมื่อสลับเป็นอังกฤษ */
+      const iso = String(a.dateISO||'');
+      const dt = iso ? new Date(iso+'T00:00:00') : null;
+      const day = dt ? dt.getDate() : 1, month = dt ? dt.getMonth() : 0;
+      const dist = dt ? Math.round((dt - _adNow)/86400000) : -1;
+      return {...a, dayNum:day, monthShort: (ADM_LANG==='en'?MSHORT_EN2:MSHORT)[month], dist,
+        catColor:(a.catObj||{}).color||'#9CA3AF', dateBg:((a.catObj||{}).color||'#9CA3AF')+'1f',
+        distLabel: dist<0 ? T('ผ่านไปแล้ว') : dist===0 ? T('วันนี้') : (ADM_LANG==='en' ? 'in '+dist+' days' : T('อีก ')+dist+T(' วัน'))};
+    }).filter(a=>a.dist>=0).sort((a,b)=>a.dist-b.dist).slice(0,5);
+
+    const reportTopic = p.reportTopic||'hours';
+    const topicChips = REPORT_TOPICS.map(([id,label])=>{
+      const active = id===reportTopic;
+      return {label, onClick:()=>p.onReportTopic(id), style:`padding:9px 16px;border-radius:999px;font-size:13px;font-weight:600;border:1px solid ${active?'#A774F7':'rgba(30,37,48,.12)'};background:${active?'#A774F7':'#fff'};color:${active?'#fff':'#475569'}`};
+    });
+
+
+    const allLogs = p.logs||[];
+    const lf = this.state.logFilter||'all';
+    const logTabs = [
+      {key:'all', label:T('ทั้งหมด'), count:allLogs.length},
+      {key:'info', label:T('ข้อมูล'), count:allLogs.filter(l=>l.level==='info').length},
+      {key:'warn', label:T('คำเตือน'), count:allLogs.filter(l=>l.level==='warn').length},
+      {key:'error', label:T('ข้อผิดพลาด'), count:allLogs.filter(l=>l.level==='error').length},
+    ].filter(t=>t.key==='all'||t.count>0).map(t=>({...t, style:this.tabStyle(t.key===lf), onClick:()=>this.setState({logFilter:t.key})}));
+    const rp = this.state.reportPeriod||'6m';
+    const RP = {'1m':{n:1,label:T('ย้อนหลัง 1 เดือน')},'3m':{n:3,label:T('ย้อนหลัง 3 เดือน')},'6m':{n:6,label:T('ย้อนหลัง 6 เดือน')},'1y':{n:12,label:T('ย้อนหลัง 1 ปี')}};
+    const reportPeriodTabs = [
+      {key:'1m', label:T('1 เดือน')},{key:'3m', label:T('3 เดือน')},{key:'6m', label:T('6 เดือน')},{key:'1y', label:T('1 ปี')},
+    ].map(x=>({...x, style:this.tabStyle(x.key===rp), onClick:()=>this.setState({reportPeriod:x.key})}));
+    const reportPeriodLabel = (RP[rp]||RP['6m']).label;
+    const rawReportBars = p.chartBar||[];
+    const keepN = Math.min(rawReportBars.length, (RP[rp]||RP['6m']).n);
+    const reportBarsScoped = rawReportBars.slice(-keepN);
+
+    const lr = this.state.logRange||'all';
+    const logRangeTabs = [
+      {key:'all', label:T('ทุกช่วงเวลา')}, {key:'today', label:T('วันนี้')}, {key:'7d', label:T('7 วัน')}, {key:'30d', label:T('30 วัน')},
+    ].map(x=>({...x, style:this.tabStyle(x.key===lr), onClick:()=>this.setState({logRange:x.key})}));
+    const inRange = (l)=>{
+      if(lr==='all') return true;
+      const s = String(l.time||l.date||'');
+      if(lr==='today') return /นาที|ชั่วโมง|วันนี้|เมื่อสักครู่/.test(s);
+      const m = s.match(/(\d+)\s*วัน/);
+      const days = m ? Number(m[1]) : (/นาที|ชั่วโมง|วันนี้|เมื่อสักครู่/.test(s) ? 0 : 999);
+      return lr==='7d' ? days<=7 : days<=30;
+    };
+    const logRows = allLogs.filter(l=>(lf==='all'||l.level===lf) && inRange(l)).map(l=>{const [bg,color]=LEVEL_COLORS[l.level]||LEVEL_COLORS.info; return {...l, bg,color,levelLabel:l.level.toUpperCase()};});
+
+    const allContacts = p.contactMsgs||[];
+    const cmf = this.state.contactFilter||'all';
+    const contactTabs = [
+      {key:'all', label:T('ทั้งหมด'), count:allContacts.length},
+      {key:'unread', label:T('ยังไม่อ่าน'), count:allContacts.filter(c=>!c.read).length},
+      {key:'read', label:T('อ่านแล้ว'), count:allContacts.filter(c=>c.read).length},
+    ].map(x=>({...x, style:this.tabStyle(x.key===cmf), onClick:()=>this.setState({contactFilter:x.key})}));
+    const cSearch = (this.state.contactSearch||'').trim();
+    const selCid = this.state.contactSel;
+    const contactRows = allContacts
+      .filter(c=> cmf==='all' ? true : cmf==='unread' ? !c.read : !!c.read)
+      .filter(c=> !cSearch || (c.from||'').includes(cSearch) || (c.text||'').includes(cSearch))
+      .map(c=>{
+        const on = selCid===c.id;
+        return {...c, unread: !c.read, initial:(c.from||'?').slice(0,1),
+          avatarStyle:`display:flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:12px;flex-shrink:0;font-size:13px;font-weight:600;color:#fff;background:linear-gradient(135deg,#1F2937,#A774F7)`,
+          rowStyle:`display:flex;gap:11px;align-items:flex-start;padding:13px 15px;border-radius:16px;cursor:pointer;transition:all 180ms ease;background:${on?'rgba(167,116,247,.1)':'rgba(255,255,255,.62)'};border:1px solid ${on?'rgba(167,116,247,.4)':'rgba(255,255,255,.7)'}`,
+          nameWeight: c.read ? 400 : 600,
+          onSelect:()=>{ this.setState({contactSel:c.id}); if(!c.read) p.onMarkContact(c.id); },
+          onMark:()=>{ this.setState({contactSel:c.id}); if(!c.read) p.onMarkContact(c.id); }};
+      });
+    const selContact = allContacts.find(c=>c.id===selCid) || null;
+    const sentReply = (this.state.contactReplies||{})[selCid] || '';
+
+    const settings = p.settings||{};
+    const toggleDefs = [
+      ['maintenance',T('โหมดบำรุงรักษา')],['emailNotif',T('แจ้งเตือนทางอีเมล')],['autoBackup',T('สำรองข้อมูลอัตโนมัติ')],['kyfSystem',T('ระบบ กยศ.')],['autoCert',T('ออกใบประกาศอัตโนมัติ')],
+    ];
+    const toggleRows = toggleDefs.map(([key,label])=>{
+      const on = !!settings[key];
+      return {label, onToggle:()=>p.onSetting(key,!on), trackStyle:`width:44px;height:24px;border-radius:999px;cursor:pointer;background:${on?'#A774F7':'rgba(30,37,48,.15)'};padding:2px;display:flex;justify-content:${on?'flex-end':'flex-start'}`, knobStyle:'width:20px;height:20px;border-radius:50%;background:#fff'};
+    });
+
+    return {
+      avatarUrl: p.avatarUrl || '', hasAvatar: !!p.avatarUrl, noAvatar: !p.avatarUrl,
+      isHome:page==='home', isUsers:page==='users', isActivitiesPage:page==='activities',
+      ...this.i18nVals(),
+      ...this.adminHomeVals(),
+      ...this.dashboardVals(),
+      ...this.settingsVals(),
+      ...this.adminProfileVals(),
+      ...this.adminGuideVals(),
+      ...this.adminNotifVals(),
+      ...this.exportVals(),
+      isCategories:page==='categories', isFaculties:page==='faculties', isNewsBanners:page==='newsBanners', isAdminCalendar:page==='calendar',
+      isReportsPage:page==='reports', isLogs:page==='logs', isContact:page==='contact', isSettings:page==='settings',
+      adminCalendarData, adminCalDays, hasAdminSelectedDay: !!adminCalSelected, adminSelectedDay: adminCalSelected, adminSelectedDayActivities,
+      hasSelectedDayActs: adminSelectedDayActivities.length>0,
+      weekdayLabels, calSummary, calLegend, upcomingActs, hasUpcoming: upcomingActs.length>0,
+      railNextLabel: T('เลื่อนดูถัดไป'),
+      onRailNext: (e)=>{
+        const wrap = e.currentTarget.parentElement;
+        const rail = wrap && wrap.querySelector('.nuv-rail');
+        if(!rail) return;
+        const step = Math.max(200, rail.clientWidth - 80);
+        const atEnd = rail.scrollLeft + rail.clientWidth >= rail.scrollWidth - 4;
+        rail.scrollTo({left: atEnd ? 0 : rail.scrollLeft + step, behavior:'smooth'});
+      },
+      onAdminCalPrev: ()=>p.onAdminCalNav(-1), onAdminCalNext: ()=>p.onAdminCalNav(1),
+      onAddBanner: ()=>p.onAddBanner(),
+      statCards, userRows, hasUsers: userRows.length>0, onAddUser:()=>p.onAddUser(),
+      roleFilterCards, hasLegacyRoleWarning: legacy.length>0, legacyRoleNames,
+      activities, hasActivities: activities.length>0, actTabs, categoryRows, onAddCategory:()=>p.onAddCategory(),
+      catSummary, categoryCount,
+      calViewTabs: [['month',T('รายเดือน'),'calendar_view_month'],['week',T('รายสัปดาห์'),'calendar_view_week']].map(([k,label,icon])=>{
+        const on = calView===k;
+        return {label, icon, onClick:()=>this.setState({calView:k}),
+          style:`display:flex;align-items:center;gap:6px;padding:9px 15px;border-radius:12px;cursor:pointer;font-family:inherit;font-size:12.5px;font-weight:${on?500:400};transition:all 200ms ease;border:1px solid ${on?'transparent':'rgba(31,41,55,.1)'};background:${on?'linear-gradient(135deg,#1F2937,#A774F7)':'rgba(255,255,255,.6)'};color:${on?'#fff':'#6B7280'}`};
+      }),
+      isMonthView: calView==='month', isWeekView: calView==='week',
+      weekDays, hasWeekActs: weekActTotal>0, weekRangeLabel,
+      weekEmptyLabel: T('ไม่มีกิจกรรมในสัปดาห์นี้'),
+      weekPrevTitle: T('สัปดาห์ก่อนหน้า'), weekNextTitle: T('สัปดาห์ถัดไป'),
+      weekLabel: T('สัปดาห์ที่')+' '+(wIdx+1),
+      onWeekPrev: ()=>this.setState(s=>({calWeekIdx: Math.max(0,(s.calWeekIdx||0)-1)})),
+      onWeekNext: ()=>this.setState(s=>({calWeekIdx: Math.min(weekChunks.length-1,(s.calWeekIdx||0)+1)})),
+      calFilterLabel: T('กรองตามหมวดหมู่'), hasCalFilter: !!this.state.calCatFilter,
+      onClearCalFilter: ()=>this.setState({calCatFilter:null}), calClearLabel: T('ล้างตัวกรอง'),
+      contactInboxTitle: T('กล่องข้อความ'), contactListTitle: T('ข้อความจากผู้ใช้'),
+      contactSearch: this.state.contactSearch||'',
+      onContactSearch:(e)=>this.setState({contactSearch:e.target.value}),
+      contactSearchPh: T('ค้นหาผู้ส่งหรือข้อความ...'),
+      contactNoResults: T('ไม่พบข้อความที่ตรงกับคำค้น'),
+      hasSelContact: !!selContact,
+      selContactFrom: selContact? selContact.from : '',
+      selContactText: selContact? selContact.text : '',
+      selContactInitial: selContact? (selContact.from||'?').slice(0,1) : '',
+      selContactStatus: selContact ? (selContact.read ? T('อ่านแล้ว') : T('ยังไม่อ่าน')) : '',
+      contactEmptyDetail: T('เลือกข้อความเพื่ออ่านและตอบกลับ'),
+      contactReplyLabel: T('ตอบกลับ'), contactReplyPh: T('พิมพ์คำตอบ... (กด Enter เพื่อส่ง)'),
+      contactReplyDraft: this.state.contactReplyDraft||'',
+      onContactReplyChange:(e)=>this.setState({contactReplyDraft:e.target.value}),
+      onContactReplySend: ()=>{
+        const txt = (this.state.contactReplyDraft||'').trim();
+        if(!txt || !selCid) return;
+        this.setState(st=>({contactReplies:{...(st.contactReplies||{}), [selCid]: txt}, contactReplyDraft:''}));
+      },
+      onContactReplyKey:(e)=>{ if(e.key==='Enter' && !e.shiftKey){ e.preventDefault();
+        const txt = (this.state.contactReplyDraft||'').trim();
+        if(!txt || !selCid) return;
+        this.setState(st=>({contactReplies:{...(st.contactReplies||{}), [selCid]: txt}, contactReplyDraft:''})); } },
+      hasSentReply: !!sentReply, sentReply, sentReplyTitle: T('คำตอบของคุณ'), replySentLabel: T('ส่งคำตอบแล้ว'),
+      facSummary, facSortTabs, facSearch: this.state.facSearch||'',
+      facRankTitle: T('อันดับอัตราผ่านเกณฑ์ กยศ.'), facCompareAll: T('เปรียบเทียบทุกคณะ'),
+      onCompareAll: ()=>p.onFacultyGraph(null),
+      facColRank: T('อันดับ'), facColJoined: T('เข้าร่วม'), facColPassed: T('ผ่านเกณฑ์'), facColNot: T('ยังไม่ผ่าน'), facColGraph: T('ดูกราฟ'),
+      onFacSearch:(e)=>this.setState({facSearch:e.target.value}),
+      facultyRows, hasFaculties: facultyRows.length>0, showFacultyGraph: !!selFac, selectedFacultyName: selFac?selFac.name:'', facultyGraphBars: facultyGraphBarsPct,
+      newsRows, hasNews: newsRows.length>0, bannerRows, hasBanners: bannerRows.length>0, topicChips,
+      reportBars: reportBarsScoped.map((b,i)=>({...b, onEnter:()=>this.setState({hoverBarIdx:i}), showTip: this.state.hoverBarIdx===i})),
+      reportPeriodTabs, reportPeriodLabel,
+      onBarLeave: ()=>this.setState({hoverBarIdx:null}),
+      logRows, hasLogs: logRows.length>0, contactRows, hasContacts: contactRows.length>0,
+      logTabs, logRangeTabs, newsTabs, contactTabs, userSearch: uSearch,
+      onUserSearch:(e)=>this.setState({userSearch:e.target.value}),
+      toggleRows, maxReg: settings.maxRegistrants||200, onMaxRegChange:(e)=>p.onSetting('maxRegistrants', e.target.value), onReset:()=>p.onReset(),
+      linePoints: p.linePoints||'',
+      linePts: (p.linePointsArr||[]).map((pt,i)=>({...pt, onEnter:()=>this.setState({hoverLineIdx:i})})),
+      onLineLeave: ()=>this.setState({hoverLineIdx:null}),
+      hasLineTip: this.state.hoverLineIdx!=null,
+      lineTipX: this.state.hoverLineIdx!=null ? ((p.linePointsArr||[])[this.state.hoverLineIdx].cx/280*100) : 0,
+      lineTipY: this.state.hoverLineIdx!=null ? ((p.linePointsArr||[])[this.state.hoverLineIdx].cy/100*100) : 0,
+      lineTipValue: this.state.hoverLineIdx!=null ? (p.linePointsArr||[])[this.state.hoverLineIdx].value : '',
+      lineTipLabel: this.state.hoverLineIdx!=null ? (p.linePointsArr||[])[this.state.hoverLineIdx].label : '',
+    };
+  }
+}
+
+</script>
+</body>
+</html>

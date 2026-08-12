@@ -1,0 +1,1602 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+
+<helmet data-dc-atomics><script src="./image-slot.js"></script><style>
+@media (max-width:820px){
+  .nuv-modal-body{flex-direction:column !important;gap:18px !important;padding:18px !important}
+  .nuv-modal-side{width:100% !important}
+  .nuv-modal-hero{height:190px !important}
+  .nuv-modal-hero-title{font-size:19px !important}
+}
+@media (max-width:820px){ .nuv-perks{grid-template-columns:1fr 1fr !important} }
+@media (max-width:640px){
+  .nuv-modal-scrim{padding:10px !important;align-items:flex-start !important}
+  .nuv-modal-scrim > div{max-height:94vh !important;border-radius:20px !important}
+  /* คำไทยไม่มีช่องว่าง ตัดบรรทัดเองไม่ได้ — บีบ 2 คอลัมน์บนจอแคบทำให้ข้อความล้นขอบ */
+  .nuv-perks{grid-template-columns:1fr !important}
+  .nuv-modal-gallery{grid-template-columns:1fr !important}
+  .nuv-modal-close{width:44px !important;height:44px !important}
+}
+/* ข้อความทุกบล็อกในโมดัลต้องตัดบรรทัดได้ ไม่ดันเนื้อหาออกนอกกรอบ */
+.nuv-modal-body, .nuv-modal-body *{min-width:0;overflow-wrap:anywhere}
+@media (max-width:560px){
+  .nuv-scan-pane{padding:16px 14px !important}
+  .nuv-scan-cam{aspect-ratio:3/4 !important;max-height:56vh !important;border-radius:18px !important}
+  .nuv-scan-pane button, .nuv-scan-pane label{min-height:44px !important}
+  .nuv-scan-pane .nuv-scan-tabbtns > button{flex:1 1 100% !important;min-width:0 !important}
+}
+@keyframes nuvPop{from{opacity:0;transform:scale(.96) translateY(6px)}to{opacity:1;transform:scale(1) translateY(0)}}@keyframes nuScan{0%{top:15%}50%{top:85%}100%{top:15%}}@keyframes nuvHitFlash{0%{opacity:0;transform:scale(1.04)}100%{opacity:1;transform:scale(1)}}</style></helmet>
+
+<sc-if value="{{ hasModal }}" hint-placeholder-val="{{ false }}">
+  <div onClick="{{ onBackdrop }}" class="nuv-modal-scrim" style="position:fixed;inset:0;background:rgba(30,37,48,.45);backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);z-index:100;display:flex;align-items:center;justify-content:center;padding:20px">
+    <div onClick="{{ stop }}" style="{{ modalWrapperStyle }}">
+
+      <sc-if value="{{ isDetail }}" hint-placeholder-val="{{ false }}">
+        <div class="nuv-modal-hero" style="position:relative;height:260px;flex-shrink:0">
+          <img src="{{ activity.photo }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block"/>
+          <div style="position:absolute;inset:0;background:linear-gradient(0deg,rgba(0,0,0,.65) 5%,rgba(0,0,0,.05) 55%);pointer-events:none"></div>
+          <button onClick="{{ onCloseModal }}" title="{{ L.k96 }}" class="nuv-modal-close" style-hover="background:rgba(255,255,255,.85);transform:translateY(-2px);box-shadow:0 6px 16px rgba(31,41,55,.14)" style="position:absolute;top:14px;right:14px;width:38px;height:38px;border-radius:50%;border:none;background:rgba(255,255,255,.72);cursor:pointer;transition:all 220ms ease;display:flex;align-items:center;justify-content:center;color:#4B5563;z-index:3"><span class="msr" style="font-size:20px">close</span></button>
+          <div style="position:absolute;top:14px;left:18px;display:flex;align-items:center;gap:6px;font-size:12px;color:#fff;opacity:.92"><span class="msr" style="font-size:16px">info</span>{{ L.k36 }}</div>
+          <div style="position:absolute;left:18px;bottom:16px;right:18px">
+            <div style="display:inline-flex;padding:4px 10px;border-radius:999px;font-size:11px;font-weight:500;background:{{ activity.catBg }};color:#fff;backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%)">{{ activity.catObj.label }}</div>
+            <div class="nuv-modal-hero-title" style="font-weight:500;font-size:24px;color:#fff;margin-top:8px;text-shadow:0 2px 8px rgba(0,0,0,.4)">{{ activity.title }}</div>
+          </div>
+        </div>
+        <div class="nuv-modal-body" style="display:flex;gap:24px;padding:24px;flex-wrap:wrap-reverse">
+          <div style="flex:1.6;min-width:280px;display:flex;flex-direction:column;gap:22px">
+            <div>
+              <div style="font-weight:500;font-size:15px;color:#E97171;margin-bottom:8px">{{ L.k40 }}</div>
+              <div style="font-size:13.5px;color:#334155;line-height:1.8">{{ activity.desc }}</div>
+              <div style="display:flex;align-items:center;gap:6px;margin-top:12px;font-size:12.5px;color:#6B7280"><span class="msr" style="font-size:16px;color:#9CA3AF">place</span>{{ activity.org }} · {{ activity.location }}</div>
+            </div>
+            <div>
+              <div style="font-size:12px;font-weight:500;color:#94A3B8;letter-spacing:.04em;margin-bottom:10px">{{ L.k29 }}</div>
+              <div class="nuv-perks" style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px">
+                <sc-for list="{{ activity.perks }}" as="pk" hint-placeholder-count="3">
+                  <div style="background:rgba(99,210,161,.09);border:1px solid rgba(99,210,161,.24);border-radius:14px;padding:14px 12px;text-align:center">
+                    <span class="msr" style="font-size:20px;color:#0F8A63">redeem</span>
+                    <div style="font-size:11.5px;font-weight:500;color:#1F2937;margin-top:6px;line-height:1.5">{{ pk }}</div>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+            <div>
+              <div style="font-size:12px;font-weight:500;color:#94A3B8;letter-spacing:.04em;margin-bottom:10px">{{ L.k69 }}</div>
+              <sc-if value="{{ hasGallery }}" hint-placeholder-val="{{ false }}">
+                <div class="nuv-modal-gallery" style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+                  <sc-for list="{{ galleryImgs }}" as="gi" hint-placeholder-count="2">
+                    <img src="{{ gi }}" alt="" style="width:100%;height:130px;object-fit:cover;border-radius:14px;display:block"/>
+                  </sc-for>
+                </div>
+              </sc-if>
+              <sc-if value="{{ noGallery }}" hint-placeholder-val="{{ true }}">
+                <div class="nuv-modal-gallery" style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+                  <image-slot id="{{ detailGallery1Id }}" shape="rounded" radius="14" placeholder="{{ L.k63 }}" style="width:100%;height:130px"></image-slot>
+                  <image-slot id="{{ detailGallery2Id }}" shape="rounded" radius="14" placeholder="{{ L.k64 }}" style="width:100%;height:130px"></image-slot>
+                </div>
+              </sc-if>
+            </div>
+            <div>
+              <div style="font-size:12px;font-weight:500;color:#94A3B8;letter-spacing:.04em;margin-bottom:10px">{{ L.k27 }}</div>
+              <div style="display:flex;flex-direction:column;gap:7px">
+                <sc-for list="{{ activity.prep }}" as="pr" hint-placeholder-count="3">
+                  <div style="display:flex;align-items:center;gap:8px;font-size:12.5px;line-height:1.6;color:#334155"><span class="msr" style="font-size:16px;color:#A774F7">check_circle</span>{{ pr }}</div>
+                </sc-for>
+              </div>
+            </div>
+            <div>
+              <div style="font-size:12px;font-weight:500;color:#94A3B8;letter-spacing:.04em;margin-bottom:10px">{{ L.k21 }}</div>
+              <div style="position:relative;border-radius:16px;overflow:hidden;height:220px;border:1px solid rgba(31,41,55,.1);background:rgba(31,41,55,.03)">
+                <sc-if value="{{ hasMapImage }}" hint-placeholder-val="{{ false }}">
+                  <img src="{{ activity.mapImage }}" alt="" style="width:100%;height:220px;object-fit:cover;display:block"/>
+                </sc-if>
+                <sc-if value="{{ mapEmbedOk }}" hint-placeholder-val="{{ true }}">
+                  <iframe src="{{ mapEmbedSrc }}" title="{{ L.k21 }}" onLoad="{{ onMapLoad }}" onError="{{ onMapFail }}" width="100%" height="220" loading="lazy" allowfullscreen="" referrerpolicy="strict-origin-when-cross-origin" style="width:100%;height:220px;border:0;display:block"></iframe>
+                </sc-if>
+                <sc-if value="{{ mapEmbedFailed }}" hint-placeholder-val="{{ false }}">
+                  <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;height:220px;padding:18px;text-align:center">
+                    <span class="msr" style="font-size:30px;color:#CBD5E1">map</span>
+                    <div style="font-size:12.5px;font-weight:500;color:#4B5563">{{ mapFailTitle }}</div>
+                    <div style="font-size:11.5px;line-height:1.65;color:#9CA3AF;word-break:break-word;max-width:320px">{{ mapPlain }}</div>
+                    <button onClick="{{ onMapRetry }}" style-hover="background:rgba(31,41,55,.06)" style="margin-top:4px;display:inline-flex;align-items:center;gap:5px;padding:7px 13px;border-radius:11px;border:1px solid rgba(31,41,55,.12);background:transparent;font-family:inherit;font-size:11.5px;color:#4B5563;cursor:pointer"><span class="msr" style="font-size:14px">refresh</span>{{ mapRetryLabel }}</button>
+                  </div>
+                </sc-if>
+              </div>
+              <div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-top:9px">
+                <a href="{{ mapHref }}" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:5px;padding:7px 13px;border-radius:11px;border:1px solid rgba(31,41,55,.12);background:rgba(255,255,255,.7);font-size:11.5px;font-weight:500;color:#8b2fe0;text-decoration:none">{{ mapOpenAppLabel }}<span class="msr" style="font-size:15px">open_in_new</span></a>
+                <button onClick="{{ onCopyMap }}" style-hover="background:rgba(31,41,55,.06)" style="display:inline-flex;align-items:center;gap:5px;padding:7px 13px;border-radius:11px;border:1px solid rgba(31,41,55,.12);background:transparent;font-family:inherit;font-size:11.5px;color:#6B7280;cursor:pointer"><span class="msr" style="font-size:14px">content_copy</span>{{ mapCopyLabel }}</button>
+                <div style="font-size:11px;color:#9CA3AF;min-width:0;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ activity.location }}</div>
+              </div>
+            </div>
+          </div>
+          <div class="nuv-modal-side" style="width:250px;flex-shrink:0">
+            <div style="position:sticky;top:0;background:rgba(255,255,255,.62);backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);border:1px solid rgba(30,37,48,.06);border-radius:22px;padding:18px;box-shadow:0 12px 30px rgba(31,41,55,.08), inset 0 1px 0 rgba(255,255,255,.55)">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+                <div style="font-weight:500;font-size:15px;color:#1F2937">{{ L.k81 }}</div>
+                <div style="padding:3px 9px;border-radius:999px;font-size:10.5px;font-weight:500;background:{{ statusBadgeBg }};color:{{ statusBadgeColor }}">{{ statusBadgeLabel }}</div>
+              </div>
+              <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:4px"><span style="color:{{ activity.capColor }};font-weight:500">{{ activity.seatsLeftLabel }}</span><span style="color:#9CA3AF">{{ activity.seatsFilled }}/{{ activity.seatsTotal }}</span></div>
+              <div style="height:7px;border-radius:5px;background:rgba(31,41,55,.08);overflow:hidden;margin-bottom:14px"><div style="height:100%;width:{{ activity.seatPct }}%;background:{{ activity.capDot }}"></div></div>
+              <div style="display:flex;flex-direction:column;gap:10px;font-size:12.5px;color:#334155">
+                <div style="display:flex;align-items:center;gap:8px"><span class="msr" style="font-size:17px;color:#9CA3AF">event</span>{{ activity.date }}</div>
+                <sc-if value="{{ hasActivityRange }}" hint-placeholder-val="{{ false }}">
+                  <div style="display:flex;align-items:center;gap:8px"><span class="msr" style="font-size:17px;color:#9CA3AF">date_range</span>{{ activityRangeText }}</div>
+                </sc-if>
+                <sc-if value="{{ hasActivityTime }}" hint-placeholder-val="{{ false }}">
+                  <div style="display:flex;align-items:center;gap:8px"><span class="msr" style="font-size:17px;color:#9CA3AF">access_time</span>{{ activityTimeText }}</div>
+                </sc-if>
+                <div style="display:flex;align-items:flex-start;gap:8px"><span class="msr" style="font-size:17px;color:#9CA3AF">place</span><span style="flex:1;min-width:0;line-height:1.6">{{ activity.location }}</span></div>
+                <div style="display:flex;align-items:center;gap:8px"><span class="msr" style="font-size:17px;color:#9CA3AF">groups</span>{{ L.k47 }}</div>
+                <div style="display:flex;align-items:center;gap:8px"><span class="msr" style="font-size:17px;color:#9CA3AF">schedule</span>{{ activity.hours }} {{ L.k49 }}</div>
+                <div style="display:flex;align-items:flex-start;gap:8px"><span class="msr" style="font-size:17px;color:#9CA3AF">how_to_reg</span><span style="flex:1;min-width:0;line-height:1.6">{{ L.k88 }} {{ activity.regOpen }} – {{ activity.regClose }}</span></div>
+              </div>
+              <button onClick="{{ onRegisterClick }}" style-hover="transform:translateY(-2px);box-shadow:0 12px 28px rgba(167,116,247,.35)" style="margin-top:16px;width:100%;display:flex;align-items:center;justify-content:center;gap:8px;padding:12px;border-radius:13px;border:none;background:{{ registerBtnBg }};color:#fff;font-family:inherit;font-weight:500;font-size:13.5px;cursor:pointer;transition:all 220ms ease"><span class="msr" style="font-size:18px">how_to_reg</span>{{ registerBtnLabel }}</button>
+              <button onClick="{{ onShareClick }}" style-hover="background:rgba(255,255,255,.95);transform:translateY(-2px);box-shadow:0 8px 20px rgba(31,41,55,.12)" style="margin-top:9px;width:100%;display:flex;align-items:center;justify-content:center;gap:7px;padding:11px;border-radius:13px;cursor:pointer;transition:all 220ms ease;border:1px solid rgba(31,41,55,.1);background:rgba(255,255,255,.7);color:#4B5563;font-family:inherit;font-size:13px"><span class="msr" style="font-size:18px">share</span>{{ L.k48 }}</button>
+              <div style="display:flex;align-items:center;justify-content:center;gap:5px;text-align:center;font-size:10.5px;color:#94A3B8;margin-top:10px"><span class="msr" style="font-size:14px">info</span>{{ L.k6 }}</div>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isDetailReadonly }}" hint-placeholder-val="{{ false }}">
+        <div style="padding:24px">
+          <div style="height:130px;border-radius:16px;background:repeating-linear-gradient(45deg,rgba(0,0,0,.04),rgba(0,0,0,.04) 10px,rgba(0,0,0,.02) 10px,rgba(0,0,0,.02) 20px);display:flex;align-items:center;justify-content:center;font-size:11px;line-height:1.7;color:#94A3B8;font-family:monospace;margin-bottom:16px">{{ L.k77 }}</div>
+          <div style="display:inline-flex;padding:4px 10px;border-radius:999px;font-size:11px;line-height:1.7;font-weight:500;background:{{ activity.catBg }};color:{{ activity.catObj.color }}">{{ activity.catObj.label }}</div>
+          <div style="font-weight:600;font-size:19px;line-height:1.7;color:#1F2937;margin-top:10px">{{ activity.title }}</div>
+          <div style="font-size:13px;line-height:1.7;color:#6B7280;margin-top:4px">{{ activity.org }} · {{ activity.date }} · {{ activity.location }}</div>
+          <div style="font-size:13.5px;color:#334155;margin-top:14px;line-height:1.6">{{ activity.desc }}</div>
+          <div style="margin-top:14px">
+            <div style="font-size:12px;font-weight:500;color:#94A3B8;letter-spacing:.04em;margin-bottom:9px">{{ L.k21 }}</div>
+            <div style="position:relative;border-radius:16px;overflow:hidden;height:200px;border:1px solid rgba(31,41,55,.1);background:rgba(31,41,55,.03)">
+              <sc-if value="{{ mapEmbedOk }}" hint-placeholder-val="{{ true }}">
+                <iframe src="{{ mapEmbedSrc }}" title="{{ L.k21 }}" onLoad="{{ onMapLoad }}" onError="{{ onMapFail }}" width="100%" height="200" loading="lazy" allowfullscreen="" referrerpolicy="strict-origin-when-cross-origin" style="width:100%;height:200px;border:0;display:block"></iframe>
+              </sc-if>
+              <sc-if value="{{ mapEmbedFailed }}" hint-placeholder-val="{{ false }}">
+                <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;height:200px;padding:18px;text-align:center">
+                  <span class="msr" style="font-size:28px;color:#CBD5E1">map</span>
+                  <div style="font-size:12.5px;font-weight:500;color:#4B5563">{{ mapFailTitle }}</div>
+                  <div style="font-size:11.5px;line-height:1.65;color:#9CA3AF;word-break:break-word;max-width:320px">{{ mapPlain }}</div>
+                  <button onClick="{{ onMapRetry }}" style-hover="background:rgba(31,41,55,.06)" style="margin-top:4px;display:inline-flex;align-items:center;gap:5px;padding:7px 13px;border-radius:11px;border:1px solid rgba(31,41,55,.12);background:transparent;font-family:inherit;font-size:11.5px;color:#4B5563;cursor:pointer"><span class="msr" style="font-size:14px">refresh</span>{{ mapRetryLabel }}</button>
+                </div>
+              </sc-if>
+            </div>
+            <div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-top:9px">
+              <a href="{{ mapHref }}" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:5px;padding:7px 13px;border-radius:11px;border:1px solid rgba(31,41,55,.12);background:rgba(255,255,255,.7);font-size:11.5px;font-weight:500;color:#8b2fe0;text-decoration:none">{{ mapOpenAppLabel }}<span class="msr" style="font-size:15px">open_in_new</span></a>
+              <button onClick="{{ onCopyMap }}" style-hover="background:rgba(31,41,55,.06)" style="display:inline-flex;align-items:center;gap:5px;padding:7px 13px;border-radius:11px;border:1px solid rgba(31,41,55,.12);background:transparent;font-family:inherit;font-size:11.5px;color:#6B7280;cursor:pointer"><span class="msr" style="font-size:14px">content_copy</span>{{ mapCopyLabel }}</button>
+            </div>
+          </div>
+          <div style="margin-top:18px;padding:14px;border-radius:14px;background:rgba(167,116,247,.08);color:#7c2fd9;font-size:13px;line-height:1.7;text-align:center;font-weight:600">{{ L.k8 }}</div>
+          <button onClick="{{ onCloseModal }}" style="margin-top:14px;width:100%;padding:11px;border-radius:12px;border:1px solid rgba(30,37,48,.12);background:rgba(255,255,255,.55);backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);color:#1F2937;font-weight:500;font-size:13.5px;line-height:1.7;cursor:pointer">{{ L.k96 }}</button>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isShare }}" hint-placeholder-val="{{ false }}">
+        <div style="padding:24px;display:flex;flex-direction:column;gap:16px">
+          <div>
+            <div style="font-weight:600;font-size:16px;line-height:1.6;color:#1F2937">{{ L.k70 }}</div>
+            <div style="font-size:12.5px;line-height:1.65;color:#6B7280;margin-top:3px">{{ shareSubtitle }}</div>
+          </div>
+
+          <sc-if value="{{ shareBlocked }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;align-items:flex-start;gap:10px;padding:13px 15px;border-radius:15px;background:rgba(245,166,35,.12);border:1px solid rgba(245,166,35,.32)">
+              <span class="msr" style="font-size:19px;color:#B45309;flex-shrink:0">info</span>
+              <div style="font-size:12px;line-height:1.7;color:#8A5A12">{{ shareBlockedMsg }}</div>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ shareEnabled }}" hint-placeholder-val="{{ true }}">
+            <div style="display:flex;flex-direction:column;gap:14px">
+              <div class="nuv-share-row" style="display:flex;gap:14px;overflow-x:auto;padding:2px 2px 6px;-webkit-overflow-scrolling:touch;scrollbar-width:thin">
+                <sc-for list="{{ shareChannels }}" as="c" hint-placeholder-count="6">
+                  <button onClick="{{ c.onClick }}" title="{{ c.label }}" style-hover="transform:translateY(-3px)" style="flex:0 0 auto;display:flex;flex-direction:column;align-items:center;gap:7px;width:66px;padding:0;border:none;background:transparent;font-family:inherit;cursor:pointer;transition:transform 200ms ease">
+                    <span style="{{ c.iconStyle }}">
+                      <sc-if value="{{ c.isText }}" hint-placeholder-val="{{ false }}">
+                        <span style="font-size:{{ c.glyphSize }};font-weight:700;letter-spacing:.02em">{{ c.glyph }}</span>
+                      </sc-if>
+                      <sc-if value="{{ c.isIcon }}" hint-placeholder-val="{{ true }}">
+                        <span class="msr" style="font-size:25px">{{ c.glyph }}</span>
+                      </sc-if>
+                    </span>
+                    <span style="font-size:11px;line-height:1.4;color:#4B5563;text-align:center;word-break:break-word">{{ c.label }}</span>
+                  </button>
+                </sc-for>
+              </div>
+
+              <sc-if value="{{ shareQrOpen }}" hint-placeholder-val="{{ false }}">
+                <div style="display:flex;flex-direction:column;align-items:center;gap:9px;padding:16px;border-radius:18px;background:rgba(255,255,255,.72);border:1px solid rgba(31,41,55,.08)">
+                  <div style="width:176px;height:176px;border-radius:14px;overflow:hidden;background:#fff;box-shadow:0 6px 18px rgba(31,41,55,.12)">{{ shareQrEl }}</div>
+                  <div style="font-size:11.5px;color:#9CA3AF;line-height:1.6;text-align:center">{{ shareQrHint }}</div>
+                </div>
+              </sc-if>
+
+              <div style="display:flex;align-items:center;gap:10px;padding:8px 8px 8px 15px;border-radius:15px;background:rgba(31,41,55,.05);border:1px solid rgba(31,41,55,.08)">
+                <span style="flex:1;min-width:0;font-size:12px;color:#4B5563;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;direction:ltr">{{ shareUrl }}</span>
+                <button onClick="{{ onCopyLink }}" style-hover="transform:translateY(-1px);box-shadow:0 8px 18px rgba(167,116,247,.3)" style="flex-shrink:0;display:flex;align-items:center;gap:6px;padding:10px 15px;border-radius:11px;border:none;background:{{ shareCopyBg }};color:#fff;font-family:inherit;font-weight:500;font-size:12.5px;cursor:pointer;transition:all 200ms ease"><span class="msr" style="font-size:17px">{{ shareCopyIcon }}</span>{{ shareCopyLabel }}</button>
+              </div>
+
+              <sc-if value="{{ hasShareNote }}" hint-placeholder-val="{{ false }}">
+                <div style="font-size:11.5px;line-height:1.7;color:#C2410C;text-align:center">{{ shareNote }}</div>
+              </sc-if>
+            </div>
+          </sc-if>
+
+          <button onClick="{{ onCloseModal }}" style-hover="background:#111827" style="width:100%;padding:12px;border-radius:12px;border:none;background:#1F2937;color:#fff;font-family:inherit;font-size:13px;line-height:1.7;font-weight:500;cursor:pointer;transition:all 200ms ease">{{ L.k96 }}</button>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isParticipants }}" hint-placeholder-val="{{ false }}">
+        <div style="padding:24px;display:flex;flex-direction:column;max-height:min(78vh,660px)">
+          <div style="font-weight:600;font-size:16px;line-height:1.7;color:#1F2937">{{ L.k42 }}</div>
+          <div style="font-size:12.5px;line-height:1.7;color:#6B7280">{{ activity.title }}</div>
+          <div style="display:flex;gap:7px;flex-wrap:wrap;margin-top:12px">
+            <sc-for list="{{ partStatTabs }}" as="pt" hint-placeholder-count="3">
+              <button onClick="{{ pt.onClick }}" style="{{ pt.style }}">{{ pt.label }}<span style="opacity:.65">{{ pt.count }}</span></button>
+            </sc-for>
+          </div>
+          <input value="{{ partSearch }}" onChange="{{ onPartSearch }}" placeholder="{{ L.k65 }}" style="width:100%;margin-top:14px;padding:11px 14px;border-radius:12px;border:1px solid rgba(30,37,48,.12);font-size:13px;line-height:1.7;outline:none;box-sizing:border-box"/>
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:10px;margin-bottom:2px">
+            <div style="font-size:11.5px;color:#9CA3AF;line-height:1.7">{{ partFoundLabel }}</div>
+            <button onClick="{{ onPartCsv }}" style-hover="background:rgba(167,116,247,.1);border-color:rgba(167,116,247,.35);color:#7C2FD9" style="display:flex;align-items:center;gap:6px;padding:7px 12px;border-radius:10px;border:1px solid rgba(31,41,55,.1);background:transparent;color:#6B7280;font-family:inherit;font-size:11.5px;cursor:pointer;flex-shrink:0;transition:all 200ms ease"><span class="msr" style="font-size:16px">download</span>{{ partCsvLabel }}</button>
+          </div>
+          <div style="flex:1;min-height:0;overflow:auto;padding-right:4px">
+            <sc-for list="{{ partRows }}" as="m" hint-placeholder-count="6">
+              <div style="display:flex;align-items:center;gap:12px;padding:13px 0;border-top:1px solid rgba(30,37,48,.05)">
+                <div style="{{ m.avatarStyle }}">{{ m.initial }}</div>
+                <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px">
+                  <div style="font-weight:600;font-size:13px;line-height:1.55;color:#334155;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ m.name }}</div>
+                  <div style="font-size:11.5px;line-height:1.55;color:#94A3B8;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ m.meta }}</div>
+                </div>
+                <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0">
+                  <div style="{{ m.statusStyle }}">{{ m.statusLabel }}</div>
+                  <sc-if value="{{ m.hasHours }}" hint-placeholder-val="{{ false }}">
+                    <div style="font-size:11px;color:#94A3B8;font-variant-numeric:tabular-nums">{{ m.hoursLabel }}</div>
+                  </sc-if>
+                </div>
+              </div>
+            </sc-for>
+            <sc-if value="{{ partEmpty }}" hint-placeholder-val="{{ false }}">
+              <div style="padding:30px 20px;text-align:center;color:#9CA3AF;font-size:13px;line-height:1.8">{{ partEmptyLabel }}</div>
+            </sc-if>
+          </div>
+          <button onClick="{{ onCloseModal }}" style="margin-top:16px;flex-shrink:0;width:100%;padding:12px;border-radius:12px;border:none;background:#1F2937;color:#fff;font-weight:500;font-size:13.5px;line-height:1.7;cursor:pointer">{{ L.k96 }}</button>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isContact }}" hint-placeholder-val="{{ false }}">
+        <div style="padding:24px">
+          <div style="font-weight:600;font-size:16px;line-height:1.7;color:#1F2937;margin-bottom:6px">{{ L.k14 }}</div>
+          <div style="font-size:12px;color:#6B7280;line-height:1.7;margin-bottom:10px">{{ contactToLabel }}</div>
+          <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px">
+            <sc-for list="{{ contactTargets }}" as="tg" hint-placeholder-count="2">
+              <button onClick="{{ tg.onClick }}" style="{{ tg.style }}">{{ tg.label }}</button>
+            </sc-for>
+          </div>
+          <textarea value="{{ contactText }}" onChange="{{ onContactChange }}" placeholder="{{ L.k25 }}" rows="4" style="width:100%;padding:12px 14px;border-radius:12px;border:1px solid rgba(30,37,48,.12);font-size:13.5px;line-height:1.7;outline:none;resize:none"></textarea>
+          <button onClick="{{ onContactSubmit }}" style="margin-top:14px;width:100%;padding:11px;border-radius:12px;border:none;background:#1F2937;color:#fff;font-weight:500;font-size:13.5px;line-height:1.7;cursor:pointer">{{ L.k78 }}</button>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isActivityForm }}" hint-placeholder-val="{{ false }}">
+        <div style="padding:26px 28px 22px;background:linear-gradient(135deg,rgba(233,113,113,.12),rgba(167,116,247,.12));border-bottom:1px solid rgba(30,37,48,.06)">
+          <div style="font-size:11.5px;color:#94A3B8">{{ L.k53 }}</div>
+          <div style="font-weight:600;font-size:20px;color:#1F2937;margin-top:2px">{{ activityFormTitle }}</div>
+          <div style="font-size:12.5px;color:#6B7280;margin-top:4px">{{ L.k2 }}</div>
+        </div>
+        <div style="padding:24px 28px;display:flex;flex-direction:column;gap:26px">
+          <div>
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px"><span class="msr" style="font-size:18px;color:#E97171">info</span><div style="font-size:12px;font-weight:500;color:#E97171;letter-spacing:.04em">{{ L.k30 }}</div></div>
+            <div style="display:flex;flex-direction:column;gap:12px">
+              <div><div style="font-size:11.5px;color:#6B7280;margin-bottom:5px">{{ L.k72 }}</div><input value="{{ af.title }}" onChange="{{ onAfTitle }}" placeholder="{{ L.k11 }}" style="width:100%;padding:12px 14px;border-radius:13px;border:1px solid rgba(30,37,48,.12);background:rgba(255,255,255,.62);font-size:13.5px;outline:none"/></div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+                <div><div style="font-size:11.5px;color:#6B7280;margin-bottom:5px">{{ L.k43 }}</div>
+                  <select value="{{ af.cat }}" onChange="{{ onAfCat }}" style="width:100%;padding:12px 14px;border-radius:13px;border:1px solid rgba(30,37,48,.12);background:rgba(255,255,255,.62);font-size:13.5px;outline:none">
+                    <sc-for list="{{ categories }}" as="c" hint-placeholder-count="7"><option value="{{ c.id }}">{{ c.label }}</option></sc-for>
+                  </select>
+                </div>
+                <div><div style="font-size:11.5px;color:#6B7280;margin-bottom:5px">{{ L.k28 }}</div><input value="{{ af.org }}" onChange="{{ onAfOrg }}" placeholder="{{ L.k15 }}" style="width:100%;padding:12px 14px;border-radius:13px;border:1px solid rgba(30,37,48,.12);background:rgba(255,255,255,.62);font-size:13.5px;outline:none"/></div>
+              </div>
+              <div><div style="font-size:11.5px;color:#6B7280;margin-bottom:5px">{{ L.k36 }}</div><textarea value="{{ af.desc }}" onChange="{{ onAfDesc }}" placeholder="{{ L.k4 }}" rows="4" style="width:100%;padding:12px 14px;border-radius:13px;border:1px solid rgba(30,37,48,.12);background:rgba(255,255,255,.62);font-size:13.5px;outline:none;resize:none"></textarea></div>
+            </div>
+          </div>
+
+          <div>
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px"><span class="msr" style="font-size:18px;color:#E97171">event</span><div style="font-size:12px;font-weight:500;color:#E97171;letter-spacing:.04em">{{ L.k22 }}</div></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px">
+              <div><div style="font-size:11.5px;color:#6B7280;margin-bottom:5px">{{ L.k54 }}</div><input type="date" value="{{ afDateISO }}" onChange="{{ onAfDate }}" style="width:100%;padding:11px 13px;border-radius:13px;border:1px solid rgba(30,37,48,.12);background:rgba(255,255,255,.62);font-size:13.5px;font-family:inherit;color:#1F2937;outline:none;cursor:pointer"/><div style="font-size:11px;color:#9CA3AF;margin-top:4px">{{ afDateThai }}</div></div>
+              <div><div style="font-size:11.5px;color:#6B7280;margin-bottom:5px">{{ L.k49 }}</div><input value="{{ af.hours }}" onChange="{{ onAfHours }}" placeholder="6" style="width:100%;padding:12px 14px;border-radius:13px;border:1px solid rgba(30,37,48,.12);background:rgba(255,255,255,.62);font-size:13.5px;outline:none"/></div>
+              <div><div style="font-size:11.5px;color:#6B7280;margin-bottom:5px">{{ L.k41 }}</div><input value="{{ af.seatsTotal }}" onChange="{{ onAfSeats }}" placeholder="50" style="width:100%;padding:12px 14px;border-radius:13px;border:1px solid rgba(30,37,48,.12);background:rgba(255,255,255,.62);font-size:13.5px;outline:none"/></div>
+            </div>
+            <div style="margin-top:12px">
+              <div style="font-size:11.5px;color:#6B7280;margin-bottom:5px">{{ afEndDateLabel }}</div>
+              <input type="date" value="{{ afEndDateISO }}" onChange="{{ onAfEndDate }}" style="width:100%;padding:11px 13px;border-radius:13px;border:1px solid rgba(30,37,48,.12);background:rgba(255,255,255,.62);font-size:13.5px;font-family:inherit;color:#1F2937;outline:none;cursor:pointer"/>
+              <div style="font-size:11px;color:#9CA3AF;margin-top:4px">{{ afEndDateHint }}</div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px">
+              <div><div style="font-size:11.5px;color:#6B7280;margin-bottom:5px">{{ afTimeStartLabel }}</div><input type="time" value="{{ af.timeStart }}" onChange="{{ onAfTimeStart }}" style="width:100%;padding:11px 13px;border-radius:13px;border:1px solid rgba(30,37,48,.12);background:rgba(255,255,255,.62);font-size:13.5px;font-family:inherit;color:#1F2937;outline:none;cursor:pointer"/></div>
+              <div><div style="font-size:11.5px;color:#6B7280;margin-bottom:5px">{{ afTimeEndLabel }}</div><input type="time" value="{{ af.timeEnd }}" onChange="{{ onAfTimeEnd }}" style="width:100%;padding:11px 13px;border-radius:13px;border:1px solid rgba(30,37,48,.12);background:rgba(255,255,255,.62);font-size:13.5px;font-family:inherit;color:#1F2937;outline:none;cursor:pointer"/></div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px">
+              <div><div style="font-size:11.5px;color:#6B7280;margin-bottom:5px">{{ L.k44 }}</div><input type="date" value="{{ afRegOpenISO }}" onChange="{{ onAfRegOpen }}" style="width:100%;padding:11px 13px;border-radius:13px;border:1px solid rgba(30,37,48,.12);background:rgba(255,255,255,.62);font-size:13.5px;font-family:inherit;color:#1F2937;outline:none;cursor:pointer"/><div style="font-size:11px;color:#9CA3AF;margin-top:4px">{{ afRegOpenThai }}</div></div>
+              <div><div style="font-size:11.5px;color:#6B7280;margin-bottom:5px">{{ L.k50 }}</div><input type="date" value="{{ afRegCloseISO }}" onChange="{{ onAfRegClose }}" style="width:100%;padding:11px 13px;border-radius:13px;border:1px solid rgba(30,37,48,.12);background:rgba(255,255,255,.62);font-size:13.5px;font-family:inherit;color:#1F2937;outline:none;cursor:pointer"/><div style="font-size:11px;color:#9CA3AF;margin-top:4px">{{ afRegCloseThai }}</div></div>
+            </div>
+          </div>
+
+          <div>
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px"><span class="msr" style="font-size:18px;color:#E97171">place</span><div style="font-size:12px;font-weight:500;color:#E97171;letter-spacing:.04em">{{ L.k60 }}</div></div>
+            <div style="display:flex;flex-direction:column;gap:12px">
+              <div><div style="font-size:11.5px;color:#6B7280;margin-bottom:5px">{{ L.k37 }}</div><input value="{{ af.location }}" onChange="{{ onAfLocation }}" placeholder="{{ phLocation }}" style="width:100%;padding:12px 14px;border-radius:13px;border:1px solid rgba(30,37,48,.12);background:rgba(255,255,255,.62);font-size:13.5px;outline:none"/></div>
+              <div><div style="font-size:11.5px;color:#6B7280;margin-bottom:5px">{{ L.k17 }}</div><input value="{{ af.mapLink }}" onChange="{{ onAfMapLink }}" placeholder="https://maps.google.com/?q=..." style="width:100%;padding:12px 14px;border-radius:13px;border:1px solid rgba(30,37,48,.12);background:rgba(255,255,255,.62);font-size:13.5px;outline:none"/></div>
+            </div>
+          </div>
+
+          <div>
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px"><span class="msr" style="font-size:18px;color:#E97171">card_giftcard</span><div style="font-size:12px;font-weight:500;color:#E97171;letter-spacing:.04em">{{ L.k5 }}</div></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+              <div><div style="font-size:11.5px;color:#6B7280;margin-bottom:5px">{{ L.k12 }}</div><textarea value="{{ af.perksText }}" onChange="{{ onAfPerks }}" placeholder="{{ phPerks }}" rows="4" style="width:100%;padding:12px 14px;border-radius:13px;border:1px solid rgba(30,37,48,.12);background:rgba(255,255,255,.62);font-size:13.5px;outline:none;resize:none"></textarea></div>
+              <div><div style="font-size:11.5px;color:#6B7280;margin-bottom:5px">{{ L.k7 }}</div><textarea value="{{ af.prepText }}" onChange="{{ onAfPrep }}" placeholder="{{ phBring }}" rows="4" style="width:100%;padding:12px 14px;border-radius:13px;border:1px solid rgba(30,37,48,.12);background:rgba(255,255,255,.62);font-size:13.5px;outline:none;resize:none"></textarea></div>
+            </div>
+          </div>
+
+          <div>
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px"><span class="msr" style="font-size:18px;color:#E97171">image</span><div style="font-size:12px;font-weight:500;color:#E97171;letter-spacing:.04em">{{ L.k24 }}</div></div>
+            <div style="display:grid;grid-template-columns:2fr 1fr 1fr;gap:10px">
+              <image-slot id="{{ afHeroId }}" shape="rounded" radius="14" placeholder="{{ L.k90 }}" style="width:100%;height:120px"></image-slot>
+              <image-slot id="{{ afG1Id }}" shape="rounded" radius="14" placeholder="{{ L.k86 }}" style="width:100%;height:120px"></image-slot>
+              <image-slot id="{{ afG2Id }}" shape="rounded" radius="14" placeholder="{{ L.k87 }}" style="width:100%;height:120px"></image-slot>
+            </div>
+            <div style="margin-top:10px">
+              <div style="font-size:11.5px;color:#6B7280;margin-bottom:5px">{{ L.k21 }}</div>
+              <image-slot id="{{ afMapId }}" shape="rounded" radius="14" placeholder="{{ L.k21 }}" style="width:100%;height:120px"></image-slot>
+            </div>
+          </div>
+
+          <div style="display:flex;gap:10px;position:sticky;bottom:0;background:rgba(255,255,255,.9);backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);padding:14px 0;margin:0 -28px -22px;padding-left:28px;padding-right:28px;border-top:1px solid rgba(30,37,48,.06)">
+            <button onClick="{{ onCloseModal }}" style="flex:1;padding:12px;border-radius:13px;border:1px solid rgba(30,37,48,.12);background:rgba(255,255,255,.55);backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);font-weight:400;font-size:13.5px;cursor:pointer">{{ L.k91 }}</button>
+            <button onClick="{{ onAfSubmit }}" style="flex:2;padding:12px;border-radius:13px;border:none;background:linear-gradient(135deg,#E97171,#A774F7);color:#fff;font-weight:500;font-size:13.5px;cursor:pointer;box-shadow:0 6px 18px rgba(167,116,247,.3)">{{ L.k55 }}</button>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isConfirmDelete }}" hint-placeholder-val="{{ false }}">
+        <div style="padding:24px;text-align:center">
+          <div style="font-weight:600;font-size:16px;line-height:1.7;color:#1F2937;margin-bottom:8px">{{ L.k73 }}</div>
+          <div style="font-size:13.5px;line-height:1.7;color:#6B7280;margin-bottom:18px">{{ L.k3 }}</div>
+          <div style="display:flex;gap:8px">
+            <button onClick="{{ onCloseModal }}" style="flex:1;padding:11px;border-radius:11px;border:1px solid rgba(30,37,48,.12);background:rgba(255,255,255,.55);backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);font-weight:600;font-size:13.5px;line-height:1.7;cursor:pointer">{{ L.k91 }}</button>
+            <button onClick="{{ onConfirmDelete }}" style="flex:1;padding:11px;border-radius:11px;border:none;background:#E97171;color:#fff;font-weight:500;font-size:13.5px;line-height:1.7;cursor:pointer">{{ L.k97 }}</button>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isMsgDelete }}" hint-placeholder-val="{{ false }}">
+        <div style="padding:24px">
+          <div style="display:flex;align-items:center;gap:11px;margin-bottom:10px">
+            <div style="width:40px;height:40px;border-radius:13px;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:rgba(233,113,113,.14)"><span class="msr" style="font-size:21px;color:#C0392B">delete</span></div>
+            <div style="min-width:0">
+              <div style="font-weight:600;font-size:15.5px;line-height:1.5;color:#1F2937">{{ msgDelTitle }}</div>
+              <div style="font-size:12.5px;line-height:1.6;color:#6B7280;margin-top:2px">{{ msgDelDesc }}</div>
+            </div>
+          </div>
+          <sc-if value="{{ msgDelAdminNote }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;gap:8px;align-items:flex-start;padding:11px 13px;border-radius:12px;background:rgba(245,166,35,.12);border:1px solid rgba(245,166,35,.3);font-size:12px;line-height:1.65;color:#8A5A00;margin-bottom:12px"><span class="msr" style="font-size:17px;color:#B26B00;flex-shrink:0">gavel</span><span>{{ msgDelAdminNote }}</span></div>
+          </sc-if>
+          <div style="display:flex;flex-direction:column;gap:9px">
+            <button onClick="{{ onDelMsgMe }}" style-hover="background:rgba(255,255,255,.95);border-color:rgba(31,41,55,.2)" style="display:flex;align-items:center;gap:11px;text-align:left;padding:13px 15px;border-radius:13px;border:1px solid rgba(31,41,55,.12);background:rgba(255,255,255,.6);font-family:inherit;cursor:pointer;transition:all 180ms ease">
+              <span class="msr" style="font-size:20px;color:#6B7280;flex-shrink:0">visibility_off</span>
+              <span style="min-width:0">
+                <span style="display:block;font-weight:500;font-size:13.5px;color:#1F2937">{{ msgDelMeLabel }}</span>
+                <span style="display:block;font-size:11.5px;line-height:1.6;color:#9CA3AF;margin-top:1px">{{ msgDelMeHint }}</span>
+              </span>
+            </button>
+            <sc-if value="{{ msgDelCanAll }}" hint-placeholder-val="{{ false }}">
+              <button onClick="{{ onDelMsgAll }}" style-hover="background:rgba(233,113,113,.16)" style="display:flex;align-items:center;gap:11px;text-align:left;padding:13px 15px;border-radius:13px;border:1px solid rgba(233,113,113,.32);background:rgba(233,113,113,.1);font-family:inherit;cursor:pointer;transition:all 180ms ease">
+                <span class="msr" style="font-size:20px;color:#C0392B;flex-shrink:0">delete_forever</span>
+                <span style="min-width:0">
+                  <span style="display:block;font-weight:500;font-size:13.5px;color:#A93226">{{ msgDelAllLabel }}</span>
+                  <span style="display:block;font-size:11.5px;line-height:1.6;color:#C0724F;margin-top:1px">{{ msgDelAllHint }}</span>
+                </span>
+              </button>
+            </sc-if>
+            <sc-if value="{{ !msgDelCanAll }}" hint-placeholder-val="{{ false }}">
+              <div style="font-size:11.5px;line-height:1.65;color:#9CA3AF;padding:0 2px">{{ msgDelExpiredHint }}</div>
+            </sc-if>
+            <button onClick="{{ onCloseModal }}" style="padding:11px;border-radius:11px;border:1px solid rgba(30,37,48,.12);background:rgba(255,255,255,.55);font-family:inherit;font-weight:500;font-size:13.5px;color:#4B5563;cursor:pointer">{{ L.k91 }}</button>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isConvDelete }}" hint-placeholder-val="{{ false }}">
+        <div style="padding:24px">
+          <div style="display:flex;align-items:center;gap:11px;margin-bottom:10px">
+            <div style="width:40px;height:40px;border-radius:13px;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:rgba(233,113,113,.14)"><span class="msr" style="font-size:21px;color:#C0392B">delete_sweep</span></div>
+            <div style="min-width:0">
+              <div style="font-weight:600;font-size:15.5px;line-height:1.5;color:#1F2937">{{ convDelTitle }}</div>
+              <div style="font-size:12.5px;line-height:1.6;color:#6B7280;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ convDelName }}</div>
+            </div>
+          </div>
+          <div style="display:flex;gap:8px;align-items:flex-start;padding:11px 13px;border-radius:12px;background:rgba(122,184,255,.13);border:1px solid rgba(122,184,255,.32);font-size:12px;line-height:1.65;color:#1D4E89;margin-bottom:14px"><span class="msr" style="font-size:17px;color:#2563A8;flex-shrink:0">info</span><span>{{ convDelNote }}</span></div>
+          <div style="display:flex;gap:8px">
+            <button onClick="{{ onCloseModal }}" style="flex:1;padding:11px;border-radius:11px;border:1px solid rgba(30,37,48,.12);background:rgba(255,255,255,.55);font-family:inherit;font-weight:500;font-size:13.5px;color:#4B5563;cursor:pointer">{{ L.k91 }}</button>
+            <button onClick="{{ onConfirmConvDelete }}" style="flex:1;padding:11px;border-radius:11px;border:none;background:#E97171;color:#fff;font-family:inherit;font-weight:500;font-size:13.5px;cursor:pointer">{{ L.k97 }}</button>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isChatCleanup }}" hint-placeholder-val="{{ false }}">
+        <div style="padding:24px">
+          <div style="display:flex;align-items:center;gap:11px;margin-bottom:12px">
+            <div style="width:40px;height:40px;border-radius:13px;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:rgba(233,113,113,.14)"><span class="msr" style="font-size:21px;color:#C0392B">auto_delete</span></div>
+            <div style="min-width:0">
+              <div style="font-weight:600;font-size:15.5px;line-height:1.5;color:#1F2937">{{ cleanupTitle }}</div>
+              <div style="font-size:12.5px;line-height:1.6;color:#6B7280;margin-top:2px">{{ cleanupDesc }}</div>
+            </div>
+          </div>
+          <div style="font-size:12px;color:#6B7280;margin-bottom:7px">{{ cleanupAgeLabel }}</div>
+          <div style="display:flex;gap:7px;flex-wrap:wrap;margin-bottom:14px">
+            <sc-for list="{{ cleanupOpts }}" as="c" hint-placeholder-count="4">
+              <button onClick="{{ c.onClick }}" style="{{ c.style }}">{{ c.label }}</button>
+            </sc-for>
+          </div>
+          <div style="display:flex;gap:8px;align-items:flex-start;padding:12px 14px;border-radius:13px;background:rgba(233,113,113,.1);border:1px solid rgba(233,113,113,.3);font-size:12.5px;line-height:1.7;color:#A93226;margin-bottom:14px"><span class="msr" style="font-size:18px;color:#C0392B;flex-shrink:0">warning</span><span>{{ cleanupWarn }}</span></div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button onClick="{{ onCloseModal }}" style="flex:1;min-width:110px;padding:11px;border-radius:11px;border:1px solid rgba(30,37,48,.12);background:rgba(255,255,255,.55);font-family:inherit;font-weight:500;font-size:13.5px;color:#4B5563;cursor:pointer">{{ L.k91 }}</button>
+            <button onClick="{{ onCleanupBackup }}" style="flex:1;min-width:110px;padding:11px;border-radius:11px;border:1px solid rgba(122,184,255,.4);background:rgba(122,184,255,.14);font-family:inherit;font-weight:500;font-size:13.5px;color:#1D4E89;cursor:pointer">{{ cleanupBackupLabel }}</button>
+            <button onClick="{{ onRunCleanup }}" style="flex:1;min-width:110px;padding:11px;border-radius:11px;border:none;background:#E97171;color:#fff;font-family:inherit;font-weight:500;font-size:13.5px;cursor:pointer">{{ cleanupRunLabel }}</button>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isEvidence }}" hint-placeholder-val="{{ false }}">
+        <div style="padding:24px">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+            <div>
+              <div style="font-weight:600;font-size:16px;color:#1F2937">{{ L.k31 }}</div>
+              <div style="font-size:12.5px;color:#6B7280;margin-top:2px">{{ evidenceName }}</div>
+            </div>
+            <button onClick="{{ onCloseModal }}" title="{{ L.k96 }}" style-hover="background:rgba(255,255,255,.85);transform:translateY(-2px);box-shadow:0 6px 16px rgba(31,41,55,.14)" style="display:flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;border:none;background:rgba(31,41,55,.06);color:#4B5563;cursor:pointer;transition:all 220ms ease"><span class="msr" style="font-size:18px">close</span></button>
+          </div>
+          <sc-if value="{{ hasEvidenceImage }}" hint-placeholder-val="{{ false }}">
+            <img src="{{ evidenceImage }}" alt="" style="width:100%;height:300px;object-fit:contain;border-radius:16px;background:rgba(31,41,55,.06);display:block"/>
+            <div style="display:flex;align-items:center;gap:8px;margin-top:9px;font-size:11.5px;color:#9CA3AF"><span class="msr" style="font-size:15px;color:#63D2A1">verified</span>{{ evidenceMeta }}</div>
+          </sc-if>
+          <sc-if value="{{ !hasEvidenceImage }}" hint-placeholder-val="{{ true }}">
+            <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;width:100%;height:260px;border-radius:16px;border:1px dashed rgba(31,41,55,.16);background:rgba(31,41,55,.03);color:#9CA3AF;text-align:center;padding:20px">
+              <span class="msr" style="font-size:32px;color:#CBD5E1">image_not_supported</span>
+              <div style="font-size:12.5px;line-height:1.6">{{ evidenceEmptyLabel }}</div>
+            </div>
+          </sc-if>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px;font-size:12.5px;color:#4B5563">
+            <div style="background:rgba(31,41,55,.04);border-radius:12px;padding:11px 14px"><div style="font-size:11px;color:#9CA3AF">{{ L.k84 }}</div><div>{{ evidenceCheckin }}</div></div>
+            <div style="background:rgba(31,41,55,.04);border-radius:12px;padding:11px 14px"><div style="font-size:11px;color:#9CA3AF">{{ L.k89 }}</div><div>{{ evidenceCheckout }}</div></div>
+          </div>
+          <sc-if value="{{ evidenceDecided }}" hint-placeholder-val="{{ false }}">
+            <div style="{{ evidenceDecidedStyle }}"><span class="msr fill" style="font-size:18px">{{ evidenceDecidedIcon }}</span>{{ evidenceDecidedLabel }}</div>
+          </sc-if>
+          <sc-if value="{{ canReviewEvidence }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;gap:9px;flex-wrap:wrap;margin-top:14px">
+              <button onClick="{{ onApproveEvidence }}" style-hover="transform:translateY(-2px);box-shadow:0 10px 22px rgba(99,210,161,.34)" style="flex:1;min-width:130px;min-height:44px;display:flex;align-items:center;justify-content:center;gap:7px;padding:12px 15px;border-radius:13px;border:none;background:#63D2A1;color:#fff;font-family:inherit;font-weight:500;font-size:13px;cursor:pointer;transition:all 200ms ease"><span class="msr" style="font-size:18px">check_circle</span>{{ approveEvidenceLabel }}</button>
+              <button onClick="{{ onRejectEvidence }}" style-hover="background:rgba(233,113,113,.2)" style="flex:1;min-width:130px;min-height:44px;display:flex;align-items:center;justify-content:center;gap:7px;padding:12px 15px;border-radius:13px;border:1px solid rgba(233,113,113,.36);background:rgba(233,113,113,.1);color:#C2410C;font-family:inherit;font-weight:500;font-size:13px;cursor:pointer;transition:all 200ms ease"><span class="msr" style="font-size:18px">report</span>{{ rejectEvidenceLabel }}</button>
+              <sc-if value="{{ hasEvidenceFile }}" hint-placeholder-val="{{ false }}"><button onClick="{{ onDownloadEvidence }}" title="{{ downloadEvidenceLabel }}" aria-label="{{ downloadEvidenceLabel }}" class="nuv-iconbtn" style-hover="background:rgba(255,255,255,.95)" style="min-height:44px;display:flex;align-items:center;justify-content:center;gap:7px;padding:12px 15px;border-radius:13px;border:1px solid rgba(31,41,55,.12);background:rgba(255,255,255,.7);color:#4B5563;font-family:inherit;font-size:13px;cursor:pointer;transition:all 200ms ease"><span class="msr" style="font-size:18px">download</span><span class="nuv-blabel">{{ downloadEvidenceLabel }}</span></button></sc-if>
+            </div>
+          </sc-if>
+          <sc-if value="{{ evidenceNoAction }}" hint-placeholder-val="{{ false }}">
+            <div style="margin-top:14px;padding:12px 15px;border-radius:13px;background:rgba(245,166,35,.13);border:1px solid rgba(245,166,35,.26);color:#8a5205;font-size:12.5px;line-height:1.65">{{ evidenceNoActionText }}</div>
+          </sc-if>
+          <button onClick="{{ onCloseModal }}" style="margin-top:12px;width:100%;min-height:44px;padding:12px;border-radius:13px;border:none;background:#1F2937;color:#fff;font-weight:500;font-size:13.5px;cursor:pointer">{{ L.k96 }}</button>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isConfirmRegister }}" hint-placeholder-val="{{ false }}">
+        <div style="padding:26px">
+          <div style="display:flex;gap:14px;align-items:flex-start;margin-bottom:16px">
+            <div style="width:46px;height:46px;border-radius:14px;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:rgba(233,113,113,.16)"><span class="msr fill" style="font-size:24px;color:#E97171">how_to_reg</span></div>
+            <div style="flex:1;min-width:0">
+              <div style="font-weight:600;font-size:17px;color:#1F2937">{{ L.k32 }}</div>
+              <div style="font-size:12.5px;color:#6B7280;margin-top:2px">{{ L.k10 }}</div>
+            </div>
+          </div>
+          <div style="background:rgba(31,41,55,.04);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:9px">
+            <div style="font-weight:500;font-size:14.5px;color:#1F2937;line-height:1.5">{{ activity.title }}</div>
+            <div style="display:flex;flex-direction:column;gap:6px;font-size:12.5px;color:#4B5563">
+              <div style="display:flex;align-items:center;gap:7px"><span class="msr" style="font-size:17px;color:#9CA3AF">event</span>{{ activity.date }}</div>
+              <div style="display:flex;align-items:center;gap:7px"><span class="msr" style="font-size:17px;color:#9CA3AF">place</span>{{ activity.location }}</div>
+              <div style="display:flex;align-items:center;gap:7px"><span class="msr" style="font-size:17px;color:#9CA3AF">schedule</span>{{ L.k92 }} {{ activity.hours }} {{ L.k49 }}</div>
+              <div style="display:flex;align-items:center;gap:7px"><span class="msr" style="font-size:17px;color:#9CA3AF">event_seat</span>{{ activity.seatsLeftLabel }}</div>
+            </div>
+          </div>
+          <div style="display:flex;gap:8px;align-items:flex-start;background:rgba(245,166,35,.1);border-radius:12px;padding:11px 14px;margin-top:12px">
+            <span class="msr" style="font-size:17px;color:#B45309;flex-shrink:0">info</span>
+            <div style="font-size:11.5px;line-height:1.7;color:#92400E">{{ L.k1 }}</div>
+          </div>
+          <div style="display:flex;gap:10px;margin-top:18px">
+            <button onClick="{{ onCloseModal }}" style="flex:1;padding:12px;border-radius:13px;border:1px solid rgba(31,41,55,.12);background:rgba(255,255,255,.55);font-weight:400;font-size:13.5px;cursor:pointer">{{ L.k91 }}</button>
+            <button onClick="{{ onConfirmRegister }}" style="flex:2;padding:12px;border-radius:13px;border:none;background:linear-gradient(135deg,#E97171,#A774F7);color:#fff;font-weight:500;font-size:13.5px;cursor:pointer;box-shadow:0 6px 18px rgba(233,113,113,.3)">{{ L.k32 }}</button>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isCancelRequest }}" hint-placeholder-val="{{ false }}">
+        <div style="padding:24px">
+          <div style="font-weight:600;font-size:16px;color:#1F2937;margin-bottom:4px">{{ L.k56 }}</div>
+          <div style="font-size:12.5px;color:#6B7280;margin-bottom:14px">{{ reg.activity.title }}</div>
+          <textarea value="{{ cancelReason }}" onChange="{{ onCancelReasonChange }}" placeholder="{{ L.k23 }}" rows="4" style="width:100%;padding:12px 14px;border-radius:12px;border:1px solid rgba(30,37,48,.12);font-size:13.5px;outline:none;resize:none"></textarea>
+          <div style="display:flex;gap:8px;margin-top:14px">
+            <button onClick="{{ onCloseModal }}" style="flex:1;padding:11px;border-radius:11px;border:1px solid rgba(30,37,48,.12);background:rgba(255,255,255,.55);backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);font-weight:600;font-size:13.5px;cursor:pointer">{{ L.k82 }}</button>
+            <button onClick="{{ onCancelRequestSubmit }}" style="flex:2;padding:11px;border-radius:11px;border:none;background:#E97171;color:#fff;font-weight:500;font-size:13.5px;cursor:pointer">{{ L.k57 }}</button>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isBannerForm }}" hint-placeholder-val="{{ false }}">
+        <div style="padding:24px">
+          <div style="font-weight:600;font-size:16px;color:#1F2937;margin-bottom:14px">{{ bannerFormTitle }}</div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <input value="{{ bf.title }}" onChange="{{ onBfTitle }}" placeholder="{{ L.k66 }}" style="padding:11px 14px;border-radius:11px;border:1px solid rgba(30,37,48,.12);font-size:13.5px;outline:none"/>
+            <textarea value="{{ bf.desc }}" onChange="{{ onBfDesc }}" placeholder="{{ L.k79 }}" rows="3" style="padding:11px 14px;border-radius:11px;border:1px solid rgba(30,37,48,.12);font-size:13.5px;outline:none;resize:none"></textarea>
+            <input value="{{ bf.date }}" onChange="{{ onBfDate }}" placeholder="{{ L.k13 }}" style="padding:11px 14px;border-radius:11px;border:1px solid rgba(30,37,48,.12);font-size:13.5px;outline:none"/>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+              <div>
+                <div style="font-size:11.5px;color:#6B7280;margin-bottom:6px">{{ L.k58 }}</div>
+                <input value="{{ bf.ctaLabel }}" onChange="{{ onBfCtaLabel }}" placeholder="{{ L.k52 }}" style="width:100%;padding:11px 14px;border-radius:11px;border:1px solid rgba(30,37,48,.12);font-size:13px;outline:none"/>
+              </div>
+              <div>
+                <div style="font-size:11.5px;color:#6B7280;margin-bottom:6px">{{ L.k51 }}</div>
+                <select value="{{ bf.ctaTarget }}" onChange="{{ onBfCtaTarget }}" style="width:100%;padding:11px 14px;border-radius:11px;border:1px solid rgba(30,37,48,.12);font-size:13px;outline:none">
+                  <sc-for list="{{ ctaTargets }}" as="ct" hint-placeholder-count="5"><option value="{{ ct.id }}">{{ ct.label }}</option></sc-for>
+                </select>
+              </div>
+            </div>
+            <div>
+              <div style="font-size:11.5px;color:#6B7280;margin-bottom:6px">{{ L.k38 }}</div>
+              <image-slot id="{{ bannerSlotId }}" shape="rounded" radius="14" placeholder="{{ L.k19 }}" style="width:100%;height:140px"></image-slot>
+              <input value="{{ bf.image }}" onChange="{{ onBfImage }}" placeholder="{{ L.k9 }}" style="width:100%;margin-top:8px;padding:11px 14px;border-radius:11px;border:1px solid rgba(30,37,48,.12);font-size:13px;outline:none"/>
+            </div>
+            <select value="{{ bf.type }}" onChange="{{ onBfType }}" style="padding:11px 14px;border-radius:11px;border:1px solid rgba(30,37,48,.12);font-size:13.5px;outline:none">
+              <option value="general">{{ L.k61 }}</option>
+              <option value="update">{{ L.k59 }}</option>
+              <option value="reminder">{{ L.k74 }}</option>
+            </select>
+          </div>
+          <div style="display:flex;gap:8px;margin-top:16px">
+            <button onClick="{{ onCloseModal }}" style="flex:1;padding:11px;border-radius:11px;border:1px solid rgba(30,37,48,.12);background:rgba(255,255,255,.55);backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);font-weight:600;font-size:13.5px;cursor:pointer">{{ L.k91 }}</button>
+            <button onClick="{{ onBfSubmit }}" style="flex:2;padding:11px;border-radius:11px;border:none;background:#1F2937;color:#fff;font-weight:500;font-size:13.5px;cursor:pointer">{{ L.k93 }}</button>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isQrScan }}" hint-placeholder-val="{{ false }}">
+        <div class="nuv-scan-pane" style="padding:24px">
+          <div style="font-weight:600;font-size:16px;line-height:1.7;color:#1F2937;text-align:center;margin-bottom:4px">{{ qrScanTitle }}</div>
+          <div style="font-size:12.5px;line-height:1.7;color:#6B7280;text-align:center;margin-bottom:16px">{{ qrScanSubtitle }}</div>
+          <div class="nuv-scan-cam" style="position:relative;width:100%;aspect-ratio:4/3;max-height:300px;border-radius:22px;overflow:hidden;background:#12101a;border:1px solid rgba(31,41,55,.12)">
+            <video ref="{{ scanVideoRef }}" autoplay="{{ true }}" muted="{{ true }}" style="width:100%;height:100%;object-fit:cover;display:block"></video>
+            <div style="position:absolute;inset:0;pointer-events:none;box-shadow:inset 0 0 0 100vmax rgba(18,16,26,.36)"></div>
+            <div style="position:absolute;left:14%;right:14%;top:14%;bottom:14%;pointer-events:none">
+              <span style="display:block;position:absolute;left:0;top:0;width:26px;height:26px;border-top:3px solid {{ scanFrameColor }};border-left:3px solid {{ scanFrameColor }};border-top-left-radius:12px"></span>
+              <span style="display:block;position:absolute;right:0;top:0;width:26px;height:26px;border-top:3px solid {{ scanFrameColor }};border-right:3px solid {{ scanFrameColor }};border-top-right-radius:12px"></span>
+              <span style="display:block;position:absolute;left:0;bottom:0;width:26px;height:26px;border-bottom:3px solid {{ scanFrameColor }};border-left:3px solid {{ scanFrameColor }};border-bottom-left-radius:12px"></span>
+              <span style="display:block;position:absolute;right:0;bottom:0;width:26px;height:26px;border-bottom:3px solid {{ scanFrameColor }};border-right:3px solid {{ scanFrameColor }};border-bottom-right-radius:12px"></span>
+            </div>
+            <sc-if value="{{ scanHit }}" hint-placeholder-val="{{ false }}">
+              <div style="position:absolute;left:14%;right:14%;top:14%;bottom:14%;border-radius:18px;box-shadow:0 0 0 3px #63D2A1,0 0 26px rgba(99,210,161,.65);background:rgba(99,210,161,.14);pointer-events:none;animation:nuvHitFlash 260ms ease-out"></div>
+            </sc-if>
+            <sc-if value="{{ scanBusy }}" hint-placeholder-val="{{ true }}">
+              <div style="position:absolute;left:14%;right:14%;height:2px;top:15%;background:#63D2A1;box-shadow:0 0 12px #63D2A1;animation:nuScan 2.6s ease-in-out infinite"></div>
+            </sc-if>
+            <sc-if value="{{ scanMsgCenter }}" hint-placeholder-val="{{ false }}">
+              <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:26px;background:rgba(18,16,26,.62);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);text-align:center">
+                <span class="msr" style="font-size:34px;color:{{ scanMsgColor }}">{{ scanMsgIcon }}</span>
+                <span style="font-size:12.5px;line-height:1.75;color:#fff;max-width:280px">{{ scanMsg }}</span>
+              </div>
+            </sc-if>
+            <sc-if value="{{ scanMsgBar }}" hint-placeholder-val="{{ false }}">
+              <div style="position:absolute;left:12px;right:12px;bottom:12px;padding:11px 13px;border-radius:14px;background:rgba(18,16,26,.72);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);display:flex;align-items:center;gap:9px">
+                <span class="msr" style="font-size:18px;color:{{ scanMsgColor }}">{{ scanMsgIcon }}</span>
+                <span style="font-size:12px;line-height:1.6;color:#fff;text-align:left">{{ scanMsg }}</span>
+              </div>
+            </sc-if>
+          </div>
+          <div style="font-size:11.5px;line-height:1.7;color:#9CA3AF;text-align:center;margin-top:14px">{{ scanHint }}</div>
+          <sc-if value="{{ scanShowOpenTab }}" hint-placeholder-val="{{ false }}">
+            <div class="nuv-scan-tabbtns" style="margin-top:18px;display:flex;flex-direction:column;gap:9px">
+              <button onClick="{{ onScanPopup }}" style-hover="transform:translateY(-2px);box-shadow:0 12px 26px rgba(167,116,247,.4)" style="display:flex;align-items:center;justify-content:center;gap:8px;padding:14px 18px;border-radius:14px;border:none;background:linear-gradient(135deg,#E97171,#A774F7);color:#fff;font-family:inherit;font-weight:600;font-size:13.5px;cursor:pointer;box-shadow:0 8px 20px rgba(167,116,247,.28);transition:all 200ms ease"><span class="msr" style="font-size:19px">open_in_new</span>{{ scanOpenTabLabel }}</button>
+              <button onClick="{{ onScanRetry }}" style-hover="background:rgba(255,255,255,.95)" style="display:flex;align-items:center;justify-content:center;gap:6px;padding:11px 15px;border-radius:13px;border:1px solid rgba(31,41,55,.14);background:transparent;color:#6B7280;font-family:inherit;font-size:12.5px;cursor:pointer;transition:all 200ms ease"><span class="msr" style="font-size:17px">refresh</span>{{ scanRetryLabel }}</button>
+              <div style="font-size:11px;color:#9CA3AF;line-height:1.7;text-align:center;padding:0 4px">{{ scanOpenTabHint }}</div>
+            </div>
+          </sc-if>
+          <div style="margin-top:24px;padding-top:18px;border-top:1px solid rgba(31,41,55,.08);display:flex;flex-direction:column;gap:8px">
+            <div style="font-size:10.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#B6B3BE">{{ scanFallbackTitle }}</div>
+            <label style-hover="background:rgba(255,255,255,.9);border-color:rgba(167,116,247,.35)" style="display:flex;align-items:center;gap:10px;padding:11px 13px;border-radius:13px;border:1px solid rgba(31,41,55,.1);background:transparent;cursor:pointer;transition:all 200ms ease">
+              <span class="msr" style="font-size:19px;color:#9CA3AF">add_photo_alternate</span>
+              <span style="flex:1;min-width:0">
+                <span style="display:block;font-size:12px;font-weight:500;color:#4B5563;line-height:1.5">{{ scanUploadLabel }}</span>
+                <span style="display:block;font-size:10.5px;color:#B6B3BE;line-height:1.6;margin-top:1px">{{ scanUploadHint }}</span>
+              </span>
+              <input type="file" accept="image/*" onChange="{{ onScanFile }}" style="display:none"/>
+            </label>
+            <sc-if value="{{ scanShowManual }}" hint-placeholder-val="{{ false }}">
+              <button onClick="{{ onQrConfirm }}" style-hover="background:rgba(167,116,247,.08);border-color:rgba(167,116,247,.35)" style="display:flex;align-items:center;gap:10px;width:100%;padding:11px 13px;border-radius:13px;border:1px solid rgba(31,41,55,.1);background:transparent;color:#4B5563;font-family:inherit;font-weight:500;font-size:12px;line-height:1.5;text-align:left;cursor:pointer;transition:all 200ms ease"><span class="msr" style="font-size:19px;color:#9CA3AF">task_alt</span>{{ scanManualLabel }}</button>
+            </sc-if>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isReview }}" hint-placeholder-val="{{ false }}">
+        <div style="padding:24px">
+          <div style="font-weight:600;font-size:16px;line-height:1.7;color:#1F2937;margin-bottom:4px">{{ L.k46 }}</div>
+          <div style="font-size:12.5px;line-height:1.7;color:#6B7280;margin-bottom:14px">{{ activity.title }}</div>
+          <div style="display:flex;gap:8px;justify-content:center;margin-bottom:14px">
+            <sc-for list="{{ starRow }}" as="st" hint-placeholder-count="5">
+              <span onClick="{{ st.onClick }}" class="{{ st.cls }}" style="cursor:pointer;font-size:32px;color:{{ st.color }};transition:color 160ms ease,transform 160ms ease" style-hover="transform:scale(1.12)">star</span>
+            </sc-for>
+          </div>
+          <textarea value="{{ reviewComment }}" onChange="{{ onReviewComment }}" placeholder="{{ L.k20 }}" rows="3" style="width:100%;padding:12px 14px;border-radius:12px;border:1px solid rgba(30,37,48,.12);font-size:13.5px;line-height:1.7;outline:none;resize:none"></textarea>
+          <button onClick="{{ onReviewSubmit }}" style="margin-top:14px;width:100%;padding:11px;border-radius:12px;border:none;background:#1F2937;color:#fff;font-weight:500;font-size:13.5px;line-height:1.7;cursor:pointer">{{ L.k85 }}</button>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isCertPreview }}" hint-placeholder-val="{{ false }}">
+        <div style="padding:24px">
+          <div style="border:2px solid #A774F7;border-radius:16px;padding:30px;text-align:center;background:linear-gradient(135deg,rgba(167,116,247,.06),rgba(233,113,113,.06))">
+            <div style="font-size:11px;line-height:1.7;letter-spacing:.1em;color:#A774F7;font-weight:500">CERTIFICATE OF VOLUNTEERING</div>
+            <div style="font-weight:600;font-size:20px;line-height:1.7;color:#1F2937;margin:14px 0 6px">{{ L.k39 }}</div>
+            <div style="font-size:13px;line-height:1.7;color:#6B7280">{{ L.k26 }}</div>
+            <div style="font-weight:500;font-size:17px;line-height:1.7;color:#1F2937;margin-top:8px">{{ studentName }}</div>
+            <div style="font-size:13px;line-height:1.7;color:#6B7280;margin-top:8px">{{ L.k33 }} "{{ reg.activity.title }}"</div>
+            <div style="font-size:11.5px;line-height:1.7;color:#94A3B8;margin-top:12px">{{ L.k34 }}{{ certId }}</div>
+          </div>
+          <div style="display:flex;gap:8px;margin-top:16px">
+            <button onClick="{{ onCloseModal }}" style="flex:1;padding:11px;border-radius:11px;border:1px solid rgba(30,37,48,.12);background:rgba(255,255,255,.55);backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);font-weight:600;font-size:13.5px;line-height:1.7;cursor:pointer">{{ L.k96 }}</button>
+            <button style="flex:1;padding:11px;border-radius:11px;border:none;background:#A774F7;color:#fff;font-weight:500;font-size:13.5px;line-height:1.7;cursor:pointer">{{ L.k83 }}</button>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isAddUser }}" hint-placeholder-val="{{ false }}">
+        <div>
+          <div style="display:flex;align-items:center;gap:13px;padding:22px 24px 18px;border-bottom:1px solid rgba(30,37,48,.07)">
+            <div style="display:flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:14px;background:linear-gradient(135deg,#E97171,#A774F7);color:#fff;flex-shrink:0"><span class="msr" style="font-size:22px">{{ auHeaderIcon }}</span></div>
+            <div style="flex:1;min-width:0">
+              <div style="font-weight:600;font-size:16px;line-height:1.5;color:#1F2937">{{ addUserTitle }}</div>
+              <div style="font-size:12px;color:#9CA3AF;margin-top:2px">{{ auSubtitle }}</div>
+            </div>
+            <button onClick="{{ onCloseModal }}" style-hover="background:rgba(31,41,55,.08)" style="display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:10px;border:none;background:transparent;color:#9CA3AF;cursor:pointer;transition:background 160ms ease"><span class="msr" style="font-size:20px">close</span></button>
+          </div>
+          <div style="padding:20px 24px;display:flex;flex-direction:column;gap:16px">
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px">
+              <label style="display:flex;flex-direction:column;gap:6px">
+                <span style="font-size:12px;font-weight:500;color:#4B5563">{{ auNameLabel }}<span style="color:#E97171"> *</span></span>
+                <input value="{{ au.name }}" onChange="{{ onAuName }}" placeholder="{{ auNamePh }}" style="padding:11px 13px;border-radius:12px;border:1px solid rgba(30,37,48,.12);font-family:inherit;font-size:13.5px;color:#1F2937;outline:none;background:rgba(255,255,255,.7)"/>
+              </label>
+              <label style="display:flex;flex-direction:column;gap:6px">
+                <span style="font-size:12px;font-weight:500;color:#4B5563">{{ auEmailLabel }}<span style="color:#E97171"> *</span></span>
+                <input value="{{ au.email }}" onChange="{{ onAuEmail }}" placeholder="name@nu.ac.th" style="padding:11px 13px;border-radius:12px;border:1px solid rgba(30,37,48,.12);font-family:inherit;font-size:13.5px;color:#1F2937;outline:none;background:rgba(255,255,255,.7)"/>
+              </label>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <span style="font-size:12px;font-weight:500;color:#4B5563">{{ auRoleLabel }}<span style="color:#E97171"> *</span></span>
+              <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:9px">
+                <sc-for list="{{ auRoleCards }}" as="r" hint-placeholder-count="3">
+                  <div onClick="{{ r.onClick }}" style="{{ r.style }}">
+                    <span class="msr" style="font-size:20px;color:{{ r.iconColor }}">{{ r.icon }}</span>
+                    <div style="min-width:0">
+                      <div style="font-size:13px;font-weight:500;color:{{ r.labelColor }}">{{ r.label }}</div>
+                      <div style="font-size:10.5px;color:#9CA3AF;line-height:1.5">{{ r.hint }}</div>
+                    </div>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+            <label style="display:flex;flex-direction:column;gap:6px">
+              <span style="font-size:12px;font-weight:500;color:#4B5563">{{ auFacultyLabel }}</span>
+              <select value="{{ au.faculty }}" onChange="{{ onAuFaculty }}" style="padding:11px 13px;border-radius:12px;border:1px solid rgba(30,37,48,.12);font-family:inherit;font-size:13.5px;color:#1F2937;outline:none;background:rgba(255,255,255,.7)">
+                <option value="">{{ auFacultyPh }}</option>
+                <sc-for list="{{ facultyOptions }}" as="f" hint-placeholder-count="6">
+                  <option value="{{ f.name }}">{{ f.name }}</option>
+                </sc-for>
+              </select>
+            </label>
+            <sc-if value="{{ auHasErr }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;align-items:center;gap:8px;padding:11px 14px;border-radius:12px;background:rgba(233,113,113,.12);border:1px solid rgba(233,113,113,.3);color:#c2410c;font-size:12.5px"><span class="msr" style="font-size:17px">error</span>{{ auErr }}</div>
+            </sc-if>
+            <div style="display:flex;align-items:center;gap:8px;font-size:11.5px;color:#9CA3AF"><span class="msr" style="font-size:16px">mail</span>{{ auInviteNote }}</div>
+          </div>
+          <div style="display:flex;gap:9px;padding:0 24px 22px">
+            <button onClick="{{ onCloseModal }}" style="flex:1;padding:12px;border-radius:12px;border:1px solid rgba(30,37,48,.12);background:rgba(255,255,255,.6);font-family:inherit;font-weight:500;font-size:13.5px;color:#4B5563;cursor:pointer">{{ L.k91 }}</button>
+            <button onClick="{{ onAuSubmit }}" style="flex:2;display:flex;align-items:center;justify-content:center;gap:7px;padding:12px;border-radius:12px;border:none;background:linear-gradient(135deg,#E97171,#A774F7);color:#fff;font-family:inherit;font-weight:500;font-size:13.5px;cursor:pointer;box-shadow:0 8px 22px rgba(167,116,247,.32)"><span class="msr" style="font-size:18px">check</span>{{ auSubmitLabel }}</button>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isCategoryEdit }}" hint-placeholder-val="{{ false }}">
+        <div style="padding:24px">
+          <div style="font-weight:600;font-size:16px;line-height:1.7;color:#1F2937;margin-bottom:14px">{{ categoryFormTitle }}</div>
+          <input value="{{ ce.label }}" onChange="{{ onCeLabel }}" placeholder="{{ L.k68 }}" style="width:100%;padding:11px 14px;border-radius:11px;border:1px solid rgba(30,37,48,.12);font-size:13.5px;line-height:1.7;outline:none;margin-bottom:12px"/>
+          <div style="display:flex;gap:8px">
+            <sc-for list="{{ colorSwatches }}" as="sw" hint-placeholder-count="7">
+              <div onClick="{{ sw.onClick }}" style="{{ sw.style }}"></div>
+            </sc-for>
+          </div>
+          <div style="display:flex;gap:8px;margin-top:18px">
+            <button onClick="{{ onCloseModal }}" style="flex:1;padding:11px;border-radius:11px;border:1px solid rgba(30,37,48,.12);background:rgba(255,255,255,.55);backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);font-weight:600;font-size:13.5px;line-height:1.7;cursor:pointer">{{ L.k91 }}</button>
+            <button onClick="{{ onCeSubmit }}" style="flex:2;padding:11px;border-radius:11px;border:none;background:#1F2937;color:#fff;font-weight:500;font-size:13.5px;line-height:1.7;cursor:pointer">{{ L.k93 }}</button>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isFacultyGraph }}" hint-placeholder-val="{{ false }}">
+        <div>
+          <div style="display:flex;align-items:center;gap:13px;padding:22px 24px 18px;border-bottom:1px solid rgba(30,37,48,.07)">
+            <div style="display:flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:14px;background:linear-gradient(135deg,#1F2937,#A774F7);color:#fff;flex-shrink:0"><span class="msr" style="font-size:22px">bar_chart</span></div>
+            <div style="flex:1;min-width:0">
+              <div style="font-weight:600;font-size:16px;line-height:1.5;color:#1F2937">{{ fgTitle }}</div>
+              <div style="font-size:12px;color:#9CA3AF;margin-top:2px">{{ fgSubtitle }}</div>
+            </div>
+            <button onClick="{{ onCloseModal }}" style-hover="background:rgba(31,41,55,.08)" style="display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:10px;border:none;background:transparent;color:#9CA3AF;cursor:pointer;transition:background 160ms ease"><span class="msr" style="font-size:20px">close</span></button>
+          </div>
+          <div style="padding:18px 24px 6px;display:flex;gap:10px;flex-wrap:wrap">
+            <sc-for list="{{ fgStats }}" as="s" hint-placeholder-count="3">
+              <div style="flex:1;min-width:120px;padding:13px 15px;border-radius:15px;background:rgba(255,255,255,.7);border:1px solid rgba(30,37,48,.07)">
+                <div style="font-size:11px;color:#9CA3AF">{{ s.label }}</div>
+                <div style="font-size:19px;font-weight:600;color:{{ s.color }};margin-top:3px">{{ s.value }}</div>
+              </div>
+            </sc-for>
+          </div>
+          <div style="padding:14px 24px 4px;display:flex;gap:16px;flex-wrap:wrap;font-size:11.5px;color:#6B7280">
+            <div style="display:flex;align-items:center;gap:6px"><span style="width:10px;height:10px;border-radius:3px;background:#63D2A1"></span>{{ fgLegendPassed }}</div>
+            <div style="display:flex;align-items:center;gap:6px"><span style="width:10px;height:10px;border-radius:3px;background:rgba(31,41,55,.13)"></span>{{ fgLegendJoined }}</div>
+          </div>
+          <div style="padding:8px 24px 20px;max-height:340px;overflow-y:auto;display:flex;flex-direction:column;gap:11px">
+            <sc-for list="{{ fgRows }}" as="f" hint-placeholder-count="8">
+              <div style="{{ f.rowStyle }}">
+                <div style="display:flex;align-items:center;gap:9px;margin-bottom:7px">
+                  <span style="width:9px;height:9px;border-radius:50%;background:{{ f.color }};border:1px solid rgba(31,41,55,.15);flex-shrink:0"></span>
+                  <div style="flex:1;min-width:0;font-size:12.5px;font-weight:{{ f.weight }};color:#1F2937;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ f.name }}</div>
+                  <div style="font-size:12.5px;font-weight:600;color:{{ f.rateColor }};flex-shrink:0">{{ f.rate }}%</div>
+                </div>
+                <div style="position:relative;height:10px;border-radius:999px;background:rgba(31,41,55,.08);overflow:hidden">
+                  <div style="position:absolute;inset:0;width:{{ f.joinedPct }}%;background:rgba(31,41,55,.13)"></div>
+                  <div style="position:absolute;inset:0;width:{{ f.passedPct }}%;background:linear-gradient(90deg,#63D2A1,#3FBF8C)"></div>
+                </div>
+                <div style="display:flex;gap:14px;margin-top:6px;font-size:11px;color:#9CA3AF">
+                  <span>{{ f.studentsLabel }}</span><span>{{ f.joinedLabel }}</span><span>{{ f.passedLabel }}</span>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </sc-if>
+
+    </div>
+  </div>
+</sc-if>
+
+<sc-if value="{{ showAnnouncement }}" hint-placeholder-val="{{ false }}">
+  <div style="position:fixed;inset:0;background:rgba(30,37,48,.45);z-index:110;display:flex;align-items:center;justify-content:center;padding:20px">
+    <div style="animation:nuvPop .22s ease;position:relative;overflow:hidden;background:#fff;border-radius:26px;max-width:432px;width:100%;text-align:center;box-shadow:0 26px 70px rgba(30,37,48,.3)">
+      <div style="position:absolute;top:0;left:0;right:0;height:104px;background:linear-gradient(135deg,rgba(233,113,113,.14),rgba(167,116,247,.14))"></div>
+      <div style="position:relative;padding:30px 30px 26px">
+        <div style="width:60px;height:60px;border-radius:19px;background:linear-gradient(135deg,#E97171,#A774F7);margin:0 auto 18px;display:flex;align-items:center;justify-content:center;color:#fff;box-shadow:0 12px 28px rgba(167,116,247,.4)"><span class="msr fill" style="font-size:29px">campaign</span></div>
+        <div style="font-size:11px;font-weight:500;letter-spacing:.04em;color:#A774F7;margin-bottom:7px">{{ annStepLabel }}</div>
+        <div style="font-weight:600;font-size:18px;line-height:1.5;color:#1F2937;margin-bottom:9px;text-wrap:pretty">{{ annTitle }}</div>
+        <div style="font-size:13.5px;color:#6B7280;line-height:1.75;text-wrap:pretty;max-width:330px;margin:0 auto">{{ annBody }}</div>
+        <div style="display:flex;justify-content:center;align-items:center;gap:6px;margin:20px 0 22px">
+          <sc-for list="{{ annDots }}" as="d" hint-placeholder-count="2"><div style="{{ d.style }}"></div></sc-for>
+        </div>
+        <button onClick="{{ onAnnNext }}" style-hover="transform:translateY(-2px);box-shadow:0 16px 34px rgba(167,116,247,.42)" style="width:100%;display:flex;align-items:center;justify-content:center;gap:8px;padding:13px;border-radius:14px;border:none;background:linear-gradient(135deg,#E97171,#A774F7);color:#fff;font-family:inherit;font-weight:500;font-size:14px;cursor:pointer;transition:all 220ms ease;box-shadow:0 10px 26px rgba(167,116,247,.32)">{{ annBtnLabel }}<span class="msr" style="font-size:19px">{{ annBtnIcon }}</span></button>
+        <sc-if value="{{ annShowSkip }}" hint-placeholder-val="{{ true }}">
+          <button onClick="{{ onAnnSkip }}" style-hover="color:#6B7280" style="margin-top:12px;border:none;background:transparent;color:#9CA3AF;font-family:inherit;font-size:12.5px;cursor:pointer;transition:color 160ms ease">{{ annSkipLabel }}</button>
+        </sc-if>
+      </div>
+    </div>
+  </div>
+</sc-if>
+
+<sc-if value="{{ hasToast }}" hint-placeholder-val="{{ false }}">
+  <div style="position:fixed;bottom:26px;left:50%;transform:translateX(-50%);z-index:200;display:flex;align-items:center;gap:14px;max-width:calc(100vw - 32px);background:#1F2937;color:#fff;padding:13px 16px 13px 22px;border-radius:14px;font-size:13.5px;line-height:1.7;font-weight:600;box-shadow:0 10px 30px rgba(0,0,0,.25)">
+    <span style="min-width:0">{{ toast }}</span>
+    <sc-if value="{{ hasToastAction }}" hint-placeholder-val="{{ false }}">
+      <button onClick="{{ onToastAction }}" style-hover="background:rgba(255,255,255,.3)" style="flex-shrink:0;padding:6px 13px;border-radius:9px;border:none;background:rgba(255,255,255,.18);color:#fff;font-family:inherit;font-weight:600;font-size:12.5px;cursor:pointer;transition:background 160ms ease">{{ toastActionLabel }}</button>
+    </sc-if>
+  </div>
+</sc-if>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+var OVL_LANG = "th";
+const OVL_FALLBACK_PHOTO = 'https://images.unsplash.com/photo-1559027615-cd4628902d4a?auto=format&fit=crop&w=900&q=70';
+const OVL_EN = {"ลองโหลดแผนที่อีกครั้ง":"Try loading the map again","ไม่สามารถโหลดแผนที่ได้ในขณะนี้":"The map can’t be loaded right now","เปิดในแอป Google Maps":"Open in Google Maps","คัดลอกที่อยู่":"Copy address","คัดลอกแล้ว":"Copied","ลบข้อความนี้?":"Delete this message?","การลบไม่สามารถย้อนกลับได้หลังพ้น 5 วินาที":"Deletion is permanent after 5 seconds","คุณกำลังลบข้อความของผู้ใช้อื่นในฐานะแอดมิน · ระบบจะบันทึกลง System Log":"You are deleting another user's message as an admin · this is recorded in the System Log","ลบเฉพาะฝั่งฉัน":"Delete for me","ข้อความหายจากมุมมองของคุณ อีกฝ่ายยังเห็นอยู่":"Hidden from your view only — the other person still sees it","ลบสำหรับทุกคน":"Delete for everyone","แทนที่ด้วยข้อความ \"ข้อความนี้ถูกลบแล้ว\" ทั้งสองฝั่ง":"Replaced with \"This message was deleted\" on both sides","ลบสำหรับทุกคนได้ภายใน 24 ชั่วโมงหลังส่งเท่านั้น":"Delete for everyone is only available within 24 hours of sending","ลบการสนทนานี้?":"Delete this conversation?","ลบเฉพาะฝั่งของคุณเท่านั้น ประวัติของอีกฝ่ายไม่ถูกแตะต้อง · ถ้ามีข้อความใหม่เข้ามา ห้องสนทนาจะกลับมาพร้อมข้อความใหม่":"Removed from your side only — the other person's history is untouched · the conversation returns if a new message arrives","ล้างข้อความแชทเก่า":"Clear old chat messages","ลบข้อความที่เก่ากว่าช่วงเวลาที่เลือกออกจากทุกห้องสนทนา":"Delete messages older than the selected period from every conversation","เก่ากว่า":"Older than","เดือน":"months","จะลบ":"Will delete","ข้อความ":"messages","ห้องสนทนา":"conversations","ย้อนกลับไม่ได้ ควรสำรองข้อมูลก่อน":"This cannot be undone — back up first","สำรองข้อมูลก่อน":"Back up first","ล้างเลย":"Clear now","อ.บางระกำ จ.พิษณุโลก":"Bang Rakam District, Phitsanulok","เกียรติบัตร":"Certificate","อาหารและเครื่องดื่มฟรี":"Free food and drinks","รองเท้าลุยน้ำ":"Water shoes","หมวก/ครีมกันแดด":"Hat / sunscreen","รออนุมัติ":"Pending","อนุมัติแล้ว":"Approved","เช็กอินแล้ว":"Checked in","รอหลักฐาน":"Awaiting evidence","เสร็จสิ้น":"Completed","ไม่มาตามนัด":"No-show"," ชม.":" hrs","ไม่พบชื่อที่ค้นหา":"No matching names","ยังไม่มีผู้สมัครกิจกรรมนี้":"No applicants for this activity yet","ส่งออก CSV":"Export CSV","รหัสนิสิต":"Student ID","สถานะ":"Status","ชั่วโมง":"Hours","พบ ":"Found "," คน จาก ":" of ","ทั้งหมด ":"All "," ที่นั่ง":" seats","ทั้งหมด":"All","ยังเข้าร่วม":"Still attending","ไม่มา/ยกเลิก":"No-show / cancelled","อัปโหลดเวลา":"Uploaded at","นิสิตยังไม่ได้อัปโหลดรูปหลักฐาน":"The student has not uploaded evidence yet","อนุมัติหลักฐาน":"Approve evidence","ให้อัปใหม่":"Request re-upload","ตรวจสอบแล้ว · อนุมัติหลักฐาน":"Reviewed · evidence approved","ตรวจสอบแล้ว · ให้อัปโหลดใหม่":"Reviewed · re-upload requested","นิสิตยังไม่ส่งหลักฐาน — ตรวจสอบได้เมื่อมีการอัปโหลดแล้ว":"No evidence submitted yet — you can review it once uploaded","สแกน QR กิจกรรม":"Scan activity QR","หันกล้องไปที่ QR ที่ผู้จัดแสดง ระบบจะเช็กอินหรือเช็กเอาต์ให้อัตโนมัติ":"Point the camera at the QR the organizer is showing — check-in or check-out happens automatically","ส่งถึง":"Send to","แอดมินระบบ":"System admin","ผู้จัด: ":"Organizer: ","เริ่มใช้งาน":"Get started","ถัดไป":"Next","ข้ามการแนะนำ":"Skip intro","ขั้นที่":"Step","จาก":"of","เพิ่มผู้ใช้ใหม่":"Add new user","แก้ไขผู้ใช้":"Edit user","ชื่อ-นามสกุล":"Full name","อีเมล":"Email","บทบาท":"Role","คณะ/หน่วยงาน":"Faculty / unit","เลือกคณะหรือหน่วยงาน":"Select a faculty or unit","เช่น ณัฐชา วิริยะกุล":"e.g. Natcha Wiriyakul","บันทึกผู้ใช้":"Save user","สร้างบัญชีผู้ใช้":"Create account","กำหนดบทบาทและสังกัดของบัญชีนี้":"Set this account's role and affiliation","แก้ไขข้อมูลบัญชีและสิทธิ์การใช้งาน":"Edit account details and permissions","ระบบจะส่งอีเมลตั้งรหัสผ่านให้ผู้ใช้อัตโนมัติ":"The system emails a password setup link automatically","กรุณากรอกชื่อ-นามสกุล":"Please enter a full name","กรุณากรอกอีเมลให้ถูกต้อง":"Please enter a valid email","ลงทะเบียนกิจกรรม สะสมชั่วโมง":"Registers for activities, earns hours","สร้างและดูแลกิจกรรม":"Creates and manages activities","ดูแลระบบทั้งหมด":"Full system access","เปรียบเทียบคณะ":"Faculty comparison","อัตราผ่านเกณฑ์ กยศ. แยกตามคณะ":"SLF pass rate by faculty","นิสิตทั้งหมด":"Total students","เข้าร่วมกิจกรรม":"Participated","ผ่านเกณฑ์แล้ว":"Met requirement","ผ่านเกณฑ์":"Met requirement","เข้าร่วม":"Participated","นิสิต ":"students "," คน":"","เข้าร่วม ":"joined ","ผ่าน ":"passed ","รายละเอียดกิจกรรม":"Activity details","ภารกิจโดยละเอียด":"Mission details","สิทธิประโยชน์พิเศษ":"What you get","ภาพบรรยากาศ":"Photos","สิ่งที่ต้องเตรียมมา":"What to bring","เปิดแผนที่":"Open map","ลงทะเบียน":"Register","นิสิตทุกชั้นปี":"All year levels","เปิดรับ":"Open","แชร์กิจกรรมนี้":"Share this activity","การลงทะเบียนต้องรอการอนุมัติจากผู้จัด":"Registration requires organizer approval","ภาพกิจกรรม":"Activity photo","เปิดแผนที่สถานที่จัดกิจกรรม":"Open the venue map","เข้าสู่ระบบเพื่อลงทะเบียนกิจกรรมนี้":"Sign in to register for this activity","ปิด":"Close","แชร์กิจกรรม":"Share activity","คัดลอกลิงก์":"Copy link","รายชื่อผู้สมัคร":"Applicants","ติดต่อแอดมิน / ผู้จัดกิจกรรม":"Contact admin / organizer","ส่งข้อความ":"Send message","ผู้จัดกิจกรรม":"Organizer","กรอกให้ครบถ้วน — ข้อมูลนี้จะแสดงในหน้ารายละเอียดกิจกรรมของนิสิต":"Complete every field — students see this on the activity page","01 · ข้อมูลพื้นฐาน":"01 · Basics","ชื่อกิจกรรม":"Activity name","หมวดหมู่กิจกรรม":"Category","หน่วยงาน/ชมรมผู้จัด":"Organizing unit / club","02 · วันเวลาและที่นั่ง":"02 · Date & seats","วันจัดกิจกรรม":"Activity date","ชั่วโมงจิตอาสา":"Volunteer hours","จำนวนที่รับสมัคร":"Seats available","วันเปิดรับสมัคร":"Registration opens","วันปิดรับสมัคร":"Registration closes","03 · สถานที่":"03 · Venue","สถานที่จัดกิจกรรม":"Venue","ลิงก์แผนที่ (Google Maps)":"Map link (Google Maps)","04 · สิ่งที่ได้รับและสิ่งที่ต้องเตรียม":"04 · Benefits & what to bring","สิ่งที่ได้รับ (บรรทัดละ 1 ข้อ)":"Benefits (one per line)","สิ่งที่ต้องเตรียมมา (บรรทัดละ 1 ข้อ)":"What to bring (one per line)","05 · ภาพประกอบกิจกรรม":"05 · Activity images","ยกเลิก":"Cancel","บันทึกกิจกรรม":"Save activity","ยืนยันการลบ":"Confirm delete","คุณต้องการลบกิจกรรมนี้ใช่หรือไม่? การลบไม่สามารถย้อนกลับได้":"Delete this activity? This cannot be undone.","ลบ":"Delete","หลักฐานการเข้าร่วม":"Participation evidence","เวลาเข้า":"Check-in time","เวลาออก":"Check-out time","ยืนยันการลงทะเบียน":"Confirm registration","โปรดตรวจสอบรายละเอียดก่อนยืนยัน":"Please review the details before confirming","ได้รับ":"Earn","ชั่วโมงจิตอาสา ":"volunteer hours ","เมื่อยืนยันแล้วคำขอจะถูกส่งไปยังผู้จัดเพื่อรออนุมัติ หากต้องการยกเลิกภายหลังต้องส่งคำขอยกเลิกพร้อมเหตุผล":"Once confirmed, your request goes to the organizer for approval. Cancelling later requires a request with a reason.","ยกเลิกกิจกรรม":"Cancel activity","ไม่ยกเลิก":"Keep it","ส่งคำขอยกเลิก":"Send cancellation request","ข้อความบนปุ่ม":"Button label","ปุ่มนี้พาไปที่":"Button links to","ภาพประกอบแบนเนอร์":"Banner image","ประกาศทั่วไป":"General announcement","อัพเดท (ระบบ)":"System update","เตือนความจำ":"Reminder","บันทึก":"Save","กำลังสแกน...":"Scanning...","จำลองสแกนสำเร็จ":"Simulate successful scan","ให้คะแนนกิจกรรม":"Rate this activity","ส่งรีวิว":"Submit review","มหาวิทยาลัยนเรศวร":"Naresuan University","มอบให้เพื่อรับรองว่า":"This certifies that","ได้เข้าร่วมกิจกรรม":"participated in","รหัสใบประกาศ CERT-":"Certificate ID CERT-","ดาวน์โหลด":"Download","นิสิต":"Student","ผู้ดูแลระบบ":"Administrator","กราฟเปรียบเทียบคณะ":"Faculty comparison chart","ภาพกิจกรรม 1":"Activity photo 1","ภาพกิจกรรม 2":"Activity photo 2","แผนที่สถานที่จัดกิจกรรม":"Venue map","ค้นหาชื่อ...":"Search by name...","พิมพ์ข้อความของคุณ...":"Type your message...","เช่น ปลูกป่าชายเลนฟื้นฟูชายฝั่ง":"e.g. Mangrove planting for coastal restoration","เช่น ชมรมอนุรักษ์สิ่งแวดล้อม":"e.g. Environmental Conservation Club","อธิบายภารกิจ กิจกรรมที่จะทำ และสิ่งที่นิสิตจะได้เรียนรู้":"Describe the mission, what you'll do, and what students will learn","ภาพหลัก":"Main image","ภาพที่ 2":"Image 2","ภาพที่ 3":"Image 3","ภาพหลักฐานที่นิสิตอัปโหลด":"Evidence uploaded by the student","ระบุเหตุผลการยกเลิก...":"Reason for cancelling...","หัวข้อประกาศ":"Announcement title","รายละเอียด":"Details","วันที่ประกาศ เช่น 20 ก.ค. 2569":"Announcement date, e.g. 20 Jul 2026","เช่น ดูกิจกรรม":"e.g. View activity","ลากรูปแบนเนอร์มาวางที่นี่":"Drag a banner image here","หรือวางลิงก์รูปภาพ (https://...)":"or paste an image link (https://...)","เขียนความคิดเห็นของคุณ...":"Write your comment...","ชื่อ-นามสกุล":"Full name","อีเมล":"Email","สังกัด/คณะ":"Faculty / affiliation","ชื่อหมวดหมู่":"Category name","แก้ไขกิจกรรม":"Edit activity","สร้างกิจกรรมใหม่":"Create activity","สแกน QR เพื่อเช็กเอาต์":"Scan QR to check out","สแกน QR เพื่อเช็กอิน":"Scan QR to check in","แก้ไขผู้ใช้":"Edit user","เพิ่มผู้ใช้ใหม่":"Add user","แก้ไขหมวดหมู่":"Edit category","เพิ่มหมวดหมู่ใหม่":"Add category","แก้ไขแบนเนอร์":"Edit banner","เพิ่มแบนเนอร์ใหม่":"Add banner","ยินดีต้อนรับสู่ NU Volunteer":"Welcome to NU Volunteer","ระบบรวมกิจกรรมจิตอาสาของมหาวิทยาลัยนเรศวร ค้นหา ลงทะเบียน และสะสมชั่วโมงได้ในที่เดียว":"Naresuan University's volunteer hub — find activities, register, and track your hours in one place.","เปิดรับสมัครกิจกรรมภาคเรียนที่ 1/2569":"Semester 1/2026 registration is open","กิจกรรมใหม่หลายรายการเปิดรับสมัครแล้ววันนี้ อย่าลืมเช็กปฏิทินกิจกรรม":"Several new activities opened today — check the activity calendar.","ดูกิจกรรม":"View activities","เปิดรับสมัคร":"Open","ลงทะเบียนแล้ว":"Registered","ลงทะเบียนเลย":"Register now","ค้นหากิจกรรม":"Find Activities","ปฏิทิน":"Calendar","การลงทะเบียน":"My Registrations","ชั่วโมงสะสม":"Volunteer Hours","ใบประกาศ":"Certificates","คู่มือผู้ใช้งาน":"User Guide","เริ่มใช้งาน":"Get started","ถัดไป":"Next"};
+function T(s){ return OVL_LANG === "en" ? (OVL_EN[s] || s) : s; }
+
+const NUV_TMA = ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+function nuvThaiToISO(v){
+  if(!v) return '';
+  const s = String(v).trim();
+  if(/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
+  const m = s.match(/^(\d{1,2})\s+(\S+)\s+(\d{4})$/);
+  if(!m) return '';
+  const mi = NUV_TMA.indexOf(m[2]);
+  if(mi < 0) return '';
+  let y = Number(m[3]); if(y > 2400) y -= 543;
+  return y + '-' + String(mi+1).padStart(2,'0') + '-' + String(Number(m[1])).padStart(2,'0');
+}
+function nuvISOToThai(v){
+  if(!v) return '';
+  const m = String(v).match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if(!m) return String(v);
+  return Number(m[3]) + ' ' + NUV_TMA[Number(m[2])-1] + ' ' + (Number(m[1])+543);
+}
+const annList = ()=>[
+  {title:T('ยินดีต้อนรับสู่ NU Volunteer'), body:T('ระบบรวมกิจกรรมจิตอาสาของมหาวิทยาลัยนเรศวร ค้นหา ลงทะเบียน และสะสมชั่วโมงได้ในที่เดียว')},
+  {title:T('เปิดรับสมัครกิจกรรมภาคเรียนที่ 1/2569'), body:T('กิจกรรมใหม่หลายรายการเปิดรับสมัครแล้ววันนี้ อย่าลืมเช็กปฏิทินกิจกรรม')},
+];
+class Component extends DCLogic {
+  state = { af:{title:'',cat:'edu',org:'',location:'',date:'',endDate:'',timeStart:'',timeEnd:'',hours:'',seatsTotal:'',desc:'',mapLink:'',regOpen:'',regClose:'',perksText:'',prepText:''}, au:{name:'',email:'',role:'student',faculty:''}, ce:{label:'',color:'#A774F7'}, bf:{title:'',desc:'',date:'',type:'general',image:'',ctaLabel:T('ดูกิจกรรม'),ctaTarget:'discover'}, cancelReason:'', reviewStars:5, reviewComment:'', contactText:'' };
+
+  _setVid = (el)=>{ this._vid = el; };
+  componentWillUnmount(){ this.stopScan(); }
+  startScan(){
+    this.setState({scanStatus:'starting', scanMsg:''});
+    const go = ()=>{
+      if(!this.props.modal || this.props.modal.type!=='qrscan') return;
+      if(!this._vid || !window.NUVScan){ this._scanT = setTimeout(go, 120); return; }
+      this._scanner = window.NUVScan.start(this._vid, {
+        onStatus:(st)=>this.setState({scanStatus:st}),
+        onResult:(val)=>this.handleScanResult(val),
+      });
+    };
+    clearTimeout(this._scanT);
+    this._scanT = setTimeout(go, 60);
+  }
+  stopScan(){
+    clearTimeout(this._scanT); clearTimeout(this._retryT);
+    if(this._scanner){ this._scanner.stop(); this._scanner = null; }
+    this.setState({scanStatus:'idle', scanMsg:''});
+  }
+  handleScanResult(val){
+    const m = this.props.modal;
+    if(!m || m.type!=='qrscan') return;
+    const kind = (m.payload && m.payload.kind==='checkout') ? 'checkout' : (m.payload && m.payload.kind==='any') ? 'any' : 'checkin';
+    const want = m.reg ? m.reg.activityId : null;
+    let a='', mode='', tok='';
+    try{
+      const str = String(val), i = str.indexOf('?');
+      const q = new URLSearchParams(i>=0 ? str.slice(i+1) : '');
+      a = q.get('a')||''; tok = q.get('t')||''; mode = q.get('m')==='out' ? 'checkout' : 'checkin';
+    }catch(e){}
+    const en = this.props.lang==='en';
+    if(!a){ this.scanRetry(en?'That code is not a NU Volunteer check-in code.':'QR นี้ไม่ใช่รหัสเช็กอินของ NU Volunteer'); return; }
+    if(want && a!==want){ this.scanRetry(en?'This code belongs to a different activity.':'QR นี้ไม่ตรงกับกิจกรรม'); return; }
+    /* token หมุนเวียนทุกนาที — ตรวจได้เมื่อสแกนบนเครื่องเดียวกับที่ผู้จัดแสดง QR อยู่ */
+    const sess = this.readQrSession();
+    if(tok && sess && sess.activityId===a){
+      if(sess.exp && Date.now() > sess.exp + 15000){ this.scanRetry(en?'This code has expired — ask the organizer to refresh it and scan again.':'QR หมดอายุ กรุณาสแกนใหม่'); return; }
+      if(sess.token && tok!==sess.token){ this.scanRetry(en?'This code has expired — scan the code currently on screen.':'QR หมดอายุ กรุณาสแกนใหม่'); return; }
+    }
+    if(window.NUVScan && window.NUVScan.feedback) window.NUVScan.feedback();
+    if(kind==='any'){
+      this.setState({scanStatus:'hit', scanMsg: en?'Code accepted — recording…':'อ่าน QR สำเร็จ · กำลังบันทึก…'});
+      setTimeout(()=>{ if(this.props.onScannedCode) this.props.onScannedCode(a, mode); }, 500);
+      return;
+    }
+    if(mode!==kind){ this.scanRetry(en?('The organizer is showing the '+(mode==='checkout'?'check-out':'check-in')+' code.'):('ผู้จัดกำลังแสดง QR สำหรับ'+(mode==='checkout'?'เช็กเอาต์':'เช็กอิน'))); return; }
+    this.setState({scanStatus:'hit', scanMsg: en?'Code accepted — recording…':'อ่าน QR สำเร็จ · กำลังบันทึก…'});
+    setTimeout(()=>{ if(this.props.onQrScanConfirm) this.props.onQrScanConfirm(); }, 500);
+  }
+  readQrSession(){
+    try{ return JSON.parse(localStorage.getItem('nuv-qr-session')||'null'); }catch(e){ return null; }
+  }
+  scanRetry(msg){
+    this.setState({scanStatus:'mismatch', scanMsg:msg});
+    clearTimeout(this._retryT);
+    this._retryT = setTimeout(()=>{ this.setState({scanMsg:''}); this.startScan(); }, 2200);
+  }
+  _armMapWatch(){
+    clearTimeout(this._mapT);
+    /* ถ้า iframe ไม่ยิง load ภายใน 12 วิ ถือว่าโหลดไม่ได้ (ถูกบล็อกเงียบ ๆ) — เผื่อเน็ตช้า */
+    this._mapT = setTimeout(()=>{ if(this.props.modal) this.setState({mapFailed:true}); }, 12000);
+  }
+  componentDidUpdate(prev){
+    const t = this.props.modal && this.props.modal.type;
+    const pt = prev.modal && prev.modal.type;
+    if((t==='detail'||t==='detailReadonly') && t!==pt){
+      this.setState({mapFailed:false});
+      /* ถ้ามีรูปแผนที่ที่อัปโหลด ไม่ต้องเฝ้า iframe เพราะไม่ได้เรนเดอร์ */
+      const act = (this.props.modal && this.props.modal.activity) || {};
+      if(!act.mapImage) this._armMapWatch();
+    }
+    if(!this.props.modal && prev.modal){ clearTimeout(this._mapT); this._mapT = null; }
+    const isShareM = this.props.modal && this.props.modal.type==='share';
+    const wasShareM = prev.modal && prev.modal.type==='share';
+    if(isShareM && !wasShareM) this.setState({shareQrOpen:false, shareCopied:false, shareNote:''});
+    const isScan = this.props.modal && this.props.modal.type==='qrscan';
+    const wasScan = prev.modal && prev.modal.type==='qrscan';
+    if(isScan && !wasScan) this.startScan();
+    if(!isScan && wasScan) this.stopScan();
+    if(this.props.modal && this.props.modal.type==='activityForm' && (!prev.modal || prev.modal.type!=='activityForm')){
+      const a = this.props.modal.activity;
+      /* ผูก id ตั้งแต่เปิดฟอร์ม เพื่อให้รูปที่วางไว้อยู่คีย์เดียวกับหน้ารายละเอียด */
+      this._afId = (this.props.modal.payload && this.props.modal.payload.id) || (a && a.id) || ('a' + Date.now().toString(36));
+      this.setState({af: a ? {title:a.title,cat:a.cat,org:a.org,location:a.location,date:a.date,endDate:a.endDate||'',timeStart:a.timeStart||'',timeEnd:a.timeEnd||'',hours:a.hours,seatsTotal:a.seatsTotal,desc:a.desc,mapLink:a.mapLink||'',regOpen:a.regOpen||'',regClose:a.regClose||'',perksText:(a.perks||[]).join('\\n'),prepText:(a.prep||[]).join('\\n')} : {title:'',cat:'edu',org:'',location:'',date:'',endDate:'',timeStart:'',timeEnd:'',hours:'',seatsTotal:'',desc:'',mapLink:'',regOpen:'',regClose:'',perksText:'',prepText:''}});
+    }
+    if(this.props.modal && this.props.modal.type==='bannerForm' && (!prev.modal || prev.modal.type!=='bannerForm')){
+      const b = this.props.modal.payload && this.props.modal.payload.id ? (this.props.banners||[]).find(x=>x.id===this.props.modal.payload.id) : null;
+      this.setState({bf: b ? {title:b.title,desc:b.desc,date:b.date,type:b.type,image:b.image||'',ctaLabel:b.ctaLabel||T('ดูกิจกรรม'),ctaTarget:b.ctaTarget||'discover'} : {title:'',desc:'',date:'',type:'general',image:'',ctaLabel:T('ดูกิจกรรม'),ctaTarget:'discover'}});
+    }
+    if(this.props.modal && this.props.modal.type==='cancelRequest' && (!prev.modal || prev.modal.type!=='cancelRequest')){
+      this.setState({cancelReason:''});
+    }
+    if(this.props.modal && this.props.modal.type==='addUser' && (!prev.modal || prev.modal.type!=='addUser')){
+      const u = this.props.modal.payload && this.props.modal.payload.id ? (this.props.users||[]).find(x=>x.id===this.props.modal.payload.id) : null;
+      this.setState({au: u ? {name:u.name||'', email:u.email||'', role:u.role||'student', faculty:u.faculty||''} : {name:'',email:'',role:'student',faculty:''}, auErr:''});
+    }
+    if(this.props.modal && this.props.modal.type==='categoryEdit' && (!prev.modal || prev.modal.type!=='categoryEdit')){
+      const c = this.props.modal.payload && this.props.modal.payload.id ? (this.props.categories||[]).find(x=>x.id===this.props.modal.payload.id) : null;
+      this.setState({ce: c ? {label:c.label||'', color:c.color||'#A774F7'} : {label:'',color:'#A774F7'}});
+    }
+    if(this.props.modal && this.props.modal.type==='review' && (!prev.modal || prev.modal.type!=='review')){
+      this.setState({reviewStars:5, reviewComment:''});
+    }
+    if(this.props.modal && this.props.modal.type==='contact' && (!prev.modal || prev.modal.type!=='contact')){
+      this.setState({contactText:'', contactTarget:'admin'});
+    }
+  }
+
+  onScanFile = async (e)=>{
+    const file = e.target.files && e.target.files[0];
+    e.target.value = '';
+    if(!file || !window.NUVScan) return;
+    const en = this.props.lang==='en';
+    this.setState({scanStatus:'mismatch', scanMsg: en?'Reading the image…':'กำลังอ่านรูป…'});
+    clearTimeout(this._retryT);
+    let val = null;
+    try{ val = await window.NUVScan.decodeImage(file); }catch(err){}
+    if(val) this.handleScanResult(val);
+    else this.scanRetry(en?'No QR code found in that image — try a clearer photo.':'ไม่พบ QR ในรูปนี้ — ลองรูปที่ชัดกว่านี้');
+  };
+  scanUiVals(){
+    const en = this.props.lang==='en';
+    const st = this.state.scanStatus || 'idle';
+    let msg = this.state.scanMsg || '', icon = 'error', color = '#F2A65A';
+    if(st==='starting') { msg = en?'Opening the camera…':'กำลังเปิดกล้อง…'; icon='photo_camera'; color='#fff'; }
+    if(st==='framed')   { msg = en?'This page runs inside a preview frame that blocks the camera — open it in a new tab.':'หน้านี้ถูกเปิดในโหมดพรีวิว กรุณาเปิดในแท็บใหม่เพื่อใช้กล้อง'; icon='picture_in_picture_off'; }
+    if(st==='denied')   { msg = en?'You blocked camera access — allow it in your browser settings, then try again.':'คุณปฏิเสธการใช้กล้อง กรุณาอนุญาตในตั้งค่าเบราว์เซอร์แล้วลองใหม่'; icon='videocam_off'; }
+    if(st==='nocam')    { msg = en?'No usable camera found — upload a photo of the QR below.':'ไม่พบกล้องที่ใช้งานได้ — อัปโหลดรูป QR ด้านล่างแทน'; icon='videocam_off'; }
+    if(st==='busy')     { msg = en?'The camera is in use by another app or tab — close it and try again.':'กล้องถูกใช้งานอยู่โดยแอปอื่น กรุณาปิดแล้วลองใหม่'; icon='videocam_off'; }
+    if(st==='insecure') { msg = en?'The camera needs a secure (https) connection.':'การใช้กล้องต้องเปิดหน้าผ่าน https เท่านั้น'; icon='lock'; }
+    if(st==='unsupported'){ msg = en?'This browser does not support camera scanning — upload a photo of the QR instead.':'เบราว์เซอร์นี้ไม่รองรับการสแกนด้วยกล้อง — อัปโหลดรูป QR แทน'; icon='error'; }
+    if(st==='nodecoder'){ msg = en?'Cannot start the QR reader on this device.':'ไม่สามารถเปิดตัวอ่าน QR บนอุปกรณ์นี้ได้'; icon='error'; }
+    if(st==='popup')    { msg = en?'The camera is open in a separate window — scan there and this will update automatically.':'กล้องเปิดอยู่ที่หน้าต่างอีกหน้า—สแกนที่นั่น ระบบจะบันทึกให้อัตโนมัติ'; icon='open_in_new'; color='#fff'; }
+    if(st==='popupblocked'){ msg = en?'Your browser blocked the pop-up — allow pop-ups for this site, then try again.':'เบราว์เซอร์บล็อกหน้าต่างใหม่ — อนุญาตป๊อปอัปให้เว็บนี้แล้วลองอีกครั้ง'; icon='report'; color='#E97171'; }
+    if(st==='popupclosed'){ msg = en?'The camera window was closed before a code was scanned.':'หน้าต่างสแกนปิดไปก่อนที่จะอ่าน QR สำเร็จ'; icon='error'; }
+    if(st==='hit')      { icon='check_circle'; color='#63D2A1'; }
+    if(st==='mismatch') { icon='report'; color='#E97171'; }
+    return {
+      scanVideoRef: this._setVid,
+      scanBusy: st==='starting' || st==='scanning' || st==='popup',
+      scanHit: st==='hit',
+      scanFrameColor: st==='hit' ? '#63D2A1' : st==='mismatch' ? '#E97171' : 'rgba(255,255,255,.92)',
+      scanHasMsg: !!msg,
+      scanMsgCenter: !!msg && ['framed','denied','nocam','busy','insecure','unsupported','nodecoder','popupblocked','popupclosed'].indexOf(st)>=0,
+      scanMsgBar: !!msg && ['framed','denied','nocam','busy','insecure','unsupported','nodecoder','popupblocked','popupclosed'].indexOf(st)<0,
+      scanFallbackTitle: en?'If the camera is unavailable':'หากกล้องใช้งานไม่ได้',
+      scanMsg: msg, scanMsgIcon: icon, scanMsgColor: color,
+      scanHint: en?'Point the camera at the QR code the organizer is showing.':'เล็งกล้องไปที่ QR ที่ผู้จัดกิจกรรมแสดงอยู่',
+      scanManualLabel: en?'Confirm manually':'ยืนยันด้วยตนเอง',
+      scanUploadLabel: en?'Upload or take a photo of the QR code':'อัปโหลดหรือถ่ายรูป QR เพื่ออ่าน',
+      scanUploadHint: en?'Your device offers both camera and photo library — a screenshot works too.':'อุปกรณ์จะให้เลือกกล้องหรือคลังภาพ · สกรีนช็อตก็อ่านได้',
+      scanOpenTabLabel: en?'Open in a new tab to use the camera':'เปิดในแท็บใหม่เพื่อใช้กล้อง',
+      scanShowOpenTab: ['framed','denied','nocam','busy','insecure','unsupported','nodecoder','popupblocked','popupclosed'].indexOf(st)>=0,
+      scanOpenTabHint: st==='denied'
+        ? (en?'Chrome: lock icon in the address bar → Site settings → Camera → Allow. Safari: Settings → Websites → Camera → Allow. Then tap “Try the camera again”.':'Chrome: กดไอคอนกุญแจ/แถบที่อยู่ → การตั้งค่าเว็บไซต์ → กล้อง → อนุญาต · Safari: ตั้งค่า → เว็บไซต์ → กล้อง → อนุญาต แล้วกด “ลองเปิดกล้องอีกครั้ง”')
+        : st==='framed'
+        ? (en?'The preview frame blocks camera access — a real tab can ask for it.':'กรอบพรีวิวบล็อกกล้องอยู่ — เปิดในแท็บจริงจึงขออนุญาตได้')
+        : (en?'You can also read the QR from a photo below.':'หรือใช้วิธีอ่าน QR จากรูปภาพด้านล่างแทนได้'),
+      onScanPopup: ()=>{
+        if(!window.NUVScan || !window.NUVScan.startPopup) return;
+        if(this._scanner){ this._scanner.stop(); this._scanner = null; }
+        clearTimeout(this._scanT); clearTimeout(this._retryT);
+        this.setState({scanStatus:'popup', scanMsg:''});
+        this._scanner = window.NUVScan.startPopup({
+          onStatus:(s2)=>this.setState({scanStatus:s2}),
+          onResult:(v)=>this.handleScanResult(v),
+        });
+      },
+      onScanRetry: ()=>{ this.stopScan(); this.startScan(); },
+      scanRetryLabel: en?'Try the camera again':'ลองเปิดกล้องอีกครั้ง',
+      onScanFile: this.onScanFile,
+    };
+  }
+  shareVals(activity){
+    const en = this.props.lang==='en';
+    const a = activity || {};
+    const ok = !!a.id;
+    const url = ok ? (location.origin + location.pathname + '#/activity?id=' + encodeURIComponent(a.id)) : '';
+    const text = [a.title, a.date, 'NU Volunteer'].filter(Boolean).join(' · ');
+    const full = text + ' ' + url;
+    const note = (msg)=>{ this.setState({shareNote:msg}); clearTimeout(this._shareT); this._shareT = setTimeout(()=>this.setState({shareNote:''}), 3200); };
+    const blockedMsg = en ? 'Please allow pop-ups to share.' : 'กรุณาอนุญาต pop-up เพื่อแชร์';
+    const open = (href, popup)=>{
+      try{
+        const w = popup
+          ? window.open(href, 'nuvShare', 'width=620,height=640,noopener,noreferrer')
+          : window.open(href, '_blank', 'noopener,noreferrer');
+        if(!w) note(blockedMsg);
+      }catch(e){ note(blockedMsg); }
+    };
+    const circle = (bg)=>'display:flex;align-items:center;justify-content:center;width:54px;height:54px;border-radius:50%;flex-shrink:0;color:#fff;background:'+bg+';box-shadow:0 6px 16px rgba(31,41,55,.18)';
+    const chans = [
+      {key:'line', label:'LINE', bg:'#06C755', glyph:'LINE', glyphSize:'13px', isText:true,
+        onClick:()=>open('https://line.me/R/msg/text/?'+encodeURIComponent(full))},
+      {key:'fb', label:'Facebook', bg:'#1877F2', glyph:'f', glyphSize:'27px', isText:true,
+        onClick:()=>open('https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(url), true)},
+      {key:'x', label:'X', bg:'#000000', glyph:'X', glyphSize:'22px', isText:true,
+        onClick:()=>open('https://twitter.com/intent/tweet?text='+encodeURIComponent(text)+'&url='+encodeURIComponent(url), true)},
+      {key:'sms', label: en?'Messages':'ข้อความ', bg:'#34C759', glyph:'sms',
+        onClick:()=>{ try{ window.location.href = 'sms:?&body='+encodeURIComponent(full); }catch(e){ note(blockedMsg); } }},
+      {key:'qr', label:'QR Code', bg:'linear-gradient(135deg,#E97171,#A774F7)', glyph:'qr_code_2',
+        onClick:()=>this.setState(s=>({shareQrOpen: !s.shareQrOpen}))},
+      {key:'email', label: en?'Email':'อีเมล', bg:'#6B7280', glyph:'mail',
+        onClick:()=>{ try{ window.location.href = 'mailto:?subject='+encodeURIComponent(text)+'&body='+encodeURIComponent(full); }catch(e){ note(blockedMsg); } }},
+    ];
+    if(navigator.share){
+      chans.push({key:'more', label: en?'More':'อื่นๆ', bg:'#1F2937', glyph:'more_horiz',
+        onClick:()=>{ navigator.share({title:a.title||'NU Volunteer', text, url}).catch(()=>{}); }});
+    }
+    let qrEl = null;
+    if(this.state.shareQrOpen && ok && window.NUVQR){
+      for(const t of [url, '#/activity?id='+encodeURIComponent(a.id)]){
+        try{
+          const q = window.NUVQR.path(t), pad = 2, vb = q.size + pad*2;
+          qrEl = React.createElement('svg', {viewBox:'0 0 '+vb+' '+vb, width:'100%', height:'100%', shapeRendering:'crispEdges', style:{display:'block'}},
+            React.createElement('rect', {width:vb, height:vb, fill:'#fff'}),
+            React.createElement('path', {d:q.d, fill:'#1F2937', transform:'translate('+pad+','+pad+')'}));
+          break;
+        }catch(e){}
+      }
+    }
+    const copied = !!this.state.shareCopied;
+    return {
+      shareSubtitle: [a.title, a.date].filter(Boolean).join(' · '),
+      shareEnabled: ok, shareBlocked: !ok,
+      shareBlockedMsg: en ? 'This activity has no public link yet — publish it first, then share.' : 'กิจกรรมนี้ยังไม่มีลิงก์สาธารณะ กรุณาเผยแพร่กิจกรรมก่อนแชร์',
+      shareChannels: chans.map(c=>({...c, isIcon: !c.isText, glyphSize: c.glyphSize||'25px', iconStyle: circle(c.bg)})),
+      shareUrl: url,
+      shareQrOpen: !!this.state.shareQrOpen && ok, shareQrEl: qrEl,
+      shareQrHint: en ? 'Let others scan this to open the activity page.' : 'ให้คนอื่นสแกนเพื่อเปิดหน้ารายละเอียดกิจกรรมนี้',
+      shareCopyLabel: copied ? (en?'Copied ✓':'คัดลอกแล้ว ✓') : (en?'Copy':'คัดลอก'),
+      shareCopyIcon: copied ? 'check' : 'content_copy',
+      shareCopyBg: copied ? '#0F8A63' : 'linear-gradient(135deg,#E97171,#A774F7)',
+      shareNote: this.state.shareNote||'', hasShareNote: !!this.state.shareNote,
+      onCopyLink: async ()=>{
+        let done = false;
+        try{ await navigator.clipboard.writeText(url); done = true; }catch(e){}
+        if(!done){
+          try{
+            const ta = document.createElement('textarea');
+            ta.value = url; ta.style.position='fixed'; ta.style.opacity='0';
+            document.body.appendChild(ta); ta.select();
+            done = document.execCommand('copy');
+            ta.remove();
+          }catch(e){}
+        }
+        if(done){
+          this.setState({shareCopied:true});
+          clearTimeout(this._copyT);
+          this._copyT = setTimeout(()=>this.setState({shareCopied:false}), 2500);
+        } else note(en?'Could not copy — select the link and copy it manually.':'คัดลอกไม่สำเร็จ กรุณาเลือกลิงก์แล้วคัดลอกเอง');
+      },
+    };
+  }
+
+  /* รายชื่อผู้สมัคร — แหล่งข้อมูลเดียวกับตัวเลขที่นั่งบนการ์ด (props.participants) */
+  participantsVals(activity){
+    const p = this.props;
+    const all = (p.participants||[]).filter(x=>x.activityId===(activity||{}).id);
+    const PS = {
+      pending:{label:T('รออนุมัติ'), color:'#B45309', bg:'rgba(245,166,35,.18)'},
+      approved:{label:T('อนุมัติแล้ว'), color:'#1D4ED8', bg:'rgba(122,184,255,.20)'},
+      'checked-in':{label:T('เช็กอินแล้ว'), color:'#7C2FD9', bg:'rgba(167,116,247,.18)'},
+      'checked-out':{label:T('รอหลักฐาน'), color:'#B45309', bg:'rgba(245,166,35,.18)'},
+      completed:{label:T('เสร็จสิ้น'), color:'#0F8A63', bg:'rgba(99,210,161,.20)'},
+      cancelled:{label:T('ยกเลิก'), color:'#C2410C', bg:'rgba(233,113,113,.18)'},
+      'no-show':{label:T('ไม่มาตามนัด'), color:'#57534E', bg:'rgba(31,41,55,.12)'},
+    };
+    const filter = this.state.partFilter || 'all';
+    const q = (this.state.partSearch||'').trim();
+    const inFilter = (st)=> filter==='all' ? true
+      : filter==='active' ? ['pending','approved','checked-in','checked-out','completed'].indexOf(st)>=0
+      : ['cancelled','no-show'].indexOf(st)>=0;
+    const scoped = all.filter(x=>inFilter(x.status));
+    const rows = scoped.filter(x=>!q || [x.name, x.faculty, x.studentId].filter(Boolean).some(v=>String(v).toLowerCase().includes(q.toLowerCase()))).map(x=>{
+      const st = PS[x.status] || PS.pending;
+      return {
+        name:x.name, faculty:x.faculty||'—',
+        meta: [x.studentId, x.faculty].filter(Boolean).join(' · ') || '—',
+        hasHours: !!Number(x.hours),
+        hoursLabel: (Number(x.hours)||0)+T(' ชม.'),
+        initial: (x.name||'?').trim().charAt(0),
+        avatarStyle:'width:34px;height:34px;border-radius:11px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;color:#7C2FD9;background:rgba(167,116,247,.14)',
+        statusLabel: st.label,
+        statusStyle:'padding:4px 11px;border-radius:999px;font-size:11px;font-weight:500;flex-shrink:0;white-space:nowrap;color:'+st.color+';background:'+st.bg,
+      };
+    });
+    const seats = (activity||{}).seatsTotal || (activity||{}).seats || 0;
+    return {
+      partRows: rows, partEmpty: rows.length===0,
+      partEmptyLabel: q ? T('ไม่พบชื่อที่ค้นหา') : T('ยังไม่มีผู้สมัครกิจกรรมนี้'),
+      partSearch: this.state.partSearch||'',
+      onPartSearch: (e)=>this.setState({partSearch:e.target.value}),
+      partCsvLabel: T('ส่งออก CSV'),
+      onPartCsv: ()=>{
+        const head = [T('ชื่อ-นามสกุล'), T('รหัสนิสิต'), T('คณะ/หน่วยงาน'), T('สถานะ'), T('ชั่วโมง')];
+        const body = scoped.map(x=>[x.name, x.studentId||'', x.faculty||'', (PS[x.status]||PS.pending).label, Number(x.hours)||0]);
+        const esc = (v)=>{ const t = String(v==null?'':v); return /[",\n]/.test(t) ? '"'+t.replace(/"/g,'""')+'"' : t; };
+        const csv = '\uFEFF' + [head, ...body].map(r=>r.map(esc).join(',')).join('\r\n');
+        try{
+          const url = URL.createObjectURL(new Blob([csv], {type:'text/csv;charset=utf-8'}));
+          const a2 = document.createElement('a');
+          a2.href = url; a2.download = 'nu-volunteer-participants-'+((activity||{}).id||'activity')+'.csv';
+          document.body.appendChild(a2); a2.click(); a2.remove();
+          setTimeout(()=>URL.revokeObjectURL(url), 1500);
+        }catch(e){}
+      },
+      partFoundLabel: q
+        ? T('พบ ')+rows.length+T(' คน จาก ')+scoped.length+T(' คน')
+        : T('ทั้งหมด ')+all.length+T(' คน จาก ')+seats+T(' ที่นั่ง'),
+      partStatTabs: [
+        ['all', T('ทั้งหมด'), all.length],
+        ['active', T('ยังเข้าร่วม'), all.filter(x=>['pending','approved','checked-in','checked-out','completed'].indexOf(x.status)>=0).length],
+        ['out', T('ไม่มา/ยกเลิก'), all.filter(x=>['cancelled','no-show'].indexOf(x.status)>=0).length],
+      ].map(([id,label,count])=>({
+        id, label, count,
+        onClick:()=>this.setState({partFilter:id}),
+        style:'display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:11px;font-family:inherit;font-size:12px;cursor:pointer;transition:all 200ms ease;border:1px solid '
+          +(filter===id?'transparent':'rgba(31,41,55,.1)')+';background:'
+          +(filter===id?'linear-gradient(135deg,#E97171,#A774F7)':'rgba(255,255,255,.7)')+';color:'
+          +(filter===id?'#fff':'#4B5563'),
+      })),
+    };
+  }
+
+  i18nVals(){
+    const en = this.props.lang === "en";
+    return {L: {
+      k1: en ? "Once confirmed, your request goes to the organizer for approval. Cancelling later requires a request with a reason." : "เมื่อยืนยันแล้วคำขอจะถูกส่งไปยังผู้จัดเพื่อรออนุมัติ หากต้องการยกเลิกภายหลังต้องส่งคำขอยกเลิกพร้อมเหตุผล",
+      k2: en ? "Complete every field — students see this on the activity page" : "กรอกให้ครบถ้วน — ข้อมูลนี้จะแสดงในหน้ารายละเอียดกิจกรรมของนิสิต",
+      k3: en ? "Delete this activity? This cannot be undone." : "คุณต้องการลบกิจกรรมนี้ใช่หรือไม่? การลบไม่สามารถย้อนกลับได้",
+      k4: en ? "Describe the mission, what you'll do, and what students will learn" : "อธิบายภารกิจ กิจกรรมที่จะทำ และสิ่งที่นิสิตจะได้เรียนรู้",
+      k5: en ? "04 · Benefits & what to bring" : "04 · สิ่งที่ได้รับและสิ่งที่ต้องเตรียม",
+      k6: en ? "Registration requires organizer approval" : "การลงทะเบียนต้องรอการอนุมัติจากผู้จัด",
+      k7: en ? "What to bring (one per line)" : "สิ่งที่ต้องเตรียมมา (บรรทัดละ 1 ข้อ)",
+      k8: en ? "Sign in to register for this activity" : "เข้าสู่ระบบเพื่อลงทะเบียนกิจกรรมนี้",
+      k9: en ? "or paste an image link (https://...)" : "หรือวางลิงก์รูปภาพ (https://...)",
+      k10: en ? "Please review the details before confirming" : "โปรดตรวจสอบรายละเอียดก่อนยืนยัน",
+      k11: en ? "e.g. Mangrove planting for coastal restoration" : "เช่น ปลูกป่าชายเลนฟื้นฟูชายฝั่ง",
+      k12: en ? "Benefits (one per line)" : "สิ่งที่ได้รับ (บรรทัดละ 1 ข้อ)",
+      k13: en ? "Announcement date, e.g. 20 Jul 2026" : "วันที่ประกาศ เช่น 20 ก.ค. 2569",
+      k14: en ? "Contact admin / organizer" : "ติดต่อแอดมิน / ผู้จัดกิจกรรม",
+      k15: en ? "e.g. Environmental Conservation Club" : "เช่น ชมรมอนุรักษ์สิ่งแวดล้อม",
+      k16: en ? "Open the venue map" : "เปิดแผนที่สถานที่จัดกิจกรรม",
+      k17: en ? "Map link (Google Maps)" : "ลิงก์แผนที่ (Google Maps)",
+      k18: en ? "Evidence uploaded by the student" : "ภาพหลักฐานที่นิสิตอัปโหลด",
+      k19: en ? "Drag a banner image here" : "ลากรูปแบนเนอร์มาวางที่นี่",
+      k20: en ? "Write your comment..." : "เขียนความคิดเห็นของคุณ...",
+      k21: en ? "Venue map" : "แผนที่สถานที่จัดกิจกรรม",
+      k22: en ? "02 · Date & seats" : "02 · วันเวลาและที่นั่ง",
+      k23: en ? "Reason for cancelling..." : "ระบุเหตุผลการยกเลิก...",
+      k24: en ? "05 · Activity images" : "05 · ภาพประกอบกิจกรรม",
+      k25: en ? "Type your message..." : "พิมพ์ข้อความของคุณ...",
+      k26: en ? "This certifies that" : "มอบให้เพื่อรับรองว่า",
+      k27: en ? "What to bring" : "สิ่งที่ต้องเตรียมมา",
+      k28: en ? "Organizing unit / club" : "หน่วยงาน/ชมรมผู้จัด",
+      k29: en ? "What you get" : "สิทธิประโยชน์พิเศษ",
+      k30: en ? "01 · Basics" : "01 · ข้อมูลพื้นฐาน",
+      k31: en ? "Participation evidence" : "หลักฐานการเข้าร่วม",
+      k32: en ? "Confirm registration" : "ยืนยันการลงทะเบียน",
+      k33: en ? "participated in" : "ได้เข้าร่วมกิจกรรม",
+      k34: en ? "Certificate ID CERT-" : "รหัสใบประกาศ CERT-",
+      k35: en ? "Faculty comparison chart" : "กราฟเปรียบเทียบคณะ",
+      k36: en ? "Activity details" : "รายละเอียดกิจกรรม",
+      k37: en ? "Venue" : "สถานที่จัดกิจกรรม",
+      k38: en ? "Banner image" : "ภาพประกอบแบนเนอร์",
+      k39: en ? "Naresuan University" : "มหาวิทยาลัยนเรศวร",
+      k40: en ? "Mission details" : "ภารกิจโดยละเอียด",
+      k41: en ? "Seats available" : "จำนวนที่รับสมัคร",
+      k42: en ? "Applicants" : "รายชื่อผู้สมัคร",
+      k43: en ? "Category" : "หมวดหมู่กิจกรรม",
+      k44: en ? "Registration opens" : "วันเปิดรับสมัคร",
+      k45: en ? "Simulate successful scan" : "จำลองสแกนสำเร็จ",
+      k46: en ? "Rate this activity" : "ให้คะแนนกิจกรรม",
+      k47: en ? "All year levels" : "นิสิตทุกชั้นปี",
+      k48: en ? "Share this activity" : "แชร์กิจกรรมนี้",
+      k49: en ? "Volunteer hours" : "ชั่วโมงจิตอาสา",
+      k50: en ? "Registration closes" : "วันปิดรับสมัคร",
+      k51: en ? "Button links to" : "ปุ่มนี้พาไปที่",
+      k52: en ? "e.g. View activity" : "เช่น ดูกิจกรรม",
+      k53: en ? "Organizer" : "ผู้จัดกิจกรรม",
+      k54: en ? "Activity date" : "วันจัดกิจกรรม",
+      k55: en ? "Save activity" : "บันทึกกิจกรรม",
+      k56: en ? "Cancel activity" : "ยกเลิกกิจกรรม",
+      k57: en ? "Send cancellation request" : "ส่งคำขอยกเลิก",
+      k58: en ? "Button label" : "ข้อความบนปุ่ม",
+      k59: en ? "System update" : "อัพเดท (ระบบ)",
+      k60: en ? "03 · Venue" : "03 · สถานที่",
+      k61: en ? "General announcement" : "ประกาศทั่วไป",
+      k62: en ? "Scanning..." : "กำลังสแกน...",
+      k63: en ? "Activity photo 1" : "ภาพกิจกรรม 1",
+      k64: en ? "Activity photo 2" : "ภาพกิจกรรม 2",
+      k65: en ? "Search by name..." : "ค้นหาชื่อ...",
+      k66: en ? "Announcement title" : "หัวข้อประกาศ",
+      k67: en ? "Full name" : "ชื่อ-นามสกุล",
+      k68: en ? "Category name" : "ชื่อหมวดหมู่",
+      k69: en ? "Photos" : "ภาพบรรยากาศ",
+      k70: en ? "Share activity" : "แชร์กิจกรรม",
+      k71: en ? "Copy link" : "คัดลอกลิงก์",
+      k72: en ? "Activity name" : "ชื่อกิจกรรม",
+      k73: en ? "Confirm delete" : "ยืนยันการลบ",
+      k74: en ? "Reminder" : "เตือนความจำ",
+      k75: en ? "Administrator" : "ผู้ดูแลระบบ",
+      k76: en ? "Open map" : "เปิดแผนที่",
+      k77: en ? "Activity photo" : "ภาพกิจกรรม",
+      k78: en ? "Send message" : "ส่งข้อความ",
+      k79: en ? "Details" : "รายละเอียด",
+      k80: en ? "Faculty / affiliation" : "สังกัด/คณะ",
+      k81: en ? "Register" : "ลงทะเบียน",
+      k82: en ? "Keep it" : "ไม่ยกเลิก",
+      k83: en ? "Download" : "ดาวน์โหลด",
+      k84: en ? "Check-in time" : "เวลาเข้า",
+      k85: en ? "Submit review" : "ส่งรีวิว",
+      k86: en ? "Image 2" : "ภาพที่ 2",
+      k87: en ? "Image 3" : "ภาพที่ 3",
+      k88: en ? "Open" : "เปิดรับ",
+      k89: en ? "Check-out time" : "เวลาออก",
+      k90: en ? "Main image" : "ภาพหลัก",
+      k91: en ? "Cancel" : "ยกเลิก",
+      k92: en ? "Earn" : "ได้รับ",
+      k93: en ? "Save" : "บันทึก",
+      k94: en ? "Student" : "นิสิต",
+      k95: en ? "Email" : "อีเมล",
+      k96: en ? "Close" : "ปิด",
+      k97: en ? "Delete" : "ลบ",
+    }};
+  }
+  addUserVals(m){
+    const p = this.props;
+    const isEdit = !!(m && m.payload && m.payload.id);
+    const au = this.state.au || {role:'student'};
+    const ROLES = [
+      {id:'student', label:T('นิสิต'), hint:T('ลงทะเบียนกิจกรรม สะสมชั่วโมง'), icon:'school', accent:'#7AB8FF'},
+      {id:'organizer', label:T('ผู้จัดกิจกรรม'), hint:T('สร้างและดูแลกิจกรรม'), icon:'campaign', accent:'#A774F7'},
+      {id:'admin', label:T('ผู้ดูแลระบบ'), hint:T('ดูแลระบบทั้งหมด'), icon:'shield_person', accent:'#1F2937'},
+    ];
+    return {
+      auHeaderIcon: isEdit ? 'edit' : 'person_add',
+      auSubtitle: isEdit ? T('แก้ไขข้อมูลบัญชีและสิทธิ์การใช้งาน') : T('กำหนดบทบาทและสังกัดของบัญชีนี้'),
+      auSubmitLabel: isEdit ? T('บันทึกผู้ใช้') : T('สร้างบัญชีผู้ใช้'),
+      auNameLabel: T('ชื่อ-นามสกุล'), auEmailLabel: T('อีเมล'), auRoleLabel: T('บทบาท'),
+      auFacultyLabel: T('คณะ/หน่วยงาน'), auFacultyPh: T('เลือกคณะหรือหน่วยงาน'), auNamePh: T('เช่น ณัฐชา วิริยะกุล'),
+      auInviteNote: T('ระบบจะส่งอีเมลตั้งรหัสผ่านให้ผู้ใช้อัตโนมัติ'),
+      auErr: this.state.auErr||'', auHasErr: !!this.state.auErr,
+      facultyOptions: (p.faculties||[]).map(f=>({name:f.name})),
+      auRoleCards: ROLES.map(r=>{
+        const on = (au.role||'student') === r.id;
+        return {...r,
+          iconColor: on ? r.accent : '#9CA3AF', labelColor: on ? '#1F2937' : '#4B5563',
+          onClick: ()=>this.setState(s=>({au:{...s.au, role:r.id}})),
+          style: `display:flex;align-items:center;gap:10px;padding:11px 13px;border-radius:13px;cursor:pointer;transition:all 200ms ease;border:1.5px solid ${on?r.accent:'rgba(30,37,48,.1)'};background:${on?r.accent+'14':'rgba(255,255,255,.6)'};box-shadow:${on?'0 6px 18px '+r.accent+'26':'none'}`};
+      }),
+      onAuSubmit: ()=>{
+        const a = this.state.au||{};
+        if(!String(a.name||'').trim()) return this.setState({auErr:T('กรุณากรอกชื่อ-นามสกุล')});
+        if(!/^\S+@\S+\.\S+$/.test(String(a.email||''))) return this.setState({auErr:T('กรุณากรอกอีเมลให้ถูกต้อง')});
+        this.setState({auErr:''});
+        p.onAddUserSubmit({...a, id: m&&m.payload?m.payload.id:null});
+      },
+    };
+  }
+  facultyGraphVals(){
+    const p = this.props;
+    const list = (p.faculties||[]).map(f=>{
+      const joined = f.joined||0, passed = f.passed||0, total = f.total||0;
+      return {...f, rate: joined? Math.round(passed/joined*100) : 0, joined, passed, total};
+    }).sort((a,b)=>b.rate-a.rate);
+    const maxTotal = Math.max(1, ...list.map(f=>f.total));
+    const sel = p.facultyGraphId;
+    const sumTotal = list.reduce((s,f)=>s+f.total,0);
+    const sumJoined = list.reduce((s,f)=>s+f.joined,0);
+    const sumPassed = list.reduce((s,f)=>s+f.passed,0);
+    return {
+      fgTitle: T('เปรียบเทียบคณะ'), fgSubtitle: T('อัตราผ่านเกณฑ์ กยศ. แยกตามคณะ'),
+      fgLegendPassed: T('ผ่านเกณฑ์แล้ว'), fgLegendJoined: T('เข้าร่วมกิจกรรม'),
+      fgStats: [
+        {label:T('นิสิตทั้งหมด'), value:sumTotal.toLocaleString(), color:'#1F2937'},
+        {label:T('เข้าร่วมกิจกรรม'), value:sumJoined.toLocaleString(), color:'#A774F7'},
+        {label:T('ผ่านเกณฑ์แล้ว'), value:sumPassed.toLocaleString(), color:'#0F8A63'},
+      ],
+      fgRows: list.map(f=>{
+        const on = f.id === sel;
+        return {
+          name:f.name, color:f.color, rate:f.rate, weight: on?600:400,
+          rateColor: f.rate>=70 ? '#0F8A63' : f.rate>=45 ? '#B45309' : '#C2410C',
+          joinedPct: Math.round(f.joined/maxTotal*100), passedPct: Math.round(f.passed/maxTotal*100),
+          studentsLabel: T('นิสิต ')+f.total, joinedLabel: T('เข้าร่วม ')+f.joined, passedLabel: T('ผ่าน ')+f.passed,
+          rowStyle: `padding:11px 13px;border-radius:14px;border:1px solid ${on?'rgba(167,116,247,.45)':'rgba(30,37,48,.07)'};background:${on?'rgba(167,116,247,.08)':'rgba(255,255,255,.66)'}`,
+        };
+      }),
+    };
+  }
+  renderVals(){
+    const p = this.props;
+    OVL_LANG = p.lang === 'en' ? 'en' : 'th';
+    const m = p.modal;
+    const type = m ? m.type : null;
+    /* กิจกรรมที่บันทึกไว้ก่อนหน้านี้อาจไม่มีฟิลด์ photo — ใส่ภาพตั้งต้น ไม่ให้ img ไม่มี src */
+    const activity = m && m.activity ? {...m.activity, photo: m.activity.photo || OVL_FALLBACK_PHOTO, catBg:(m.activity.catObj?m.activity.catObj.color:'#94A3B8')+'1a', seatPct: m.activity.seatsTotal ? Math.round(m.activity.seatsFilled/m.activity.seatsTotal*100):0} : {catObj:{color:'#94A3B8',label:''}};
+
+    const stars = this.state.reviewStars;
+    const starRow = [1,2,3,4,5].map(n=>({color: n<=stars?'#F5A623':'#DDE1E7', cls: n<=stars?'msr fill':'msr', onClick:()=>this.setState({reviewStars:n})}));
+
+    const colorPalette = ['#A774F7','#63D2A1','#E97171','#F5A623','#EC6FBB','#7AB8FF','#21B0B0'];
+    const colorSwatches = colorPalette.map(c=>({style:`width:28px;height:28px;border-radius:9px;cursor:pointer;background:${c};border:2px solid ${this.state.ce.color===c?'#1F2937':'transparent'}`, onClick:()=>this.setState(s=>({ce:{...s.ce,color:c}}))}));
+
+    const annIdx = p.annIdx||0;
+    const ANN = annList();
+    const ann = ANN[annIdx]||ANN[0];
+
+    const ev = (m && m.payload && m.payload.participant) ? m.payload.participant : {};
+    const isDetail = type==='detail';
+    const wide = isDetail || type==='activityForm';
+    const modalWrapperStyle = wide
+      ? 'animation:nuvPop .18s ease;background:#fff;border-radius:24px;max-width:820px;width:100%;min-width:0;max-height:88vh;overflow-y:auto;overflow-x:hidden;box-shadow:0 20px 60px rgba(0,0,0,.25)'
+      : 'animation:nuvPop .18s ease;background:#fff;border-radius:22px;max-width:520px;width:100%;min-width:0;max-height:85vh;overflow-y:auto;overflow-x:hidden;box-shadow:0 20px 60px rgba(0,0,0,.25)';
+    const sb = {label: activity.capLabel||T('เปิดรับสมัคร'), bg: activity.capBg||'rgba(99,210,161,.18)', color: activity.capColor||'#0F8A63'};
+    const existingReg = m ? m.existingReg : null;
+    const blocked = activity.capKey==='full' || activity.capKey==='closed';
+    const registerBtnLabel = existingReg ? T('ลงทะเบียนแล้ว') : (blocked ? activity.capLabel : T('ลงทะเบียนเลย'));
+    const registerBtnBg = existingReg ? '#9CA3AF' : (blocked ? '#CBD5E1' : 'linear-gradient(135deg,#E97171,#A774F7)');
+
+    const mapQuery = (activity.lat && activity.lng)
+      ? (activity.lat + ',' + activity.lng)
+      : [activity.location, 'มหาวิทยาลัยนเรศวร'].filter(Boolean).join(' ');
+    const mapHref = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(mapQuery);
+    return {
+      ...this.i18nVals(),
+      mapHref, mapPlain: mapQuery,
+      /* ฝังแผนที่ในหน้าโดยตรง — output=embed ใช้ได้โดยไม่ต้องมี API key */
+      mapEmbedSrc: 'https://maps.google.com/maps?q=' + encodeURIComponent(mapQuery) + '&z=16&hl=' + (OVL_LANG==='en'?'en':'th') + '&output=embed',
+      hasGallery: !!(activity.gallery && activity.gallery.length),
+      noGallery: !(activity.gallery && activity.gallery.length),
+      galleryImgs: activity.gallery || [],
+      hasMapImage: !!activity.mapImage,
+      mapEmbedOk: !activity.mapImage && !this.state.mapFailed,
+      mapEmbedFailed: !!this.state.mapFailed,
+      mapFailTitle: T('ไม่สามารถโหลดแผนที่ได้ในขณะนี้'),
+      mapOpenAppLabel: T('เปิดในแอป Google Maps'),
+      onMapLoad: ()=>{ clearTimeout(this._mapT); this._mapT = null; },
+      onMapFail: ()=>{ clearTimeout(this._mapT); this.setState({mapFailed:true}); },
+      mapRetryLabel: T('ลองโหลดแผนที่อีกครั้ง'),
+      onMapRetry: ()=>{ this.setState({mapFailed:false}); this._armMapWatch(); },
+      mapCopyLabel: this.state.mapCopied ? T('คัดลอกแล้ว') : T('คัดลอกที่อยู่'),
+      onCopyMap: async (e)=>{
+        e.preventDefault(); e.stopPropagation();
+        try{ await navigator.clipboard.writeText(mapQuery); }
+        catch(err){
+          const ta=document.createElement('textarea'); ta.value=mapQuery; ta.style.position='fixed'; ta.style.opacity='0';
+          document.body.appendChild(ta); ta.select();
+          try{ document.execCommand('copy'); }catch(e2){}
+          document.body.removeChild(ta);
+        }
+        this.setState({mapCopied:true});
+        clearTimeout(this._mapCopyT);
+        this._mapCopyT = setTimeout(()=>this.setState({mapCopied:false}), 2200);
+      },
+      hasModal: !!m, modalWrapperStyle,
+      isDetail, isDetailReadonly: type==='detailReadonly', isShare: type==='share', isParticipants: type==='participants',
+      ...(type==='share' ? this.shareVals(activity) : {}),
+      detailHeroId: 'detail-hero-'+(activity.id||'x'), detailGallery1Id: 'detail-g1-'+(activity.id||'x'), detailGallery2Id: 'detail-g2-'+(activity.id||'x'), detailMapId: 'detail-map-'+(activity.id||'x'),
+      statusBadgeLabel: sb.label, statusBadgeBg: sb.bg, statusBadgeColor: sb.color,
+      registerBtnLabel, registerBtnBg,
+      onRegisterClick: ()=>{ if(!existingReg && !blocked) p.onRegisterActivity(activity.id); },
+      onShareClick: ()=>{ if(p.onShare) p.onShare(activity.id); },
+      isContact: type==='contact', isActivityForm: type==='activityForm', isConfirmDelete: type==='confirmDelete', isQrScan: type==='qrscan',
+      isMsgDelete: type==='msgDelete', isConvDelete: type==='convDelete', isChatCleanup: type==='chatCleanup',
+      isReview: type==='review', isCertPreview: type==='certpreview', isAddUser: type==='addUser', isCategoryEdit: type==='categoryEdit', isFacultyGraph: type==='facultyGraph',
+      isCancelRequest: type==='cancelRequest', isBannerForm: type==='bannerForm',
+      isConfirmRegister: type==='confirmRegister', isEvidence: type==='evidence',
+      evidenceName: ev.name||'', evidenceCheckin: ev.checkin||'-', evidenceCheckout: ev.checkout||'-',
+      evidenceSlotId: 'evidence-'+(ev.id||'x'),
+      hasEvidenceImage: !!ev.evidenceImage, evidenceImage: ev.evidenceImage||'',
+      evidenceMeta: [ev.evidenceFile||'', ev.evidenceAt ? (T('อัปโหลดเวลา')+' '+ev.evidenceAt) : ''].filter(Boolean).join(' · '),
+      evidenceEmptyLabel: T('นิสิตยังไม่ได้อัปโหลดรูปหลักฐาน'),
+      approveEvidenceLabel: T('อนุมัติหลักฐาน'), rejectEvidenceLabel: T('ให้อัปใหม่'), downloadEvidenceLabel: T('ดาวน์โหลด'),
+      canReviewEvidence: !!ev.evidence && ev.evidenceStatus!=='approved' && ev.evidenceStatus!=='rejected',
+      evidenceDecided: ev.evidenceStatus==='approved' || ev.evidenceStatus==='rejected',
+      evidenceDecidedLabel: ev.evidenceStatus==='approved' ? T('ตรวจสอบแล้ว · อนุมัติหลักฐาน') : T('ตรวจสอบแล้ว · ให้อัปโหลดใหม่'),
+      evidenceDecidedIcon: ev.evidenceStatus==='approved' ? 'check_circle' : 'report',
+      evidenceDecidedStyle: 'margin-top:14px;display:flex;align-items:center;gap:8px;padding:12px 15px;border-radius:13px;font-size:12.5px;font-weight:500;line-height:1.6;'
+        + (ev.evidenceStatus==='approved'
+          ? 'background:rgba(99,210,161,.16);border:1px solid rgba(99,210,161,.3);color:#0d6e50'
+          : 'background:rgba(233,113,113,.13);border:1px solid rgba(233,113,113,.28);color:#C2410C'),
+      evidenceNoAction: !ev.evidence,
+      evidenceNoActionText: T('นิสิตยังไม่ส่งหลักฐาน — ตรวจสอบได้เมื่อมีการอัปโหลดแล้ว'),
+      hasEvidenceFile: !!ev.evidenceImage,
+      onApproveEvidence: ()=>{ if(p.onApproveEvidence) p.onApproveEvidence(ev.id); },
+      onRejectEvidence: ()=>{ if(p.onRejectEvidence) p.onRejectEvidence(ev.id); },
+      onDownloadEvidence: ()=>{ if(p.onDownloadEvidence) p.onDownloadEvidence(ev.id); },
+      onConfirmRegister: ()=>{ p.onConfirmRegister(activity.id); p.onCloseModal(); },
+      activity, reg: (m && m.reg) ? m.reg : {activity:{title:''}},
+      ...this.participantsVals(activity),
+      contactText: this.state.contactText, onContactChange:(e)=>this.setState({contactText:e.target.value}),
+      onContactSubmit:()=>p.onContactSubmit(this.state.contactText, this.state.contactTarget||'admin'),
+      phLocation: T('อ.บางระกำ จ.พิษณุโลก'),
+      phPerks: T('เกียรติบัตร') + '\n' + T('อาหารและเครื่องดื่มฟรี'),
+      phBring: T('รองเท้าลุยน้ำ') + '\n' + T('หมวก/ครีมกันแดด'),
+      contactToLabel: T('ส่งถึง'),
+      contactTargets: (()=>{
+        const ctxId = (m && m.payload && m.payload.activityId) || null;
+        const regs = (p.registrations||[]).filter(r=>r.activity && r.activity.id);
+        /* มีแค่แอดมิน + ผู้จัดของกิจกรรมที่กำลังดูอยู่ */
+        const ctx = ctxId
+          ? (p.allActivities||[]).find(a=>a.id===ctxId)
+            || (regs.find(r=>r.activity.id===ctxId) || {}).activity
+            || null
+          : null;
+        const list = [{id:'admin', label:T('แอดมินระบบ'), icon:'shield_person'}];
+        if(ctx) list.push({id:ctx.id, label:T('ผู้จัด: ')+ctx.title, icon:'campaign'});
+        return list.map(tg=>{
+          const on = (this.state.contactTarget||'admin')===tg.id;
+          return {...tg, onClick:()=>this.setState({contactTarget:tg.id}),
+            style:`display:inline-flex;align-items:center;gap:6px;max-width:100%;padding:8px 13px;border-radius:11px;cursor:pointer;font-family:inherit;font-size:12.5px;line-height:1.5;text-align:left;transition:all 180ms ease;background:${on?'rgba(167,116,247,.14)':'rgba(255,255,255,.7)'};border:1px solid ${on?'rgba(167,116,247,.45)':'rgba(31,41,55,.12)'};color:${on?'#5B21B6':'#4B5563'};font-weight:${on?500:400}`};
+        });
+      })(),
+      activityFormTitle: m && m.payload && m.payload.id ? T('แก้ไขกิจกรรม') : T('สร้างกิจกรรมใหม่'),
+      af: this.state.af, categories: p.categories||[],
+      onAfTitle:(e)=>this.setState(s=>({af:{...s.af,title:e.target.value}})),
+      onAfCat:(e)=>this.setState(s=>({af:{...s.af,cat:e.target.value}})),
+      onAfOrg:(e)=>this.setState(s=>({af:{...s.af,org:e.target.value}})),
+      onAfLocation:(e)=>this.setState(s=>({af:{...s.af,location:e.target.value}})),
+      onAfDate:(e)=>this.setState(s=>({af:{...s.af,date:nuvISOToThai(e.target.value)}})),
+      afDateISO: nuvThaiToISO(this.state.af.date), afDateThai: this.state.af.date || '',
+      onAfEndDate:(e)=>this.setState(s=>({af:{...s.af,endDate:nuvISOToThai(e.target.value)}})),
+      afEndDateISO: nuvThaiToISO(this.state.af.endDate),
+      afEndDateLabel: this.props.lang==='en' ? 'End date (multi-day activities)' : 'วันสิ้นสุด (กิจกรรมหลายวัน)',
+      afEndDateHint: this.state.af.endDate ? (this.props.lang==='en'?('Ends '+this.state.af.endDate):('สิ้นสุด '+this.state.af.endDate)) : (this.props.lang==='en'?'Leave empty for a single-day activity':'เว้นว่างไว้ถ้าเป็นกิจกรรมวันเดียว'),
+      onAfTimeStart:(e)=>this.setState(s=>({af:{...s.af,timeStart:e.target.value}})),
+      onAfTimeEnd:(e)=>this.setState(s=>({af:{...s.af,timeEnd:e.target.value}})),
+      afTimeStartLabel: this.props.lang==='en' ? 'Start time' : 'เวลาเริ่ม',
+      afTimeEndLabel: this.props.lang==='en' ? 'End time' : 'เวลาสิ้นสุด',
+      hasActivityRange: !!(activity && activity.endDate),
+      activityRangeText: (activity && activity.endDate) ? ((this.props.lang==='en'?'Through ':'ถึง ')+activity.endDate+(activity.dayCount?(' · '+activity.dayCount+(this.props.lang==='en'?' days':' วัน')):'')) : '',
+      activityTimeText: (activity && activity.timeStart) ? (activity.timeStart + (activity.timeEnd ? ' – ' + activity.timeEnd : '') + (this.props.lang==='en' ? '' : ' น.')) : '',
+      hasActivityTime: !!(activity && activity.timeStart),
+      onAfHours:(e)=>this.setState(s=>({af:{...s.af,hours:e.target.value}})),
+      onAfSeats:(e)=>this.setState(s=>({af:{...s.af,seatsTotal:Number(e.target.value)||0}})),
+      onAfDesc:(e)=>this.setState(s=>({af:{...s.af,desc:e.target.value}})),
+      onAfMapLink:(e)=>this.setState(s=>({af:{...s.af,mapLink:e.target.value}})),
+      onAfRegOpen:(e)=>this.setState(s=>({af:{...s.af,regOpen:nuvISOToThai(e.target.value)}})),
+      afRegOpenISO: nuvThaiToISO(this.state.af.regOpen), afRegOpenThai: this.state.af.regOpen || '',
+      onAfRegClose:(e)=>this.setState(s=>({af:{...s.af,regClose:nuvISOToThai(e.target.value)}})),
+      afRegCloseISO: nuvThaiToISO(this.state.af.regClose), afRegCloseThai: this.state.af.regClose || '',
+      onAfPerks:(e)=>this.setState(s=>({af:{...s.af,perksText:e.target.value}})),
+      onAfPrep:(e)=>this.setState(s=>({af:{...s.af,prepText:e.target.value}})),
+      onAfSubmit: ()=>{
+        const {perksText,prepText,...rest} = this.state.af;
+        /* อ่านรูปทั้ง 4 ช่องในฟอร์มไปเก็บกับกิจกรรม เพื่อให้หน้ารายละเอียดใช้รูปจริง */
+        const slotSrc = (prefix)=>{
+          try{
+            const el = document.getElementById(prefix+'-'+(this._afId||''));
+            if(el && el.hasAttribute('data-filled') && el.shadowRoot){
+              const im = el.shadowRoot.querySelector('img');
+              if(im && im.src && /^data:image\//.test(im.src)) return im.src;
+            }
+          }catch(e){}
+          return '';
+        };
+        const heroPhoto = slotSrc('detail-hero');
+        const gallery = [slotSrc('detail-g1'), slotSrc('detail-g2')].filter(Boolean);
+        const mapImage = slotSrc('detail-map');
+        p.onSubmitActivity({...rest, perks:perksText.split('\\n').filter(Boolean), prep:prepText.split('\\n').filter(Boolean), id: m&&m.payload?m.payload.id:null, newId: this._afId||null, photo: heroPhoto||undefined, gallery: gallery.length?gallery:undefined, mapImage: mapImage||undefined});
+      },
+      afHeroId: 'detail-hero-'+(this._afId||'new'), afG1Id: 'detail-g1-'+(this._afId||'new'),
+      afG2Id: 'detail-g2-'+(this._afId||'new'), afMapId: 'detail-map-'+(this._afId||'new'),
+      onConfirmDelete: ()=>p.onConfirmDelete(),
+
+      msgDelTitle: T('ลบข้อความนี้?'),
+      msgDelDesc: T('การลบไม่สามารถย้อนกลับได้หลังพ้น 5 วินาที'),
+      msgDelAdminNote: (m && m.payload && m.payload.asAdmin) ? T('คุณกำลังลบข้อความของผู้ใช้อื่นในฐานะแอดมิน · ระบบจะบันทึกลง System Log') : '',
+      msgDelCanAll: !!(m && m.payload && m.payload.canAll),
+      msgDelMeLabel: T('ลบเฉพาะฝั่งฉัน'),
+      msgDelMeHint: T('ข้อความหายจากมุมมองของคุณ อีกฝ่ายยังเห็นอยู่'),
+      msgDelAllLabel: T('ลบสำหรับทุกคน'),
+      msgDelAllHint: T('แทนที่ด้วยข้อความ "ข้อความนี้ถูกลบแล้ว" ทั้งสองฝั่ง'),
+      msgDelExpiredHint: T('ลบสำหรับทุกคนได้ภายใน 24 ชั่วโมงหลังส่งเท่านั้น'),
+      onDelMsgMe: ()=>p.onDeleteMsg && p.onDeleteMsg('me'),
+      onDelMsgAll: ()=>p.onDeleteMsg && p.onDeleteMsg('all'),
+
+      convDelTitle: T('ลบการสนทนานี้?'),
+      convDelName: (m && m.payload && m.payload.title) || '',
+      convDelNote: T('ลบเฉพาะฝั่งของคุณเท่านั้น ประวัติของอีกฝ่ายไม่ถูกแตะต้อง · ถ้ามีข้อความใหม่เข้ามา ห้องสนทนาจะกลับมาพร้อมข้อความใหม่'),
+      onConfirmConvDelete: ()=>p.onDeleteConv && p.onDeleteConv(),
+
+      cleanupTitle: T('ล้างข้อความแชทเก่า'),
+      cleanupDesc: T('ลบข้อความที่เก่ากว่าช่วงเวลาที่เลือกออกจากทุกห้องสนทนา'),
+      cleanupAgeLabel: T('เก่ากว่า'),
+      cleanupOpts: [3,6,12,24].map(n=>{
+        const sel = (this.state.cleanupMonths||6)===n;
+        return {label: n + ' ' + T('เดือน'), onClick: ()=>this.setState({cleanupMonths:n}), style: 'padding:8px 15px;border-radius:11px;font-family:inherit;font-size:12.5px;font-weight:500;cursor:pointer;transition:all 160ms ease;border:1px solid '+(sel?'rgba(167,116,247,.5)':'rgba(31,41,55,.12)')+';background:'+(sel?'rgba(167,116,247,.14)':'rgba(255,255,255,.6)')+';color:'+(sel?'#6B21C8':'#4B5563')};
+      }),
+      cleanupWarn: (()=>{
+        const n = this.state.cleanupMonths||6;
+        const c = p.chatCleanupCount ? p.chatCleanupCount(n) : {msgs:0, convs:0};
+        return T('จะลบ') + ' ' + c.msgs + ' ' + T('ข้อความ') + ' ' + T('จาก') + ' ' + c.convs + ' ' + T('ห้องสนทนา') + ' · ' + T('ย้อนกลับไม่ได้ ควรสำรองข้อมูลก่อน');
+      })(),
+      cleanupBackupLabel: T('สำรองข้อมูลก่อน'),
+      cleanupRunLabel: T('ล้างเลย'),
+      onCleanupBackup: ()=>p.onBackup && p.onBackup(),
+      onRunCleanup: ()=>p.onRunChatCleanup && p.onRunChatCleanup(this.state.cleanupMonths||6),
+      qrScanTitle: m && m.payload && m.payload.kind==='checkout' ? T('สแกน QR เพื่อเช็กเอาต์') : m && m.payload && m.payload.kind==='any' ? T('สแกน QR กิจกรรม') : T('สแกน QR เพื่อเช็กอิน'),
+      qrScanSubtitle: (m && m.reg && m.reg.activity) ? m.reg.activity.title : T('หันกล้องไปที่ QR ที่ผู้จัดแสดง ระบบจะเช็กอินหรือเช็กเอาต์ให้อัตโนมัติ'),
+      scanShowManual: !!(m && m.payload && m.payload.kind!=='any' && m.reg),
+      ...this.scanUiVals(),
+      onQrConfirm: ()=>p.onQrScanConfirm(),
+      starRow, reviewComment: this.state.reviewComment, onReviewComment:(e)=>this.setState({reviewComment:e.target.value}),
+      onReviewSubmit: ()=>p.onReviewSubmit(stars, this.state.reviewComment),
+      studentName: (p.studentProfile||{}).name||'', certId: m && m.payload ? m.payload.regId : '',
+      addUserTitle: m && m.payload && m.payload.id ? T('แก้ไขผู้ใช้') : T('เพิ่มผู้ใช้ใหม่'), au: this.state.au,
+      ...this.addUserVals(m),
+      ...this.facultyGraphVals(),
+      onAuName:(e)=>this.setState(s=>({au:{...s.au,name:e.target.value}})),
+      onAuEmail:(e)=>this.setState(s=>({au:{...s.au,email:e.target.value}})),
+      onAuRole:(e)=>this.setState(s=>({au:{...s.au,role:e.target.value}})),
+      onAuFaculty:(e)=>this.setState(s=>({au:{...s.au,faculty:e.target.value}})),
+
+      categoryFormTitle: m && m.payload && m.payload.id ? T('แก้ไขหมวดหมู่') : T('เพิ่มหมวดหมู่ใหม่'), ce: this.state.ce, colorSwatches,
+      onCeLabel:(e)=>this.setState(s=>({ce:{...s.ce,label:e.target.value}})),
+      onCeSubmit: ()=>p.onCategorySubmit({...this.state.ce, id: m&&m.payload?m.payload.id:null}),
+      cancelReason: this.state.cancelReason, onCancelReasonChange:(e)=>this.setState({cancelReason:e.target.value}),
+      onCancelRequestSubmit: ()=>p.onCancelRequestSubmit(this.state.cancelReason),
+      bannerFormTitle: m && m.payload && m.payload.id ? T('แก้ไขแบนเนอร์') : T('เพิ่มแบนเนอร์ใหม่'), bf: this.state.bf,
+      onBfTitle:(e)=>this.setState(s=>({bf:{...s.bf,title:e.target.value}})),
+      onBfDesc:(e)=>this.setState(s=>({bf:{...s.bf,desc:e.target.value}})),
+      onBfDate:(e)=>this.setState(s=>({bf:{...s.bf,date:e.target.value}})),
+      onBfImage:(e)=>this.setState(s=>({bf:{...s.bf,image:e.target.value}})),
+      onBfCtaLabel:(e)=>this.setState(s=>({bf:{...s.bf,ctaLabel:e.target.value}})),
+      onBfCtaTarget:(e)=>this.setState(s=>({bf:{...s.bf,ctaTarget:e.target.value}})),
+      ctaTargets: [
+        {id:'discover', label:T('ค้นหากิจกรรม')},
+        {id:'calendar', label:T('ปฏิทิน')},
+        {id:'registrations', label:T('การลงทะเบียน')},
+        {id:'hours', label:T('ชั่วโมงสะสม')},
+        {id:'certificates', label:T('ใบประกาศ')},
+        {id:'guide', label:T('คู่มือผู้ใช้งาน')},
+      ],
+      bannerSlotId: 'banner-img-'+((m&&m.payload&&m.payload.id)||'new'),
+      onBfType:(e)=>this.setState(s=>({bf:{...s.bf,type:e.target.value}})),
+      onBfSubmit: ()=>p.onBannerSubmit({...this.state.bf, id: m&&m.payload?m.payload.id:null}),
+      onBackdrop: ()=>p.onCloseModal(), stop:(e)=>e.stopPropagation(), onCloseModal: ()=>p.onCloseModal(),
+      showAnnouncement: p.showAnnouncement, annTitle: ann.title, annBody: ann.body,
+      annDots: ANN.map((_,i)=>({ style:`height:7px;border-radius:999px;transition:all 260ms ease;width:${i===annIdx?'22px':'7px'};background:${i===annIdx?'linear-gradient(90deg,#E97171,#A774F7)':'#E2E8F0'}` })),
+      annBtnLabel: annIdx>=ANN.length-1?T('เริ่มใช้งาน'):T('ถัดไป'),
+      annBtnIcon: annIdx>=ANN.length-1?'rocket_launch':'arrow_forward',
+      annStepLabel: T('ขั้นที่')+' '+(annIdx+1)+' '+T('จาก')+' '+ANN.length,
+      annShowSkip: annIdx < ANN.length-1, annSkipLabel: T('ข้ามการแนะนำ'),
+      onAnnSkip: ()=>{ for(let i=annIdx;i<ANN.length;i++) p.onAnnNext(); },
+      onAnnNext: ()=>p.onAnnNext(),
+      hasToast: !!p.toast, toast: p.toast,
+      hasToastAction: !!p.hasToastAction, toastActionLabel: p.toastActionLabel||'',
+      onToastAction: ()=>p.onToastAction && p.onToastAction(),
+    };
+  }
+}
+
+</script>
+</body>
+</html>
