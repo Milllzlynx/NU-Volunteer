@@ -75,6 +75,18 @@ const TEMPLATES: Record<string, { th: Template; en: Template }> = {
       body: 'The certificate for "{activity}" has been issued. Reference {ref}.\nVerify it at {verifyUrl}',
     },
   },
+  /* อีเมลทดสอบจากหน้าการเชื่อมต่อระบบ — ไม่ได้เกิดจากเหตุการณ์ของผู้ใช้
+     มีไว้ให้ผู้ดูแลยืนยันว่าเส้นทางส่งอีเมลใช้งานได้จริงก่อนจะมีเหตุการณ์จริงเกิดขึ้น */
+  'system.test': {
+    th: {
+      subject: 'อีเมลทดสอบจาก NU Volunteer',
+      body: 'นี่คืออีเมลทดสอบที่ส่งจากหน้าการเชื่อมต่อระบบเมื่อ {at}\nถ้าคุณได้รับฉบับนี้ แปลว่าการตั้งค่าการส่งอีเมลใช้งานได้',
+    },
+    en: {
+      subject: 'Test email from NU Volunteer',
+      body: 'This is a test email sent from the system integrations page at {at}.\nIf you received it, email delivery is working.',
+    },
+  },
 };
 
 const fill = (s: string, vars: Record<string, unknown>) =>

@@ -76,10 +76,12 @@ export const ROLE_NAV: Record<string, NavItem[]> = {
     { key: 'home', label: 'หน้าหลัก', labelEn: 'Home', icon: 'home', href: '/student' },
     { key: 'discover', label: 'ค้นหากิจกรรม', labelEn: 'Find Activities', icon: 'travel_explore', href: '/student/discover' },
     { key: 'registrations', label: 'การลงทะเบียน', labelEn: 'My Registrations', icon: 'groups', href: '/student/registrations' },
+    { key: 'scan', label: 'สแกน QR', labelEn: 'Scan QR', icon: 'qr_code_scanner', href: '/student/scan' },
     { key: 'calendar', label: 'ปฏิทิน', labelEn: 'Calendar', icon: 'calendar_month', href: '/student/calendar' },
     { key: 'hours', label: 'ชั่วโมงสะสม', labelEn: 'Volunteer Hours', icon: 'schedule', href: '/student/hours' },
     { key: 'certificates', label: 'ใบประกาศ', labelEn: 'Certificates', icon: 'workspace_premium', href: '/student/certificates' },
     { key: 'wishlist', label: 'รายการโปรด', labelEn: 'Favorites', icon: 'favorite', href: '/student/wishlist' },
+    { key: 'feed', label: 'ความเคลื่อนไหว', labelEn: 'Recent Activity', icon: 'history', href: '/student/feed' },
     { key: 'notifications', label: 'การแจ้งเตือน', labelEn: 'Notifications', icon: 'notifications', href: '/student/notifications' },
     { key: 'chat', label: 'แชท', labelEn: 'Messages', icon: 'forum', href: '/student/chat' },
     { key: 'profile', label: 'โปรไฟล์', labelEn: 'Profile', icon: 'account_circle', href: '/student/profile' },
@@ -129,8 +131,8 @@ export function homeFor(role: string): string {
 /** การจัดกลุ่มเมนูในแถบข้าง */
 export const NAV_GROUPS: Record<string, { label: string; labelEn: string; keys: string[] }[]> = {
   student: [
-    { label: 'กิจกรรมของฉัน', labelEn: 'My Activities', keys: ['home', 'discover', 'registrations', 'calendar', 'hours', 'certificates'] },
-    { label: 'ทั่วไป', labelEn: 'General', keys: ['wishlist', 'notifications', 'chat', 'profile', 'settings', 'guide'] },
+    { label: 'กิจกรรมของฉัน', labelEn: 'My Activities', keys: ['home', 'discover', 'registrations', 'scan', 'calendar', 'hours', 'certificates'] },
+    { label: 'ทั่วไป', labelEn: 'General', keys: ['wishlist', 'feed', 'notifications', 'chat', 'profile', 'settings', 'guide'] },
   ],
   organizer: [
     { label: 'จัดการกิจกรรม', labelEn: 'Manage Activities', keys: ['home', 'activities', 'calendar', 'registrations', 'cancellations', 'qr', 'hoursApproval'] },
@@ -149,6 +151,17 @@ export const ROLE_ACCENT: Record<string, string> = {
   organizer: '#A774F7',
   admin: '#1F2937',
 };
+
+/**
+ * เติมความโปร่งใสให้สีหมวดหมู่
+ *
+ * สีในตาราง Category เก็บเป็น hex หกหลัก ต่อท้ายอีกสองหลักได้เป็นค่า alpha
+ * ตรวจรูปแบบก่อนเสมอ เพราะถ้าค่าในฐานข้อมูลผิดรูป การต่อสตริงจะได้สีที่เบราว์เซอร์อ่านไม่ออก
+ * แล้วพื้นหลังจะหายไปทั้งก้อนแทนที่จะแค่เพี้ยน
+ */
+export function withAlpha(color: string, alphaHex: string): string {
+  return /^#[0-9a-f]{6}$/i.test(color) ? `${color}${alphaHex}` : color;
+}
 
 /** สถานะที่นั่ง — ใช้ทั้งการ์ดกิจกรรมและหน้ารายละเอียด */
 export function seatStatus(filled: number, total: number, closed = false) {
@@ -170,6 +183,35 @@ export const REG_STATUS: Record<string, { label: string; tone: SemanticTone; ico
   'no-show': { label: 'ไม่มาตามนัด', tone: 'neutral', icon: 'person_off' },
 };
 
+/**
+ * ป้ายสถานะฝั่งนิสิต ที่อ่านหลักฐานประกอบด้วย
+ *
+ * ใบลงทะเบียนยังเป็น checked-out อยู่ตั้งแต่เช็กเอาต์จนกว่าผู้จัดจะรับรองชั่วโมง
+ * ป้ายของสถานะนั้นเขียนว่า "รอหลักฐาน" ซึ่งถูกเฉพาะตอนที่ยังไม่ได้ส่ง
+ * พอนิสิตส่งแล้วป้ายยังค้างข้อความเดิม อ่านแล้วเหมือนไฟล์ไม่ถึงระบบและต้องส่งซ้ำ
+ *
+ * ใช้เฉพาะหน้าที่นิสิตเห็นสถานะของตัวเอง — ฝั่งผู้จัดยังดูสถานะใบลงทะเบียนตรง ๆ
+ * เพราะมีคอลัมน์หลักฐานแยกอยู่แล้ว
+ */
+export function regStatusMeta(
+  status: string,
+  evidenceStatus?: string | null,
+): { label: string; tone: SemanticTone; icon: string } | undefined {
+  if (status === 'checked-out') {
+    if (evidenceStatus === 'pending') {
+      return { label: 'ส่งหลักฐานแล้ว รอตรวจ', tone: 'purple', icon: 'hourglass_top' };
+    }
+    if (evidenceStatus === 'rejected') {
+      return { label: 'ต้องส่งหลักฐานใหม่', tone: 'danger', icon: 'report' };
+    }
+    // หลักฐานผ่านแล้วแต่ใบยังไม่ completed = เหลือขั้นรับรองชั่วโมงของผู้จัดอย่างเดียว
+    if (evidenceStatus === 'approved') {
+      return { label: 'รอรับรองชั่วโมง', tone: 'success', icon: 'verified' };
+    }
+  }
+  return REG_STATUS[status];
+}
+
 export const EVIDENCE_STATUS: Record<string, { label: string; tone: SemanticTone }> = {
   pending: { label: 'รอตรวจ', tone: 'warning' },
   approved: { label: 'หลักฐานผ่าน', tone: 'success' },
@@ -180,4 +222,14 @@ export const APPEAL_STATUS: Record<string, { label: string; tone: SemanticTone }
   pending: { label: 'รอพิจารณา', tone: 'warning' },
   approved: { label: 'อุทธรณ์ผ่าน', tone: 'success' },
   rejected: { label: 'อุทธรณ์ไม่ผ่าน', tone: 'danger' },
+};
+
+/** ชนิดการแจ้งเตือน — ใช้ร่วมกันระหว่างตัวกรองและป้ายบนรายการ (ตรงกับ Notification.type) */
+export const NOTIF_TYPE: Record<string, { label: string; tone: SemanticTone; icon: string }> = {
+  approval: { label: 'การอนุมัติ', tone: 'success', icon: 'check_circle' },
+  reminder: { label: 'เตือนความจำ', tone: 'warning', icon: 'alarm' },
+  message: { label: 'ข้อความ', tone: 'info', icon: 'forum' },
+  certificate: { label: 'ใบประกาศ', tone: 'purple', icon: 'workspace_premium' },
+  kyf: { label: 'กยศ.', tone: 'kyf', icon: 'school' },
+  system: { label: 'ระบบ', tone: 'neutral', icon: 'campaign' },
 };

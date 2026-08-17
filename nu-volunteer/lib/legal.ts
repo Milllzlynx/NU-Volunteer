@@ -83,9 +83,9 @@ export const PRIVACY_SECTIONS: LegalSection[] = [
     id: 'p3',
     title: 'การเปิดเผยข้อมูล',
     titleEn: 'Disclosure',
-    body: 'ผู้จัดกิจกรรมเห็นเฉพาะชื่อ คณะ และสถานะการเข้าร่วมของผู้สมัครกิจกรรมของตนเท่านั้น\nหน้าตรวจสอบใบประกาศสาธารณะแสดงเฉพาะชื่อ กิจกรรม ชั่วโมง และวันที่ออก ไม่แสดงอีเมล เบอร์โทร หรือที่อยู่\nเราไม่ขายหรือให้เช่าข้อมูลส่วนบุคคลแก่บุคคลภายนอกไม่ว่ากรณีใด',
+    body: 'ผู้จัดกิจกรรมเห็นเฉพาะชื่อ คณะ และสถานะการเข้าร่วมของผู้สมัครกิจกรรมของตนเท่านั้น\nผู้ใช้ที่เข้าสู่ระบบแล้วเห็นชื่อและคณะของผู้ที่ได้ที่นั่งในกิจกรรมหนึ่ง ๆ ได้จากหน้ารายละเอียดกิจกรรม โดยไม่เห็นอีเมลหรือเบอร์โทร ส่วนผู้ที่ยังไม่เข้าสู่ระบบไม่เห็นรายชื่อนี้\nหน้าตรวจสอบใบประกาศสาธารณะแสดงเฉพาะชื่อ กิจกรรม ชั่วโมง และวันที่ออก ไม่แสดงอีเมล เบอร์โทร หรือที่อยู่\nเราไม่ขายหรือให้เช่าข้อมูลส่วนบุคคลแก่บุคคลภายนอกไม่ว่ากรณีใด',
     bodyEn:
-      'Organizers see only the name, faculty and attendance status of their own participants.\nThe public certificate check shows only name, activity, hours and issue date — never email, phone or address.\nWe never sell or rent personal data to third parties.',
+      'Organizers see only the name, faculty and attendance status of their own participants.\nSigned-in users can see the names and faculties of people holding a seat on an activity, from that activity page; email and phone are never shown, and visitors who are not signed in do not see the list at all.\nThe public certificate check shows only name, activity, hours and issue date — never email, phone or address.\nWe never sell or rent personal data to third parties.',
   },
   {
     id: 'p4',

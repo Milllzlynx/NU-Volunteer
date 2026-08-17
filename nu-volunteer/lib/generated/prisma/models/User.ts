@@ -35,8 +35,12 @@ export type UserMinAggregateOutputType = {
   loanStatus: string | null
   avatarUrl: string | null
   phone: string | null
+  bio: string | null
   active: boolean | null
   seeded: boolean | null
+  shareContact: boolean | null
+  deletionRequestedAt: Date | null
+  deletionReason: string | null
   tokensValidFrom: Date | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -53,8 +57,12 @@ export type UserMaxAggregateOutputType = {
   loanStatus: string | null
   avatarUrl: string | null
   phone: string | null
+  bio: string | null
   active: boolean | null
   seeded: boolean | null
+  shareContact: boolean | null
+  deletionRequestedAt: Date | null
+  deletionReason: string | null
   tokensValidFrom: Date | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -71,8 +79,12 @@ export type UserCountAggregateOutputType = {
   loanStatus: number
   avatarUrl: number
   phone: number
+  bio: number
   active: number
   seeded: number
+  shareContact: number
+  deletionRequestedAt: number
+  deletionReason: number
   tokensValidFrom: number
   createdAt: number
   updatedAt: number
@@ -91,8 +103,12 @@ export type UserMinAggregateInputType = {
   loanStatus?: true
   avatarUrl?: true
   phone?: true
+  bio?: true
   active?: true
   seeded?: true
+  shareContact?: true
+  deletionRequestedAt?: true
+  deletionReason?: true
   tokensValidFrom?: true
   createdAt?: true
   updatedAt?: true
@@ -109,8 +125,12 @@ export type UserMaxAggregateInputType = {
   loanStatus?: true
   avatarUrl?: true
   phone?: true
+  bio?: true
   active?: true
   seeded?: true
+  shareContact?: true
+  deletionRequestedAt?: true
+  deletionReason?: true
   tokensValidFrom?: true
   createdAt?: true
   updatedAt?: true
@@ -127,8 +147,12 @@ export type UserCountAggregateInputType = {
   loanStatus?: true
   avatarUrl?: true
   phone?: true
+  bio?: true
   active?: true
   seeded?: true
+  shareContact?: true
+  deletionRequestedAt?: true
+  deletionReason?: true
   tokensValidFrom?: true
   createdAt?: true
   updatedAt?: true
@@ -218,8 +242,12 @@ export type UserGroupByOutputType = {
   loanStatus: string | null
   avatarUrl: string | null
   phone: string | null
+  bio: string
   active: boolean
   seeded: boolean
+  shareContact: boolean
+  deletionRequestedAt: Date | null
+  deletionReason: string | null
   tokensValidFrom: Date
   createdAt: Date
   updatedAt: Date
@@ -257,8 +285,12 @@ export type UserWhereInput = {
   loanStatus?: Prisma.StringNullableFilter<"User"> | string | null
   avatarUrl?: Prisma.StringNullableFilter<"User"> | string | null
   phone?: Prisma.StringNullableFilter<"User"> | string | null
+  bio?: Prisma.StringFilter<"User"> | string
   active?: Prisma.BoolFilter<"User"> | boolean
   seeded?: Prisma.BoolFilter<"User"> | boolean
+  shareContact?: Prisma.BoolFilter<"User"> | boolean
+  deletionRequestedAt?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
+  deletionReason?: Prisma.StringNullableFilter<"User"> | string | null
   tokensValidFrom?: Prisma.DateTimeFilter<"User"> | Date | string
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
@@ -280,6 +312,9 @@ export type UserWhereInput = {
   hourAdjustments?: Prisma.HourAdjustmentListRelationFilter
   adjustmentsMade?: Prisma.HourAdjustmentListRelationFilter
   systemLogs?: Prisma.SystemLogListRelationFilter
+  calendarEvents?: Prisma.CalendarEventListRelationFilter
+  notifyPrefs?: Prisma.XOR<Prisma.NotificationPreferenceNullableScalarRelationFilter, Prisma.NotificationPreferenceWhereInput> | null
+  news?: Prisma.NewsListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
@@ -293,8 +328,12 @@ export type UserOrderByWithRelationInput = {
   loanStatus?: Prisma.SortOrderInput | Prisma.SortOrder
   avatarUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   phone?: Prisma.SortOrderInput | Prisma.SortOrder
+  bio?: Prisma.SortOrder
   active?: Prisma.SortOrder
   seeded?: Prisma.SortOrder
+  shareContact?: Prisma.SortOrder
+  deletionRequestedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  deletionReason?: Prisma.SortOrderInput | Prisma.SortOrder
   tokensValidFrom?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -316,6 +355,9 @@ export type UserOrderByWithRelationInput = {
   hourAdjustments?: Prisma.HourAdjustmentOrderByRelationAggregateInput
   adjustmentsMade?: Prisma.HourAdjustmentOrderByRelationAggregateInput
   systemLogs?: Prisma.SystemLogOrderByRelationAggregateInput
+  calendarEvents?: Prisma.CalendarEventOrderByRelationAggregateInput
+  notifyPrefs?: Prisma.NotificationPreferenceOrderByWithRelationInput
+  news?: Prisma.NewsOrderByRelationAggregateInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -332,8 +374,12 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   loanStatus?: Prisma.StringNullableFilter<"User"> | string | null
   avatarUrl?: Prisma.StringNullableFilter<"User"> | string | null
   phone?: Prisma.StringNullableFilter<"User"> | string | null
+  bio?: Prisma.StringFilter<"User"> | string
   active?: Prisma.BoolFilter<"User"> | boolean
   seeded?: Prisma.BoolFilter<"User"> | boolean
+  shareContact?: Prisma.BoolFilter<"User"> | boolean
+  deletionRequestedAt?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
+  deletionReason?: Prisma.StringNullableFilter<"User"> | string | null
   tokensValidFrom?: Prisma.DateTimeFilter<"User"> | Date | string
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
@@ -355,6 +401,9 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   hourAdjustments?: Prisma.HourAdjustmentListRelationFilter
   adjustmentsMade?: Prisma.HourAdjustmentListRelationFilter
   systemLogs?: Prisma.SystemLogListRelationFilter
+  calendarEvents?: Prisma.CalendarEventListRelationFilter
+  notifyPrefs?: Prisma.XOR<Prisma.NotificationPreferenceNullableScalarRelationFilter, Prisma.NotificationPreferenceWhereInput> | null
+  news?: Prisma.NewsListRelationFilter
 }, "id" | "email">
 
 export type UserOrderByWithAggregationInput = {
@@ -368,8 +417,12 @@ export type UserOrderByWithAggregationInput = {
   loanStatus?: Prisma.SortOrderInput | Prisma.SortOrder
   avatarUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   phone?: Prisma.SortOrderInput | Prisma.SortOrder
+  bio?: Prisma.SortOrder
   active?: Prisma.SortOrder
   seeded?: Prisma.SortOrder
+  shareContact?: Prisma.SortOrder
+  deletionRequestedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  deletionReason?: Prisma.SortOrderInput | Prisma.SortOrder
   tokensValidFrom?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -392,8 +445,12 @@ export type UserScalarWhereWithAggregatesInput = {
   loanStatus?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   avatarUrl?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   phone?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
+  bio?: Prisma.StringWithAggregatesFilter<"User"> | string
   active?: Prisma.BoolWithAggregatesFilter<"User"> | boolean
   seeded?: Prisma.BoolWithAggregatesFilter<"User"> | boolean
+  shareContact?: Prisma.BoolWithAggregatesFilter<"User"> | boolean
+  deletionRequestedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
+  deletionReason?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   tokensValidFrom?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
@@ -410,8 +467,12 @@ export type UserCreateInput = {
   loanStatus?: string | null
   avatarUrl?: string | null
   phone?: string | null
+  bio?: string
   active?: boolean
   seeded?: boolean
+  shareContact?: boolean
+  deletionRequestedAt?: Date | string | null
+  deletionReason?: string | null
   tokensValidFrom?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -433,6 +494,9 @@ export type UserCreateInput = {
   hourAdjustments?: Prisma.HourAdjustmentCreateNestedManyWithoutUserInput
   adjustmentsMade?: Prisma.HourAdjustmentCreateNestedManyWithoutAuthorInput
   systemLogs?: Prisma.SystemLogCreateNestedManyWithoutActorInput
+  calendarEvents?: Prisma.CalendarEventCreateNestedManyWithoutUserInput
+  notifyPrefs?: Prisma.NotificationPreferenceCreateNestedOneWithoutUserInput
+  news?: Prisma.NewsCreateNestedManyWithoutAuthorInput
 }
 
 export type UserUncheckedCreateInput = {
@@ -446,8 +510,12 @@ export type UserUncheckedCreateInput = {
   loanStatus?: string | null
   avatarUrl?: string | null
   phone?: string | null
+  bio?: string
   active?: boolean
   seeded?: boolean
+  shareContact?: boolean
+  deletionRequestedAt?: Date | string | null
+  deletionReason?: string | null
   tokensValidFrom?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -469,6 +537,9 @@ export type UserUncheckedCreateInput = {
   hourAdjustments?: Prisma.HourAdjustmentUncheckedCreateNestedManyWithoutUserInput
   adjustmentsMade?: Prisma.HourAdjustmentUncheckedCreateNestedManyWithoutAuthorInput
   systemLogs?: Prisma.SystemLogUncheckedCreateNestedManyWithoutActorInput
+  calendarEvents?: Prisma.CalendarEventUncheckedCreateNestedManyWithoutUserInput
+  notifyPrefs?: Prisma.NotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
+  news?: Prisma.NewsUncheckedCreateNestedManyWithoutAuthorInput
 }
 
 export type UserUpdateInput = {
@@ -482,8 +553,12 @@ export type UserUpdateInput = {
   loanStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.StringFieldUpdateOperationsInput | string
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   seeded?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  shareContact?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletionRequestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tokensValidFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -505,6 +580,9 @@ export type UserUpdateInput = {
   hourAdjustments?: Prisma.HourAdjustmentUpdateManyWithoutUserNestedInput
   adjustmentsMade?: Prisma.HourAdjustmentUpdateManyWithoutAuthorNestedInput
   systemLogs?: Prisma.SystemLogUpdateManyWithoutActorNestedInput
+  calendarEvents?: Prisma.CalendarEventUpdateManyWithoutUserNestedInput
+  notifyPrefs?: Prisma.NotificationPreferenceUpdateOneWithoutUserNestedInput
+  news?: Prisma.NewsUpdateManyWithoutAuthorNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
@@ -518,8 +596,12 @@ export type UserUncheckedUpdateInput = {
   loanStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.StringFieldUpdateOperationsInput | string
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   seeded?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  shareContact?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletionRequestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tokensValidFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -541,6 +623,9 @@ export type UserUncheckedUpdateInput = {
   hourAdjustments?: Prisma.HourAdjustmentUncheckedUpdateManyWithoutUserNestedInput
   adjustmentsMade?: Prisma.HourAdjustmentUncheckedUpdateManyWithoutAuthorNestedInput
   systemLogs?: Prisma.SystemLogUncheckedUpdateManyWithoutActorNestedInput
+  calendarEvents?: Prisma.CalendarEventUncheckedUpdateManyWithoutUserNestedInput
+  notifyPrefs?: Prisma.NotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
+  news?: Prisma.NewsUncheckedUpdateManyWithoutAuthorNestedInput
 }
 
 export type UserCreateManyInput = {
@@ -554,8 +639,12 @@ export type UserCreateManyInput = {
   loanStatus?: string | null
   avatarUrl?: string | null
   phone?: string | null
+  bio?: string
   active?: boolean
   seeded?: boolean
+  shareContact?: boolean
+  deletionRequestedAt?: Date | string | null
+  deletionReason?: string | null
   tokensValidFrom?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -572,8 +661,12 @@ export type UserUpdateManyMutationInput = {
   loanStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.StringFieldUpdateOperationsInput | string
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   seeded?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  shareContact?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletionRequestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tokensValidFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -590,8 +683,12 @@ export type UserUncheckedUpdateManyInput = {
   loanStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.StringFieldUpdateOperationsInput | string
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   seeded?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  shareContact?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletionRequestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tokensValidFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -608,8 +705,12 @@ export type UserCountOrderByAggregateInput = {
   loanStatus?: Prisma.SortOrder
   avatarUrl?: Prisma.SortOrder
   phone?: Prisma.SortOrder
+  bio?: Prisma.SortOrder
   active?: Prisma.SortOrder
   seeded?: Prisma.SortOrder
+  shareContact?: Prisma.SortOrder
+  deletionRequestedAt?: Prisma.SortOrder
+  deletionReason?: Prisma.SortOrder
   tokensValidFrom?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -626,8 +727,12 @@ export type UserMaxOrderByAggregateInput = {
   loanStatus?: Prisma.SortOrder
   avatarUrl?: Prisma.SortOrder
   phone?: Prisma.SortOrder
+  bio?: Prisma.SortOrder
   active?: Prisma.SortOrder
   seeded?: Prisma.SortOrder
+  shareContact?: Prisma.SortOrder
+  deletionRequestedAt?: Prisma.SortOrder
+  deletionReason?: Prisma.SortOrder
   tokensValidFrom?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -644,8 +749,12 @@ export type UserMinOrderByAggregateInput = {
   loanStatus?: Prisma.SortOrder
   avatarUrl?: Prisma.SortOrder
   phone?: Prisma.SortOrder
+  bio?: Prisma.SortOrder
   active?: Prisma.SortOrder
   seeded?: Prisma.SortOrder
+  shareContact?: Prisma.SortOrder
+  deletionRequestedAt?: Prisma.SortOrder
+  deletionReason?: Prisma.SortOrder
   tokensValidFrom?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -671,6 +780,10 @@ export type NullableStringFieldUpdateOperationsInput = {
 
 export type BoolFieldUpdateOperationsInput = {
   set?: boolean
+}
+
+export type NullableDateTimeFieldUpdateOperationsInput = {
+  set?: Date | string | null
 }
 
 export type DateTimeFieldUpdateOperationsInput = {
@@ -919,6 +1032,22 @@ export type UserUpdateOneRequiredWithoutMessagesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutMessagesInput, Prisma.UserUpdateWithoutMessagesInput>, Prisma.UserUncheckedUpdateWithoutMessagesInput>
 }
 
+export type UserCreateNestedOneWithoutNewsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutNewsInput, Prisma.UserUncheckedCreateWithoutNewsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutNewsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneWithoutNewsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutNewsInput, Prisma.UserUncheckedCreateWithoutNewsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutNewsInput
+  upsert?: Prisma.UserUpsertWithoutNewsInput
+  disconnect?: Prisma.UserWhereInput | boolean
+  delete?: Prisma.UserWhereInput | boolean
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutNewsInput, Prisma.UserUpdateWithoutNewsInput>, Prisma.UserUncheckedUpdateWithoutNewsInput>
+}
+
 export type UserCreateNestedOneWithoutSystemLogsInput = {
   create?: Prisma.XOR<Prisma.UserCreateWithoutSystemLogsInput, Prisma.UserUncheckedCreateWithoutSystemLogsInput>
   connectOrCreate?: Prisma.UserCreateOrConnectWithoutSystemLogsInput
@@ -935,6 +1064,34 @@ export type UserUpdateOneWithoutSystemLogsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutSystemLogsInput, Prisma.UserUpdateWithoutSystemLogsInput>, Prisma.UserUncheckedUpdateWithoutSystemLogsInput>
 }
 
+export type UserCreateNestedOneWithoutCalendarEventsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutCalendarEventsInput, Prisma.UserUncheckedCreateWithoutCalendarEventsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutCalendarEventsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutCalendarEventsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutCalendarEventsInput, Prisma.UserUncheckedCreateWithoutCalendarEventsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutCalendarEventsInput
+  upsert?: Prisma.UserUpsertWithoutCalendarEventsInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutCalendarEventsInput, Prisma.UserUpdateWithoutCalendarEventsInput>, Prisma.UserUncheckedUpdateWithoutCalendarEventsInput>
+}
+
+export type UserCreateNestedOneWithoutNotifyPrefsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutNotifyPrefsInput, Prisma.UserUncheckedCreateWithoutNotifyPrefsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutNotifyPrefsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutNotifyPrefsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutNotifyPrefsInput, Prisma.UserUncheckedCreateWithoutNotifyPrefsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutNotifyPrefsInput
+  upsert?: Prisma.UserUpsertWithoutNotifyPrefsInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutNotifyPrefsInput, Prisma.UserUpdateWithoutNotifyPrefsInput>, Prisma.UserUncheckedUpdateWithoutNotifyPrefsInput>
+}
+
 export type UserCreateWithoutSessionsInput = {
   id?: string
   email: string
@@ -946,8 +1103,12 @@ export type UserCreateWithoutSessionsInput = {
   loanStatus?: string | null
   avatarUrl?: string | null
   phone?: string | null
+  bio?: string
   active?: boolean
   seeded?: boolean
+  shareContact?: boolean
+  deletionRequestedAt?: Date | string | null
+  deletionReason?: string | null
   tokensValidFrom?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -968,6 +1129,9 @@ export type UserCreateWithoutSessionsInput = {
   hourAdjustments?: Prisma.HourAdjustmentCreateNestedManyWithoutUserInput
   adjustmentsMade?: Prisma.HourAdjustmentCreateNestedManyWithoutAuthorInput
   systemLogs?: Prisma.SystemLogCreateNestedManyWithoutActorInput
+  calendarEvents?: Prisma.CalendarEventCreateNestedManyWithoutUserInput
+  notifyPrefs?: Prisma.NotificationPreferenceCreateNestedOneWithoutUserInput
+  news?: Prisma.NewsCreateNestedManyWithoutAuthorInput
 }
 
 export type UserUncheckedCreateWithoutSessionsInput = {
@@ -981,8 +1145,12 @@ export type UserUncheckedCreateWithoutSessionsInput = {
   loanStatus?: string | null
   avatarUrl?: string | null
   phone?: string | null
+  bio?: string
   active?: boolean
   seeded?: boolean
+  shareContact?: boolean
+  deletionRequestedAt?: Date | string | null
+  deletionReason?: string | null
   tokensValidFrom?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1003,6 +1171,9 @@ export type UserUncheckedCreateWithoutSessionsInput = {
   hourAdjustments?: Prisma.HourAdjustmentUncheckedCreateNestedManyWithoutUserInput
   adjustmentsMade?: Prisma.HourAdjustmentUncheckedCreateNestedManyWithoutAuthorInput
   systemLogs?: Prisma.SystemLogUncheckedCreateNestedManyWithoutActorInput
+  calendarEvents?: Prisma.CalendarEventUncheckedCreateNestedManyWithoutUserInput
+  notifyPrefs?: Prisma.NotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
+  news?: Prisma.NewsUncheckedCreateNestedManyWithoutAuthorInput
 }
 
 export type UserCreateOrConnectWithoutSessionsInput = {
@@ -1032,8 +1203,12 @@ export type UserUpdateWithoutSessionsInput = {
   loanStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.StringFieldUpdateOperationsInput | string
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   seeded?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  shareContact?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletionRequestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tokensValidFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1054,6 +1229,9 @@ export type UserUpdateWithoutSessionsInput = {
   hourAdjustments?: Prisma.HourAdjustmentUpdateManyWithoutUserNestedInput
   adjustmentsMade?: Prisma.HourAdjustmentUpdateManyWithoutAuthorNestedInput
   systemLogs?: Prisma.SystemLogUpdateManyWithoutActorNestedInput
+  calendarEvents?: Prisma.CalendarEventUpdateManyWithoutUserNestedInput
+  notifyPrefs?: Prisma.NotificationPreferenceUpdateOneWithoutUserNestedInput
+  news?: Prisma.NewsUpdateManyWithoutAuthorNestedInput
 }
 
 export type UserUncheckedUpdateWithoutSessionsInput = {
@@ -1067,8 +1245,12 @@ export type UserUncheckedUpdateWithoutSessionsInput = {
   loanStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.StringFieldUpdateOperationsInput | string
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   seeded?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  shareContact?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletionRequestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tokensValidFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1089,6 +1271,9 @@ export type UserUncheckedUpdateWithoutSessionsInput = {
   hourAdjustments?: Prisma.HourAdjustmentUncheckedUpdateManyWithoutUserNestedInput
   adjustmentsMade?: Prisma.HourAdjustmentUncheckedUpdateManyWithoutAuthorNestedInput
   systemLogs?: Prisma.SystemLogUncheckedUpdateManyWithoutActorNestedInput
+  calendarEvents?: Prisma.CalendarEventUncheckedUpdateManyWithoutUserNestedInput
+  notifyPrefs?: Prisma.NotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
+  news?: Prisma.NewsUncheckedUpdateManyWithoutAuthorNestedInput
 }
 
 export type UserCreateWithoutResetTokensInput = {
@@ -1102,8 +1287,12 @@ export type UserCreateWithoutResetTokensInput = {
   loanStatus?: string | null
   avatarUrl?: string | null
   phone?: string | null
+  bio?: string
   active?: boolean
   seeded?: boolean
+  shareContact?: boolean
+  deletionRequestedAt?: Date | string | null
+  deletionReason?: string | null
   tokensValidFrom?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1124,6 +1313,9 @@ export type UserCreateWithoutResetTokensInput = {
   hourAdjustments?: Prisma.HourAdjustmentCreateNestedManyWithoutUserInput
   adjustmentsMade?: Prisma.HourAdjustmentCreateNestedManyWithoutAuthorInput
   systemLogs?: Prisma.SystemLogCreateNestedManyWithoutActorInput
+  calendarEvents?: Prisma.CalendarEventCreateNestedManyWithoutUserInput
+  notifyPrefs?: Prisma.NotificationPreferenceCreateNestedOneWithoutUserInput
+  news?: Prisma.NewsCreateNestedManyWithoutAuthorInput
 }
 
 export type UserUncheckedCreateWithoutResetTokensInput = {
@@ -1137,8 +1329,12 @@ export type UserUncheckedCreateWithoutResetTokensInput = {
   loanStatus?: string | null
   avatarUrl?: string | null
   phone?: string | null
+  bio?: string
   active?: boolean
   seeded?: boolean
+  shareContact?: boolean
+  deletionRequestedAt?: Date | string | null
+  deletionReason?: string | null
   tokensValidFrom?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1159,6 +1355,9 @@ export type UserUncheckedCreateWithoutResetTokensInput = {
   hourAdjustments?: Prisma.HourAdjustmentUncheckedCreateNestedManyWithoutUserInput
   adjustmentsMade?: Prisma.HourAdjustmentUncheckedCreateNestedManyWithoutAuthorInput
   systemLogs?: Prisma.SystemLogUncheckedCreateNestedManyWithoutActorInput
+  calendarEvents?: Prisma.CalendarEventUncheckedCreateNestedManyWithoutUserInput
+  notifyPrefs?: Prisma.NotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
+  news?: Prisma.NewsUncheckedCreateNestedManyWithoutAuthorInput
 }
 
 export type UserCreateOrConnectWithoutResetTokensInput = {
@@ -1188,8 +1387,12 @@ export type UserUpdateWithoutResetTokensInput = {
   loanStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.StringFieldUpdateOperationsInput | string
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   seeded?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  shareContact?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletionRequestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tokensValidFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1210,6 +1413,9 @@ export type UserUpdateWithoutResetTokensInput = {
   hourAdjustments?: Prisma.HourAdjustmentUpdateManyWithoutUserNestedInput
   adjustmentsMade?: Prisma.HourAdjustmentUpdateManyWithoutAuthorNestedInput
   systemLogs?: Prisma.SystemLogUpdateManyWithoutActorNestedInput
+  calendarEvents?: Prisma.CalendarEventUpdateManyWithoutUserNestedInput
+  notifyPrefs?: Prisma.NotificationPreferenceUpdateOneWithoutUserNestedInput
+  news?: Prisma.NewsUpdateManyWithoutAuthorNestedInput
 }
 
 export type UserUncheckedUpdateWithoutResetTokensInput = {
@@ -1223,8 +1429,12 @@ export type UserUncheckedUpdateWithoutResetTokensInput = {
   loanStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.StringFieldUpdateOperationsInput | string
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   seeded?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  shareContact?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletionRequestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tokensValidFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1245,6 +1455,9 @@ export type UserUncheckedUpdateWithoutResetTokensInput = {
   hourAdjustments?: Prisma.HourAdjustmentUncheckedUpdateManyWithoutUserNestedInput
   adjustmentsMade?: Prisma.HourAdjustmentUncheckedUpdateManyWithoutAuthorNestedInput
   systemLogs?: Prisma.SystemLogUncheckedUpdateManyWithoutActorNestedInput
+  calendarEvents?: Prisma.CalendarEventUncheckedUpdateManyWithoutUserNestedInput
+  notifyPrefs?: Prisma.NotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
+  news?: Prisma.NewsUncheckedUpdateManyWithoutAuthorNestedInput
 }
 
 export type UserCreateWithoutTwoFactorInput = {
@@ -1258,8 +1471,12 @@ export type UserCreateWithoutTwoFactorInput = {
   loanStatus?: string | null
   avatarUrl?: string | null
   phone?: string | null
+  bio?: string
   active?: boolean
   seeded?: boolean
+  shareContact?: boolean
+  deletionRequestedAt?: Date | string | null
+  deletionReason?: string | null
   tokensValidFrom?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1280,6 +1497,9 @@ export type UserCreateWithoutTwoFactorInput = {
   hourAdjustments?: Prisma.HourAdjustmentCreateNestedManyWithoutUserInput
   adjustmentsMade?: Prisma.HourAdjustmentCreateNestedManyWithoutAuthorInput
   systemLogs?: Prisma.SystemLogCreateNestedManyWithoutActorInput
+  calendarEvents?: Prisma.CalendarEventCreateNestedManyWithoutUserInput
+  notifyPrefs?: Prisma.NotificationPreferenceCreateNestedOneWithoutUserInput
+  news?: Prisma.NewsCreateNestedManyWithoutAuthorInput
 }
 
 export type UserUncheckedCreateWithoutTwoFactorInput = {
@@ -1293,8 +1513,12 @@ export type UserUncheckedCreateWithoutTwoFactorInput = {
   loanStatus?: string | null
   avatarUrl?: string | null
   phone?: string | null
+  bio?: string
   active?: boolean
   seeded?: boolean
+  shareContact?: boolean
+  deletionRequestedAt?: Date | string | null
+  deletionReason?: string | null
   tokensValidFrom?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1315,6 +1539,9 @@ export type UserUncheckedCreateWithoutTwoFactorInput = {
   hourAdjustments?: Prisma.HourAdjustmentUncheckedCreateNestedManyWithoutUserInput
   adjustmentsMade?: Prisma.HourAdjustmentUncheckedCreateNestedManyWithoutAuthorInput
   systemLogs?: Prisma.SystemLogUncheckedCreateNestedManyWithoutActorInput
+  calendarEvents?: Prisma.CalendarEventUncheckedCreateNestedManyWithoutUserInput
+  notifyPrefs?: Prisma.NotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
+  news?: Prisma.NewsUncheckedCreateNestedManyWithoutAuthorInput
 }
 
 export type UserCreateOrConnectWithoutTwoFactorInput = {
@@ -1344,8 +1571,12 @@ export type UserUpdateWithoutTwoFactorInput = {
   loanStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.StringFieldUpdateOperationsInput | string
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   seeded?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  shareContact?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletionRequestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tokensValidFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1366,6 +1597,9 @@ export type UserUpdateWithoutTwoFactorInput = {
   hourAdjustments?: Prisma.HourAdjustmentUpdateManyWithoutUserNestedInput
   adjustmentsMade?: Prisma.HourAdjustmentUpdateManyWithoutAuthorNestedInput
   systemLogs?: Prisma.SystemLogUpdateManyWithoutActorNestedInput
+  calendarEvents?: Prisma.CalendarEventUpdateManyWithoutUserNestedInput
+  notifyPrefs?: Prisma.NotificationPreferenceUpdateOneWithoutUserNestedInput
+  news?: Prisma.NewsUpdateManyWithoutAuthorNestedInput
 }
 
 export type UserUncheckedUpdateWithoutTwoFactorInput = {
@@ -1379,8 +1613,12 @@ export type UserUncheckedUpdateWithoutTwoFactorInput = {
   loanStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.StringFieldUpdateOperationsInput | string
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   seeded?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  shareContact?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletionRequestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tokensValidFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1401,6 +1639,9 @@ export type UserUncheckedUpdateWithoutTwoFactorInput = {
   hourAdjustments?: Prisma.HourAdjustmentUncheckedUpdateManyWithoutUserNestedInput
   adjustmentsMade?: Prisma.HourAdjustmentUncheckedUpdateManyWithoutAuthorNestedInput
   systemLogs?: Prisma.SystemLogUncheckedUpdateManyWithoutActorNestedInput
+  calendarEvents?: Prisma.CalendarEventUncheckedUpdateManyWithoutUserNestedInput
+  notifyPrefs?: Prisma.NotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
+  news?: Prisma.NewsUncheckedUpdateManyWithoutAuthorNestedInput
 }
 
 export type UserCreateWithoutOrganizedInput = {
@@ -1414,8 +1655,12 @@ export type UserCreateWithoutOrganizedInput = {
   loanStatus?: string | null
   avatarUrl?: string | null
   phone?: string | null
+  bio?: string
   active?: boolean
   seeded?: boolean
+  shareContact?: boolean
+  deletionRequestedAt?: Date | string | null
+  deletionReason?: string | null
   tokensValidFrom?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1436,6 +1681,9 @@ export type UserCreateWithoutOrganizedInput = {
   hourAdjustments?: Prisma.HourAdjustmentCreateNestedManyWithoutUserInput
   adjustmentsMade?: Prisma.HourAdjustmentCreateNestedManyWithoutAuthorInput
   systemLogs?: Prisma.SystemLogCreateNestedManyWithoutActorInput
+  calendarEvents?: Prisma.CalendarEventCreateNestedManyWithoutUserInput
+  notifyPrefs?: Prisma.NotificationPreferenceCreateNestedOneWithoutUserInput
+  news?: Prisma.NewsCreateNestedManyWithoutAuthorInput
 }
 
 export type UserUncheckedCreateWithoutOrganizedInput = {
@@ -1449,8 +1697,12 @@ export type UserUncheckedCreateWithoutOrganizedInput = {
   loanStatus?: string | null
   avatarUrl?: string | null
   phone?: string | null
+  bio?: string
   active?: boolean
   seeded?: boolean
+  shareContact?: boolean
+  deletionRequestedAt?: Date | string | null
+  deletionReason?: string | null
   tokensValidFrom?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1471,6 +1723,9 @@ export type UserUncheckedCreateWithoutOrganizedInput = {
   hourAdjustments?: Prisma.HourAdjustmentUncheckedCreateNestedManyWithoutUserInput
   adjustmentsMade?: Prisma.HourAdjustmentUncheckedCreateNestedManyWithoutAuthorInput
   systemLogs?: Prisma.SystemLogUncheckedCreateNestedManyWithoutActorInput
+  calendarEvents?: Prisma.CalendarEventUncheckedCreateNestedManyWithoutUserInput
+  notifyPrefs?: Prisma.NotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
+  news?: Prisma.NewsUncheckedCreateNestedManyWithoutAuthorInput
 }
 
 export type UserCreateOrConnectWithoutOrganizedInput = {
@@ -1500,8 +1755,12 @@ export type UserUpdateWithoutOrganizedInput = {
   loanStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.StringFieldUpdateOperationsInput | string
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   seeded?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  shareContact?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletionRequestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tokensValidFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1522,6 +1781,9 @@ export type UserUpdateWithoutOrganizedInput = {
   hourAdjustments?: Prisma.HourAdjustmentUpdateManyWithoutUserNestedInput
   adjustmentsMade?: Prisma.HourAdjustmentUpdateManyWithoutAuthorNestedInput
   systemLogs?: Prisma.SystemLogUpdateManyWithoutActorNestedInput
+  calendarEvents?: Prisma.CalendarEventUpdateManyWithoutUserNestedInput
+  notifyPrefs?: Prisma.NotificationPreferenceUpdateOneWithoutUserNestedInput
+  news?: Prisma.NewsUpdateManyWithoutAuthorNestedInput
 }
 
 export type UserUncheckedUpdateWithoutOrganizedInput = {
@@ -1535,8 +1797,12 @@ export type UserUncheckedUpdateWithoutOrganizedInput = {
   loanStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.StringFieldUpdateOperationsInput | string
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   seeded?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  shareContact?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletionRequestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tokensValidFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1557,6 +1823,9 @@ export type UserUncheckedUpdateWithoutOrganizedInput = {
   hourAdjustments?: Prisma.HourAdjustmentUncheckedUpdateManyWithoutUserNestedInput
   adjustmentsMade?: Prisma.HourAdjustmentUncheckedUpdateManyWithoutAuthorNestedInput
   systemLogs?: Prisma.SystemLogUncheckedUpdateManyWithoutActorNestedInput
+  calendarEvents?: Prisma.CalendarEventUncheckedUpdateManyWithoutUserNestedInput
+  notifyPrefs?: Prisma.NotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
+  news?: Prisma.NewsUncheckedUpdateManyWithoutAuthorNestedInput
 }
 
 export type UserCreateWithoutRegistrationsInput = {
@@ -1570,8 +1839,12 @@ export type UserCreateWithoutRegistrationsInput = {
   loanStatus?: string | null
   avatarUrl?: string | null
   phone?: string | null
+  bio?: string
   active?: boolean
   seeded?: boolean
+  shareContact?: boolean
+  deletionRequestedAt?: Date | string | null
+  deletionReason?: string | null
   tokensValidFrom?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1592,6 +1865,9 @@ export type UserCreateWithoutRegistrationsInput = {
   hourAdjustments?: Prisma.HourAdjustmentCreateNestedManyWithoutUserInput
   adjustmentsMade?: Prisma.HourAdjustmentCreateNestedManyWithoutAuthorInput
   systemLogs?: Prisma.SystemLogCreateNestedManyWithoutActorInput
+  calendarEvents?: Prisma.CalendarEventCreateNestedManyWithoutUserInput
+  notifyPrefs?: Prisma.NotificationPreferenceCreateNestedOneWithoutUserInput
+  news?: Prisma.NewsCreateNestedManyWithoutAuthorInput
 }
 
 export type UserUncheckedCreateWithoutRegistrationsInput = {
@@ -1605,8 +1881,12 @@ export type UserUncheckedCreateWithoutRegistrationsInput = {
   loanStatus?: string | null
   avatarUrl?: string | null
   phone?: string | null
+  bio?: string
   active?: boolean
   seeded?: boolean
+  shareContact?: boolean
+  deletionRequestedAt?: Date | string | null
+  deletionReason?: string | null
   tokensValidFrom?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1627,6 +1907,9 @@ export type UserUncheckedCreateWithoutRegistrationsInput = {
   hourAdjustments?: Prisma.HourAdjustmentUncheckedCreateNestedManyWithoutUserInput
   adjustmentsMade?: Prisma.HourAdjustmentUncheckedCreateNestedManyWithoutAuthorInput
   systemLogs?: Prisma.SystemLogUncheckedCreateNestedManyWithoutActorInput
+  calendarEvents?: Prisma.CalendarEventUncheckedCreateNestedManyWithoutUserInput
+  notifyPrefs?: Prisma.NotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
+  news?: Prisma.NewsUncheckedCreateNestedManyWithoutAuthorInput
 }
 
 export type UserCreateOrConnectWithoutRegistrationsInput = {
@@ -1656,8 +1939,12 @@ export type UserUpdateWithoutRegistrationsInput = {
   loanStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.StringFieldUpdateOperationsInput | string
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   seeded?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  shareContact?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletionRequestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tokensValidFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1678,6 +1965,9 @@ export type UserUpdateWithoutRegistrationsInput = {
   hourAdjustments?: Prisma.HourAdjustmentUpdateManyWithoutUserNestedInput
   adjustmentsMade?: Prisma.HourAdjustmentUpdateManyWithoutAuthorNestedInput
   systemLogs?: Prisma.SystemLogUpdateManyWithoutActorNestedInput
+  calendarEvents?: Prisma.CalendarEventUpdateManyWithoutUserNestedInput
+  notifyPrefs?: Prisma.NotificationPreferenceUpdateOneWithoutUserNestedInput
+  news?: Prisma.NewsUpdateManyWithoutAuthorNestedInput
 }
 
 export type UserUncheckedUpdateWithoutRegistrationsInput = {
@@ -1691,8 +1981,12 @@ export type UserUncheckedUpdateWithoutRegistrationsInput = {
   loanStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.StringFieldUpdateOperationsInput | string
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   seeded?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  shareContact?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletionRequestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tokensValidFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1713,6 +2007,9 @@ export type UserUncheckedUpdateWithoutRegistrationsInput = {
   hourAdjustments?: Prisma.HourAdjustmentUncheckedUpdateManyWithoutUserNestedInput
   adjustmentsMade?: Prisma.HourAdjustmentUncheckedUpdateManyWithoutAuthorNestedInput
   systemLogs?: Prisma.SystemLogUncheckedUpdateManyWithoutActorNestedInput
+  calendarEvents?: Prisma.CalendarEventUncheckedUpdateManyWithoutUserNestedInput
+  notifyPrefs?: Prisma.NotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
+  news?: Prisma.NewsUncheckedUpdateManyWithoutAuthorNestedInput
 }
 
 export type UserCreateWithoutFavoritesInput = {
@@ -1726,8 +2023,12 @@ export type UserCreateWithoutFavoritesInput = {
   loanStatus?: string | null
   avatarUrl?: string | null
   phone?: string | null
+  bio?: string
   active?: boolean
   seeded?: boolean
+  shareContact?: boolean
+  deletionRequestedAt?: Date | string | null
+  deletionReason?: string | null
   tokensValidFrom?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1748,6 +2049,9 @@ export type UserCreateWithoutFavoritesInput = {
   hourAdjustments?: Prisma.HourAdjustmentCreateNestedManyWithoutUserInput
   adjustmentsMade?: Prisma.HourAdjustmentCreateNestedManyWithoutAuthorInput
   systemLogs?: Prisma.SystemLogCreateNestedManyWithoutActorInput
+  calendarEvents?: Prisma.CalendarEventCreateNestedManyWithoutUserInput
+  notifyPrefs?: Prisma.NotificationPreferenceCreateNestedOneWithoutUserInput
+  news?: Prisma.NewsCreateNestedManyWithoutAuthorInput
 }
 
 export type UserUncheckedCreateWithoutFavoritesInput = {
@@ -1761,8 +2065,12 @@ export type UserUncheckedCreateWithoutFavoritesInput = {
   loanStatus?: string | null
   avatarUrl?: string | null
   phone?: string | null
+  bio?: string
   active?: boolean
   seeded?: boolean
+  shareContact?: boolean
+  deletionRequestedAt?: Date | string | null
+  deletionReason?: string | null
   tokensValidFrom?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1783,6 +2091,9 @@ export type UserUncheckedCreateWithoutFavoritesInput = {
   hourAdjustments?: Prisma.HourAdjustmentUncheckedCreateNestedManyWithoutUserInput
   adjustmentsMade?: Prisma.HourAdjustmentUncheckedCreateNestedManyWithoutAuthorInput
   systemLogs?: Prisma.SystemLogUncheckedCreateNestedManyWithoutActorInput
+  calendarEvents?: Prisma.CalendarEventUncheckedCreateNestedManyWithoutUserInput
+  notifyPrefs?: Prisma.NotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
+  news?: Prisma.NewsUncheckedCreateNestedManyWithoutAuthorInput
 }
 
 export type UserCreateOrConnectWithoutFavoritesInput = {
@@ -1812,8 +2123,12 @@ export type UserUpdateWithoutFavoritesInput = {
   loanStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.StringFieldUpdateOperationsInput | string
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   seeded?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  shareContact?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletionRequestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tokensValidFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1834,6 +2149,9 @@ export type UserUpdateWithoutFavoritesInput = {
   hourAdjustments?: Prisma.HourAdjustmentUpdateManyWithoutUserNestedInput
   adjustmentsMade?: Prisma.HourAdjustmentUpdateManyWithoutAuthorNestedInput
   systemLogs?: Prisma.SystemLogUpdateManyWithoutActorNestedInput
+  calendarEvents?: Prisma.CalendarEventUpdateManyWithoutUserNestedInput
+  notifyPrefs?: Prisma.NotificationPreferenceUpdateOneWithoutUserNestedInput
+  news?: Prisma.NewsUpdateManyWithoutAuthorNestedInput
 }
 
 export type UserUncheckedUpdateWithoutFavoritesInput = {
@@ -1847,8 +2165,12 @@ export type UserUncheckedUpdateWithoutFavoritesInput = {
   loanStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.StringFieldUpdateOperationsInput | string
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   seeded?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  shareContact?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletionRequestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tokensValidFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1869,6 +2191,9 @@ export type UserUncheckedUpdateWithoutFavoritesInput = {
   hourAdjustments?: Prisma.HourAdjustmentUncheckedUpdateManyWithoutUserNestedInput
   adjustmentsMade?: Prisma.HourAdjustmentUncheckedUpdateManyWithoutAuthorNestedInput
   systemLogs?: Prisma.SystemLogUncheckedUpdateManyWithoutActorNestedInput
+  calendarEvents?: Prisma.CalendarEventUncheckedUpdateManyWithoutUserNestedInput
+  notifyPrefs?: Prisma.NotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
+  news?: Prisma.NewsUncheckedUpdateManyWithoutAuthorNestedInput
 }
 
 export type UserCreateWithoutEvidenceSeenInput = {
@@ -1882,8 +2207,12 @@ export type UserCreateWithoutEvidenceSeenInput = {
   loanStatus?: string | null
   avatarUrl?: string | null
   phone?: string | null
+  bio?: string
   active?: boolean
   seeded?: boolean
+  shareContact?: boolean
+  deletionRequestedAt?: Date | string | null
+  deletionReason?: string | null
   tokensValidFrom?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1904,6 +2233,9 @@ export type UserCreateWithoutEvidenceSeenInput = {
   hourAdjustments?: Prisma.HourAdjustmentCreateNestedManyWithoutUserInput
   adjustmentsMade?: Prisma.HourAdjustmentCreateNestedManyWithoutAuthorInput
   systemLogs?: Prisma.SystemLogCreateNestedManyWithoutActorInput
+  calendarEvents?: Prisma.CalendarEventCreateNestedManyWithoutUserInput
+  notifyPrefs?: Prisma.NotificationPreferenceCreateNestedOneWithoutUserInput
+  news?: Prisma.NewsCreateNestedManyWithoutAuthorInput
 }
 
 export type UserUncheckedCreateWithoutEvidenceSeenInput = {
@@ -1917,8 +2249,12 @@ export type UserUncheckedCreateWithoutEvidenceSeenInput = {
   loanStatus?: string | null
   avatarUrl?: string | null
   phone?: string | null
+  bio?: string
   active?: boolean
   seeded?: boolean
+  shareContact?: boolean
+  deletionRequestedAt?: Date | string | null
+  deletionReason?: string | null
   tokensValidFrom?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1939,6 +2275,9 @@ export type UserUncheckedCreateWithoutEvidenceSeenInput = {
   hourAdjustments?: Prisma.HourAdjustmentUncheckedCreateNestedManyWithoutUserInput
   adjustmentsMade?: Prisma.HourAdjustmentUncheckedCreateNestedManyWithoutAuthorInput
   systemLogs?: Prisma.SystemLogUncheckedCreateNestedManyWithoutActorInput
+  calendarEvents?: Prisma.CalendarEventUncheckedCreateNestedManyWithoutUserInput
+  notifyPrefs?: Prisma.NotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
+  news?: Prisma.NewsUncheckedCreateNestedManyWithoutAuthorInput
 }
 
 export type UserCreateOrConnectWithoutEvidenceSeenInput = {
@@ -1968,8 +2307,12 @@ export type UserUpdateWithoutEvidenceSeenInput = {
   loanStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.StringFieldUpdateOperationsInput | string
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   seeded?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  shareContact?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletionRequestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tokensValidFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1990,6 +2333,9 @@ export type UserUpdateWithoutEvidenceSeenInput = {
   hourAdjustments?: Prisma.HourAdjustmentUpdateManyWithoutUserNestedInput
   adjustmentsMade?: Prisma.HourAdjustmentUpdateManyWithoutAuthorNestedInput
   systemLogs?: Prisma.SystemLogUpdateManyWithoutActorNestedInput
+  calendarEvents?: Prisma.CalendarEventUpdateManyWithoutUserNestedInput
+  notifyPrefs?: Prisma.NotificationPreferenceUpdateOneWithoutUserNestedInput
+  news?: Prisma.NewsUpdateManyWithoutAuthorNestedInput
 }
 
 export type UserUncheckedUpdateWithoutEvidenceSeenInput = {
@@ -2003,8 +2349,12 @@ export type UserUncheckedUpdateWithoutEvidenceSeenInput = {
   loanStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.StringFieldUpdateOperationsInput | string
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   seeded?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  shareContact?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletionRequestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tokensValidFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2025,6 +2375,9 @@ export type UserUncheckedUpdateWithoutEvidenceSeenInput = {
   hourAdjustments?: Prisma.HourAdjustmentUncheckedUpdateManyWithoutUserNestedInput
   adjustmentsMade?: Prisma.HourAdjustmentUncheckedUpdateManyWithoutAuthorNestedInput
   systemLogs?: Prisma.SystemLogUncheckedUpdateManyWithoutActorNestedInput
+  calendarEvents?: Prisma.CalendarEventUncheckedUpdateManyWithoutUserNestedInput
+  notifyPrefs?: Prisma.NotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
+  news?: Prisma.NewsUncheckedUpdateManyWithoutAuthorNestedInput
 }
 
 export type UserCreateWithoutAppealsInput = {
@@ -2038,8 +2391,12 @@ export type UserCreateWithoutAppealsInput = {
   loanStatus?: string | null
   avatarUrl?: string | null
   phone?: string | null
+  bio?: string
   active?: boolean
   seeded?: boolean
+  shareContact?: boolean
+  deletionRequestedAt?: Date | string | null
+  deletionReason?: string | null
   tokensValidFrom?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -2060,6 +2417,9 @@ export type UserCreateWithoutAppealsInput = {
   hourAdjustments?: Prisma.HourAdjustmentCreateNestedManyWithoutUserInput
   adjustmentsMade?: Prisma.HourAdjustmentCreateNestedManyWithoutAuthorInput
   systemLogs?: Prisma.SystemLogCreateNestedManyWithoutActorInput
+  calendarEvents?: Prisma.CalendarEventCreateNestedManyWithoutUserInput
+  notifyPrefs?: Prisma.NotificationPreferenceCreateNestedOneWithoutUserInput
+  news?: Prisma.NewsCreateNestedManyWithoutAuthorInput
 }
 
 export type UserUncheckedCreateWithoutAppealsInput = {
@@ -2073,8 +2433,12 @@ export type UserUncheckedCreateWithoutAppealsInput = {
   loanStatus?: string | null
   avatarUrl?: string | null
   phone?: string | null
+  bio?: string
   active?: boolean
   seeded?: boolean
+  shareContact?: boolean
+  deletionRequestedAt?: Date | string | null
+  deletionReason?: string | null
   tokensValidFrom?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -2095,6 +2459,9 @@ export type UserUncheckedCreateWithoutAppealsInput = {
   hourAdjustments?: Prisma.HourAdjustmentUncheckedCreateNestedManyWithoutUserInput
   adjustmentsMade?: Prisma.HourAdjustmentUncheckedCreateNestedManyWithoutAuthorInput
   systemLogs?: Prisma.SystemLogUncheckedCreateNestedManyWithoutActorInput
+  calendarEvents?: Prisma.CalendarEventUncheckedCreateNestedManyWithoutUserInput
+  notifyPrefs?: Prisma.NotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
+  news?: Prisma.NewsUncheckedCreateNestedManyWithoutAuthorInput
 }
 
 export type UserCreateOrConnectWithoutAppealsInput = {
@@ -2113,8 +2480,12 @@ export type UserCreateWithoutAppealsJudgedInput = {
   loanStatus?: string | null
   avatarUrl?: string | null
   phone?: string | null
+  bio?: string
   active?: boolean
   seeded?: boolean
+  shareContact?: boolean
+  deletionRequestedAt?: Date | string | null
+  deletionReason?: string | null
   tokensValidFrom?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -2135,6 +2506,9 @@ export type UserCreateWithoutAppealsJudgedInput = {
   hourAdjustments?: Prisma.HourAdjustmentCreateNestedManyWithoutUserInput
   adjustmentsMade?: Prisma.HourAdjustmentCreateNestedManyWithoutAuthorInput
   systemLogs?: Prisma.SystemLogCreateNestedManyWithoutActorInput
+  calendarEvents?: Prisma.CalendarEventCreateNestedManyWithoutUserInput
+  notifyPrefs?: Prisma.NotificationPreferenceCreateNestedOneWithoutUserInput
+  news?: Prisma.NewsCreateNestedManyWithoutAuthorInput
 }
 
 export type UserUncheckedCreateWithoutAppealsJudgedInput = {
@@ -2148,8 +2522,12 @@ export type UserUncheckedCreateWithoutAppealsJudgedInput = {
   loanStatus?: string | null
   avatarUrl?: string | null
   phone?: string | null
+  bio?: string
   active?: boolean
   seeded?: boolean
+  shareContact?: boolean
+  deletionRequestedAt?: Date | string | null
+  deletionReason?: string | null
   tokensValidFrom?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -2170,6 +2548,9 @@ export type UserUncheckedCreateWithoutAppealsJudgedInput = {
   hourAdjustments?: Prisma.HourAdjustmentUncheckedCreateNestedManyWithoutUserInput
   adjustmentsMade?: Prisma.HourAdjustmentUncheckedCreateNestedManyWithoutAuthorInput
   systemLogs?: Prisma.SystemLogUncheckedCreateNestedManyWithoutActorInput
+  calendarEvents?: Prisma.CalendarEventUncheckedCreateNestedManyWithoutUserInput
+  notifyPrefs?: Prisma.NotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
+  news?: Prisma.NewsUncheckedCreateNestedManyWithoutAuthorInput
 }
 
 export type UserCreateOrConnectWithoutAppealsJudgedInput = {
@@ -2199,8 +2580,12 @@ export type UserUpdateWithoutAppealsInput = {
   loanStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.StringFieldUpdateOperationsInput | string
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   seeded?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  shareContact?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletionRequestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tokensValidFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2221,6 +2606,9 @@ export type UserUpdateWithoutAppealsInput = {
   hourAdjustments?: Prisma.HourAdjustmentUpdateManyWithoutUserNestedInput
   adjustmentsMade?: Prisma.HourAdjustmentUpdateManyWithoutAuthorNestedInput
   systemLogs?: Prisma.SystemLogUpdateManyWithoutActorNestedInput
+  calendarEvents?: Prisma.CalendarEventUpdateManyWithoutUserNestedInput
+  notifyPrefs?: Prisma.NotificationPreferenceUpdateOneWithoutUserNestedInput
+  news?: Prisma.NewsUpdateManyWithoutAuthorNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAppealsInput = {
@@ -2234,8 +2622,12 @@ export type UserUncheckedUpdateWithoutAppealsInput = {
   loanStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.StringFieldUpdateOperationsInput | string
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   seeded?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  shareContact?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletionRequestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tokensValidFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2256,6 +2648,9 @@ export type UserUncheckedUpdateWithoutAppealsInput = {
   hourAdjustments?: Prisma.HourAdjustmentUncheckedUpdateManyWithoutUserNestedInput
   adjustmentsMade?: Prisma.HourAdjustmentUncheckedUpdateManyWithoutAuthorNestedInput
   systemLogs?: Prisma.SystemLogUncheckedUpdateManyWithoutActorNestedInput
+  calendarEvents?: Prisma.CalendarEventUncheckedUpdateManyWithoutUserNestedInput
+  notifyPrefs?: Prisma.NotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
+  news?: Prisma.NewsUncheckedUpdateManyWithoutAuthorNestedInput
 }
 
 export type UserUpsertWithoutAppealsJudgedInput = {
@@ -2280,8 +2675,12 @@ export type UserUpdateWithoutAppealsJudgedInput = {
   loanStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.StringFieldUpdateOperationsInput | string
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   seeded?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  shareContact?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletionRequestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tokensValidFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2302,6 +2701,9 @@ export type UserUpdateWithoutAppealsJudgedInput = {
   hourAdjustments?: Prisma.HourAdjustmentUpdateManyWithoutUserNestedInput
   adjustmentsMade?: Prisma.HourAdjustmentUpdateManyWithoutAuthorNestedInput
   systemLogs?: Prisma.SystemLogUpdateManyWithoutActorNestedInput
+  calendarEvents?: Prisma.CalendarEventUpdateManyWithoutUserNestedInput
+  notifyPrefs?: Prisma.NotificationPreferenceUpdateOneWithoutUserNestedInput
+  news?: Prisma.NewsUpdateManyWithoutAuthorNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAppealsJudgedInput = {
@@ -2315,8 +2717,12 @@ export type UserUncheckedUpdateWithoutAppealsJudgedInput = {
   loanStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.StringFieldUpdateOperationsInput | string
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   seeded?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  shareContact?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletionRequestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tokensValidFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2337,6 +2743,9 @@ export type UserUncheckedUpdateWithoutAppealsJudgedInput = {
   hourAdjustments?: Prisma.HourAdjustmentUncheckedUpdateManyWithoutUserNestedInput
   adjustmentsMade?: Prisma.HourAdjustmentUncheckedUpdateManyWithoutAuthorNestedInput
   systemLogs?: Prisma.SystemLogUncheckedUpdateManyWithoutActorNestedInput
+  calendarEvents?: Prisma.CalendarEventUncheckedUpdateManyWithoutUserNestedInput
+  notifyPrefs?: Prisma.NotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
+  news?: Prisma.NewsUncheckedUpdateManyWithoutAuthorNestedInput
 }
 
 export type UserCreateWithoutHourAdjustmentsInput = {
@@ -2350,8 +2759,12 @@ export type UserCreateWithoutHourAdjustmentsInput = {
   loanStatus?: string | null
   avatarUrl?: string | null
   phone?: string | null
+  bio?: string
   active?: boolean
   seeded?: boolean
+  shareContact?: boolean
+  deletionRequestedAt?: Date | string | null
+  deletionReason?: string | null
   tokensValidFrom?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -2372,6 +2785,9 @@ export type UserCreateWithoutHourAdjustmentsInput = {
   threadsAsStaff?: Prisma.ChatThreadCreateNestedManyWithoutStaffInput
   adjustmentsMade?: Prisma.HourAdjustmentCreateNestedManyWithoutAuthorInput
   systemLogs?: Prisma.SystemLogCreateNestedManyWithoutActorInput
+  calendarEvents?: Prisma.CalendarEventCreateNestedManyWithoutUserInput
+  notifyPrefs?: Prisma.NotificationPreferenceCreateNestedOneWithoutUserInput
+  news?: Prisma.NewsCreateNestedManyWithoutAuthorInput
 }
 
 export type UserUncheckedCreateWithoutHourAdjustmentsInput = {
@@ -2385,8 +2801,12 @@ export type UserUncheckedCreateWithoutHourAdjustmentsInput = {
   loanStatus?: string | null
   avatarUrl?: string | null
   phone?: string | null
+  bio?: string
   active?: boolean
   seeded?: boolean
+  shareContact?: boolean
+  deletionRequestedAt?: Date | string | null
+  deletionReason?: string | null
   tokensValidFrom?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -2407,6 +2827,9 @@ export type UserUncheckedCreateWithoutHourAdjustmentsInput = {
   threadsAsStaff?: Prisma.ChatThreadUncheckedCreateNestedManyWithoutStaffInput
   adjustmentsMade?: Prisma.HourAdjustmentUncheckedCreateNestedManyWithoutAuthorInput
   systemLogs?: Prisma.SystemLogUncheckedCreateNestedManyWithoutActorInput
+  calendarEvents?: Prisma.CalendarEventUncheckedCreateNestedManyWithoutUserInput
+  notifyPrefs?: Prisma.NotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
+  news?: Prisma.NewsUncheckedCreateNestedManyWithoutAuthorInput
 }
 
 export type UserCreateOrConnectWithoutHourAdjustmentsInput = {
@@ -2425,8 +2848,12 @@ export type UserCreateWithoutAdjustmentsMadeInput = {
   loanStatus?: string | null
   avatarUrl?: string | null
   phone?: string | null
+  bio?: string
   active?: boolean
   seeded?: boolean
+  shareContact?: boolean
+  deletionRequestedAt?: Date | string | null
+  deletionReason?: string | null
   tokensValidFrom?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -2447,6 +2874,9 @@ export type UserCreateWithoutAdjustmentsMadeInput = {
   threadsAsStaff?: Prisma.ChatThreadCreateNestedManyWithoutStaffInput
   hourAdjustments?: Prisma.HourAdjustmentCreateNestedManyWithoutUserInput
   systemLogs?: Prisma.SystemLogCreateNestedManyWithoutActorInput
+  calendarEvents?: Prisma.CalendarEventCreateNestedManyWithoutUserInput
+  notifyPrefs?: Prisma.NotificationPreferenceCreateNestedOneWithoutUserInput
+  news?: Prisma.NewsCreateNestedManyWithoutAuthorInput
 }
 
 export type UserUncheckedCreateWithoutAdjustmentsMadeInput = {
@@ -2460,8 +2890,12 @@ export type UserUncheckedCreateWithoutAdjustmentsMadeInput = {
   loanStatus?: string | null
   avatarUrl?: string | null
   phone?: string | null
+  bio?: string
   active?: boolean
   seeded?: boolean
+  shareContact?: boolean
+  deletionRequestedAt?: Date | string | null
+  deletionReason?: string | null
   tokensValidFrom?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -2482,6 +2916,9 @@ export type UserUncheckedCreateWithoutAdjustmentsMadeInput = {
   threadsAsStaff?: Prisma.ChatThreadUncheckedCreateNestedManyWithoutStaffInput
   hourAdjustments?: Prisma.HourAdjustmentUncheckedCreateNestedManyWithoutUserInput
   systemLogs?: Prisma.SystemLogUncheckedCreateNestedManyWithoutActorInput
+  calendarEvents?: Prisma.CalendarEventUncheckedCreateNestedManyWithoutUserInput
+  notifyPrefs?: Prisma.NotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
+  news?: Prisma.NewsUncheckedCreateNestedManyWithoutAuthorInput
 }
 
 export type UserCreateOrConnectWithoutAdjustmentsMadeInput = {
@@ -2511,8 +2948,12 @@ export type UserUpdateWithoutHourAdjustmentsInput = {
   loanStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.StringFieldUpdateOperationsInput | string
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   seeded?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  shareContact?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletionRequestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tokensValidFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2533,6 +2974,9 @@ export type UserUpdateWithoutHourAdjustmentsInput = {
   threadsAsStaff?: Prisma.ChatThreadUpdateManyWithoutStaffNestedInput
   adjustmentsMade?: Prisma.HourAdjustmentUpdateManyWithoutAuthorNestedInput
   systemLogs?: Prisma.SystemLogUpdateManyWithoutActorNestedInput
+  calendarEvents?: Prisma.CalendarEventUpdateManyWithoutUserNestedInput
+  notifyPrefs?: Prisma.NotificationPreferenceUpdateOneWithoutUserNestedInput
+  news?: Prisma.NewsUpdateManyWithoutAuthorNestedInput
 }
 
 export type UserUncheckedUpdateWithoutHourAdjustmentsInput = {
@@ -2546,8 +2990,12 @@ export type UserUncheckedUpdateWithoutHourAdjustmentsInput = {
   loanStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.StringFieldUpdateOperationsInput | string
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   seeded?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  shareContact?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletionRequestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tokensValidFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2568,6 +3016,9 @@ export type UserUncheckedUpdateWithoutHourAdjustmentsInput = {
   threadsAsStaff?: Prisma.ChatThreadUncheckedUpdateManyWithoutStaffNestedInput
   adjustmentsMade?: Prisma.HourAdjustmentUncheckedUpdateManyWithoutAuthorNestedInput
   systemLogs?: Prisma.SystemLogUncheckedUpdateManyWithoutActorNestedInput
+  calendarEvents?: Prisma.CalendarEventUncheckedUpdateManyWithoutUserNestedInput
+  notifyPrefs?: Prisma.NotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
+  news?: Prisma.NewsUncheckedUpdateManyWithoutAuthorNestedInput
 }
 
 export type UserUpsertWithoutAdjustmentsMadeInput = {
@@ -2592,8 +3043,12 @@ export type UserUpdateWithoutAdjustmentsMadeInput = {
   loanStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.StringFieldUpdateOperationsInput | string
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   seeded?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  shareContact?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletionRequestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tokensValidFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2614,6 +3069,9 @@ export type UserUpdateWithoutAdjustmentsMadeInput = {
   threadsAsStaff?: Prisma.ChatThreadUpdateManyWithoutStaffNestedInput
   hourAdjustments?: Prisma.HourAdjustmentUpdateManyWithoutUserNestedInput
   systemLogs?: Prisma.SystemLogUpdateManyWithoutActorNestedInput
+  calendarEvents?: Prisma.CalendarEventUpdateManyWithoutUserNestedInput
+  notifyPrefs?: Prisma.NotificationPreferenceUpdateOneWithoutUserNestedInput
+  news?: Prisma.NewsUpdateManyWithoutAuthorNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAdjustmentsMadeInput = {
@@ -2627,8 +3085,12 @@ export type UserUncheckedUpdateWithoutAdjustmentsMadeInput = {
   loanStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.StringFieldUpdateOperationsInput | string
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   seeded?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  shareContact?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletionRequestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tokensValidFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2649,6 +3111,9 @@ export type UserUncheckedUpdateWithoutAdjustmentsMadeInput = {
   threadsAsStaff?: Prisma.ChatThreadUncheckedUpdateManyWithoutStaffNestedInput
   hourAdjustments?: Prisma.HourAdjustmentUncheckedUpdateManyWithoutUserNestedInput
   systemLogs?: Prisma.SystemLogUncheckedUpdateManyWithoutActorNestedInput
+  calendarEvents?: Prisma.CalendarEventUncheckedUpdateManyWithoutUserNestedInput
+  notifyPrefs?: Prisma.NotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
+  news?: Prisma.NewsUncheckedUpdateManyWithoutAuthorNestedInput
 }
 
 export type UserCreateWithoutCertificatesInput = {
@@ -2662,8 +3127,12 @@ export type UserCreateWithoutCertificatesInput = {
   loanStatus?: string | null
   avatarUrl?: string | null
   phone?: string | null
+  bio?: string
   active?: boolean
   seeded?: boolean
+  shareContact?: boolean
+  deletionRequestedAt?: Date | string | null
+  deletionReason?: string | null
   tokensValidFrom?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -2684,6 +3153,9 @@ export type UserCreateWithoutCertificatesInput = {
   hourAdjustments?: Prisma.HourAdjustmentCreateNestedManyWithoutUserInput
   adjustmentsMade?: Prisma.HourAdjustmentCreateNestedManyWithoutAuthorInput
   systemLogs?: Prisma.SystemLogCreateNestedManyWithoutActorInput
+  calendarEvents?: Prisma.CalendarEventCreateNestedManyWithoutUserInput
+  notifyPrefs?: Prisma.NotificationPreferenceCreateNestedOneWithoutUserInput
+  news?: Prisma.NewsCreateNestedManyWithoutAuthorInput
 }
 
 export type UserUncheckedCreateWithoutCertificatesInput = {
@@ -2697,8 +3169,12 @@ export type UserUncheckedCreateWithoutCertificatesInput = {
   loanStatus?: string | null
   avatarUrl?: string | null
   phone?: string | null
+  bio?: string
   active?: boolean
   seeded?: boolean
+  shareContact?: boolean
+  deletionRequestedAt?: Date | string | null
+  deletionReason?: string | null
   tokensValidFrom?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -2719,6 +3195,9 @@ export type UserUncheckedCreateWithoutCertificatesInput = {
   hourAdjustments?: Prisma.HourAdjustmentUncheckedCreateNestedManyWithoutUserInput
   adjustmentsMade?: Prisma.HourAdjustmentUncheckedCreateNestedManyWithoutAuthorInput
   systemLogs?: Prisma.SystemLogUncheckedCreateNestedManyWithoutActorInput
+  calendarEvents?: Prisma.CalendarEventUncheckedCreateNestedManyWithoutUserInput
+  notifyPrefs?: Prisma.NotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
+  news?: Prisma.NewsUncheckedCreateNestedManyWithoutAuthorInput
 }
 
 export type UserCreateOrConnectWithoutCertificatesInput = {
@@ -2748,8 +3227,12 @@ export type UserUpdateWithoutCertificatesInput = {
   loanStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.StringFieldUpdateOperationsInput | string
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   seeded?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  shareContact?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletionRequestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tokensValidFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2770,6 +3253,9 @@ export type UserUpdateWithoutCertificatesInput = {
   hourAdjustments?: Prisma.HourAdjustmentUpdateManyWithoutUserNestedInput
   adjustmentsMade?: Prisma.HourAdjustmentUpdateManyWithoutAuthorNestedInput
   systemLogs?: Prisma.SystemLogUpdateManyWithoutActorNestedInput
+  calendarEvents?: Prisma.CalendarEventUpdateManyWithoutUserNestedInput
+  notifyPrefs?: Prisma.NotificationPreferenceUpdateOneWithoutUserNestedInput
+  news?: Prisma.NewsUpdateManyWithoutAuthorNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCertificatesInput = {
@@ -2783,8 +3269,12 @@ export type UserUncheckedUpdateWithoutCertificatesInput = {
   loanStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.StringFieldUpdateOperationsInput | string
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   seeded?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  shareContact?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletionRequestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tokensValidFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2805,6 +3295,9 @@ export type UserUncheckedUpdateWithoutCertificatesInput = {
   hourAdjustments?: Prisma.HourAdjustmentUncheckedUpdateManyWithoutUserNestedInput
   adjustmentsMade?: Prisma.HourAdjustmentUncheckedUpdateManyWithoutAuthorNestedInput
   systemLogs?: Prisma.SystemLogUncheckedUpdateManyWithoutActorNestedInput
+  calendarEvents?: Prisma.CalendarEventUncheckedUpdateManyWithoutUserNestedInput
+  notifyPrefs?: Prisma.NotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
+  news?: Prisma.NewsUncheckedUpdateManyWithoutAuthorNestedInput
 }
 
 export type UserCreateWithoutReviewsInput = {
@@ -2818,8 +3311,12 @@ export type UserCreateWithoutReviewsInput = {
   loanStatus?: string | null
   avatarUrl?: string | null
   phone?: string | null
+  bio?: string
   active?: boolean
   seeded?: boolean
+  shareContact?: boolean
+  deletionRequestedAt?: Date | string | null
+  deletionReason?: string | null
   tokensValidFrom?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -2840,6 +3337,9 @@ export type UserCreateWithoutReviewsInput = {
   hourAdjustments?: Prisma.HourAdjustmentCreateNestedManyWithoutUserInput
   adjustmentsMade?: Prisma.HourAdjustmentCreateNestedManyWithoutAuthorInput
   systemLogs?: Prisma.SystemLogCreateNestedManyWithoutActorInput
+  calendarEvents?: Prisma.CalendarEventCreateNestedManyWithoutUserInput
+  notifyPrefs?: Prisma.NotificationPreferenceCreateNestedOneWithoutUserInput
+  news?: Prisma.NewsCreateNestedManyWithoutAuthorInput
 }
 
 export type UserUncheckedCreateWithoutReviewsInput = {
@@ -2853,8 +3353,12 @@ export type UserUncheckedCreateWithoutReviewsInput = {
   loanStatus?: string | null
   avatarUrl?: string | null
   phone?: string | null
+  bio?: string
   active?: boolean
   seeded?: boolean
+  shareContact?: boolean
+  deletionRequestedAt?: Date | string | null
+  deletionReason?: string | null
   tokensValidFrom?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -2875,6 +3379,9 @@ export type UserUncheckedCreateWithoutReviewsInput = {
   hourAdjustments?: Prisma.HourAdjustmentUncheckedCreateNestedManyWithoutUserInput
   adjustmentsMade?: Prisma.HourAdjustmentUncheckedCreateNestedManyWithoutAuthorInput
   systemLogs?: Prisma.SystemLogUncheckedCreateNestedManyWithoutActorInput
+  calendarEvents?: Prisma.CalendarEventUncheckedCreateNestedManyWithoutUserInput
+  notifyPrefs?: Prisma.NotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
+  news?: Prisma.NewsUncheckedCreateNestedManyWithoutAuthorInput
 }
 
 export type UserCreateOrConnectWithoutReviewsInput = {
@@ -2904,8 +3411,12 @@ export type UserUpdateWithoutReviewsInput = {
   loanStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.StringFieldUpdateOperationsInput | string
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   seeded?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  shareContact?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletionRequestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tokensValidFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2926,6 +3437,9 @@ export type UserUpdateWithoutReviewsInput = {
   hourAdjustments?: Prisma.HourAdjustmentUpdateManyWithoutUserNestedInput
   adjustmentsMade?: Prisma.HourAdjustmentUpdateManyWithoutAuthorNestedInput
   systemLogs?: Prisma.SystemLogUpdateManyWithoutActorNestedInput
+  calendarEvents?: Prisma.CalendarEventUpdateManyWithoutUserNestedInput
+  notifyPrefs?: Prisma.NotificationPreferenceUpdateOneWithoutUserNestedInput
+  news?: Prisma.NewsUpdateManyWithoutAuthorNestedInput
 }
 
 export type UserUncheckedUpdateWithoutReviewsInput = {
@@ -2939,8 +3453,12 @@ export type UserUncheckedUpdateWithoutReviewsInput = {
   loanStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.StringFieldUpdateOperationsInput | string
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   seeded?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  shareContact?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletionRequestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tokensValidFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2961,6 +3479,9 @@ export type UserUncheckedUpdateWithoutReviewsInput = {
   hourAdjustments?: Prisma.HourAdjustmentUncheckedUpdateManyWithoutUserNestedInput
   adjustmentsMade?: Prisma.HourAdjustmentUncheckedUpdateManyWithoutAuthorNestedInput
   systemLogs?: Prisma.SystemLogUncheckedUpdateManyWithoutActorNestedInput
+  calendarEvents?: Prisma.CalendarEventUncheckedUpdateManyWithoutUserNestedInput
+  notifyPrefs?: Prisma.NotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
+  news?: Prisma.NewsUncheckedUpdateManyWithoutAuthorNestedInput
 }
 
 export type UserCreateWithoutNotificationsInput = {
@@ -2974,8 +3495,12 @@ export type UserCreateWithoutNotificationsInput = {
   loanStatus?: string | null
   avatarUrl?: string | null
   phone?: string | null
+  bio?: string
   active?: boolean
   seeded?: boolean
+  shareContact?: boolean
+  deletionRequestedAt?: Date | string | null
+  deletionReason?: string | null
   tokensValidFrom?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -2996,6 +3521,9 @@ export type UserCreateWithoutNotificationsInput = {
   hourAdjustments?: Prisma.HourAdjustmentCreateNestedManyWithoutUserInput
   adjustmentsMade?: Prisma.HourAdjustmentCreateNestedManyWithoutAuthorInput
   systemLogs?: Prisma.SystemLogCreateNestedManyWithoutActorInput
+  calendarEvents?: Prisma.CalendarEventCreateNestedManyWithoutUserInput
+  notifyPrefs?: Prisma.NotificationPreferenceCreateNestedOneWithoutUserInput
+  news?: Prisma.NewsCreateNestedManyWithoutAuthorInput
 }
 
 export type UserUncheckedCreateWithoutNotificationsInput = {
@@ -3009,8 +3537,12 @@ export type UserUncheckedCreateWithoutNotificationsInput = {
   loanStatus?: string | null
   avatarUrl?: string | null
   phone?: string | null
+  bio?: string
   active?: boolean
   seeded?: boolean
+  shareContact?: boolean
+  deletionRequestedAt?: Date | string | null
+  deletionReason?: string | null
   tokensValidFrom?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -3031,6 +3563,9 @@ export type UserUncheckedCreateWithoutNotificationsInput = {
   hourAdjustments?: Prisma.HourAdjustmentUncheckedCreateNestedManyWithoutUserInput
   adjustmentsMade?: Prisma.HourAdjustmentUncheckedCreateNestedManyWithoutAuthorInput
   systemLogs?: Prisma.SystemLogUncheckedCreateNestedManyWithoutActorInput
+  calendarEvents?: Prisma.CalendarEventUncheckedCreateNestedManyWithoutUserInput
+  notifyPrefs?: Prisma.NotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
+  news?: Prisma.NewsUncheckedCreateNestedManyWithoutAuthorInput
 }
 
 export type UserCreateOrConnectWithoutNotificationsInput = {
@@ -3060,8 +3595,12 @@ export type UserUpdateWithoutNotificationsInput = {
   loanStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.StringFieldUpdateOperationsInput | string
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   seeded?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  shareContact?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletionRequestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tokensValidFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -3082,6 +3621,9 @@ export type UserUpdateWithoutNotificationsInput = {
   hourAdjustments?: Prisma.HourAdjustmentUpdateManyWithoutUserNestedInput
   adjustmentsMade?: Prisma.HourAdjustmentUpdateManyWithoutAuthorNestedInput
   systemLogs?: Prisma.SystemLogUpdateManyWithoutActorNestedInput
+  calendarEvents?: Prisma.CalendarEventUpdateManyWithoutUserNestedInput
+  notifyPrefs?: Prisma.NotificationPreferenceUpdateOneWithoutUserNestedInput
+  news?: Prisma.NewsUpdateManyWithoutAuthorNestedInput
 }
 
 export type UserUncheckedUpdateWithoutNotificationsInput = {
@@ -3095,8 +3637,12 @@ export type UserUncheckedUpdateWithoutNotificationsInput = {
   loanStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.StringFieldUpdateOperationsInput | string
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   seeded?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  shareContact?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletionRequestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tokensValidFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -3117,6 +3663,9 @@ export type UserUncheckedUpdateWithoutNotificationsInput = {
   hourAdjustments?: Prisma.HourAdjustmentUncheckedUpdateManyWithoutUserNestedInput
   adjustmentsMade?: Prisma.HourAdjustmentUncheckedUpdateManyWithoutAuthorNestedInput
   systemLogs?: Prisma.SystemLogUncheckedUpdateManyWithoutActorNestedInput
+  calendarEvents?: Prisma.CalendarEventUncheckedUpdateManyWithoutUserNestedInput
+  notifyPrefs?: Prisma.NotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
+  news?: Prisma.NewsUncheckedUpdateManyWithoutAuthorNestedInput
 }
 
 export type UserCreateWithoutThreadsAsUserInput = {
@@ -3130,8 +3679,12 @@ export type UserCreateWithoutThreadsAsUserInput = {
   loanStatus?: string | null
   avatarUrl?: string | null
   phone?: string | null
+  bio?: string
   active?: boolean
   seeded?: boolean
+  shareContact?: boolean
+  deletionRequestedAt?: Date | string | null
+  deletionReason?: string | null
   tokensValidFrom?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -3152,6 +3705,9 @@ export type UserCreateWithoutThreadsAsUserInput = {
   hourAdjustments?: Prisma.HourAdjustmentCreateNestedManyWithoutUserInput
   adjustmentsMade?: Prisma.HourAdjustmentCreateNestedManyWithoutAuthorInput
   systemLogs?: Prisma.SystemLogCreateNestedManyWithoutActorInput
+  calendarEvents?: Prisma.CalendarEventCreateNestedManyWithoutUserInput
+  notifyPrefs?: Prisma.NotificationPreferenceCreateNestedOneWithoutUserInput
+  news?: Prisma.NewsCreateNestedManyWithoutAuthorInput
 }
 
 export type UserUncheckedCreateWithoutThreadsAsUserInput = {
@@ -3165,8 +3721,12 @@ export type UserUncheckedCreateWithoutThreadsAsUserInput = {
   loanStatus?: string | null
   avatarUrl?: string | null
   phone?: string | null
+  bio?: string
   active?: boolean
   seeded?: boolean
+  shareContact?: boolean
+  deletionRequestedAt?: Date | string | null
+  deletionReason?: string | null
   tokensValidFrom?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -3187,6 +3747,9 @@ export type UserUncheckedCreateWithoutThreadsAsUserInput = {
   hourAdjustments?: Prisma.HourAdjustmentUncheckedCreateNestedManyWithoutUserInput
   adjustmentsMade?: Prisma.HourAdjustmentUncheckedCreateNestedManyWithoutAuthorInput
   systemLogs?: Prisma.SystemLogUncheckedCreateNestedManyWithoutActorInput
+  calendarEvents?: Prisma.CalendarEventUncheckedCreateNestedManyWithoutUserInput
+  notifyPrefs?: Prisma.NotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
+  news?: Prisma.NewsUncheckedCreateNestedManyWithoutAuthorInput
 }
 
 export type UserCreateOrConnectWithoutThreadsAsUserInput = {
@@ -3205,8 +3768,12 @@ export type UserCreateWithoutThreadsAsStaffInput = {
   loanStatus?: string | null
   avatarUrl?: string | null
   phone?: string | null
+  bio?: string
   active?: boolean
   seeded?: boolean
+  shareContact?: boolean
+  deletionRequestedAt?: Date | string | null
+  deletionReason?: string | null
   tokensValidFrom?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -3227,6 +3794,9 @@ export type UserCreateWithoutThreadsAsStaffInput = {
   hourAdjustments?: Prisma.HourAdjustmentCreateNestedManyWithoutUserInput
   adjustmentsMade?: Prisma.HourAdjustmentCreateNestedManyWithoutAuthorInput
   systemLogs?: Prisma.SystemLogCreateNestedManyWithoutActorInput
+  calendarEvents?: Prisma.CalendarEventCreateNestedManyWithoutUserInput
+  notifyPrefs?: Prisma.NotificationPreferenceCreateNestedOneWithoutUserInput
+  news?: Prisma.NewsCreateNestedManyWithoutAuthorInput
 }
 
 export type UserUncheckedCreateWithoutThreadsAsStaffInput = {
@@ -3240,8 +3810,12 @@ export type UserUncheckedCreateWithoutThreadsAsStaffInput = {
   loanStatus?: string | null
   avatarUrl?: string | null
   phone?: string | null
+  bio?: string
   active?: boolean
   seeded?: boolean
+  shareContact?: boolean
+  deletionRequestedAt?: Date | string | null
+  deletionReason?: string | null
   tokensValidFrom?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -3262,6 +3836,9 @@ export type UserUncheckedCreateWithoutThreadsAsStaffInput = {
   hourAdjustments?: Prisma.HourAdjustmentUncheckedCreateNestedManyWithoutUserInput
   adjustmentsMade?: Prisma.HourAdjustmentUncheckedCreateNestedManyWithoutAuthorInput
   systemLogs?: Prisma.SystemLogUncheckedCreateNestedManyWithoutActorInput
+  calendarEvents?: Prisma.CalendarEventUncheckedCreateNestedManyWithoutUserInput
+  notifyPrefs?: Prisma.NotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
+  news?: Prisma.NewsUncheckedCreateNestedManyWithoutAuthorInput
 }
 
 export type UserCreateOrConnectWithoutThreadsAsStaffInput = {
@@ -3291,8 +3868,12 @@ export type UserUpdateWithoutThreadsAsUserInput = {
   loanStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.StringFieldUpdateOperationsInput | string
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   seeded?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  shareContact?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletionRequestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tokensValidFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -3313,6 +3894,9 @@ export type UserUpdateWithoutThreadsAsUserInput = {
   hourAdjustments?: Prisma.HourAdjustmentUpdateManyWithoutUserNestedInput
   adjustmentsMade?: Prisma.HourAdjustmentUpdateManyWithoutAuthorNestedInput
   systemLogs?: Prisma.SystemLogUpdateManyWithoutActorNestedInput
+  calendarEvents?: Prisma.CalendarEventUpdateManyWithoutUserNestedInput
+  notifyPrefs?: Prisma.NotificationPreferenceUpdateOneWithoutUserNestedInput
+  news?: Prisma.NewsUpdateManyWithoutAuthorNestedInput
 }
 
 export type UserUncheckedUpdateWithoutThreadsAsUserInput = {
@@ -3326,8 +3910,12 @@ export type UserUncheckedUpdateWithoutThreadsAsUserInput = {
   loanStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.StringFieldUpdateOperationsInput | string
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   seeded?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  shareContact?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletionRequestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tokensValidFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -3348,6 +3936,9 @@ export type UserUncheckedUpdateWithoutThreadsAsUserInput = {
   hourAdjustments?: Prisma.HourAdjustmentUncheckedUpdateManyWithoutUserNestedInput
   adjustmentsMade?: Prisma.HourAdjustmentUncheckedUpdateManyWithoutAuthorNestedInput
   systemLogs?: Prisma.SystemLogUncheckedUpdateManyWithoutActorNestedInput
+  calendarEvents?: Prisma.CalendarEventUncheckedUpdateManyWithoutUserNestedInput
+  notifyPrefs?: Prisma.NotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
+  news?: Prisma.NewsUncheckedUpdateManyWithoutAuthorNestedInput
 }
 
 export type UserUpsertWithoutThreadsAsStaffInput = {
@@ -3372,8 +3963,12 @@ export type UserUpdateWithoutThreadsAsStaffInput = {
   loanStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.StringFieldUpdateOperationsInput | string
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   seeded?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  shareContact?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletionRequestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tokensValidFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -3394,6 +3989,9 @@ export type UserUpdateWithoutThreadsAsStaffInput = {
   hourAdjustments?: Prisma.HourAdjustmentUpdateManyWithoutUserNestedInput
   adjustmentsMade?: Prisma.HourAdjustmentUpdateManyWithoutAuthorNestedInput
   systemLogs?: Prisma.SystemLogUpdateManyWithoutActorNestedInput
+  calendarEvents?: Prisma.CalendarEventUpdateManyWithoutUserNestedInput
+  notifyPrefs?: Prisma.NotificationPreferenceUpdateOneWithoutUserNestedInput
+  news?: Prisma.NewsUpdateManyWithoutAuthorNestedInput
 }
 
 export type UserUncheckedUpdateWithoutThreadsAsStaffInput = {
@@ -3407,8 +4005,12 @@ export type UserUncheckedUpdateWithoutThreadsAsStaffInput = {
   loanStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.StringFieldUpdateOperationsInput | string
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   seeded?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  shareContact?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletionRequestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tokensValidFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -3429,6 +4031,9 @@ export type UserUncheckedUpdateWithoutThreadsAsStaffInput = {
   hourAdjustments?: Prisma.HourAdjustmentUncheckedUpdateManyWithoutUserNestedInput
   adjustmentsMade?: Prisma.HourAdjustmentUncheckedUpdateManyWithoutAuthorNestedInput
   systemLogs?: Prisma.SystemLogUncheckedUpdateManyWithoutActorNestedInput
+  calendarEvents?: Prisma.CalendarEventUncheckedUpdateManyWithoutUserNestedInput
+  notifyPrefs?: Prisma.NotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
+  news?: Prisma.NewsUncheckedUpdateManyWithoutAuthorNestedInput
 }
 
 export type UserCreateWithoutMessagesInput = {
@@ -3442,8 +4047,12 @@ export type UserCreateWithoutMessagesInput = {
   loanStatus?: string | null
   avatarUrl?: string | null
   phone?: string | null
+  bio?: string
   active?: boolean
   seeded?: boolean
+  shareContact?: boolean
+  deletionRequestedAt?: Date | string | null
+  deletionReason?: string | null
   tokensValidFrom?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -3464,6 +4073,9 @@ export type UserCreateWithoutMessagesInput = {
   hourAdjustments?: Prisma.HourAdjustmentCreateNestedManyWithoutUserInput
   adjustmentsMade?: Prisma.HourAdjustmentCreateNestedManyWithoutAuthorInput
   systemLogs?: Prisma.SystemLogCreateNestedManyWithoutActorInput
+  calendarEvents?: Prisma.CalendarEventCreateNestedManyWithoutUserInput
+  notifyPrefs?: Prisma.NotificationPreferenceCreateNestedOneWithoutUserInput
+  news?: Prisma.NewsCreateNestedManyWithoutAuthorInput
 }
 
 export type UserUncheckedCreateWithoutMessagesInput = {
@@ -3477,8 +4089,12 @@ export type UserUncheckedCreateWithoutMessagesInput = {
   loanStatus?: string | null
   avatarUrl?: string | null
   phone?: string | null
+  bio?: string
   active?: boolean
   seeded?: boolean
+  shareContact?: boolean
+  deletionRequestedAt?: Date | string | null
+  deletionReason?: string | null
   tokensValidFrom?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -3499,6 +4115,9 @@ export type UserUncheckedCreateWithoutMessagesInput = {
   hourAdjustments?: Prisma.HourAdjustmentUncheckedCreateNestedManyWithoutUserInput
   adjustmentsMade?: Prisma.HourAdjustmentUncheckedCreateNestedManyWithoutAuthorInput
   systemLogs?: Prisma.SystemLogUncheckedCreateNestedManyWithoutActorInput
+  calendarEvents?: Prisma.CalendarEventUncheckedCreateNestedManyWithoutUserInput
+  notifyPrefs?: Prisma.NotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
+  news?: Prisma.NewsUncheckedCreateNestedManyWithoutAuthorInput
 }
 
 export type UserCreateOrConnectWithoutMessagesInput = {
@@ -3528,8 +4147,12 @@ export type UserUpdateWithoutMessagesInput = {
   loanStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.StringFieldUpdateOperationsInput | string
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   seeded?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  shareContact?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletionRequestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tokensValidFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -3550,6 +4173,9 @@ export type UserUpdateWithoutMessagesInput = {
   hourAdjustments?: Prisma.HourAdjustmentUpdateManyWithoutUserNestedInput
   adjustmentsMade?: Prisma.HourAdjustmentUpdateManyWithoutAuthorNestedInput
   systemLogs?: Prisma.SystemLogUpdateManyWithoutActorNestedInput
+  calendarEvents?: Prisma.CalendarEventUpdateManyWithoutUserNestedInput
+  notifyPrefs?: Prisma.NotificationPreferenceUpdateOneWithoutUserNestedInput
+  news?: Prisma.NewsUpdateManyWithoutAuthorNestedInput
 }
 
 export type UserUncheckedUpdateWithoutMessagesInput = {
@@ -3563,8 +4189,12 @@ export type UserUncheckedUpdateWithoutMessagesInput = {
   loanStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.StringFieldUpdateOperationsInput | string
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   seeded?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  shareContact?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletionRequestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tokensValidFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -3585,9 +4215,12 @@ export type UserUncheckedUpdateWithoutMessagesInput = {
   hourAdjustments?: Prisma.HourAdjustmentUncheckedUpdateManyWithoutUserNestedInput
   adjustmentsMade?: Prisma.HourAdjustmentUncheckedUpdateManyWithoutAuthorNestedInput
   systemLogs?: Prisma.SystemLogUncheckedUpdateManyWithoutActorNestedInput
+  calendarEvents?: Prisma.CalendarEventUncheckedUpdateManyWithoutUserNestedInput
+  notifyPrefs?: Prisma.NotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
+  news?: Prisma.NewsUncheckedUpdateManyWithoutAuthorNestedInput
 }
 
-export type UserCreateWithoutSystemLogsInput = {
+export type UserCreateWithoutNewsInput = {
   id?: string
   email: string
   passwordHash: string
@@ -3598,8 +4231,12 @@ export type UserCreateWithoutSystemLogsInput = {
   loanStatus?: string | null
   avatarUrl?: string | null
   phone?: string | null
+  bio?: string
   active?: boolean
   seeded?: boolean
+  shareContact?: boolean
+  deletionRequestedAt?: Date | string | null
+  deletionReason?: string | null
   tokensValidFrom?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -3620,9 +4257,12 @@ export type UserCreateWithoutSystemLogsInput = {
   threadsAsStaff?: Prisma.ChatThreadCreateNestedManyWithoutStaffInput
   hourAdjustments?: Prisma.HourAdjustmentCreateNestedManyWithoutUserInput
   adjustmentsMade?: Prisma.HourAdjustmentCreateNestedManyWithoutAuthorInput
+  systemLogs?: Prisma.SystemLogCreateNestedManyWithoutActorInput
+  calendarEvents?: Prisma.CalendarEventCreateNestedManyWithoutUserInput
+  notifyPrefs?: Prisma.NotificationPreferenceCreateNestedOneWithoutUserInput
 }
 
-export type UserUncheckedCreateWithoutSystemLogsInput = {
+export type UserUncheckedCreateWithoutNewsInput = {
   id?: string
   email: string
   passwordHash: string
@@ -3633,8 +4273,12 @@ export type UserUncheckedCreateWithoutSystemLogsInput = {
   loanStatus?: string | null
   avatarUrl?: string | null
   phone?: string | null
+  bio?: string
   active?: boolean
   seeded?: boolean
+  shareContact?: boolean
+  deletionRequestedAt?: Date | string | null
+  deletionReason?: string | null
   tokensValidFrom?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -3655,6 +4299,193 @@ export type UserUncheckedCreateWithoutSystemLogsInput = {
   threadsAsStaff?: Prisma.ChatThreadUncheckedCreateNestedManyWithoutStaffInput
   hourAdjustments?: Prisma.HourAdjustmentUncheckedCreateNestedManyWithoutUserInput
   adjustmentsMade?: Prisma.HourAdjustmentUncheckedCreateNestedManyWithoutAuthorInput
+  systemLogs?: Prisma.SystemLogUncheckedCreateNestedManyWithoutActorInput
+  calendarEvents?: Prisma.CalendarEventUncheckedCreateNestedManyWithoutUserInput
+  notifyPrefs?: Prisma.NotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutNewsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutNewsInput, Prisma.UserUncheckedCreateWithoutNewsInput>
+}
+
+export type UserUpsertWithoutNewsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutNewsInput, Prisma.UserUncheckedUpdateWithoutNewsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutNewsInput, Prisma.UserUncheckedCreateWithoutNewsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutNewsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutNewsInput, Prisma.UserUncheckedUpdateWithoutNewsInput>
+}
+
+export type UserUpdateWithoutNewsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  studentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  faculty?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  loanStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.StringFieldUpdateOperationsInput | string
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  seeded?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  shareContact?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletionRequestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  tokensValidFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  resetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
+  twoFactor?: Prisma.TwoFactorUpdateOneWithoutUserNestedInput
+  organized?: Prisma.ActivityUpdateManyWithoutOrganizerNestedInput
+  registrations?: Prisma.RegistrationUpdateManyWithoutUserNestedInput
+  favorites?: Prisma.FavoriteUpdateManyWithoutUserNestedInput
+  certificates?: Prisma.CertificateUpdateManyWithoutUserNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
+  reviews?: Prisma.ReviewUpdateManyWithoutUserNestedInput
+  appeals?: Prisma.AppealUpdateManyWithoutUserNestedInput
+  appealsJudged?: Prisma.AppealUpdateManyWithoutDecidedByNestedInput
+  evidenceSeen?: Prisma.EvidenceUpdateManyWithoutReviewedByNestedInput
+  messages?: Prisma.ChatMessageUpdateManyWithoutSenderNestedInput
+  threadsAsUser?: Prisma.ChatThreadUpdateManyWithoutStudentNestedInput
+  threadsAsStaff?: Prisma.ChatThreadUpdateManyWithoutStaffNestedInput
+  hourAdjustments?: Prisma.HourAdjustmentUpdateManyWithoutUserNestedInput
+  adjustmentsMade?: Prisma.HourAdjustmentUpdateManyWithoutAuthorNestedInput
+  systemLogs?: Prisma.SystemLogUpdateManyWithoutActorNestedInput
+  calendarEvents?: Prisma.CalendarEventUpdateManyWithoutUserNestedInput
+  notifyPrefs?: Prisma.NotificationPreferenceUpdateOneWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutNewsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  studentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  faculty?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  loanStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.StringFieldUpdateOperationsInput | string
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  seeded?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  shareContact?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletionRequestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  tokensValidFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  resetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
+  twoFactor?: Prisma.TwoFactorUncheckedUpdateOneWithoutUserNestedInput
+  organized?: Prisma.ActivityUncheckedUpdateManyWithoutOrganizerNestedInput
+  registrations?: Prisma.RegistrationUncheckedUpdateManyWithoutUserNestedInput
+  favorites?: Prisma.FavoriteUncheckedUpdateManyWithoutUserNestedInput
+  certificates?: Prisma.CertificateUncheckedUpdateManyWithoutUserNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
+  reviews?: Prisma.ReviewUncheckedUpdateManyWithoutUserNestedInput
+  appeals?: Prisma.AppealUncheckedUpdateManyWithoutUserNestedInput
+  appealsJudged?: Prisma.AppealUncheckedUpdateManyWithoutDecidedByNestedInput
+  evidenceSeen?: Prisma.EvidenceUncheckedUpdateManyWithoutReviewedByNestedInput
+  messages?: Prisma.ChatMessageUncheckedUpdateManyWithoutSenderNestedInput
+  threadsAsUser?: Prisma.ChatThreadUncheckedUpdateManyWithoutStudentNestedInput
+  threadsAsStaff?: Prisma.ChatThreadUncheckedUpdateManyWithoutStaffNestedInput
+  hourAdjustments?: Prisma.HourAdjustmentUncheckedUpdateManyWithoutUserNestedInput
+  adjustmentsMade?: Prisma.HourAdjustmentUncheckedUpdateManyWithoutAuthorNestedInput
+  systemLogs?: Prisma.SystemLogUncheckedUpdateManyWithoutActorNestedInput
+  calendarEvents?: Prisma.CalendarEventUncheckedUpdateManyWithoutUserNestedInput
+  notifyPrefs?: Prisma.NotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
+}
+
+export type UserCreateWithoutSystemLogsInput = {
+  id?: string
+  email: string
+  passwordHash: string
+  role?: string
+  name?: string
+  studentId?: string | null
+  faculty?: string | null
+  loanStatus?: string | null
+  avatarUrl?: string | null
+  phone?: string | null
+  bio?: string
+  active?: boolean
+  seeded?: boolean
+  shareContact?: boolean
+  deletionRequestedAt?: Date | string | null
+  deletionReason?: string | null
+  tokensValidFrom?: Date | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  resetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
+  twoFactor?: Prisma.TwoFactorCreateNestedOneWithoutUserInput
+  organized?: Prisma.ActivityCreateNestedManyWithoutOrganizerInput
+  registrations?: Prisma.RegistrationCreateNestedManyWithoutUserInput
+  favorites?: Prisma.FavoriteCreateNestedManyWithoutUserInput
+  certificates?: Prisma.CertificateCreateNestedManyWithoutUserInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
+  reviews?: Prisma.ReviewCreateNestedManyWithoutUserInput
+  appeals?: Prisma.AppealCreateNestedManyWithoutUserInput
+  appealsJudged?: Prisma.AppealCreateNestedManyWithoutDecidedByInput
+  evidenceSeen?: Prisma.EvidenceCreateNestedManyWithoutReviewedByInput
+  messages?: Prisma.ChatMessageCreateNestedManyWithoutSenderInput
+  threadsAsUser?: Prisma.ChatThreadCreateNestedManyWithoutStudentInput
+  threadsAsStaff?: Prisma.ChatThreadCreateNestedManyWithoutStaffInput
+  hourAdjustments?: Prisma.HourAdjustmentCreateNestedManyWithoutUserInput
+  adjustmentsMade?: Prisma.HourAdjustmentCreateNestedManyWithoutAuthorInput
+  calendarEvents?: Prisma.CalendarEventCreateNestedManyWithoutUserInput
+  notifyPrefs?: Prisma.NotificationPreferenceCreateNestedOneWithoutUserInput
+  news?: Prisma.NewsCreateNestedManyWithoutAuthorInput
+}
+
+export type UserUncheckedCreateWithoutSystemLogsInput = {
+  id?: string
+  email: string
+  passwordHash: string
+  role?: string
+  name?: string
+  studentId?: string | null
+  faculty?: string | null
+  loanStatus?: string | null
+  avatarUrl?: string | null
+  phone?: string | null
+  bio?: string
+  active?: boolean
+  seeded?: boolean
+  shareContact?: boolean
+  deletionRequestedAt?: Date | string | null
+  deletionReason?: string | null
+  tokensValidFrom?: Date | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  resetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
+  twoFactor?: Prisma.TwoFactorUncheckedCreateNestedOneWithoutUserInput
+  organized?: Prisma.ActivityUncheckedCreateNestedManyWithoutOrganizerInput
+  registrations?: Prisma.RegistrationUncheckedCreateNestedManyWithoutUserInput
+  favorites?: Prisma.FavoriteUncheckedCreateNestedManyWithoutUserInput
+  certificates?: Prisma.CertificateUncheckedCreateNestedManyWithoutUserInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
+  reviews?: Prisma.ReviewUncheckedCreateNestedManyWithoutUserInput
+  appeals?: Prisma.AppealUncheckedCreateNestedManyWithoutUserInput
+  appealsJudged?: Prisma.AppealUncheckedCreateNestedManyWithoutDecidedByInput
+  evidenceSeen?: Prisma.EvidenceUncheckedCreateNestedManyWithoutReviewedByInput
+  messages?: Prisma.ChatMessageUncheckedCreateNestedManyWithoutSenderInput
+  threadsAsUser?: Prisma.ChatThreadUncheckedCreateNestedManyWithoutStudentInput
+  threadsAsStaff?: Prisma.ChatThreadUncheckedCreateNestedManyWithoutStaffInput
+  hourAdjustments?: Prisma.HourAdjustmentUncheckedCreateNestedManyWithoutUserInput
+  adjustmentsMade?: Prisma.HourAdjustmentUncheckedCreateNestedManyWithoutAuthorInput
+  calendarEvents?: Prisma.CalendarEventUncheckedCreateNestedManyWithoutUserInput
+  notifyPrefs?: Prisma.NotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
+  news?: Prisma.NewsUncheckedCreateNestedManyWithoutAuthorInput
 }
 
 export type UserCreateOrConnectWithoutSystemLogsInput = {
@@ -3684,8 +4515,12 @@ export type UserUpdateWithoutSystemLogsInput = {
   loanStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.StringFieldUpdateOperationsInput | string
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   seeded?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  shareContact?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletionRequestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tokensValidFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -3706,6 +4541,9 @@ export type UserUpdateWithoutSystemLogsInput = {
   threadsAsStaff?: Prisma.ChatThreadUpdateManyWithoutStaffNestedInput
   hourAdjustments?: Prisma.HourAdjustmentUpdateManyWithoutUserNestedInput
   adjustmentsMade?: Prisma.HourAdjustmentUpdateManyWithoutAuthorNestedInput
+  calendarEvents?: Prisma.CalendarEventUpdateManyWithoutUserNestedInput
+  notifyPrefs?: Prisma.NotificationPreferenceUpdateOneWithoutUserNestedInput
+  news?: Prisma.NewsUpdateManyWithoutAuthorNestedInput
 }
 
 export type UserUncheckedUpdateWithoutSystemLogsInput = {
@@ -3719,8 +4557,12 @@ export type UserUncheckedUpdateWithoutSystemLogsInput = {
   loanStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.StringFieldUpdateOperationsInput | string
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   seeded?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  shareContact?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletionRequestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tokensValidFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -3741,6 +4583,377 @@ export type UserUncheckedUpdateWithoutSystemLogsInput = {
   threadsAsStaff?: Prisma.ChatThreadUncheckedUpdateManyWithoutStaffNestedInput
   hourAdjustments?: Prisma.HourAdjustmentUncheckedUpdateManyWithoutUserNestedInput
   adjustmentsMade?: Prisma.HourAdjustmentUncheckedUpdateManyWithoutAuthorNestedInput
+  calendarEvents?: Prisma.CalendarEventUncheckedUpdateManyWithoutUserNestedInput
+  notifyPrefs?: Prisma.NotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
+  news?: Prisma.NewsUncheckedUpdateManyWithoutAuthorNestedInput
+}
+
+export type UserCreateWithoutCalendarEventsInput = {
+  id?: string
+  email: string
+  passwordHash: string
+  role?: string
+  name?: string
+  studentId?: string | null
+  faculty?: string | null
+  loanStatus?: string | null
+  avatarUrl?: string | null
+  phone?: string | null
+  bio?: string
+  active?: boolean
+  seeded?: boolean
+  shareContact?: boolean
+  deletionRequestedAt?: Date | string | null
+  deletionReason?: string | null
+  tokensValidFrom?: Date | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  resetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
+  twoFactor?: Prisma.TwoFactorCreateNestedOneWithoutUserInput
+  organized?: Prisma.ActivityCreateNestedManyWithoutOrganizerInput
+  registrations?: Prisma.RegistrationCreateNestedManyWithoutUserInput
+  favorites?: Prisma.FavoriteCreateNestedManyWithoutUserInput
+  certificates?: Prisma.CertificateCreateNestedManyWithoutUserInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
+  reviews?: Prisma.ReviewCreateNestedManyWithoutUserInput
+  appeals?: Prisma.AppealCreateNestedManyWithoutUserInput
+  appealsJudged?: Prisma.AppealCreateNestedManyWithoutDecidedByInput
+  evidenceSeen?: Prisma.EvidenceCreateNestedManyWithoutReviewedByInput
+  messages?: Prisma.ChatMessageCreateNestedManyWithoutSenderInput
+  threadsAsUser?: Prisma.ChatThreadCreateNestedManyWithoutStudentInput
+  threadsAsStaff?: Prisma.ChatThreadCreateNestedManyWithoutStaffInput
+  hourAdjustments?: Prisma.HourAdjustmentCreateNestedManyWithoutUserInput
+  adjustmentsMade?: Prisma.HourAdjustmentCreateNestedManyWithoutAuthorInput
+  systemLogs?: Prisma.SystemLogCreateNestedManyWithoutActorInput
+  notifyPrefs?: Prisma.NotificationPreferenceCreateNestedOneWithoutUserInput
+  news?: Prisma.NewsCreateNestedManyWithoutAuthorInput
+}
+
+export type UserUncheckedCreateWithoutCalendarEventsInput = {
+  id?: string
+  email: string
+  passwordHash: string
+  role?: string
+  name?: string
+  studentId?: string | null
+  faculty?: string | null
+  loanStatus?: string | null
+  avatarUrl?: string | null
+  phone?: string | null
+  bio?: string
+  active?: boolean
+  seeded?: boolean
+  shareContact?: boolean
+  deletionRequestedAt?: Date | string | null
+  deletionReason?: string | null
+  tokensValidFrom?: Date | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  resetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
+  twoFactor?: Prisma.TwoFactorUncheckedCreateNestedOneWithoutUserInput
+  organized?: Prisma.ActivityUncheckedCreateNestedManyWithoutOrganizerInput
+  registrations?: Prisma.RegistrationUncheckedCreateNestedManyWithoutUserInput
+  favorites?: Prisma.FavoriteUncheckedCreateNestedManyWithoutUserInput
+  certificates?: Prisma.CertificateUncheckedCreateNestedManyWithoutUserInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
+  reviews?: Prisma.ReviewUncheckedCreateNestedManyWithoutUserInput
+  appeals?: Prisma.AppealUncheckedCreateNestedManyWithoutUserInput
+  appealsJudged?: Prisma.AppealUncheckedCreateNestedManyWithoutDecidedByInput
+  evidenceSeen?: Prisma.EvidenceUncheckedCreateNestedManyWithoutReviewedByInput
+  messages?: Prisma.ChatMessageUncheckedCreateNestedManyWithoutSenderInput
+  threadsAsUser?: Prisma.ChatThreadUncheckedCreateNestedManyWithoutStudentInput
+  threadsAsStaff?: Prisma.ChatThreadUncheckedCreateNestedManyWithoutStaffInput
+  hourAdjustments?: Prisma.HourAdjustmentUncheckedCreateNestedManyWithoutUserInput
+  adjustmentsMade?: Prisma.HourAdjustmentUncheckedCreateNestedManyWithoutAuthorInput
+  systemLogs?: Prisma.SystemLogUncheckedCreateNestedManyWithoutActorInput
+  notifyPrefs?: Prisma.NotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
+  news?: Prisma.NewsUncheckedCreateNestedManyWithoutAuthorInput
+}
+
+export type UserCreateOrConnectWithoutCalendarEventsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutCalendarEventsInput, Prisma.UserUncheckedCreateWithoutCalendarEventsInput>
+}
+
+export type UserUpsertWithoutCalendarEventsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutCalendarEventsInput, Prisma.UserUncheckedUpdateWithoutCalendarEventsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutCalendarEventsInput, Prisma.UserUncheckedCreateWithoutCalendarEventsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutCalendarEventsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutCalendarEventsInput, Prisma.UserUncheckedUpdateWithoutCalendarEventsInput>
+}
+
+export type UserUpdateWithoutCalendarEventsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  studentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  faculty?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  loanStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.StringFieldUpdateOperationsInput | string
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  seeded?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  shareContact?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletionRequestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  tokensValidFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  resetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
+  twoFactor?: Prisma.TwoFactorUpdateOneWithoutUserNestedInput
+  organized?: Prisma.ActivityUpdateManyWithoutOrganizerNestedInput
+  registrations?: Prisma.RegistrationUpdateManyWithoutUserNestedInput
+  favorites?: Prisma.FavoriteUpdateManyWithoutUserNestedInput
+  certificates?: Prisma.CertificateUpdateManyWithoutUserNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
+  reviews?: Prisma.ReviewUpdateManyWithoutUserNestedInput
+  appeals?: Prisma.AppealUpdateManyWithoutUserNestedInput
+  appealsJudged?: Prisma.AppealUpdateManyWithoutDecidedByNestedInput
+  evidenceSeen?: Prisma.EvidenceUpdateManyWithoutReviewedByNestedInput
+  messages?: Prisma.ChatMessageUpdateManyWithoutSenderNestedInput
+  threadsAsUser?: Prisma.ChatThreadUpdateManyWithoutStudentNestedInput
+  threadsAsStaff?: Prisma.ChatThreadUpdateManyWithoutStaffNestedInput
+  hourAdjustments?: Prisma.HourAdjustmentUpdateManyWithoutUserNestedInput
+  adjustmentsMade?: Prisma.HourAdjustmentUpdateManyWithoutAuthorNestedInput
+  systemLogs?: Prisma.SystemLogUpdateManyWithoutActorNestedInput
+  notifyPrefs?: Prisma.NotificationPreferenceUpdateOneWithoutUserNestedInput
+  news?: Prisma.NewsUpdateManyWithoutAuthorNestedInput
+}
+
+export type UserUncheckedUpdateWithoutCalendarEventsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  studentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  faculty?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  loanStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.StringFieldUpdateOperationsInput | string
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  seeded?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  shareContact?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletionRequestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  tokensValidFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  resetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
+  twoFactor?: Prisma.TwoFactorUncheckedUpdateOneWithoutUserNestedInput
+  organized?: Prisma.ActivityUncheckedUpdateManyWithoutOrganizerNestedInput
+  registrations?: Prisma.RegistrationUncheckedUpdateManyWithoutUserNestedInput
+  favorites?: Prisma.FavoriteUncheckedUpdateManyWithoutUserNestedInput
+  certificates?: Prisma.CertificateUncheckedUpdateManyWithoutUserNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
+  reviews?: Prisma.ReviewUncheckedUpdateManyWithoutUserNestedInput
+  appeals?: Prisma.AppealUncheckedUpdateManyWithoutUserNestedInput
+  appealsJudged?: Prisma.AppealUncheckedUpdateManyWithoutDecidedByNestedInput
+  evidenceSeen?: Prisma.EvidenceUncheckedUpdateManyWithoutReviewedByNestedInput
+  messages?: Prisma.ChatMessageUncheckedUpdateManyWithoutSenderNestedInput
+  threadsAsUser?: Prisma.ChatThreadUncheckedUpdateManyWithoutStudentNestedInput
+  threadsAsStaff?: Prisma.ChatThreadUncheckedUpdateManyWithoutStaffNestedInput
+  hourAdjustments?: Prisma.HourAdjustmentUncheckedUpdateManyWithoutUserNestedInput
+  adjustmentsMade?: Prisma.HourAdjustmentUncheckedUpdateManyWithoutAuthorNestedInput
+  systemLogs?: Prisma.SystemLogUncheckedUpdateManyWithoutActorNestedInput
+  notifyPrefs?: Prisma.NotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
+  news?: Prisma.NewsUncheckedUpdateManyWithoutAuthorNestedInput
+}
+
+export type UserCreateWithoutNotifyPrefsInput = {
+  id?: string
+  email: string
+  passwordHash: string
+  role?: string
+  name?: string
+  studentId?: string | null
+  faculty?: string | null
+  loanStatus?: string | null
+  avatarUrl?: string | null
+  phone?: string | null
+  bio?: string
+  active?: boolean
+  seeded?: boolean
+  shareContact?: boolean
+  deletionRequestedAt?: Date | string | null
+  deletionReason?: string | null
+  tokensValidFrom?: Date | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  resetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
+  twoFactor?: Prisma.TwoFactorCreateNestedOneWithoutUserInput
+  organized?: Prisma.ActivityCreateNestedManyWithoutOrganizerInput
+  registrations?: Prisma.RegistrationCreateNestedManyWithoutUserInput
+  favorites?: Prisma.FavoriteCreateNestedManyWithoutUserInput
+  certificates?: Prisma.CertificateCreateNestedManyWithoutUserInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
+  reviews?: Prisma.ReviewCreateNestedManyWithoutUserInput
+  appeals?: Prisma.AppealCreateNestedManyWithoutUserInput
+  appealsJudged?: Prisma.AppealCreateNestedManyWithoutDecidedByInput
+  evidenceSeen?: Prisma.EvidenceCreateNestedManyWithoutReviewedByInput
+  messages?: Prisma.ChatMessageCreateNestedManyWithoutSenderInput
+  threadsAsUser?: Prisma.ChatThreadCreateNestedManyWithoutStudentInput
+  threadsAsStaff?: Prisma.ChatThreadCreateNestedManyWithoutStaffInput
+  hourAdjustments?: Prisma.HourAdjustmentCreateNestedManyWithoutUserInput
+  adjustmentsMade?: Prisma.HourAdjustmentCreateNestedManyWithoutAuthorInput
+  systemLogs?: Prisma.SystemLogCreateNestedManyWithoutActorInput
+  calendarEvents?: Prisma.CalendarEventCreateNestedManyWithoutUserInput
+  news?: Prisma.NewsCreateNestedManyWithoutAuthorInput
+}
+
+export type UserUncheckedCreateWithoutNotifyPrefsInput = {
+  id?: string
+  email: string
+  passwordHash: string
+  role?: string
+  name?: string
+  studentId?: string | null
+  faculty?: string | null
+  loanStatus?: string | null
+  avatarUrl?: string | null
+  phone?: string | null
+  bio?: string
+  active?: boolean
+  seeded?: boolean
+  shareContact?: boolean
+  deletionRequestedAt?: Date | string | null
+  deletionReason?: string | null
+  tokensValidFrom?: Date | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  resetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
+  twoFactor?: Prisma.TwoFactorUncheckedCreateNestedOneWithoutUserInput
+  organized?: Prisma.ActivityUncheckedCreateNestedManyWithoutOrganizerInput
+  registrations?: Prisma.RegistrationUncheckedCreateNestedManyWithoutUserInput
+  favorites?: Prisma.FavoriteUncheckedCreateNestedManyWithoutUserInput
+  certificates?: Prisma.CertificateUncheckedCreateNestedManyWithoutUserInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
+  reviews?: Prisma.ReviewUncheckedCreateNestedManyWithoutUserInput
+  appeals?: Prisma.AppealUncheckedCreateNestedManyWithoutUserInput
+  appealsJudged?: Prisma.AppealUncheckedCreateNestedManyWithoutDecidedByInput
+  evidenceSeen?: Prisma.EvidenceUncheckedCreateNestedManyWithoutReviewedByInput
+  messages?: Prisma.ChatMessageUncheckedCreateNestedManyWithoutSenderInput
+  threadsAsUser?: Prisma.ChatThreadUncheckedCreateNestedManyWithoutStudentInput
+  threadsAsStaff?: Prisma.ChatThreadUncheckedCreateNestedManyWithoutStaffInput
+  hourAdjustments?: Prisma.HourAdjustmentUncheckedCreateNestedManyWithoutUserInput
+  adjustmentsMade?: Prisma.HourAdjustmentUncheckedCreateNestedManyWithoutAuthorInput
+  systemLogs?: Prisma.SystemLogUncheckedCreateNestedManyWithoutActorInput
+  calendarEvents?: Prisma.CalendarEventUncheckedCreateNestedManyWithoutUserInput
+  news?: Prisma.NewsUncheckedCreateNestedManyWithoutAuthorInput
+}
+
+export type UserCreateOrConnectWithoutNotifyPrefsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutNotifyPrefsInput, Prisma.UserUncheckedCreateWithoutNotifyPrefsInput>
+}
+
+export type UserUpsertWithoutNotifyPrefsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutNotifyPrefsInput, Prisma.UserUncheckedUpdateWithoutNotifyPrefsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutNotifyPrefsInput, Prisma.UserUncheckedCreateWithoutNotifyPrefsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutNotifyPrefsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutNotifyPrefsInput, Prisma.UserUncheckedUpdateWithoutNotifyPrefsInput>
+}
+
+export type UserUpdateWithoutNotifyPrefsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  studentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  faculty?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  loanStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.StringFieldUpdateOperationsInput | string
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  seeded?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  shareContact?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletionRequestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  tokensValidFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  resetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
+  twoFactor?: Prisma.TwoFactorUpdateOneWithoutUserNestedInput
+  organized?: Prisma.ActivityUpdateManyWithoutOrganizerNestedInput
+  registrations?: Prisma.RegistrationUpdateManyWithoutUserNestedInput
+  favorites?: Prisma.FavoriteUpdateManyWithoutUserNestedInput
+  certificates?: Prisma.CertificateUpdateManyWithoutUserNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
+  reviews?: Prisma.ReviewUpdateManyWithoutUserNestedInput
+  appeals?: Prisma.AppealUpdateManyWithoutUserNestedInput
+  appealsJudged?: Prisma.AppealUpdateManyWithoutDecidedByNestedInput
+  evidenceSeen?: Prisma.EvidenceUpdateManyWithoutReviewedByNestedInput
+  messages?: Prisma.ChatMessageUpdateManyWithoutSenderNestedInput
+  threadsAsUser?: Prisma.ChatThreadUpdateManyWithoutStudentNestedInput
+  threadsAsStaff?: Prisma.ChatThreadUpdateManyWithoutStaffNestedInput
+  hourAdjustments?: Prisma.HourAdjustmentUpdateManyWithoutUserNestedInput
+  adjustmentsMade?: Prisma.HourAdjustmentUpdateManyWithoutAuthorNestedInput
+  systemLogs?: Prisma.SystemLogUpdateManyWithoutActorNestedInput
+  calendarEvents?: Prisma.CalendarEventUpdateManyWithoutUserNestedInput
+  news?: Prisma.NewsUpdateManyWithoutAuthorNestedInput
+}
+
+export type UserUncheckedUpdateWithoutNotifyPrefsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  studentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  faculty?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  loanStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.StringFieldUpdateOperationsInput | string
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  seeded?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  shareContact?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletionRequestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  tokensValidFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  resetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
+  twoFactor?: Prisma.TwoFactorUncheckedUpdateOneWithoutUserNestedInput
+  organized?: Prisma.ActivityUncheckedUpdateManyWithoutOrganizerNestedInput
+  registrations?: Prisma.RegistrationUncheckedUpdateManyWithoutUserNestedInput
+  favorites?: Prisma.FavoriteUncheckedUpdateManyWithoutUserNestedInput
+  certificates?: Prisma.CertificateUncheckedUpdateManyWithoutUserNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
+  reviews?: Prisma.ReviewUncheckedUpdateManyWithoutUserNestedInput
+  appeals?: Prisma.AppealUncheckedUpdateManyWithoutUserNestedInput
+  appealsJudged?: Prisma.AppealUncheckedUpdateManyWithoutDecidedByNestedInput
+  evidenceSeen?: Prisma.EvidenceUncheckedUpdateManyWithoutReviewedByNestedInput
+  messages?: Prisma.ChatMessageUncheckedUpdateManyWithoutSenderNestedInput
+  threadsAsUser?: Prisma.ChatThreadUncheckedUpdateManyWithoutStudentNestedInput
+  threadsAsStaff?: Prisma.ChatThreadUncheckedUpdateManyWithoutStaffNestedInput
+  hourAdjustments?: Prisma.HourAdjustmentUncheckedUpdateManyWithoutUserNestedInput
+  adjustmentsMade?: Prisma.HourAdjustmentUncheckedUpdateManyWithoutAuthorNestedInput
+  systemLogs?: Prisma.SystemLogUncheckedUpdateManyWithoutActorNestedInput
+  calendarEvents?: Prisma.CalendarEventUncheckedUpdateManyWithoutUserNestedInput
+  news?: Prisma.NewsUncheckedUpdateManyWithoutAuthorNestedInput
 }
 
 
@@ -3766,6 +4979,8 @@ export type UserCountOutputType = {
   hourAdjustments: number
   adjustmentsMade: number
   systemLogs: number
+  calendarEvents: number
+  news: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -3786,6 +5001,8 @@ export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   hourAdjustments?: boolean | UserCountOutputTypeCountHourAdjustmentsArgs
   adjustmentsMade?: boolean | UserCountOutputTypeCountAdjustmentsMadeArgs
   systemLogs?: boolean | UserCountOutputTypeCountSystemLogsArgs
+  calendarEvents?: boolean | UserCountOutputTypeCountCalendarEventsArgs
+  news?: boolean | UserCountOutputTypeCountNewsArgs
 }
 
 /**
@@ -3917,6 +5134,20 @@ export type UserCountOutputTypeCountSystemLogsArgs<ExtArgs extends runtime.Types
   where?: Prisma.SystemLogWhereInput
 }
 
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountCalendarEventsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.CalendarEventWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountNewsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.NewsWhereInput
+}
+
 
 export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -3929,8 +5160,12 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   loanStatus?: boolean
   avatarUrl?: boolean
   phone?: boolean
+  bio?: boolean
   active?: boolean
   seeded?: boolean
+  shareContact?: boolean
+  deletionRequestedAt?: boolean
+  deletionReason?: boolean
   tokensValidFrom?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -3952,6 +5187,9 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   hourAdjustments?: boolean | Prisma.User$hourAdjustmentsArgs<ExtArgs>
   adjustmentsMade?: boolean | Prisma.User$adjustmentsMadeArgs<ExtArgs>
   systemLogs?: boolean | Prisma.User$systemLogsArgs<ExtArgs>
+  calendarEvents?: boolean | Prisma.User$calendarEventsArgs<ExtArgs>
+  notifyPrefs?: boolean | Prisma.User$notifyPrefsArgs<ExtArgs>
+  news?: boolean | Prisma.User$newsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -3966,8 +5204,12 @@ export type UserSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   loanStatus?: boolean
   avatarUrl?: boolean
   phone?: boolean
+  bio?: boolean
   active?: boolean
   seeded?: boolean
+  shareContact?: boolean
+  deletionRequestedAt?: boolean
+  deletionReason?: boolean
   tokensValidFrom?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -3984,8 +5226,12 @@ export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   loanStatus?: boolean
   avatarUrl?: boolean
   phone?: boolean
+  bio?: boolean
   active?: boolean
   seeded?: boolean
+  shareContact?: boolean
+  deletionRequestedAt?: boolean
+  deletionReason?: boolean
   tokensValidFrom?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -4002,14 +5248,18 @@ export type UserSelectScalar = {
   loanStatus?: boolean
   avatarUrl?: boolean
   phone?: boolean
+  bio?: boolean
   active?: boolean
   seeded?: boolean
+  shareContact?: boolean
+  deletionRequestedAt?: boolean
+  deletionReason?: boolean
   tokensValidFrom?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "email" | "passwordHash" | "role" | "name" | "studentId" | "faculty" | "loanStatus" | "avatarUrl" | "phone" | "active" | "seeded" | "tokensValidFrom" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
+export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "email" | "passwordHash" | "role" | "name" | "studentId" | "faculty" | "loanStatus" | "avatarUrl" | "phone" | "bio" | "active" | "seeded" | "shareContact" | "deletionRequestedAt" | "deletionReason" | "tokensValidFrom" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   sessions?: boolean | Prisma.User$sessionsArgs<ExtArgs>
   resetTokens?: boolean | Prisma.User$resetTokensArgs<ExtArgs>
@@ -4029,6 +5279,9 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   hourAdjustments?: boolean | Prisma.User$hourAdjustmentsArgs<ExtArgs>
   adjustmentsMade?: boolean | Prisma.User$adjustmentsMadeArgs<ExtArgs>
   systemLogs?: boolean | Prisma.User$systemLogsArgs<ExtArgs>
+  calendarEvents?: boolean | Prisma.User$calendarEventsArgs<ExtArgs>
+  notifyPrefs?: boolean | Prisma.User$notifyPrefsArgs<ExtArgs>
+  news?: boolean | Prisma.User$newsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -4055,6 +5308,9 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     hourAdjustments: Prisma.$HourAdjustmentPayload<ExtArgs>[]
     adjustmentsMade: Prisma.$HourAdjustmentPayload<ExtArgs>[]
     systemLogs: Prisma.$SystemLogPayload<ExtArgs>[]
+    calendarEvents: Prisma.$CalendarEventPayload<ExtArgs>[]
+    notifyPrefs: Prisma.$NotificationPreferencePayload<ExtArgs> | null
+    news: Prisma.$NewsPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -4067,8 +5323,12 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     loanStatus: string | null
     avatarUrl: string | null
     phone: string | null
+    bio: string
     active: boolean
     seeded: boolean
+    shareContact: boolean
+    deletionRequestedAt: Date | null
+    deletionReason: string | null
     tokensValidFrom: Date
     createdAt: Date
     updatedAt: Date
@@ -4484,6 +5744,9 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   hourAdjustments<T extends Prisma.User$hourAdjustmentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$hourAdjustmentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$HourAdjustmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   adjustmentsMade<T extends Prisma.User$adjustmentsMadeArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$adjustmentsMadeArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$HourAdjustmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   systemLogs<T extends Prisma.User$systemLogsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$systemLogsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SystemLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  calendarEvents<T extends Prisma.User$calendarEventsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$calendarEventsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CalendarEventPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  notifyPrefs<T extends Prisma.User$notifyPrefsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$notifyPrefsArgs<ExtArgs>>): Prisma.Prisma__NotificationPreferenceClient<runtime.Types.Result.GetResult<Prisma.$NotificationPreferencePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  news<T extends Prisma.User$newsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$newsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$NewsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -4523,8 +5786,12 @@ export interface UserFieldRefs {
   readonly loanStatus: Prisma.FieldRef<"User", 'String'>
   readonly avatarUrl: Prisma.FieldRef<"User", 'String'>
   readonly phone: Prisma.FieldRef<"User", 'String'>
+  readonly bio: Prisma.FieldRef<"User", 'String'>
   readonly active: Prisma.FieldRef<"User", 'Boolean'>
   readonly seeded: Prisma.FieldRef<"User", 'Boolean'>
+  readonly shareContact: Prisma.FieldRef<"User", 'Boolean'>
+  readonly deletionRequestedAt: Prisma.FieldRef<"User", 'DateTime'>
+  readonly deletionReason: Prisma.FieldRef<"User", 'String'>
   readonly tokensValidFrom: Prisma.FieldRef<"User", 'DateTime'>
   readonly createdAt: Prisma.FieldRef<"User", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"User", 'DateTime'>
@@ -5343,6 +6610,73 @@ export type User$systemLogsArgs<ExtArgs extends runtime.Types.Extensions.Interna
   take?: number
   skip?: number
   distinct?: Prisma.SystemLogScalarFieldEnum | Prisma.SystemLogScalarFieldEnum[]
+}
+
+/**
+ * User.calendarEvents
+ */
+export type User$calendarEventsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the CalendarEvent
+   */
+  select?: Prisma.CalendarEventSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the CalendarEvent
+   */
+  omit?: Prisma.CalendarEventOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CalendarEventInclude<ExtArgs> | null
+  where?: Prisma.CalendarEventWhereInput
+  orderBy?: Prisma.CalendarEventOrderByWithRelationInput | Prisma.CalendarEventOrderByWithRelationInput[]
+  cursor?: Prisma.CalendarEventWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.CalendarEventScalarFieldEnum | Prisma.CalendarEventScalarFieldEnum[]
+}
+
+/**
+ * User.notifyPrefs
+ */
+export type User$notifyPrefsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the NotificationPreference
+   */
+  select?: Prisma.NotificationPreferenceSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the NotificationPreference
+   */
+  omit?: Prisma.NotificationPreferenceOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.NotificationPreferenceInclude<ExtArgs> | null
+  where?: Prisma.NotificationPreferenceWhereInput
+}
+
+/**
+ * User.news
+ */
+export type User$newsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the News
+   */
+  select?: Prisma.NewsSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the News
+   */
+  omit?: Prisma.NewsOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.NewsInclude<ExtArgs> | null
+  where?: Prisma.NewsWhereInput
+  orderBy?: Prisma.NewsOrderByWithRelationInput | Prisma.NewsOrderByWithRelationInput[]
+  cursor?: Prisma.NewsWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.NewsScalarFieldEnum | Prisma.NewsScalarFieldEnum[]
 }
 
 /**

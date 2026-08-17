@@ -1,10 +1,13 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { ActivityCard } from '@/components/activity/ActivityCard';
+import { toActivityCardProps } from '@/lib/activityCard';
+import { activityApi } from '@/lib/api';
 import { Icon } from '@/components/ui';
 import { useApp } from '@/components/providers/AppProviders';
-import { BRAND_GRADIENT, COLOR, seatStatus } from '@/lib/design';
+import { COLOR } from '@/lib/design';
 import type { PublicActivity, PublicCategory } from '@/components/landing/types';
 
 const CARD: React.CSSProperties = {
@@ -18,233 +21,51 @@ const CARD: React.CSSProperties = {
 
 const PREVIEW_COUNT = 3;
 
-function CategoryLabel({ c, isEn }: { c: PublicCategory; isEn: boolean }) {
-  return <>{isEn && c.labelEn ? c.labelEn : c.label}</>;
-}
-
-/** รายละเอียดกิจกรรมแบบอ่านอย่างเดียว — ผู้เยี่ยมชมยังไม่ต้องเข้าสู่ระบบ */
-function ActivityModal({
-  activity,
-  onClose,
-  signedIn,
-}: {
-  activity: PublicActivity;
-  onClose: () => void;
-  signedIn: boolean;
-}) {
-  const { t, isEn } = useApp();
-  const seats = seatStatus(activity.seatsFilled, activity.seatsTotal);
-
-  const meta = [
-    { icon: 'calendar_today', label: isEn ? activity.dateEn : activity.dateTh },
-    { icon: 'schedule', label: `${activity.hours} ${t('ชั่วโมง')}` },
-    { icon: 'place', label: activity.location || '—' },
-    {
-      icon: 'groups',
-      label: `${activity.seatsFilled}/${activity.seatsTotal || '—'} ${t('ที่นั่ง')}`,
-    },
-  ];
-
-  return (
-    <div
-      role="dialog"
-      aria-modal="true"
-      aria-label={activity.title}
-      onClick={onClose}
-      style={{
-        position: 'fixed',
-        inset: 0,
-        zIndex: 700,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: 20,
-        background: 'rgba(30,37,48,.45)',
-        backdropFilter: 'blur(10px)',
-        WebkitBackdropFilter: 'blur(10px)',
-        overflow: 'auto',
-      }}
-    >
-      <div
-        onClick={(e) => e.stopPropagation()}
-        style={{
-          width: '100%',
-          maxWidth: 560,
-          background: 'rgba(255,255,255,.94)',
-          backdropFilter: 'blur(30px) saturate(180%)',
-          WebkitBackdropFilter: 'blur(30px) saturate(180%)',
-          border: '1px solid rgba(255,255,255,.8)',
-          borderRadius: 26,
-          boxShadow: '0 30px 80px rgba(24,20,34,.32)',
-          maxHeight: '88vh',
-          display: 'flex',
-          flexDirection: 'column',
-          overflow: 'hidden',
-          animation: 'nuPop .22s ease',
-        }}
-      >
-        {activity.photo ? (
-          // eslint-disable-next-line @next/next/no-img-element -- ภาพอัปโหลด/ปลายทางภายนอก
-          <img
-            src={activity.photo}
-            alt=""
-            style={{ width: '100%', height: 190, objectFit: 'cover', display: 'block' }}
-          />
-        ) : null}
-
-        <div style={{ padding: 26, overflow: 'auto' }}>
-          <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <div
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: 6,
-                  padding: '5px 12px',
-                  borderRadius: 999,
-                  fontSize: 11.5,
-                  fontWeight: 500,
-                  color: activity.category.color,
-                  background: activity.category.color + '22',
-                  marginBottom: 10,
-                }}
-              >
-                <CategoryLabel c={activity.category} isEn={isEn} />
-              </div>
-              <div style={{ fontSize: 19, fontWeight: 600, color: COLOR.ink, lineHeight: 1.45 }}>
-                {activity.title}
-              </div>
-            </div>
-            <button
-              type="button"
-              onClick={onClose}
-              title={t('ปิด')}
-              aria-label={t('ปิด')}
-              style={{
-                width: 36,
-                height: 36,
-                borderRadius: 11,
-                border: '1px solid rgba(31,41,55,.1)',
-                background: 'rgba(255,255,255,.75)',
-                color: COLOR.body,
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                flexShrink: 0,
-              }}
-            >
-              <Icon name="close" size={19} />
-            </button>
-          </div>
-
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 8,
-              flexWrap: 'wrap',
-              marginTop: 14,
-            }}
-          >
-            <span
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 6,
-                padding: '6px 14px',
-                borderRadius: 999,
-                fontSize: 12,
-                fontWeight: 500,
-                color: seats.color,
-                background: seats.bg,
-              }}
-            >
-              <span
-                style={{ width: 6, height: 6, borderRadius: '50%', background: seats.dot }}
-              />
-              {t(seats.label)}
-            </span>
-          </div>
-
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: '1fr 1fr',
-              gap: 10,
-              marginTop: 16,
-              padding: 16,
-              borderRadius: 16,
-              background: 'rgba(31,41,55,.035)',
-            }}
-          >
-            {meta.map((m) => (
-              <div key={m.icon} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <Icon name={m.icon} size={16} style={{ color: COLOR.hint, flexShrink: 0 }} />
-                <span style={{ fontSize: 12.5, color: COLOR.body, lineHeight: 1.6 }}>{m.label}</span>
-              </div>
-            ))}
-          </div>
-
-          {activity.description ? (
-            <div
-              style={{
-                fontSize: 13,
-                color: COLOR.body,
-                lineHeight: 1.9,
-                marginTop: 16,
-                textWrap: 'pretty',
-                whiteSpace: 'pre-line',
-              }}
-            >
-              {activity.description}
-            </div>
-          ) : null}
-
-          {/* ผู้ที่เข้าสู่ระบบแล้วลงทะเบียนจากหน้าของบทบาทตัวเอง — ที่นี่ชวนเฉพาะผู้เยี่ยมชม */}
-          {signedIn ? null : (
-            <Link
-              href="/register"
-              className="nuv-keep"
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: 8,
-                marginTop: 22,
-                padding: 14,
-                borderRadius: 14,
-                background: BRAND_GRADIENT,
-                color: '#fff',
-                fontWeight: 500,
-                fontSize: 14,
-                boxShadow: '0 8px 22px rgba(167,116,247,.34)',
-              }}
-            >
-              <Icon name="how_to_reg" size={19} />
-              {t('สมัครสมาชิกเพื่อลงทะเบียน')}
-            </Link>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-}
-
 export function ActivityGrid({
   activities,
   categories,
   signedIn,
+  myStatus = {},
+  myFavorites = [],
 }: {
   activities: PublicActivity[];
   categories: PublicCategory[];
   signedIn: boolean;
+  /** activityId → สถานะการลงทะเบียนของผู้ใช้ที่ล็อกอินอยู่ */
+  myStatus?: Record<string, string>;
+  myFavorites?: string[];
 }) {
   const { t, isEn } = useApp();
+  const router = useRouter();
   const [search, setSearch] = useState('');
   const [cat, setCat] = useState('all');
   const [showAll, setShowAll] = useState(false);
-  const [open, setOpen] = useState<PublicActivity | null>(null);
+
+  /* สถานะที่ผู้ใช้เปลี่ยนได้จากการ์ด — เริ่มจากค่าที่เซิร์ฟเวอร์ส่งมา แล้วอัปเดตในหน้าเลย */
+  const [status, setStatus] = useState<Record<string, string>>(myStatus);
+  const [favorites, setFavorites] = useState<string[]>(myFavorites);
+
+  const toggleFavorite = async (id: string) => {
+    // สลับทันทีให้หัวใจตอบสนองเร็ว แล้วยึดผลจริงจากเซิร์ฟเวอร์
+    setFavorites((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
+    try {
+      const res = await activityApi.toggleFavorite(id);
+      setFavorites((prev) => (res.favorited ? [...new Set([...prev, id])] : prev.filter((x) => x !== id)));
+    } catch {
+      setFavorites((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
+    }
+  };
+
+  const register = async (id: string) => {
+    try {
+      const res = await activityApi.apply(id);
+      setStatus((prev) => ({ ...prev, [id]: res.registration.status }));
+      router.refresh();
+    } catch {
+      // ที่นั่งเต็มหรือปิดรับสมัครระหว่างนั้น — หน้ารายละเอียดบอกเหตุผลได้ครบกว่าการ์ด
+      router.push(`/activities/${id}`);
+    }
+  };
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -260,11 +81,14 @@ export function ActivityGrid({
   }, [activities, search, cat]);
 
   const shown = showAll ? filtered : filtered.slice(0, PREVIEW_COUNT);
-  const chips = [{ id: 'all', label: t('ทั้งหมด'), color: '#1F2937' }, ...categories.map((c) => ({
-    id: c.id,
-    label: isEn && c.labelEn ? c.labelEn : c.label,
-    color: c.color,
-  }))];
+  const chips = [
+    { id: 'all', label: t('ทั้งหมด'), color: '#1F2937' },
+    ...categories.map((c) => ({
+      id: c.id,
+      label: isEn && c.labelEn ? c.labelEn : c.label,
+      color: c.color,
+    })),
+  ];
 
   return (
     <div
@@ -277,10 +101,6 @@ export function ActivityGrid({
         scrollMarginTop: 90,
       }}
     >
-      {open ? (
-        <ActivityModal activity={open} onClose={() => setOpen(null)} signedIn={signedIn} />
-      ) : null}
-
       <div
         style={{
           display: 'flex',
@@ -414,141 +234,21 @@ export function ActivityGrid({
             gap: 20,
           }}
         >
-          {shown.map((a) => {
-            const seats = seatStatus(a.seatsFilled, a.seatsTotal);
-            return (
-              <div
-                key={a.id}
-                className="nuv-card"
-                style={{ ...CARD, padding: 12, display: 'flex', flexDirection: 'column' }}
-              >
-                <div style={{ position: 'relative', borderRadius: 16, overflow: 'hidden' }}>
-                  {a.photo ? (
-                    // eslint-disable-next-line @next/next/no-img-element -- ภาพอัปโหลด/ปลายทางภายนอก
-                    <img
-                      src={a.photo}
-                      alt=""
-                      style={{ width: '100%', height: 165, objectFit: 'cover', display: 'block' }}
-                    />
-                  ) : (
-                    <div
-                      style={{
-                        width: '100%',
-                        height: 165,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        background: `linear-gradient(140deg, ${a.category.color}33, ${a.category.color}14)`,
-                        color: a.category.color,
-                      }}
-                    >
-                      <Icon name="volunteer_activism" size={40} fill />
-                    </div>
-                  )}
-                  <div
-                    className="nuv-keep"
-                    style={{
-                      position: 'absolute',
-                      top: 10,
-                      right: 10,
-                      padding: '5px 12px',
-                      borderRadius: 999,
-                      fontSize: 11,
-                      fontWeight: 500,
-                      background: a.category.color,
-                      color: '#fff',
-                      boxShadow: '0 5px 14px rgba(31,41,55,.22)',
-                    }}
-                  >
-                    <CategoryLabel c={a.category} isEn={isEn} />
-                  </div>
-                </div>
-
-                <div
-                  style={{
-                    padding: '14px 6px 6px',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: 9,
-                    flex: 1,
-                  }}
-                >
-                  <div
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 6,
-                      fontSize: 11.5,
-                      color: COLOR.hint,
-                    }}
-                  >
-                    <Icon name="calendar_today" size={16} />
-                    {isEn ? a.dateEn : a.dateTh}
-                  </div>
-                  <div
-                    style={{
-                      fontWeight: 500,
-                      fontSize: 14.5,
-                      color: COLOR.ink,
-                      lineHeight: 1.5,
-                      textWrap: 'pretty',
-                    }}
-                  >
-                    {a.title}
-                  </div>
-                  <div
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      gap: 10,
-                      marginTop: 'auto',
-                      paddingTop: 10,
-                    }}
-                  >
-                    <span
-                      style={{
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        gap: 6,
-                        padding: '6px 12px',
-                        borderRadius: 999,
-                        fontSize: 11.5,
-                        fontWeight: 500,
-                        color: seats.color,
-                        background: seats.bg,
-                        whiteSpace: 'nowrap',
-                      }}
-                    >
-                      <span
-                        style={{ width: 6, height: 6, borderRadius: '50%', background: seats.dot }}
-                      />
-                      {a.seatsTotal > 0 ? `${a.seatsFilled}/${a.seatsTotal}` : t(seats.label)}
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() => setOpen(a)}
-                      style={{
-                        padding: '9px 18px',
-                        borderRadius: 11,
-                        border: '1px solid rgba(31,41,55,.12)',
-                        background: 'rgba(255,255,255,.8)',
-                        color: COLOR.ink,
-                        fontFamily: 'inherit',
-                        fontWeight: 500,
-                        fontSize: 12.5,
-                        cursor: 'pointer',
-                        whiteSpace: 'nowrap',
-                        transition: 'all 220ms ease',
-                      }}
-                    >
-                      {t('ดูรายละเอียด')}
-                    </button>
-                  </div>
-                </div>
-              </div>
-            );
-          })}
+          {/* การ์ดพาไปหน้ารายละเอียดเต็มแล้ว จึงไม่ต้องมีโมดัลบนหน้าแรกอีก */}
+          {shown.map((a) => (
+            <ActivityCard
+              key={a.id}
+              {...toActivityCardProps(a, {
+                isEn,
+                signedIn,
+                registrationStatus: status[a.id] ?? null,
+                isFavorite: favorites.includes(a.id),
+                // ผู้เยี่ยมชมที่ยังไม่เข้าสู่ระบบไม่ต้องมีปุ่มที่กดแล้วเด้งไปหน้าเข้าสู่ระบบ
+                onFavoriteClick: signedIn ? () => toggleFavorite(a.id) : undefined,
+                onRegister: signedIn ? () => register(a.id) : undefined,
+              })}
+            />
+          ))}
         </div>
       )}
     </div>

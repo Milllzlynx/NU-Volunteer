@@ -31,6 +31,8 @@ export type ChatThreadMinAggregateOutputType = {
   staffId: string | null
   lastMessageAt: Date | null
   createdAt: Date | null
+  studentMuted: boolean | null
+  studentArchived: boolean | null
 }
 
 export type ChatThreadMaxAggregateOutputType = {
@@ -40,6 +42,8 @@ export type ChatThreadMaxAggregateOutputType = {
   staffId: string | null
   lastMessageAt: Date | null
   createdAt: Date | null
+  studentMuted: boolean | null
+  studentArchived: boolean | null
 }
 
 export type ChatThreadCountAggregateOutputType = {
@@ -49,6 +53,8 @@ export type ChatThreadCountAggregateOutputType = {
   staffId: number
   lastMessageAt: number
   createdAt: number
+  studentMuted: number
+  studentArchived: number
   _all: number
 }
 
@@ -60,6 +66,8 @@ export type ChatThreadMinAggregateInputType = {
   staffId?: true
   lastMessageAt?: true
   createdAt?: true
+  studentMuted?: true
+  studentArchived?: true
 }
 
 export type ChatThreadMaxAggregateInputType = {
@@ -69,6 +77,8 @@ export type ChatThreadMaxAggregateInputType = {
   staffId?: true
   lastMessageAt?: true
   createdAt?: true
+  studentMuted?: true
+  studentArchived?: true
 }
 
 export type ChatThreadCountAggregateInputType = {
@@ -78,6 +88,8 @@ export type ChatThreadCountAggregateInputType = {
   staffId?: true
   lastMessageAt?: true
   createdAt?: true
+  studentMuted?: true
+  studentArchived?: true
   _all?: true
 }
 
@@ -160,6 +172,8 @@ export type ChatThreadGroupByOutputType = {
   staffId: string
   lastMessageAt: Date
   createdAt: Date
+  studentMuted: boolean
+  studentArchived: boolean
   _count: ChatThreadCountAggregateOutputType | null
   _min: ChatThreadMinAggregateOutputType | null
   _max: ChatThreadMaxAggregateOutputType | null
@@ -190,6 +204,8 @@ export type ChatThreadWhereInput = {
   staffId?: Prisma.StringFilter<"ChatThread"> | string
   lastMessageAt?: Prisma.DateTimeFilter<"ChatThread"> | Date | string
   createdAt?: Prisma.DateTimeFilter<"ChatThread"> | Date | string
+  studentMuted?: Prisma.BoolFilter<"ChatThread"> | boolean
+  studentArchived?: Prisma.BoolFilter<"ChatThread"> | boolean
   activity?: Prisma.XOR<Prisma.ActivityNullableScalarRelationFilter, Prisma.ActivityWhereInput> | null
   student?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   staff?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
@@ -203,6 +219,8 @@ export type ChatThreadOrderByWithRelationInput = {
   staffId?: Prisma.SortOrder
   lastMessageAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  studentMuted?: Prisma.SortOrder
+  studentArchived?: Prisma.SortOrder
   activity?: Prisma.ActivityOrderByWithRelationInput
   student?: Prisma.UserOrderByWithRelationInput
   staff?: Prisma.UserOrderByWithRelationInput
@@ -220,6 +238,8 @@ export type ChatThreadWhereUniqueInput = Prisma.AtLeast<{
   staffId?: Prisma.StringFilter<"ChatThread"> | string
   lastMessageAt?: Prisma.DateTimeFilter<"ChatThread"> | Date | string
   createdAt?: Prisma.DateTimeFilter<"ChatThread"> | Date | string
+  studentMuted?: Prisma.BoolFilter<"ChatThread"> | boolean
+  studentArchived?: Prisma.BoolFilter<"ChatThread"> | boolean
   activity?: Prisma.XOR<Prisma.ActivityNullableScalarRelationFilter, Prisma.ActivityWhereInput> | null
   student?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   staff?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
@@ -233,6 +253,8 @@ export type ChatThreadOrderByWithAggregationInput = {
   staffId?: Prisma.SortOrder
   lastMessageAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  studentMuted?: Prisma.SortOrder
+  studentArchived?: Prisma.SortOrder
   _count?: Prisma.ChatThreadCountOrderByAggregateInput
   _max?: Prisma.ChatThreadMaxOrderByAggregateInput
   _min?: Prisma.ChatThreadMinOrderByAggregateInput
@@ -248,12 +270,16 @@ export type ChatThreadScalarWhereWithAggregatesInput = {
   staffId?: Prisma.StringWithAggregatesFilter<"ChatThread"> | string
   lastMessageAt?: Prisma.DateTimeWithAggregatesFilter<"ChatThread"> | Date | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"ChatThread"> | Date | string
+  studentMuted?: Prisma.BoolWithAggregatesFilter<"ChatThread"> | boolean
+  studentArchived?: Prisma.BoolWithAggregatesFilter<"ChatThread"> | boolean
 }
 
 export type ChatThreadCreateInput = {
   id?: string
   lastMessageAt?: Date | string
   createdAt?: Date | string
+  studentMuted?: boolean
+  studentArchived?: boolean
   activity?: Prisma.ActivityCreateNestedOneWithoutThreadsInput
   student: Prisma.UserCreateNestedOneWithoutThreadsAsUserInput
   staff: Prisma.UserCreateNestedOneWithoutThreadsAsStaffInput
@@ -267,6 +293,8 @@ export type ChatThreadUncheckedCreateInput = {
   staffId: string
   lastMessageAt?: Date | string
   createdAt?: Date | string
+  studentMuted?: boolean
+  studentArchived?: boolean
   messages?: Prisma.ChatMessageUncheckedCreateNestedManyWithoutThreadInput
 }
 
@@ -274,6 +302,8 @@ export type ChatThreadUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   lastMessageAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  studentMuted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  studentArchived?: Prisma.BoolFieldUpdateOperationsInput | boolean
   activity?: Prisma.ActivityUpdateOneWithoutThreadsNestedInput
   student?: Prisma.UserUpdateOneRequiredWithoutThreadsAsUserNestedInput
   staff?: Prisma.UserUpdateOneRequiredWithoutThreadsAsStaffNestedInput
@@ -287,6 +317,8 @@ export type ChatThreadUncheckedUpdateInput = {
   staffId?: Prisma.StringFieldUpdateOperationsInput | string
   lastMessageAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  studentMuted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  studentArchived?: Prisma.BoolFieldUpdateOperationsInput | boolean
   messages?: Prisma.ChatMessageUncheckedUpdateManyWithoutThreadNestedInput
 }
 
@@ -297,12 +329,16 @@ export type ChatThreadCreateManyInput = {
   staffId: string
   lastMessageAt?: Date | string
   createdAt?: Date | string
+  studentMuted?: boolean
+  studentArchived?: boolean
 }
 
 export type ChatThreadUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   lastMessageAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  studentMuted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  studentArchived?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
 export type ChatThreadUncheckedUpdateManyInput = {
@@ -312,6 +348,8 @@ export type ChatThreadUncheckedUpdateManyInput = {
   staffId?: Prisma.StringFieldUpdateOperationsInput | string
   lastMessageAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  studentMuted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  studentArchived?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
 export type ChatThreadListRelationFilter = {
@@ -337,6 +375,8 @@ export type ChatThreadCountOrderByAggregateInput = {
   staffId?: Prisma.SortOrder
   lastMessageAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  studentMuted?: Prisma.SortOrder
+  studentArchived?: Prisma.SortOrder
 }
 
 export type ChatThreadMaxOrderByAggregateInput = {
@@ -346,6 +386,8 @@ export type ChatThreadMaxOrderByAggregateInput = {
   staffId?: Prisma.SortOrder
   lastMessageAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  studentMuted?: Prisma.SortOrder
+  studentArchived?: Prisma.SortOrder
 }
 
 export type ChatThreadMinOrderByAggregateInput = {
@@ -355,6 +397,8 @@ export type ChatThreadMinOrderByAggregateInput = {
   staffId?: Prisma.SortOrder
   lastMessageAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  studentMuted?: Prisma.SortOrder
+  studentArchived?: Prisma.SortOrder
 }
 
 export type ChatThreadScalarRelationFilter = {
@@ -506,6 +550,8 @@ export type ChatThreadCreateWithoutStudentInput = {
   id?: string
   lastMessageAt?: Date | string
   createdAt?: Date | string
+  studentMuted?: boolean
+  studentArchived?: boolean
   activity?: Prisma.ActivityCreateNestedOneWithoutThreadsInput
   staff: Prisma.UserCreateNestedOneWithoutThreadsAsStaffInput
   messages?: Prisma.ChatMessageCreateNestedManyWithoutThreadInput
@@ -517,6 +563,8 @@ export type ChatThreadUncheckedCreateWithoutStudentInput = {
   staffId: string
   lastMessageAt?: Date | string
   createdAt?: Date | string
+  studentMuted?: boolean
+  studentArchived?: boolean
   messages?: Prisma.ChatMessageUncheckedCreateNestedManyWithoutThreadInput
 }
 
@@ -533,6 +581,8 @@ export type ChatThreadCreateWithoutStaffInput = {
   id?: string
   lastMessageAt?: Date | string
   createdAt?: Date | string
+  studentMuted?: boolean
+  studentArchived?: boolean
   activity?: Prisma.ActivityCreateNestedOneWithoutThreadsInput
   student: Prisma.UserCreateNestedOneWithoutThreadsAsUserInput
   messages?: Prisma.ChatMessageCreateNestedManyWithoutThreadInput
@@ -544,6 +594,8 @@ export type ChatThreadUncheckedCreateWithoutStaffInput = {
   studentId: string
   lastMessageAt?: Date | string
   createdAt?: Date | string
+  studentMuted?: boolean
+  studentArchived?: boolean
   messages?: Prisma.ChatMessageUncheckedCreateNestedManyWithoutThreadInput
 }
 
@@ -582,6 +634,8 @@ export type ChatThreadScalarWhereInput = {
   staffId?: Prisma.StringFilter<"ChatThread"> | string
   lastMessageAt?: Prisma.DateTimeFilter<"ChatThread"> | Date | string
   createdAt?: Prisma.DateTimeFilter<"ChatThread"> | Date | string
+  studentMuted?: Prisma.BoolFilter<"ChatThread"> | boolean
+  studentArchived?: Prisma.BoolFilter<"ChatThread"> | boolean
 }
 
 export type ChatThreadUpsertWithWhereUniqueWithoutStaffInput = {
@@ -604,6 +658,8 @@ export type ChatThreadCreateWithoutActivityInput = {
   id?: string
   lastMessageAt?: Date | string
   createdAt?: Date | string
+  studentMuted?: boolean
+  studentArchived?: boolean
   student: Prisma.UserCreateNestedOneWithoutThreadsAsUserInput
   staff: Prisma.UserCreateNestedOneWithoutThreadsAsStaffInput
   messages?: Prisma.ChatMessageCreateNestedManyWithoutThreadInput
@@ -615,6 +671,8 @@ export type ChatThreadUncheckedCreateWithoutActivityInput = {
   staffId: string
   lastMessageAt?: Date | string
   createdAt?: Date | string
+  studentMuted?: boolean
+  studentArchived?: boolean
   messages?: Prisma.ChatMessageUncheckedCreateNestedManyWithoutThreadInput
 }
 
@@ -647,6 +705,8 @@ export type ChatThreadCreateWithoutMessagesInput = {
   id?: string
   lastMessageAt?: Date | string
   createdAt?: Date | string
+  studentMuted?: boolean
+  studentArchived?: boolean
   activity?: Prisma.ActivityCreateNestedOneWithoutThreadsInput
   student: Prisma.UserCreateNestedOneWithoutThreadsAsUserInput
   staff: Prisma.UserCreateNestedOneWithoutThreadsAsStaffInput
@@ -659,6 +719,8 @@ export type ChatThreadUncheckedCreateWithoutMessagesInput = {
   staffId: string
   lastMessageAt?: Date | string
   createdAt?: Date | string
+  studentMuted?: boolean
+  studentArchived?: boolean
 }
 
 export type ChatThreadCreateOrConnectWithoutMessagesInput = {
@@ -681,6 +743,8 @@ export type ChatThreadUpdateWithoutMessagesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   lastMessageAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  studentMuted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  studentArchived?: Prisma.BoolFieldUpdateOperationsInput | boolean
   activity?: Prisma.ActivityUpdateOneWithoutThreadsNestedInput
   student?: Prisma.UserUpdateOneRequiredWithoutThreadsAsUserNestedInput
   staff?: Prisma.UserUpdateOneRequiredWithoutThreadsAsStaffNestedInput
@@ -693,6 +757,8 @@ export type ChatThreadUncheckedUpdateWithoutMessagesInput = {
   staffId?: Prisma.StringFieldUpdateOperationsInput | string
   lastMessageAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  studentMuted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  studentArchived?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
 export type ChatThreadCreateManyStudentInput = {
@@ -701,6 +767,8 @@ export type ChatThreadCreateManyStudentInput = {
   staffId: string
   lastMessageAt?: Date | string
   createdAt?: Date | string
+  studentMuted?: boolean
+  studentArchived?: boolean
 }
 
 export type ChatThreadCreateManyStaffInput = {
@@ -709,12 +777,16 @@ export type ChatThreadCreateManyStaffInput = {
   studentId: string
   lastMessageAt?: Date | string
   createdAt?: Date | string
+  studentMuted?: boolean
+  studentArchived?: boolean
 }
 
 export type ChatThreadUpdateWithoutStudentInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   lastMessageAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  studentMuted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  studentArchived?: Prisma.BoolFieldUpdateOperationsInput | boolean
   activity?: Prisma.ActivityUpdateOneWithoutThreadsNestedInput
   staff?: Prisma.UserUpdateOneRequiredWithoutThreadsAsStaffNestedInput
   messages?: Prisma.ChatMessageUpdateManyWithoutThreadNestedInput
@@ -726,6 +798,8 @@ export type ChatThreadUncheckedUpdateWithoutStudentInput = {
   staffId?: Prisma.StringFieldUpdateOperationsInput | string
   lastMessageAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  studentMuted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  studentArchived?: Prisma.BoolFieldUpdateOperationsInput | boolean
   messages?: Prisma.ChatMessageUncheckedUpdateManyWithoutThreadNestedInput
 }
 
@@ -735,12 +809,16 @@ export type ChatThreadUncheckedUpdateManyWithoutStudentInput = {
   staffId?: Prisma.StringFieldUpdateOperationsInput | string
   lastMessageAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  studentMuted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  studentArchived?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
 export type ChatThreadUpdateWithoutStaffInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   lastMessageAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  studentMuted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  studentArchived?: Prisma.BoolFieldUpdateOperationsInput | boolean
   activity?: Prisma.ActivityUpdateOneWithoutThreadsNestedInput
   student?: Prisma.UserUpdateOneRequiredWithoutThreadsAsUserNestedInput
   messages?: Prisma.ChatMessageUpdateManyWithoutThreadNestedInput
@@ -752,6 +830,8 @@ export type ChatThreadUncheckedUpdateWithoutStaffInput = {
   studentId?: Prisma.StringFieldUpdateOperationsInput | string
   lastMessageAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  studentMuted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  studentArchived?: Prisma.BoolFieldUpdateOperationsInput | boolean
   messages?: Prisma.ChatMessageUncheckedUpdateManyWithoutThreadNestedInput
 }
 
@@ -761,6 +841,8 @@ export type ChatThreadUncheckedUpdateManyWithoutStaffInput = {
   studentId?: Prisma.StringFieldUpdateOperationsInput | string
   lastMessageAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  studentMuted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  studentArchived?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
 export type ChatThreadCreateManyActivityInput = {
@@ -769,12 +851,16 @@ export type ChatThreadCreateManyActivityInput = {
   staffId: string
   lastMessageAt?: Date | string
   createdAt?: Date | string
+  studentMuted?: boolean
+  studentArchived?: boolean
 }
 
 export type ChatThreadUpdateWithoutActivityInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   lastMessageAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  studentMuted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  studentArchived?: Prisma.BoolFieldUpdateOperationsInput | boolean
   student?: Prisma.UserUpdateOneRequiredWithoutThreadsAsUserNestedInput
   staff?: Prisma.UserUpdateOneRequiredWithoutThreadsAsStaffNestedInput
   messages?: Prisma.ChatMessageUpdateManyWithoutThreadNestedInput
@@ -786,6 +872,8 @@ export type ChatThreadUncheckedUpdateWithoutActivityInput = {
   staffId?: Prisma.StringFieldUpdateOperationsInput | string
   lastMessageAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  studentMuted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  studentArchived?: Prisma.BoolFieldUpdateOperationsInput | boolean
   messages?: Prisma.ChatMessageUncheckedUpdateManyWithoutThreadNestedInput
 }
 
@@ -795,6 +883,8 @@ export type ChatThreadUncheckedUpdateManyWithoutActivityInput = {
   staffId?: Prisma.StringFieldUpdateOperationsInput | string
   lastMessageAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  studentMuted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  studentArchived?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
 
@@ -835,6 +925,8 @@ export type ChatThreadSelect<ExtArgs extends runtime.Types.Extensions.InternalAr
   staffId?: boolean
   lastMessageAt?: boolean
   createdAt?: boolean
+  studentMuted?: boolean
+  studentArchived?: boolean
   activity?: boolean | Prisma.ChatThread$activityArgs<ExtArgs>
   student?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   staff?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -849,6 +941,8 @@ export type ChatThreadSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ex
   staffId?: boolean
   lastMessageAt?: boolean
   createdAt?: boolean
+  studentMuted?: boolean
+  studentArchived?: boolean
   activity?: boolean | Prisma.ChatThread$activityArgs<ExtArgs>
   student?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   staff?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -861,6 +955,8 @@ export type ChatThreadSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ex
   staffId?: boolean
   lastMessageAt?: boolean
   createdAt?: boolean
+  studentMuted?: boolean
+  studentArchived?: boolean
   activity?: boolean | Prisma.ChatThread$activityArgs<ExtArgs>
   student?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   staff?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -873,9 +969,11 @@ export type ChatThreadSelectScalar = {
   staffId?: boolean
   lastMessageAt?: boolean
   createdAt?: boolean
+  studentMuted?: boolean
+  studentArchived?: boolean
 }
 
-export type ChatThreadOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "activityId" | "studentId" | "staffId" | "lastMessageAt" | "createdAt", ExtArgs["result"]["chatThread"]>
+export type ChatThreadOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "activityId" | "studentId" | "staffId" | "lastMessageAt" | "createdAt" | "studentMuted" | "studentArchived", ExtArgs["result"]["chatThread"]>
 export type ChatThreadInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   activity?: boolean | Prisma.ChatThread$activityArgs<ExtArgs>
   student?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -909,6 +1007,8 @@ export type $ChatThreadPayload<ExtArgs extends runtime.Types.Extensions.Internal
     staffId: string
     lastMessageAt: Date
     createdAt: Date
+    studentMuted: boolean
+    studentArchived: boolean
   }, ExtArgs["result"]["chatThread"]>
   composites: {}
 }
@@ -1342,6 +1442,8 @@ export interface ChatThreadFieldRefs {
   readonly staffId: Prisma.FieldRef<"ChatThread", 'String'>
   readonly lastMessageAt: Prisma.FieldRef<"ChatThread", 'DateTime'>
   readonly createdAt: Prisma.FieldRef<"ChatThread", 'DateTime'>
+  readonly studentMuted: Prisma.FieldRef<"ChatThread", 'Boolean'>
+  readonly studentArchived: Prisma.FieldRef<"ChatThread", 'Boolean'>
 }
     
 

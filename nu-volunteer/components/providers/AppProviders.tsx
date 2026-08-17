@@ -48,12 +48,48 @@ type AppContextValue = {
 
   mood: Mood;
   setMood: (m: Mood) => void;
+
+  /** ตัวเลือกการเข้าถึง — เก็บในเครื่อง ไม่ผูกกับบัญชี (ตั้งแยกได้ต่ออุปกรณ์) */
+  a11y: A11y;
+  setA11y: (patch: Partial<A11y>) => void;
 };
+
+export type A11y = {
+  /** ลดการเคลื่อนไหว: ปิดทรานซิชันและแอนิเมชันทั้งหมด */
+  reduceMotion: boolean;
+  /** ขนาดตัวอักษรฐาน (%) 100–140 */
+  textScale: number;
+  /** เพิ่มความคมชัดของตัวอักษรและเส้นขอบ */
+  highContrast: boolean;
+  /** แสดงกรอบโฟกัสชัดเจนเสมอ ไม่เฉพาะตอนใช้คีย์บอร์ด */
+  alwaysFocusRing: boolean;
+};
+
+export const A11Y_DEFAULT: A11y = {
+  reduceMotion: false,
+  textScale: 100,
+  highContrast: false,
+  alwaysFocusRing: false,
+};
+
+export const TEXT_SCALE_MIN = 100;
+export const TEXT_SCALE_MAX = 140;
 
 const AppContext = createContext<AppContextValue | null>(null);
 
 const LS_THEME = 'nuv-theme';
 const LS_MOOD = 'nuv-style-tweak';
+const LS_A11Y = 'nuv-a11y';
+
+/** เขียนค่าการเข้าถึงลง <html> ให้ CSS ใน globals.css จับได้ */
+function applyA11y(a: A11y) {
+  const el = document.documentElement;
+  el.setAttribute('data-nuv-motion', a.reduceMotion ? 'reduced' : 'full');
+  el.setAttribute('data-nuv-contrast', a.highContrast ? 'high' : 'normal');
+  el.setAttribute('data-nuv-focus', a.alwaysFocusRing ? 'always' : 'auto');
+  // ปรับที่ font-size ของ root — ทุกหน่วย rem ในหน้าจะขยายตาม
+  el.style.fontSize = a.textScale === 100 ? '' : `${a.textScale}%`;
+}
 
 function writeLangCookie(lang: Lang) {
   // เก็บเป็น cookie ด้วย เพื่อให้ server component เรนเดอร์ภาษาถูกตั้งแต่ครั้งแรก
@@ -70,6 +106,7 @@ export function AppProviders({
   const [lang, setLangState] = useState<Lang>(initialLang);
   const [theme, setThemeState] = useState<Theme>('light');
   const [mood, setMoodState] = useState<Mood>('pastel');
+  const [a11y, setA11yState] = useState<A11y>(A11Y_DEFAULT);
 
   // อ่านค่าที่ผู้ใช้เลือกไว้ (สคริปต์ใน layout ตั้ง attribute ให้แล้วก่อน paint)
   useEffect(() => {
@@ -80,6 +117,14 @@ export function AppProviders({
         if (savedTheme === 'dark' || savedTheme === 'light') setThemeState(savedTheme);
         const savedMood = localStorage.getItem(LS_MOOD) as Mood | null;
         if (savedMood && savedMood in MOOD_LABEL) setMoodState(savedMood);
+
+        const savedA11y = localStorage.getItem(LS_A11Y);
+        if (savedA11y) {
+          // รวมกับค่าเริ่มต้นเสมอ เผื่อเพิ่มตัวเลือกใหม่ทีหลังแล้วค่าเก่าไม่มีคีย์นั้น
+          const merged = { ...A11Y_DEFAULT, ...(JSON.parse(savedA11y) as Partial<A11y>) };
+          setA11yState(merged);
+          applyA11y(merged);
+        }
       } catch {
         /* localStorage ปิดอยู่ — ใช้ค่าเริ่มต้น */
       }
@@ -112,6 +157,20 @@ export function AppProviders({
     [setTheme],
   );
 
+  const setA11y = useCallback((patch: Partial<A11y>) => {
+    setA11yState((prev) => {
+      const next = { ...prev, ...patch };
+      next.textScale = Math.min(TEXT_SCALE_MAX, Math.max(TEXT_SCALE_MIN, Math.round(next.textScale)));
+      applyA11y(next);
+      try {
+        localStorage.setItem(LS_A11Y, JSON.stringify(next));
+      } catch {
+        /* ไม่เป็นไร */
+      }
+      return next;
+    });
+  }, []);
+
   const setLang = useCallback((next: Lang) => {
     setLangState(next);
     document.documentElement.setAttribute('lang', next === 'en' ? 'en' : 'th');
@@ -138,8 +197,11 @@ export function AppProviders({
 
       mood,
       setMood,
+
+      a11y,
+      setA11y,
     }),
-    [lang, theme, mood, setLang, setTheme, setMood],
+    [lang, theme, mood, a11y, setLang, setTheme, setMood, setA11y],
   );
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

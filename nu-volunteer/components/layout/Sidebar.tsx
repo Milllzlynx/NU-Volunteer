@@ -82,12 +82,15 @@ export function Sidebar({
   role,
   page,
   badges = {},
+  available,
   mobileOpen,
   onClose,
 }: {
   role: string;
   page: string;
   badges?: Record<string, number>;
+  /** คีย์ของหน้าที่เปิดใช้งานแล้ว — คีย์ที่ไม่อยู่ในรายการจะแสดงแบบยังกดไม่ได้ */
+  available?: string[];
   mobileOpen: boolean;
   onClose: () => void;
 }) {
@@ -274,6 +277,37 @@ export function Sidebar({
                   const active = it.key === page;
                   const count = badges[it.key] || 0;
                   const label = isEn ? it.labelEn : it.label;
+                  const ready = !available || available.includes(it.key);
+
+                  // หน้าที่ยังไม่เปิดใช้งาน: คงไว้ในเมนูตามที่ออกแบบ แต่กดไม่ได้
+                  if (!ready) {
+                    const soon = isEn ? 'Coming soon' : 'กำลังพัฒนา';
+                    return (
+                      <div
+                        key={it.key}
+                        title={isCollapsed ? `${label} — ${soon}` : soon}
+                        aria-disabled="true"
+                        style={{ ...navItemStyle(false, isCollapsed), opacity: 0.42, cursor: 'not-allowed' }}
+                      >
+                        <Icon name={it.icon} size={19} style={{ flexShrink: 0, opacity: 0.8 }} />
+                        {!isCollapsed ? (
+                          <span
+                            style={{
+                              lineHeight: 1.6,
+                              flex: 1,
+                              minWidth: 0,
+                              whiteSpace: 'nowrap',
+                              overflow: 'hidden',
+                              textOverflow: 'ellipsis',
+                            }}
+                          >
+                            {label}
+                          </span>
+                        ) : null}
+                      </div>
+                    );
+                  }
+
                   return (
                     <Link
                       key={it.key}

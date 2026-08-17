@@ -59,6 +59,7 @@ export const ModelName = {
   Faculty: 'Faculty',
   Category: 'Category',
   Activity: 'Activity',
+  ActivitySession: 'ActivitySession',
   Registration: 'Registration',
   Favorite: 'Favorite',
   CheckinToken: 'CheckinToken',
@@ -76,7 +77,9 @@ export const ModelName = {
   SystemLog: 'SystemLog',
   EmailLog: 'EmailLog',
   Backup: 'Backup',
-  Setting: 'Setting'
+  Setting: 'Setting',
+  CalendarEvent: 'CalendarEvent',
+  NotificationPreference: 'NotificationPreference'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -103,8 +106,12 @@ export const UserScalarFieldEnum = {
   loanStatus: 'loanStatus',
   avatarUrl: 'avatarUrl',
   phone: 'phone',
+  bio: 'bio',
   active: 'active',
   seeded: 'seeded',
+  shareContact: 'shareContact',
+  deletionRequestedAt: 'deletionRequestedAt',
+  deletionReason: 'deletionReason',
   tokensValidFrom: 'tokensValidFrom',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -173,6 +180,12 @@ export type AuthLogScalarFieldEnum = (typeof AuthLogScalarFieldEnum)[keyof typeo
 export const FacultyScalarFieldEnum = {
   id: 'id',
   name: 'name',
+  nameEn: 'nameEn',
+  abbr: 'abbr',
+  email: 'email',
+  phone: 'phone',
+  location: 'location',
+  active: 'active',
   colorName: 'colorName',
   color: 'color',
   order: 'order',
@@ -186,6 +199,8 @@ export const CategoryScalarFieldEnum = {
   id: 'id',
   label: 'label',
   labelEn: 'labelEn',
+  desc: 'desc',
+  icon: 'icon',
   color: 'color',
   order: 'order',
   active: 'active'
@@ -218,6 +233,7 @@ export const ActivityScalarFieldEnum = {
   mapImage: 'mapImage',
   perks: 'perks',
   prep: 'prep',
+  notes: 'notes',
   requiresApproval: 'requiresApproval',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -226,10 +242,28 @@ export const ActivityScalarFieldEnum = {
 export type ActivityScalarFieldEnum = (typeof ActivityScalarFieldEnum)[keyof typeof ActivityScalarFieldEnum]
 
 
+export const ActivitySessionScalarFieldEnum = {
+  id: 'id',
+  activityId: 'activityId',
+  name: 'name',
+  description: 'description',
+  location: 'location',
+  startAt: 'startAt',
+  endAt: 'endAt',
+  capacity: 'capacity',
+  status: 'status',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ActivitySessionScalarFieldEnum = (typeof ActivitySessionScalarFieldEnum)[keyof typeof ActivitySessionScalarFieldEnum]
+
+
 export const RegistrationScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
   activityId: 'activityId',
+  sessionId: 'sessionId',
   status: 'status',
   regAt: 'regAt',
   approvedAt: 'approvedAt',
@@ -371,7 +405,9 @@ export const ChatThreadScalarFieldEnum = {
   studentId: 'studentId',
   staffId: 'staffId',
   lastMessageAt: 'lastMessageAt',
-  createdAt: 'createdAt'
+  createdAt: 'createdAt',
+  studentMuted: 'studentMuted',
+  studentArchived: 'studentArchived'
 } as const
 
 export type ChatThreadScalarFieldEnum = (typeof ChatThreadScalarFieldEnum)[keyof typeof ChatThreadScalarFieldEnum]
@@ -408,8 +444,14 @@ export const NewsScalarFieldEnum = {
   id: 'id',
   title: 'title',
   body: 'body',
-  published: 'published',
+  status: 'status',
   publishedAt: 'publishedAt',
+  image: 'image',
+  pinned: 'pinned',
+  audience: 'audience',
+  views: 'views',
+  tags: 'tags',
+  authorId: 'authorId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -482,6 +524,38 @@ export const SettingScalarFieldEnum = {
 } as const
 
 export type SettingScalarFieldEnum = (typeof SettingScalarFieldEnum)[keyof typeof SettingScalarFieldEnum]
+
+
+export const CalendarEventScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  title: 'title',
+  note: 'note',
+  startAt: 'startAt',
+  endAt: 'endAt',
+  allDay: 'allDay',
+  color: 'color',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type CalendarEventScalarFieldEnum = (typeof CalendarEventScalarFieldEnum)[keyof typeof CalendarEventScalarFieldEnum]
+
+
+export const NotificationPreferenceScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  activityReminder: 'activityReminder',
+  deadlineReminder: 'deadlineReminder',
+  systemNotice: 'systemNotice',
+  chatMessage: 'chatMessage',
+  leadDays: 'leadDays',
+  emailEnabled: 'emailEnabled',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type NotificationPreferenceScalarFieldEnum = (typeof NotificationPreferenceScalarFieldEnum)[keyof typeof NotificationPreferenceScalarFieldEnum]
 
 
 export const SortOrder = {

@@ -1,26 +1,9 @@
 import { Shell } from '@/components/layout/Shell';
 import { Landing } from '@/components/landing/Landing';
-import type { PublicActivity, PublicCategory } from '@/components/landing/types';
+import type { PublicCategory } from '@/components/landing/types';
+import { SEAT_TAKEN, toPublicActivities } from '@/lib/activities';
 import { getCurrentUser } from '@/lib/auth';
 import { prisma } from '@/lib/db';
-
-/** สถานะการลงทะเบียนที่นับว่ากินที่นั่งไปแล้ว */
-const SEAT_TAKEN = ['pending', 'approved', 'checked-in', 'checked-out', 'completed'];
-
-const TZ = 'Asia/Bangkok';
-// จัดรูปแบบวันที่ฝั่งเซิร์ฟเวอร์ พร้อมตรึงเขตเวลา เพื่อให้ผลลัพธ์ SSR ตรงกับฝั่ง client เสมอ
-const DATE_TH = new Intl.DateTimeFormat('th-TH', {
-  day: 'numeric',
-  month: 'short',
-  year: 'numeric',
-  timeZone: TZ,
-});
-const DATE_EN = new Intl.DateTimeFormat('en-GB', {
-  day: 'numeric',
-  month: 'short',
-  year: 'numeric',
-  timeZone: TZ,
-});
 
 async function loadLanding() {
   const now = new Date();
@@ -42,15 +25,6 @@ async function loadLanding() {
     prisma.registration.aggregate({ _sum: { hoursAwarded: true } }),
   ]);
 
-  const seatCounts = activityRows.length
-    ? await prisma.registration.groupBy({
-        by: ['activityId'],
-        where: { activityId: { in: activityRows.map((a) => a.id) }, status: { in: SEAT_TAKEN } },
-        _count: { _all: true },
-      })
-    : [];
-  const filled = new Map(seatCounts.map((c) => [c.activityId, c._count._all]));
-
   const categories: PublicCategory[] = categoryRows.map((c) => ({
     id: c.id,
     label: c.label,
@@ -58,28 +32,9 @@ async function loadLanding() {
     color: c.color,
   }));
 
-  const activities: PublicActivity[] = activityRows.map((a) => ({
-    id: a.id,
-    title: a.title,
-    description: a.description,
-    photo: a.photo,
-    dateTh: DATE_TH.format(a.startAt),
-    dateEn: DATE_EN.format(a.startAt),
-    hours: a.hours,
-    location: a.location,
-    seatsFilled: filled.get(a.id) ?? 0,
-    seatsTotal: a.seatsTotal,
-    category: {
-      id: a.category.id,
-      label: a.category.label,
-      labelEn: a.category.labelEn,
-      color: a.category.color,
-    },
-  }));
-
   return {
     categories,
-    activities,
+    activities: await toPublicActivities(activityRows),
     stats: {
       activities: activityTotal,
       participants: participantRows.length,
@@ -91,6 +46,21 @@ async function loadLanding() {
 export default async function HomePage() {
   const [user, data] = await Promise.all([getCurrentUser(), loadLanding()]);
 
+  // สถานะของผู้ใช้ต่อกิจกรรมที่แสดงอยู่ — ทำให้การ์ดบอกได้ว่า "ลงทะเบียนแล้ว" หรือถูกใจไว้แล้ว
+  const ids = data.activities.map((a) => a.id);
+  const [registrations, favorites] = user
+    ? await Promise.all([
+        prisma.registration.findMany({
+          where: { userId: user.id, activityId: { in: ids } },
+          select: { activityId: true, status: true },
+        }),
+        prisma.favorite.findMany({
+          where: { userId: user.id, activityId: { in: ids } },
+          select: { activityId: true },
+        }),
+      ])
+    : [[], []];
+
   return (
     <Shell>
       <Landing
@@ -98,6 +68,8 @@ export default async function HomePage() {
         stats={data.stats}
         categories={data.categories}
         activities={data.activities}
+        myStatus={Object.fromEntries(registrations.map((r) => [r.activityId, r.status]))}
+        myFavorites={favorites.map((f) => f.activityId)}
       />
     </Shell>
   );

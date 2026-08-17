@@ -66,6 +66,7 @@ export type ActivityMinAggregateOutputType = {
   mapImage: string | null
   perks: string | null
   prep: string | null
+  notes: string | null
   requiresApproval: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -95,6 +96,7 @@ export type ActivityMaxAggregateOutputType = {
   mapImage: string | null
   perks: string | null
   prep: string | null
+  notes: string | null
   requiresApproval: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -124,6 +126,7 @@ export type ActivityCountAggregateOutputType = {
   mapImage: number
   perks: number
   prep: number
+  notes: number
   requiresApproval: number
   createdAt: number
   updatedAt: number
@@ -171,6 +174,7 @@ export type ActivityMinAggregateInputType = {
   mapImage?: true
   perks?: true
   prep?: true
+  notes?: true
   requiresApproval?: true
   createdAt?: true
   updatedAt?: true
@@ -200,6 +204,7 @@ export type ActivityMaxAggregateInputType = {
   mapImage?: true
   perks?: true
   prep?: true
+  notes?: true
   requiresApproval?: true
   createdAt?: true
   updatedAt?: true
@@ -229,6 +234,7 @@ export type ActivityCountAggregateInputType = {
   mapImage?: true
   perks?: true
   prep?: true
+  notes?: true
   requiresApproval?: true
   createdAt?: true
   updatedAt?: true
@@ -345,6 +351,7 @@ export type ActivityGroupByOutputType = {
   mapImage: string | null
   perks: string
   prep: string
+  notes: string
   requiresApproval: boolean
   createdAt: Date
   updatedAt: Date
@@ -397,6 +404,7 @@ export type ActivityWhereInput = {
   mapImage?: Prisma.StringNullableFilter<"Activity"> | string | null
   perks?: Prisma.StringFilter<"Activity"> | string
   prep?: Prisma.StringFilter<"Activity"> | string
+  notes?: Prisma.StringFilter<"Activity"> | string
   requiresApproval?: Prisma.BoolFilter<"Activity"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Activity"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Activity"> | Date | string
@@ -408,6 +416,7 @@ export type ActivityWhereInput = {
   reviews?: Prisma.ReviewListRelationFilter
   checkinTokens?: Prisma.CheckinTokenListRelationFilter
   threads?: Prisma.ChatThreadListRelationFilter
+  sessions?: Prisma.ActivitySessionListRelationFilter
 }
 
 export type ActivityOrderByWithRelationInput = {
@@ -434,6 +443,7 @@ export type ActivityOrderByWithRelationInput = {
   mapImage?: Prisma.SortOrderInput | Prisma.SortOrder
   perks?: Prisma.SortOrder
   prep?: Prisma.SortOrder
+  notes?: Prisma.SortOrder
   requiresApproval?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -445,6 +455,7 @@ export type ActivityOrderByWithRelationInput = {
   reviews?: Prisma.ReviewOrderByRelationAggregateInput
   checkinTokens?: Prisma.CheckinTokenOrderByRelationAggregateInput
   threads?: Prisma.ChatThreadOrderByRelationAggregateInput
+  sessions?: Prisma.ActivitySessionOrderByRelationAggregateInput
 }
 
 export type ActivityWhereUniqueInput = Prisma.AtLeast<{
@@ -474,6 +485,7 @@ export type ActivityWhereUniqueInput = Prisma.AtLeast<{
   mapImage?: Prisma.StringNullableFilter<"Activity"> | string | null
   perks?: Prisma.StringFilter<"Activity"> | string
   prep?: Prisma.StringFilter<"Activity"> | string
+  notes?: Prisma.StringFilter<"Activity"> | string
   requiresApproval?: Prisma.BoolFilter<"Activity"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Activity"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Activity"> | Date | string
@@ -485,6 +497,7 @@ export type ActivityWhereUniqueInput = Prisma.AtLeast<{
   reviews?: Prisma.ReviewListRelationFilter
   checkinTokens?: Prisma.CheckinTokenListRelationFilter
   threads?: Prisma.ChatThreadListRelationFilter
+  sessions?: Prisma.ActivitySessionListRelationFilter
 }, "id">
 
 export type ActivityOrderByWithAggregationInput = {
@@ -511,6 +524,7 @@ export type ActivityOrderByWithAggregationInput = {
   mapImage?: Prisma.SortOrderInput | Prisma.SortOrder
   perks?: Prisma.SortOrder
   prep?: Prisma.SortOrder
+  notes?: Prisma.SortOrder
   requiresApproval?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -548,6 +562,7 @@ export type ActivityScalarWhereWithAggregatesInput = {
   mapImage?: Prisma.StringNullableWithAggregatesFilter<"Activity"> | string | null
   perks?: Prisma.StringWithAggregatesFilter<"Activity"> | string
   prep?: Prisma.StringWithAggregatesFilter<"Activity"> | string
+  notes?: Prisma.StringWithAggregatesFilter<"Activity"> | string
   requiresApproval?: Prisma.BoolWithAggregatesFilter<"Activity"> | boolean
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Activity"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Activity"> | Date | string
@@ -575,6 +590,7 @@ export type ActivityCreateInput = {
   mapImage?: string | null
   perks?: string
   prep?: string
+  notes?: string
   requiresApproval?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -586,6 +602,7 @@ export type ActivityCreateInput = {
   reviews?: Prisma.ReviewCreateNestedManyWithoutActivityInput
   checkinTokens?: Prisma.CheckinTokenCreateNestedManyWithoutActivityInput
   threads?: Prisma.ChatThreadCreateNestedManyWithoutActivityInput
+  sessions?: Prisma.ActivitySessionCreateNestedManyWithoutActivityInput
 }
 
 export type ActivityUncheckedCreateInput = {
@@ -612,6 +629,7 @@ export type ActivityUncheckedCreateInput = {
   mapImage?: string | null
   perks?: string
   prep?: string
+  notes?: string
   requiresApproval?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -621,6 +639,7 @@ export type ActivityUncheckedCreateInput = {
   reviews?: Prisma.ReviewUncheckedCreateNestedManyWithoutActivityInput
   checkinTokens?: Prisma.CheckinTokenUncheckedCreateNestedManyWithoutActivityInput
   threads?: Prisma.ChatThreadUncheckedCreateNestedManyWithoutActivityInput
+  sessions?: Prisma.ActivitySessionUncheckedCreateNestedManyWithoutActivityInput
 }
 
 export type ActivityUpdateInput = {
@@ -645,6 +664,7 @@ export type ActivityUpdateInput = {
   mapImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   perks?: Prisma.StringFieldUpdateOperationsInput | string
   prep?: Prisma.StringFieldUpdateOperationsInput | string
+  notes?: Prisma.StringFieldUpdateOperationsInput | string
   requiresApproval?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -656,6 +676,7 @@ export type ActivityUpdateInput = {
   reviews?: Prisma.ReviewUpdateManyWithoutActivityNestedInput
   checkinTokens?: Prisma.CheckinTokenUpdateManyWithoutActivityNestedInput
   threads?: Prisma.ChatThreadUpdateManyWithoutActivityNestedInput
+  sessions?: Prisma.ActivitySessionUpdateManyWithoutActivityNestedInput
 }
 
 export type ActivityUncheckedUpdateInput = {
@@ -682,6 +703,7 @@ export type ActivityUncheckedUpdateInput = {
   mapImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   perks?: Prisma.StringFieldUpdateOperationsInput | string
   prep?: Prisma.StringFieldUpdateOperationsInput | string
+  notes?: Prisma.StringFieldUpdateOperationsInput | string
   requiresApproval?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -691,6 +713,7 @@ export type ActivityUncheckedUpdateInput = {
   reviews?: Prisma.ReviewUncheckedUpdateManyWithoutActivityNestedInput
   checkinTokens?: Prisma.CheckinTokenUncheckedUpdateManyWithoutActivityNestedInput
   threads?: Prisma.ChatThreadUncheckedUpdateManyWithoutActivityNestedInput
+  sessions?: Prisma.ActivitySessionUncheckedUpdateManyWithoutActivityNestedInput
 }
 
 export type ActivityCreateManyInput = {
@@ -717,6 +740,7 @@ export type ActivityCreateManyInput = {
   mapImage?: string | null
   perks?: string
   prep?: string
+  notes?: string
   requiresApproval?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -744,6 +768,7 @@ export type ActivityUpdateManyMutationInput = {
   mapImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   perks?: Prisma.StringFieldUpdateOperationsInput | string
   prep?: Prisma.StringFieldUpdateOperationsInput | string
+  notes?: Prisma.StringFieldUpdateOperationsInput | string
   requiresApproval?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -773,6 +798,7 @@ export type ActivityUncheckedUpdateManyInput = {
   mapImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   perks?: Prisma.StringFieldUpdateOperationsInput | string
   prep?: Prisma.StringFieldUpdateOperationsInput | string
+  notes?: Prisma.StringFieldUpdateOperationsInput | string
   requiresApproval?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -812,6 +838,7 @@ export type ActivityCountOrderByAggregateInput = {
   mapImage?: Prisma.SortOrder
   perks?: Prisma.SortOrder
   prep?: Prisma.SortOrder
+  notes?: Prisma.SortOrder
   requiresApproval?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -849,6 +876,7 @@ export type ActivityMaxOrderByAggregateInput = {
   mapImage?: Prisma.SortOrder
   perks?: Prisma.SortOrder
   prep?: Prisma.SortOrder
+  notes?: Prisma.SortOrder
   requiresApproval?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -878,6 +906,7 @@ export type ActivityMinOrderByAggregateInput = {
   mapImage?: Prisma.SortOrder
   perks?: Prisma.SortOrder
   prep?: Prisma.SortOrder
+  notes?: Prisma.SortOrder
   requiresApproval?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -1001,6 +1030,20 @@ export type FloatFieldUpdateOperationsInput = {
   divide?: number
 }
 
+export type ActivityCreateNestedOneWithoutSessionsInput = {
+  create?: Prisma.XOR<Prisma.ActivityCreateWithoutSessionsInput, Prisma.ActivityUncheckedCreateWithoutSessionsInput>
+  connectOrCreate?: Prisma.ActivityCreateOrConnectWithoutSessionsInput
+  connect?: Prisma.ActivityWhereUniqueInput
+}
+
+export type ActivityUpdateOneRequiredWithoutSessionsNestedInput = {
+  create?: Prisma.XOR<Prisma.ActivityCreateWithoutSessionsInput, Prisma.ActivityUncheckedCreateWithoutSessionsInput>
+  connectOrCreate?: Prisma.ActivityCreateOrConnectWithoutSessionsInput
+  upsert?: Prisma.ActivityUpsertWithoutSessionsInput
+  connect?: Prisma.ActivityWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ActivityUpdateToOneWithWhereWithoutSessionsInput, Prisma.ActivityUpdateWithoutSessionsInput>, Prisma.ActivityUncheckedUpdateWithoutSessionsInput>
+}
+
 export type ActivityCreateNestedOneWithoutRegistrationsInput = {
   create?: Prisma.XOR<Prisma.ActivityCreateWithoutRegistrationsInput, Prisma.ActivityUncheckedCreateWithoutRegistrationsInput>
   connectOrCreate?: Prisma.ActivityCreateOrConnectWithoutRegistrationsInput
@@ -1109,6 +1152,7 @@ export type ActivityCreateWithoutOrganizerInput = {
   mapImage?: string | null
   perks?: string
   prep?: string
+  notes?: string
   requiresApproval?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1119,6 +1163,7 @@ export type ActivityCreateWithoutOrganizerInput = {
   reviews?: Prisma.ReviewCreateNestedManyWithoutActivityInput
   checkinTokens?: Prisma.CheckinTokenCreateNestedManyWithoutActivityInput
   threads?: Prisma.ChatThreadCreateNestedManyWithoutActivityInput
+  sessions?: Prisma.ActivitySessionCreateNestedManyWithoutActivityInput
 }
 
 export type ActivityUncheckedCreateWithoutOrganizerInput = {
@@ -1144,6 +1189,7 @@ export type ActivityUncheckedCreateWithoutOrganizerInput = {
   mapImage?: string | null
   perks?: string
   prep?: string
+  notes?: string
   requiresApproval?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1153,6 +1199,7 @@ export type ActivityUncheckedCreateWithoutOrganizerInput = {
   reviews?: Prisma.ReviewUncheckedCreateNestedManyWithoutActivityInput
   checkinTokens?: Prisma.CheckinTokenUncheckedCreateNestedManyWithoutActivityInput
   threads?: Prisma.ChatThreadUncheckedCreateNestedManyWithoutActivityInput
+  sessions?: Prisma.ActivitySessionUncheckedCreateNestedManyWithoutActivityInput
 }
 
 export type ActivityCreateOrConnectWithoutOrganizerInput = {
@@ -1207,6 +1254,7 @@ export type ActivityScalarWhereInput = {
   mapImage?: Prisma.StringNullableFilter<"Activity"> | string | null
   perks?: Prisma.StringFilter<"Activity"> | string
   prep?: Prisma.StringFilter<"Activity"> | string
+  notes?: Prisma.StringFilter<"Activity"> | string
   requiresApproval?: Prisma.BoolFilter<"Activity"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Activity"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Activity"> | Date | string
@@ -1234,6 +1282,7 @@ export type ActivityCreateWithoutCategoryInput = {
   mapImage?: string | null
   perks?: string
   prep?: string
+  notes?: string
   requiresApproval?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1244,6 +1293,7 @@ export type ActivityCreateWithoutCategoryInput = {
   reviews?: Prisma.ReviewCreateNestedManyWithoutActivityInput
   checkinTokens?: Prisma.CheckinTokenCreateNestedManyWithoutActivityInput
   threads?: Prisma.ChatThreadCreateNestedManyWithoutActivityInput
+  sessions?: Prisma.ActivitySessionCreateNestedManyWithoutActivityInput
 }
 
 export type ActivityUncheckedCreateWithoutCategoryInput = {
@@ -1269,6 +1319,7 @@ export type ActivityUncheckedCreateWithoutCategoryInput = {
   mapImage?: string | null
   perks?: string
   prep?: string
+  notes?: string
   requiresApproval?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1278,6 +1329,7 @@ export type ActivityUncheckedCreateWithoutCategoryInput = {
   reviews?: Prisma.ReviewUncheckedCreateNestedManyWithoutActivityInput
   checkinTokens?: Prisma.CheckinTokenUncheckedCreateNestedManyWithoutActivityInput
   threads?: Prisma.ChatThreadUncheckedCreateNestedManyWithoutActivityInput
+  sessions?: Prisma.ActivitySessionUncheckedCreateNestedManyWithoutActivityInput
 }
 
 export type ActivityCreateOrConnectWithoutCategoryInput = {
@@ -1305,6 +1357,166 @@ export type ActivityUpdateManyWithWhereWithoutCategoryInput = {
   data: Prisma.XOR<Prisma.ActivityUpdateManyMutationInput, Prisma.ActivityUncheckedUpdateManyWithoutCategoryInput>
 }
 
+export type ActivityCreateWithoutSessionsInput = {
+  id?: string
+  title: string
+  orgName?: string
+  description?: string
+  location?: string
+  lat?: number | null
+  lng?: number | null
+  mapLink?: string | null
+  geoRadiusM?: number
+  startAt: Date | string
+  endAt: Date | string
+  regOpenAt?: Date | string | null
+  regCloseAt?: Date | string | null
+  seatsTotal?: number
+  hours?: number
+  status?: string
+  photo?: string | null
+  gallery?: string
+  mapImage?: string | null
+  perks?: string
+  prep?: string
+  notes?: string
+  requiresApproval?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  category: Prisma.CategoryCreateNestedOneWithoutActivitiesInput
+  organizer: Prisma.UserCreateNestedOneWithoutOrganizedInput
+  registrations?: Prisma.RegistrationCreateNestedManyWithoutActivityInput
+  favorites?: Prisma.FavoriteCreateNestedManyWithoutActivityInput
+  certificates?: Prisma.CertificateCreateNestedManyWithoutActivityInput
+  reviews?: Prisma.ReviewCreateNestedManyWithoutActivityInput
+  checkinTokens?: Prisma.CheckinTokenCreateNestedManyWithoutActivityInput
+  threads?: Prisma.ChatThreadCreateNestedManyWithoutActivityInput
+}
+
+export type ActivityUncheckedCreateWithoutSessionsInput = {
+  id?: string
+  title: string
+  categoryId: string
+  organizerId: string
+  orgName?: string
+  description?: string
+  location?: string
+  lat?: number | null
+  lng?: number | null
+  mapLink?: string | null
+  geoRadiusM?: number
+  startAt: Date | string
+  endAt: Date | string
+  regOpenAt?: Date | string | null
+  regCloseAt?: Date | string | null
+  seatsTotal?: number
+  hours?: number
+  status?: string
+  photo?: string | null
+  gallery?: string
+  mapImage?: string | null
+  perks?: string
+  prep?: string
+  notes?: string
+  requiresApproval?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  registrations?: Prisma.RegistrationUncheckedCreateNestedManyWithoutActivityInput
+  favorites?: Prisma.FavoriteUncheckedCreateNestedManyWithoutActivityInput
+  certificates?: Prisma.CertificateUncheckedCreateNestedManyWithoutActivityInput
+  reviews?: Prisma.ReviewUncheckedCreateNestedManyWithoutActivityInput
+  checkinTokens?: Prisma.CheckinTokenUncheckedCreateNestedManyWithoutActivityInput
+  threads?: Prisma.ChatThreadUncheckedCreateNestedManyWithoutActivityInput
+}
+
+export type ActivityCreateOrConnectWithoutSessionsInput = {
+  where: Prisma.ActivityWhereUniqueInput
+  create: Prisma.XOR<Prisma.ActivityCreateWithoutSessionsInput, Prisma.ActivityUncheckedCreateWithoutSessionsInput>
+}
+
+export type ActivityUpsertWithoutSessionsInput = {
+  update: Prisma.XOR<Prisma.ActivityUpdateWithoutSessionsInput, Prisma.ActivityUncheckedUpdateWithoutSessionsInput>
+  create: Prisma.XOR<Prisma.ActivityCreateWithoutSessionsInput, Prisma.ActivityUncheckedCreateWithoutSessionsInput>
+  where?: Prisma.ActivityWhereInput
+}
+
+export type ActivityUpdateToOneWithWhereWithoutSessionsInput = {
+  where?: Prisma.ActivityWhereInput
+  data: Prisma.XOR<Prisma.ActivityUpdateWithoutSessionsInput, Prisma.ActivityUncheckedUpdateWithoutSessionsInput>
+}
+
+export type ActivityUpdateWithoutSessionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  orgName?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  location?: Prisma.StringFieldUpdateOperationsInput | string
+  lat?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  lng?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  mapLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  geoRadiusM?: Prisma.IntFieldUpdateOperationsInput | number
+  startAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  regOpenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  regCloseAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  seatsTotal?: Prisma.IntFieldUpdateOperationsInput | number
+  hours?: Prisma.FloatFieldUpdateOperationsInput | number
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  photo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gallery?: Prisma.StringFieldUpdateOperationsInput | string
+  mapImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  perks?: Prisma.StringFieldUpdateOperationsInput | string
+  prep?: Prisma.StringFieldUpdateOperationsInput | string
+  notes?: Prisma.StringFieldUpdateOperationsInput | string
+  requiresApproval?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  category?: Prisma.CategoryUpdateOneRequiredWithoutActivitiesNestedInput
+  organizer?: Prisma.UserUpdateOneRequiredWithoutOrganizedNestedInput
+  registrations?: Prisma.RegistrationUpdateManyWithoutActivityNestedInput
+  favorites?: Prisma.FavoriteUpdateManyWithoutActivityNestedInput
+  certificates?: Prisma.CertificateUpdateManyWithoutActivityNestedInput
+  reviews?: Prisma.ReviewUpdateManyWithoutActivityNestedInput
+  checkinTokens?: Prisma.CheckinTokenUpdateManyWithoutActivityNestedInput
+  threads?: Prisma.ChatThreadUpdateManyWithoutActivityNestedInput
+}
+
+export type ActivityUncheckedUpdateWithoutSessionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  categoryId?: Prisma.StringFieldUpdateOperationsInput | string
+  organizerId?: Prisma.StringFieldUpdateOperationsInput | string
+  orgName?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  location?: Prisma.StringFieldUpdateOperationsInput | string
+  lat?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  lng?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  mapLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  geoRadiusM?: Prisma.IntFieldUpdateOperationsInput | number
+  startAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  regOpenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  regCloseAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  seatsTotal?: Prisma.IntFieldUpdateOperationsInput | number
+  hours?: Prisma.FloatFieldUpdateOperationsInput | number
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  photo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gallery?: Prisma.StringFieldUpdateOperationsInput | string
+  mapImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  perks?: Prisma.StringFieldUpdateOperationsInput | string
+  prep?: Prisma.StringFieldUpdateOperationsInput | string
+  notes?: Prisma.StringFieldUpdateOperationsInput | string
+  requiresApproval?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  registrations?: Prisma.RegistrationUncheckedUpdateManyWithoutActivityNestedInput
+  favorites?: Prisma.FavoriteUncheckedUpdateManyWithoutActivityNestedInput
+  certificates?: Prisma.CertificateUncheckedUpdateManyWithoutActivityNestedInput
+  reviews?: Prisma.ReviewUncheckedUpdateManyWithoutActivityNestedInput
+  checkinTokens?: Prisma.CheckinTokenUncheckedUpdateManyWithoutActivityNestedInput
+  threads?: Prisma.ChatThreadUncheckedUpdateManyWithoutActivityNestedInput
+}
+
 export type ActivityCreateWithoutRegistrationsInput = {
   id?: string
   title: string
@@ -1327,6 +1539,7 @@ export type ActivityCreateWithoutRegistrationsInput = {
   mapImage?: string | null
   perks?: string
   prep?: string
+  notes?: string
   requiresApproval?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1337,6 +1550,7 @@ export type ActivityCreateWithoutRegistrationsInput = {
   reviews?: Prisma.ReviewCreateNestedManyWithoutActivityInput
   checkinTokens?: Prisma.CheckinTokenCreateNestedManyWithoutActivityInput
   threads?: Prisma.ChatThreadCreateNestedManyWithoutActivityInput
+  sessions?: Prisma.ActivitySessionCreateNestedManyWithoutActivityInput
 }
 
 export type ActivityUncheckedCreateWithoutRegistrationsInput = {
@@ -1363,6 +1577,7 @@ export type ActivityUncheckedCreateWithoutRegistrationsInput = {
   mapImage?: string | null
   perks?: string
   prep?: string
+  notes?: string
   requiresApproval?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1371,6 +1586,7 @@ export type ActivityUncheckedCreateWithoutRegistrationsInput = {
   reviews?: Prisma.ReviewUncheckedCreateNestedManyWithoutActivityInput
   checkinTokens?: Prisma.CheckinTokenUncheckedCreateNestedManyWithoutActivityInput
   threads?: Prisma.ChatThreadUncheckedCreateNestedManyWithoutActivityInput
+  sessions?: Prisma.ActivitySessionUncheckedCreateNestedManyWithoutActivityInput
 }
 
 export type ActivityCreateOrConnectWithoutRegistrationsInput = {
@@ -1411,6 +1627,7 @@ export type ActivityUpdateWithoutRegistrationsInput = {
   mapImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   perks?: Prisma.StringFieldUpdateOperationsInput | string
   prep?: Prisma.StringFieldUpdateOperationsInput | string
+  notes?: Prisma.StringFieldUpdateOperationsInput | string
   requiresApproval?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1421,6 +1638,7 @@ export type ActivityUpdateWithoutRegistrationsInput = {
   reviews?: Prisma.ReviewUpdateManyWithoutActivityNestedInput
   checkinTokens?: Prisma.CheckinTokenUpdateManyWithoutActivityNestedInput
   threads?: Prisma.ChatThreadUpdateManyWithoutActivityNestedInput
+  sessions?: Prisma.ActivitySessionUpdateManyWithoutActivityNestedInput
 }
 
 export type ActivityUncheckedUpdateWithoutRegistrationsInput = {
@@ -1447,6 +1665,7 @@ export type ActivityUncheckedUpdateWithoutRegistrationsInput = {
   mapImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   perks?: Prisma.StringFieldUpdateOperationsInput | string
   prep?: Prisma.StringFieldUpdateOperationsInput | string
+  notes?: Prisma.StringFieldUpdateOperationsInput | string
   requiresApproval?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1455,6 +1674,7 @@ export type ActivityUncheckedUpdateWithoutRegistrationsInput = {
   reviews?: Prisma.ReviewUncheckedUpdateManyWithoutActivityNestedInput
   checkinTokens?: Prisma.CheckinTokenUncheckedUpdateManyWithoutActivityNestedInput
   threads?: Prisma.ChatThreadUncheckedUpdateManyWithoutActivityNestedInput
+  sessions?: Prisma.ActivitySessionUncheckedUpdateManyWithoutActivityNestedInput
 }
 
 export type ActivityCreateWithoutFavoritesInput = {
@@ -1479,6 +1699,7 @@ export type ActivityCreateWithoutFavoritesInput = {
   mapImage?: string | null
   perks?: string
   prep?: string
+  notes?: string
   requiresApproval?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1489,6 +1710,7 @@ export type ActivityCreateWithoutFavoritesInput = {
   reviews?: Prisma.ReviewCreateNestedManyWithoutActivityInput
   checkinTokens?: Prisma.CheckinTokenCreateNestedManyWithoutActivityInput
   threads?: Prisma.ChatThreadCreateNestedManyWithoutActivityInput
+  sessions?: Prisma.ActivitySessionCreateNestedManyWithoutActivityInput
 }
 
 export type ActivityUncheckedCreateWithoutFavoritesInput = {
@@ -1515,6 +1737,7 @@ export type ActivityUncheckedCreateWithoutFavoritesInput = {
   mapImage?: string | null
   perks?: string
   prep?: string
+  notes?: string
   requiresApproval?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1523,6 +1746,7 @@ export type ActivityUncheckedCreateWithoutFavoritesInput = {
   reviews?: Prisma.ReviewUncheckedCreateNestedManyWithoutActivityInput
   checkinTokens?: Prisma.CheckinTokenUncheckedCreateNestedManyWithoutActivityInput
   threads?: Prisma.ChatThreadUncheckedCreateNestedManyWithoutActivityInput
+  sessions?: Prisma.ActivitySessionUncheckedCreateNestedManyWithoutActivityInput
 }
 
 export type ActivityCreateOrConnectWithoutFavoritesInput = {
@@ -1563,6 +1787,7 @@ export type ActivityUpdateWithoutFavoritesInput = {
   mapImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   perks?: Prisma.StringFieldUpdateOperationsInput | string
   prep?: Prisma.StringFieldUpdateOperationsInput | string
+  notes?: Prisma.StringFieldUpdateOperationsInput | string
   requiresApproval?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1573,6 +1798,7 @@ export type ActivityUpdateWithoutFavoritesInput = {
   reviews?: Prisma.ReviewUpdateManyWithoutActivityNestedInput
   checkinTokens?: Prisma.CheckinTokenUpdateManyWithoutActivityNestedInput
   threads?: Prisma.ChatThreadUpdateManyWithoutActivityNestedInput
+  sessions?: Prisma.ActivitySessionUpdateManyWithoutActivityNestedInput
 }
 
 export type ActivityUncheckedUpdateWithoutFavoritesInput = {
@@ -1599,6 +1825,7 @@ export type ActivityUncheckedUpdateWithoutFavoritesInput = {
   mapImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   perks?: Prisma.StringFieldUpdateOperationsInput | string
   prep?: Prisma.StringFieldUpdateOperationsInput | string
+  notes?: Prisma.StringFieldUpdateOperationsInput | string
   requiresApproval?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1607,6 +1834,7 @@ export type ActivityUncheckedUpdateWithoutFavoritesInput = {
   reviews?: Prisma.ReviewUncheckedUpdateManyWithoutActivityNestedInput
   checkinTokens?: Prisma.CheckinTokenUncheckedUpdateManyWithoutActivityNestedInput
   threads?: Prisma.ChatThreadUncheckedUpdateManyWithoutActivityNestedInput
+  sessions?: Prisma.ActivitySessionUncheckedUpdateManyWithoutActivityNestedInput
 }
 
 export type ActivityCreateWithoutCheckinTokensInput = {
@@ -1631,6 +1859,7 @@ export type ActivityCreateWithoutCheckinTokensInput = {
   mapImage?: string | null
   perks?: string
   prep?: string
+  notes?: string
   requiresApproval?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1641,6 +1870,7 @@ export type ActivityCreateWithoutCheckinTokensInput = {
   certificates?: Prisma.CertificateCreateNestedManyWithoutActivityInput
   reviews?: Prisma.ReviewCreateNestedManyWithoutActivityInput
   threads?: Prisma.ChatThreadCreateNestedManyWithoutActivityInput
+  sessions?: Prisma.ActivitySessionCreateNestedManyWithoutActivityInput
 }
 
 export type ActivityUncheckedCreateWithoutCheckinTokensInput = {
@@ -1667,6 +1897,7 @@ export type ActivityUncheckedCreateWithoutCheckinTokensInput = {
   mapImage?: string | null
   perks?: string
   prep?: string
+  notes?: string
   requiresApproval?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1675,6 +1906,7 @@ export type ActivityUncheckedCreateWithoutCheckinTokensInput = {
   certificates?: Prisma.CertificateUncheckedCreateNestedManyWithoutActivityInput
   reviews?: Prisma.ReviewUncheckedCreateNestedManyWithoutActivityInput
   threads?: Prisma.ChatThreadUncheckedCreateNestedManyWithoutActivityInput
+  sessions?: Prisma.ActivitySessionUncheckedCreateNestedManyWithoutActivityInput
 }
 
 export type ActivityCreateOrConnectWithoutCheckinTokensInput = {
@@ -1715,6 +1947,7 @@ export type ActivityUpdateWithoutCheckinTokensInput = {
   mapImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   perks?: Prisma.StringFieldUpdateOperationsInput | string
   prep?: Prisma.StringFieldUpdateOperationsInput | string
+  notes?: Prisma.StringFieldUpdateOperationsInput | string
   requiresApproval?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1725,6 +1958,7 @@ export type ActivityUpdateWithoutCheckinTokensInput = {
   certificates?: Prisma.CertificateUpdateManyWithoutActivityNestedInput
   reviews?: Prisma.ReviewUpdateManyWithoutActivityNestedInput
   threads?: Prisma.ChatThreadUpdateManyWithoutActivityNestedInput
+  sessions?: Prisma.ActivitySessionUpdateManyWithoutActivityNestedInput
 }
 
 export type ActivityUncheckedUpdateWithoutCheckinTokensInput = {
@@ -1751,6 +1985,7 @@ export type ActivityUncheckedUpdateWithoutCheckinTokensInput = {
   mapImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   perks?: Prisma.StringFieldUpdateOperationsInput | string
   prep?: Prisma.StringFieldUpdateOperationsInput | string
+  notes?: Prisma.StringFieldUpdateOperationsInput | string
   requiresApproval?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1759,6 +1994,7 @@ export type ActivityUncheckedUpdateWithoutCheckinTokensInput = {
   certificates?: Prisma.CertificateUncheckedUpdateManyWithoutActivityNestedInput
   reviews?: Prisma.ReviewUncheckedUpdateManyWithoutActivityNestedInput
   threads?: Prisma.ChatThreadUncheckedUpdateManyWithoutActivityNestedInput
+  sessions?: Prisma.ActivitySessionUncheckedUpdateManyWithoutActivityNestedInput
 }
 
 export type ActivityCreateWithoutCertificatesInput = {
@@ -1783,6 +2019,7 @@ export type ActivityCreateWithoutCertificatesInput = {
   mapImage?: string | null
   perks?: string
   prep?: string
+  notes?: string
   requiresApproval?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1793,6 +2030,7 @@ export type ActivityCreateWithoutCertificatesInput = {
   reviews?: Prisma.ReviewCreateNestedManyWithoutActivityInput
   checkinTokens?: Prisma.CheckinTokenCreateNestedManyWithoutActivityInput
   threads?: Prisma.ChatThreadCreateNestedManyWithoutActivityInput
+  sessions?: Prisma.ActivitySessionCreateNestedManyWithoutActivityInput
 }
 
 export type ActivityUncheckedCreateWithoutCertificatesInput = {
@@ -1819,6 +2057,7 @@ export type ActivityUncheckedCreateWithoutCertificatesInput = {
   mapImage?: string | null
   perks?: string
   prep?: string
+  notes?: string
   requiresApproval?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1827,6 +2066,7 @@ export type ActivityUncheckedCreateWithoutCertificatesInput = {
   reviews?: Prisma.ReviewUncheckedCreateNestedManyWithoutActivityInput
   checkinTokens?: Prisma.CheckinTokenUncheckedCreateNestedManyWithoutActivityInput
   threads?: Prisma.ChatThreadUncheckedCreateNestedManyWithoutActivityInput
+  sessions?: Prisma.ActivitySessionUncheckedCreateNestedManyWithoutActivityInput
 }
 
 export type ActivityCreateOrConnectWithoutCertificatesInput = {
@@ -1867,6 +2107,7 @@ export type ActivityUpdateWithoutCertificatesInput = {
   mapImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   perks?: Prisma.StringFieldUpdateOperationsInput | string
   prep?: Prisma.StringFieldUpdateOperationsInput | string
+  notes?: Prisma.StringFieldUpdateOperationsInput | string
   requiresApproval?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1877,6 +2118,7 @@ export type ActivityUpdateWithoutCertificatesInput = {
   reviews?: Prisma.ReviewUpdateManyWithoutActivityNestedInput
   checkinTokens?: Prisma.CheckinTokenUpdateManyWithoutActivityNestedInput
   threads?: Prisma.ChatThreadUpdateManyWithoutActivityNestedInput
+  sessions?: Prisma.ActivitySessionUpdateManyWithoutActivityNestedInput
 }
 
 export type ActivityUncheckedUpdateWithoutCertificatesInput = {
@@ -1903,6 +2145,7 @@ export type ActivityUncheckedUpdateWithoutCertificatesInput = {
   mapImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   perks?: Prisma.StringFieldUpdateOperationsInput | string
   prep?: Prisma.StringFieldUpdateOperationsInput | string
+  notes?: Prisma.StringFieldUpdateOperationsInput | string
   requiresApproval?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1911,6 +2154,7 @@ export type ActivityUncheckedUpdateWithoutCertificatesInput = {
   reviews?: Prisma.ReviewUncheckedUpdateManyWithoutActivityNestedInput
   checkinTokens?: Prisma.CheckinTokenUncheckedUpdateManyWithoutActivityNestedInput
   threads?: Prisma.ChatThreadUncheckedUpdateManyWithoutActivityNestedInput
+  sessions?: Prisma.ActivitySessionUncheckedUpdateManyWithoutActivityNestedInput
 }
 
 export type ActivityCreateWithoutReviewsInput = {
@@ -1935,6 +2179,7 @@ export type ActivityCreateWithoutReviewsInput = {
   mapImage?: string | null
   perks?: string
   prep?: string
+  notes?: string
   requiresApproval?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1945,6 +2190,7 @@ export type ActivityCreateWithoutReviewsInput = {
   certificates?: Prisma.CertificateCreateNestedManyWithoutActivityInput
   checkinTokens?: Prisma.CheckinTokenCreateNestedManyWithoutActivityInput
   threads?: Prisma.ChatThreadCreateNestedManyWithoutActivityInput
+  sessions?: Prisma.ActivitySessionCreateNestedManyWithoutActivityInput
 }
 
 export type ActivityUncheckedCreateWithoutReviewsInput = {
@@ -1971,6 +2217,7 @@ export type ActivityUncheckedCreateWithoutReviewsInput = {
   mapImage?: string | null
   perks?: string
   prep?: string
+  notes?: string
   requiresApproval?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1979,6 +2226,7 @@ export type ActivityUncheckedCreateWithoutReviewsInput = {
   certificates?: Prisma.CertificateUncheckedCreateNestedManyWithoutActivityInput
   checkinTokens?: Prisma.CheckinTokenUncheckedCreateNestedManyWithoutActivityInput
   threads?: Prisma.ChatThreadUncheckedCreateNestedManyWithoutActivityInput
+  sessions?: Prisma.ActivitySessionUncheckedCreateNestedManyWithoutActivityInput
 }
 
 export type ActivityCreateOrConnectWithoutReviewsInput = {
@@ -2019,6 +2267,7 @@ export type ActivityUpdateWithoutReviewsInput = {
   mapImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   perks?: Prisma.StringFieldUpdateOperationsInput | string
   prep?: Prisma.StringFieldUpdateOperationsInput | string
+  notes?: Prisma.StringFieldUpdateOperationsInput | string
   requiresApproval?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2029,6 +2278,7 @@ export type ActivityUpdateWithoutReviewsInput = {
   certificates?: Prisma.CertificateUpdateManyWithoutActivityNestedInput
   checkinTokens?: Prisma.CheckinTokenUpdateManyWithoutActivityNestedInput
   threads?: Prisma.ChatThreadUpdateManyWithoutActivityNestedInput
+  sessions?: Prisma.ActivitySessionUpdateManyWithoutActivityNestedInput
 }
 
 export type ActivityUncheckedUpdateWithoutReviewsInput = {
@@ -2055,6 +2305,7 @@ export type ActivityUncheckedUpdateWithoutReviewsInput = {
   mapImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   perks?: Prisma.StringFieldUpdateOperationsInput | string
   prep?: Prisma.StringFieldUpdateOperationsInput | string
+  notes?: Prisma.StringFieldUpdateOperationsInput | string
   requiresApproval?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2063,6 +2314,7 @@ export type ActivityUncheckedUpdateWithoutReviewsInput = {
   certificates?: Prisma.CertificateUncheckedUpdateManyWithoutActivityNestedInput
   checkinTokens?: Prisma.CheckinTokenUncheckedUpdateManyWithoutActivityNestedInput
   threads?: Prisma.ChatThreadUncheckedUpdateManyWithoutActivityNestedInput
+  sessions?: Prisma.ActivitySessionUncheckedUpdateManyWithoutActivityNestedInput
 }
 
 export type ActivityCreateWithoutThreadsInput = {
@@ -2087,6 +2339,7 @@ export type ActivityCreateWithoutThreadsInput = {
   mapImage?: string | null
   perks?: string
   prep?: string
+  notes?: string
   requiresApproval?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -2097,6 +2350,7 @@ export type ActivityCreateWithoutThreadsInput = {
   certificates?: Prisma.CertificateCreateNestedManyWithoutActivityInput
   reviews?: Prisma.ReviewCreateNestedManyWithoutActivityInput
   checkinTokens?: Prisma.CheckinTokenCreateNestedManyWithoutActivityInput
+  sessions?: Prisma.ActivitySessionCreateNestedManyWithoutActivityInput
 }
 
 export type ActivityUncheckedCreateWithoutThreadsInput = {
@@ -2123,6 +2377,7 @@ export type ActivityUncheckedCreateWithoutThreadsInput = {
   mapImage?: string | null
   perks?: string
   prep?: string
+  notes?: string
   requiresApproval?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -2131,6 +2386,7 @@ export type ActivityUncheckedCreateWithoutThreadsInput = {
   certificates?: Prisma.CertificateUncheckedCreateNestedManyWithoutActivityInput
   reviews?: Prisma.ReviewUncheckedCreateNestedManyWithoutActivityInput
   checkinTokens?: Prisma.CheckinTokenUncheckedCreateNestedManyWithoutActivityInput
+  sessions?: Prisma.ActivitySessionUncheckedCreateNestedManyWithoutActivityInput
 }
 
 export type ActivityCreateOrConnectWithoutThreadsInput = {
@@ -2171,6 +2427,7 @@ export type ActivityUpdateWithoutThreadsInput = {
   mapImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   perks?: Prisma.StringFieldUpdateOperationsInput | string
   prep?: Prisma.StringFieldUpdateOperationsInput | string
+  notes?: Prisma.StringFieldUpdateOperationsInput | string
   requiresApproval?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2181,6 +2438,7 @@ export type ActivityUpdateWithoutThreadsInput = {
   certificates?: Prisma.CertificateUpdateManyWithoutActivityNestedInput
   reviews?: Prisma.ReviewUpdateManyWithoutActivityNestedInput
   checkinTokens?: Prisma.CheckinTokenUpdateManyWithoutActivityNestedInput
+  sessions?: Prisma.ActivitySessionUpdateManyWithoutActivityNestedInput
 }
 
 export type ActivityUncheckedUpdateWithoutThreadsInput = {
@@ -2207,6 +2465,7 @@ export type ActivityUncheckedUpdateWithoutThreadsInput = {
   mapImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   perks?: Prisma.StringFieldUpdateOperationsInput | string
   prep?: Prisma.StringFieldUpdateOperationsInput | string
+  notes?: Prisma.StringFieldUpdateOperationsInput | string
   requiresApproval?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2215,6 +2474,7 @@ export type ActivityUncheckedUpdateWithoutThreadsInput = {
   certificates?: Prisma.CertificateUncheckedUpdateManyWithoutActivityNestedInput
   reviews?: Prisma.ReviewUncheckedUpdateManyWithoutActivityNestedInput
   checkinTokens?: Prisma.CheckinTokenUncheckedUpdateManyWithoutActivityNestedInput
+  sessions?: Prisma.ActivitySessionUncheckedUpdateManyWithoutActivityNestedInput
 }
 
 export type ActivityCreateManyOrganizerInput = {
@@ -2240,6 +2500,7 @@ export type ActivityCreateManyOrganizerInput = {
   mapImage?: string | null
   perks?: string
   prep?: string
+  notes?: string
   requiresApproval?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -2267,6 +2528,7 @@ export type ActivityUpdateWithoutOrganizerInput = {
   mapImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   perks?: Prisma.StringFieldUpdateOperationsInput | string
   prep?: Prisma.StringFieldUpdateOperationsInput | string
+  notes?: Prisma.StringFieldUpdateOperationsInput | string
   requiresApproval?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2277,6 +2539,7 @@ export type ActivityUpdateWithoutOrganizerInput = {
   reviews?: Prisma.ReviewUpdateManyWithoutActivityNestedInput
   checkinTokens?: Prisma.CheckinTokenUpdateManyWithoutActivityNestedInput
   threads?: Prisma.ChatThreadUpdateManyWithoutActivityNestedInput
+  sessions?: Prisma.ActivitySessionUpdateManyWithoutActivityNestedInput
 }
 
 export type ActivityUncheckedUpdateWithoutOrganizerInput = {
@@ -2302,6 +2565,7 @@ export type ActivityUncheckedUpdateWithoutOrganizerInput = {
   mapImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   perks?: Prisma.StringFieldUpdateOperationsInput | string
   prep?: Prisma.StringFieldUpdateOperationsInput | string
+  notes?: Prisma.StringFieldUpdateOperationsInput | string
   requiresApproval?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2311,6 +2575,7 @@ export type ActivityUncheckedUpdateWithoutOrganizerInput = {
   reviews?: Prisma.ReviewUncheckedUpdateManyWithoutActivityNestedInput
   checkinTokens?: Prisma.CheckinTokenUncheckedUpdateManyWithoutActivityNestedInput
   threads?: Prisma.ChatThreadUncheckedUpdateManyWithoutActivityNestedInput
+  sessions?: Prisma.ActivitySessionUncheckedUpdateManyWithoutActivityNestedInput
 }
 
 export type ActivityUncheckedUpdateManyWithoutOrganizerInput = {
@@ -2336,6 +2601,7 @@ export type ActivityUncheckedUpdateManyWithoutOrganizerInput = {
   mapImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   perks?: Prisma.StringFieldUpdateOperationsInput | string
   prep?: Prisma.StringFieldUpdateOperationsInput | string
+  notes?: Prisma.StringFieldUpdateOperationsInput | string
   requiresApproval?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2364,6 +2630,7 @@ export type ActivityCreateManyCategoryInput = {
   mapImage?: string | null
   perks?: string
   prep?: string
+  notes?: string
   requiresApproval?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -2391,6 +2658,7 @@ export type ActivityUpdateWithoutCategoryInput = {
   mapImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   perks?: Prisma.StringFieldUpdateOperationsInput | string
   prep?: Prisma.StringFieldUpdateOperationsInput | string
+  notes?: Prisma.StringFieldUpdateOperationsInput | string
   requiresApproval?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2401,6 +2669,7 @@ export type ActivityUpdateWithoutCategoryInput = {
   reviews?: Prisma.ReviewUpdateManyWithoutActivityNestedInput
   checkinTokens?: Prisma.CheckinTokenUpdateManyWithoutActivityNestedInput
   threads?: Prisma.ChatThreadUpdateManyWithoutActivityNestedInput
+  sessions?: Prisma.ActivitySessionUpdateManyWithoutActivityNestedInput
 }
 
 export type ActivityUncheckedUpdateWithoutCategoryInput = {
@@ -2426,6 +2695,7 @@ export type ActivityUncheckedUpdateWithoutCategoryInput = {
   mapImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   perks?: Prisma.StringFieldUpdateOperationsInput | string
   prep?: Prisma.StringFieldUpdateOperationsInput | string
+  notes?: Prisma.StringFieldUpdateOperationsInput | string
   requiresApproval?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2435,6 +2705,7 @@ export type ActivityUncheckedUpdateWithoutCategoryInput = {
   reviews?: Prisma.ReviewUncheckedUpdateManyWithoutActivityNestedInput
   checkinTokens?: Prisma.CheckinTokenUncheckedUpdateManyWithoutActivityNestedInput
   threads?: Prisma.ChatThreadUncheckedUpdateManyWithoutActivityNestedInput
+  sessions?: Prisma.ActivitySessionUncheckedUpdateManyWithoutActivityNestedInput
 }
 
 export type ActivityUncheckedUpdateManyWithoutCategoryInput = {
@@ -2460,6 +2731,7 @@ export type ActivityUncheckedUpdateManyWithoutCategoryInput = {
   mapImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   perks?: Prisma.StringFieldUpdateOperationsInput | string
   prep?: Prisma.StringFieldUpdateOperationsInput | string
+  notes?: Prisma.StringFieldUpdateOperationsInput | string
   requiresApproval?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2477,6 +2749,7 @@ export type ActivityCountOutputType = {
   reviews: number
   checkinTokens: number
   threads: number
+  sessions: number
 }
 
 export type ActivityCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -2486,6 +2759,7 @@ export type ActivityCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensio
   reviews?: boolean | ActivityCountOutputTypeCountReviewsArgs
   checkinTokens?: boolean | ActivityCountOutputTypeCountCheckinTokensArgs
   threads?: boolean | ActivityCountOutputTypeCountThreadsArgs
+  sessions?: boolean | ActivityCountOutputTypeCountSessionsArgs
 }
 
 /**
@@ -2540,6 +2814,13 @@ export type ActivityCountOutputTypeCountThreadsArgs<ExtArgs extends runtime.Type
   where?: Prisma.ChatThreadWhereInput
 }
 
+/**
+ * ActivityCountOutputType without action
+ */
+export type ActivityCountOutputTypeCountSessionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ActivitySessionWhereInput
+}
+
 
 export type ActivitySelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -2565,6 +2846,7 @@ export type ActivitySelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   mapImage?: boolean
   perks?: boolean
   prep?: boolean
+  notes?: boolean
   requiresApproval?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -2576,6 +2858,7 @@ export type ActivitySelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   reviews?: boolean | Prisma.Activity$reviewsArgs<ExtArgs>
   checkinTokens?: boolean | Prisma.Activity$checkinTokensArgs<ExtArgs>
   threads?: boolean | Prisma.Activity$threadsArgs<ExtArgs>
+  sessions?: boolean | Prisma.Activity$sessionsArgs<ExtArgs>
   _count?: boolean | Prisma.ActivityCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["activity"]>
 
@@ -2603,6 +2886,7 @@ export type ActivitySelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
   mapImage?: boolean
   perks?: boolean
   prep?: boolean
+  notes?: boolean
   requiresApproval?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -2634,6 +2918,7 @@ export type ActivitySelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
   mapImage?: boolean
   perks?: boolean
   prep?: boolean
+  notes?: boolean
   requiresApproval?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -2665,12 +2950,13 @@ export type ActivitySelectScalar = {
   mapImage?: boolean
   perks?: boolean
   prep?: boolean
+  notes?: boolean
   requiresApproval?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type ActivityOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "categoryId" | "organizerId" | "orgName" | "description" | "location" | "lat" | "lng" | "mapLink" | "geoRadiusM" | "startAt" | "endAt" | "regOpenAt" | "regCloseAt" | "seatsTotal" | "hours" | "status" | "photo" | "gallery" | "mapImage" | "perks" | "prep" | "requiresApproval" | "createdAt" | "updatedAt", ExtArgs["result"]["activity"]>
+export type ActivityOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "categoryId" | "organizerId" | "orgName" | "description" | "location" | "lat" | "lng" | "mapLink" | "geoRadiusM" | "startAt" | "endAt" | "regOpenAt" | "regCloseAt" | "seatsTotal" | "hours" | "status" | "photo" | "gallery" | "mapImage" | "perks" | "prep" | "notes" | "requiresApproval" | "createdAt" | "updatedAt", ExtArgs["result"]["activity"]>
 export type ActivityInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   category?: boolean | Prisma.CategoryDefaultArgs<ExtArgs>
   organizer?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -2680,6 +2966,7 @@ export type ActivityInclude<ExtArgs extends runtime.Types.Extensions.InternalArg
   reviews?: boolean | Prisma.Activity$reviewsArgs<ExtArgs>
   checkinTokens?: boolean | Prisma.Activity$checkinTokensArgs<ExtArgs>
   threads?: boolean | Prisma.Activity$threadsArgs<ExtArgs>
+  sessions?: boolean | Prisma.Activity$sessionsArgs<ExtArgs>
   _count?: boolean | Prisma.ActivityCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type ActivityIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -2702,6 +2989,7 @@ export type $ActivityPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     reviews: Prisma.$ReviewPayload<ExtArgs>[]
     checkinTokens: Prisma.$CheckinTokenPayload<ExtArgs>[]
     threads: Prisma.$ChatThreadPayload<ExtArgs>[]
+    sessions: Prisma.$ActivitySessionPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -2727,6 +3015,10 @@ export type $ActivityPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     mapImage: string | null
     perks: string
     prep: string
+    /**
+     * หมายเหตุพิเศษจากผู้จัด — ข้อความอิสระ ไม่ใช่รายการเหมือน perks/prep
+     */
+    notes: string
     requiresApproval: boolean
     createdAt: Date
     updatedAt: Date
@@ -3132,6 +3424,7 @@ export interface Prisma__ActivityClient<T, Null = never, ExtArgs extends runtime
   reviews<T extends Prisma.Activity$reviewsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Activity$reviewsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ReviewPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   checkinTokens<T extends Prisma.Activity$checkinTokensArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Activity$checkinTokensArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CheckinTokenPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   threads<T extends Prisma.Activity$threadsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Activity$threadsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ChatThreadPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  sessions<T extends Prisma.Activity$sessionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Activity$sessionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ActivitySessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3184,6 +3477,7 @@ export interface ActivityFieldRefs {
   readonly mapImage: Prisma.FieldRef<"Activity", 'String'>
   readonly perks: Prisma.FieldRef<"Activity", 'String'>
   readonly prep: Prisma.FieldRef<"Activity", 'String'>
+  readonly notes: Prisma.FieldRef<"Activity", 'String'>
   readonly requiresApproval: Prisma.FieldRef<"Activity", 'Boolean'>
   readonly createdAt: Prisma.FieldRef<"Activity", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Activity", 'DateTime'>
@@ -3727,6 +4021,30 @@ export type Activity$threadsArgs<ExtArgs extends runtime.Types.Extensions.Intern
   take?: number
   skip?: number
   distinct?: Prisma.ChatThreadScalarFieldEnum | Prisma.ChatThreadScalarFieldEnum[]
+}
+
+/**
+ * Activity.sessions
+ */
+export type Activity$sessionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ActivitySession
+   */
+  select?: Prisma.ActivitySessionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ActivitySession
+   */
+  omit?: Prisma.ActivitySessionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ActivitySessionInclude<ExtArgs> | null
+  where?: Prisma.ActivitySessionWhereInput
+  orderBy?: Prisma.ActivitySessionOrderByWithRelationInput | Prisma.ActivitySessionOrderByWithRelationInput[]
+  cursor?: Prisma.ActivitySessionWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ActivitySessionScalarFieldEnum | Prisma.ActivitySessionScalarFieldEnum[]
 }
 
 /**

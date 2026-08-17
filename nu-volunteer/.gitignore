@@ -33,14 +33,13 @@ yarn-error.log*
 # env files (can opt-in for committing if needed)
 .env*
 
-# vercel
-.vercel
-
 # typescript
 *.tsbuildinfo
 next-env.d.ts
 
-# local dev database
+# local dev database (better-sqlite3 สร้างไฟล์ -wal/-shm คู่มาด้วยตอนเปิด WAL)
 dev.db
 dev.db-journal
+dev.db-wal
+dev.db-shm
 prisma/dev.db*

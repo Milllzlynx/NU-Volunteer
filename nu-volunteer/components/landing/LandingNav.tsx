@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { BrandMark } from '@/components/layout/BrandMark';
+import { HeaderClock } from '@/components/layout/HeaderClock';
 import { Icon } from '@/components/ui';
 import { useApp } from '@/components/providers/AppProviders';
 import { authApi } from '@/lib/api';
@@ -24,36 +25,6 @@ const ICON_BTN: React.CSSProperties = {
   transition: 'all 220ms ease',
   flexShrink: 0,
 };
-
-/** นาฬิกาบนแถบนำทาง — เรนเดอร์หลัง mount เท่านั้น เพื่อไม่ให้ HTML ฝั่งเซิร์ฟเวอร์กับ client ต่างกัน */
-function Clock() {
-  const { isEn } = useApp();
-  const [now, setNow] = useState<Date | null>(null);
-
-  useEffect(() => {
-    const tick = () => setNow(new Date());
-    const first = setTimeout(tick, 0);
-    const id = setInterval(tick, 30_000);
-    return () => {
-      clearTimeout(first);
-      clearInterval(id);
-    };
-  }, []);
-
-  const locale = isEn ? 'en-GB' : 'th-TH';
-  return (
-    <div className="nuv-land-clock" style={{ textAlign: 'right', lineHeight: 1.35, marginRight: 2 }}>
-      <div style={{ fontSize: 12.5, color: COLOR.body, fontWeight: 500, whiteSpace: 'nowrap' }}>
-        {now ? now.toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' }) : '—'}
-      </div>
-      <div style={{ fontSize: 10.5, color: COLOR.hint, whiteSpace: 'nowrap' }}>
-        {now
-          ? now.toLocaleDateString(locale, { day: 'numeric', month: 'short', year: 'numeric' })
-          : ''}
-      </div>
-    </div>
-  );
-}
 
 export function LandingNav({ account }: { account: SessionAccount | null }) {
   const { t, isEn, lang, toggleLang, darkMode, toggleTheme } = useApp();
@@ -221,7 +192,8 @@ export function LandingNav({ account }: { account: SessionAccount | null }) {
         </Link>
 
         <div style={{ display: 'flex', gap: 9, alignItems: 'center', flexShrink: 0 }}>
-          <Clock />
+          {/* นาฬิกาชุดเดียวกับแถบหัวเรื่องของผู้ที่เข้าสู่ระบบแล้ว — มีชุดเดียวเท่านั้น */}
+          <HeaderClock />
 
           <button
             type="button"

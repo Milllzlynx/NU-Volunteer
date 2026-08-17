@@ -9,6 +9,7 @@ import { Icon } from '@/components/ui';
 import { useT } from '@/components/providers/AppProviders';
 import { authApi, errorMessage } from '@/lib/api';
 import { COLOR } from '@/lib/design';
+import { landingFor } from '@/lib/routes';
 
 const LS_LAST_EMAIL = 'nuv-last-email';
 
@@ -46,15 +47,15 @@ export function LoginForm() {
     setLoading(true);
     setError('');
     try {
-      await authApi.login(email.trim(), password);
+      const { account } = await authApi.login(email.trim(), password);
       try {
         if (remember) localStorage.setItem(LS_LAST_EMAIL, email.trim());
         else localStorage.removeItem(LS_LAST_EMAIL);
       } catch {
         /* ไม่เป็นไร */
       }
-      // TODO: เปลี่ยนเป็น homeFor(account.role) เมื่อหน้าแดชบอร์ดของแต่ละบทบาทพร้อมใช้งาน
-      router.replace('/');
+      // บทบาทที่ยังไม่มีแดชบอร์ดจะถูกส่งกลับหน้าแรกโดย landingFor()
+      router.replace(landingFor(account.role));
       router.refresh();
     } catch (e) {
       setError(errorMessage(e));

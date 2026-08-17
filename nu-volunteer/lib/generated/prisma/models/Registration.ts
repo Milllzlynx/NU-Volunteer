@@ -44,6 +44,7 @@ export type RegistrationMinAggregateOutputType = {
   id: string | null
   userId: string | null
   activityId: string | null
+  sessionId: string | null
   status: string | null
   regAt: Date | null
   approvedAt: Date | null
@@ -69,6 +70,7 @@ export type RegistrationMaxAggregateOutputType = {
   id: string | null
   userId: string | null
   activityId: string | null
+  sessionId: string | null
   status: string | null
   regAt: Date | null
   approvedAt: Date | null
@@ -94,6 +96,7 @@ export type RegistrationCountAggregateOutputType = {
   id: number
   userId: number
   activityId: number
+  sessionId: number
   status: number
   regAt: number
   approvedAt: number
@@ -135,6 +138,7 @@ export type RegistrationMinAggregateInputType = {
   id?: true
   userId?: true
   activityId?: true
+  sessionId?: true
   status?: true
   regAt?: true
   approvedAt?: true
@@ -160,6 +164,7 @@ export type RegistrationMaxAggregateInputType = {
   id?: true
   userId?: true
   activityId?: true
+  sessionId?: true
   status?: true
   regAt?: true
   approvedAt?: true
@@ -185,6 +190,7 @@ export type RegistrationCountAggregateInputType = {
   id?: true
   userId?: true
   activityId?: true
+  sessionId?: true
   status?: true
   regAt?: true
   approvedAt?: true
@@ -297,6 +303,7 @@ export type RegistrationGroupByOutputType = {
   id: string
   userId: string
   activityId: string
+  sessionId: string | null
   status: string
   regAt: Date
   approvedAt: Date | null
@@ -345,6 +352,7 @@ export type RegistrationWhereInput = {
   id?: Prisma.StringFilter<"Registration"> | string
   userId?: Prisma.StringFilter<"Registration"> | string
   activityId?: Prisma.StringFilter<"Registration"> | string
+  sessionId?: Prisma.StringNullableFilter<"Registration"> | string | null
   status?: Prisma.StringFilter<"Registration"> | string
   regAt?: Prisma.DateTimeFilter<"Registration"> | Date | string
   approvedAt?: Prisma.DateTimeNullableFilter<"Registration"> | Date | string | null
@@ -366,6 +374,7 @@ export type RegistrationWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"Registration"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   activity?: Prisma.XOR<Prisma.ActivityScalarRelationFilter, Prisma.ActivityWhereInput>
+  session?: Prisma.XOR<Prisma.ActivitySessionNullableScalarRelationFilter, Prisma.ActivitySessionWhereInput> | null
   evidence?: Prisma.EvidenceListRelationFilter
   appeals?: Prisma.AppealListRelationFilter
   certificate?: Prisma.XOR<Prisma.CertificateNullableScalarRelationFilter, Prisma.CertificateWhereInput> | null
@@ -375,6 +384,7 @@ export type RegistrationOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   activityId?: Prisma.SortOrder
+  sessionId?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
   regAt?: Prisma.SortOrder
   approvedAt?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -396,6 +406,7 @@ export type RegistrationOrderByWithRelationInput = {
   updatedAt?: Prisma.SortOrder
   user?: Prisma.UserOrderByWithRelationInput
   activity?: Prisma.ActivityOrderByWithRelationInput
+  session?: Prisma.ActivitySessionOrderByWithRelationInput
   evidence?: Prisma.EvidenceOrderByRelationAggregateInput
   appeals?: Prisma.AppealOrderByRelationAggregateInput
   certificate?: Prisma.CertificateOrderByWithRelationInput
@@ -409,6 +420,7 @@ export type RegistrationWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.RegistrationWhereInput | Prisma.RegistrationWhereInput[]
   userId?: Prisma.StringFilter<"Registration"> | string
   activityId?: Prisma.StringFilter<"Registration"> | string
+  sessionId?: Prisma.StringNullableFilter<"Registration"> | string | null
   status?: Prisma.StringFilter<"Registration"> | string
   regAt?: Prisma.DateTimeFilter<"Registration"> | Date | string
   approvedAt?: Prisma.DateTimeNullableFilter<"Registration"> | Date | string | null
@@ -430,6 +442,7 @@ export type RegistrationWhereUniqueInput = Prisma.AtLeast<{
   updatedAt?: Prisma.DateTimeFilter<"Registration"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   activity?: Prisma.XOR<Prisma.ActivityScalarRelationFilter, Prisma.ActivityWhereInput>
+  session?: Prisma.XOR<Prisma.ActivitySessionNullableScalarRelationFilter, Prisma.ActivitySessionWhereInput> | null
   evidence?: Prisma.EvidenceListRelationFilter
   appeals?: Prisma.AppealListRelationFilter
   certificate?: Prisma.XOR<Prisma.CertificateNullableScalarRelationFilter, Prisma.CertificateWhereInput> | null
@@ -439,6 +452,7 @@ export type RegistrationOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   activityId?: Prisma.SortOrder
+  sessionId?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
   regAt?: Prisma.SortOrder
   approvedAt?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -472,6 +486,7 @@ export type RegistrationScalarWhereWithAggregatesInput = {
   id?: Prisma.StringWithAggregatesFilter<"Registration"> | string
   userId?: Prisma.StringWithAggregatesFilter<"Registration"> | string
   activityId?: Prisma.StringWithAggregatesFilter<"Registration"> | string
+  sessionId?: Prisma.StringNullableWithAggregatesFilter<"Registration"> | string | null
   status?: Prisma.StringWithAggregatesFilter<"Registration"> | string
   regAt?: Prisma.DateTimeWithAggregatesFilter<"Registration"> | Date | string
   approvedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Registration"> | Date | string | null
@@ -516,6 +531,7 @@ export type RegistrationCreateInput = {
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutRegistrationsInput
   activity: Prisma.ActivityCreateNestedOneWithoutRegistrationsInput
+  session?: Prisma.ActivitySessionCreateNestedOneWithoutRegistrationsInput
   evidence?: Prisma.EvidenceCreateNestedManyWithoutRegistrationInput
   appeals?: Prisma.AppealCreateNestedManyWithoutRegistrationInput
   certificate?: Prisma.CertificateCreateNestedOneWithoutRegistrationInput
@@ -525,6 +541,7 @@ export type RegistrationUncheckedCreateInput = {
   id?: string
   userId: string
   activityId: string
+  sessionId?: string | null
   status?: string
   regAt?: Date | string
   approvedAt?: Date | string | null
@@ -572,6 +589,7 @@ export type RegistrationUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutRegistrationsNestedInput
   activity?: Prisma.ActivityUpdateOneRequiredWithoutRegistrationsNestedInput
+  session?: Prisma.ActivitySessionUpdateOneWithoutRegistrationsNestedInput
   evidence?: Prisma.EvidenceUpdateManyWithoutRegistrationNestedInput
   appeals?: Prisma.AppealUpdateManyWithoutRegistrationNestedInput
   certificate?: Prisma.CertificateUpdateOneWithoutRegistrationNestedInput
@@ -581,6 +599,7 @@ export type RegistrationUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   activityId?: Prisma.StringFieldUpdateOperationsInput | string
+  sessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
   regAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -609,6 +628,7 @@ export type RegistrationCreateManyInput = {
   id?: string
   userId: string
   activityId: string
+  sessionId?: string | null
   status?: string
   regAt?: Date | string
   approvedAt?: Date | string | null
@@ -657,6 +677,7 @@ export type RegistrationUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   activityId?: Prisma.StringFieldUpdateOperationsInput | string
+  sessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
   regAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -697,6 +718,7 @@ export type RegistrationCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   activityId?: Prisma.SortOrder
+  sessionId?: Prisma.SortOrder
   status?: Prisma.SortOrder
   regAt?: Prisma.SortOrder
   approvedAt?: Prisma.SortOrder
@@ -729,6 +751,7 @@ export type RegistrationMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   activityId?: Prisma.SortOrder
+  sessionId?: Prisma.SortOrder
   status?: Prisma.SortOrder
   regAt?: Prisma.SortOrder
   approvedAt?: Prisma.SortOrder
@@ -754,6 +777,7 @@ export type RegistrationMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   activityId?: Prisma.SortOrder
+  sessionId?: Prisma.SortOrder
   status?: Prisma.SortOrder
   regAt?: Prisma.SortOrder
   approvedAt?: Prisma.SortOrder
@@ -876,6 +900,48 @@ export type RegistrationUncheckedUpdateManyWithoutActivityNestedInput = {
   deleteMany?: Prisma.RegistrationScalarWhereInput | Prisma.RegistrationScalarWhereInput[]
 }
 
+export type RegistrationCreateNestedManyWithoutSessionInput = {
+  create?: Prisma.XOR<Prisma.RegistrationCreateWithoutSessionInput, Prisma.RegistrationUncheckedCreateWithoutSessionInput> | Prisma.RegistrationCreateWithoutSessionInput[] | Prisma.RegistrationUncheckedCreateWithoutSessionInput[]
+  connectOrCreate?: Prisma.RegistrationCreateOrConnectWithoutSessionInput | Prisma.RegistrationCreateOrConnectWithoutSessionInput[]
+  createMany?: Prisma.RegistrationCreateManySessionInputEnvelope
+  connect?: Prisma.RegistrationWhereUniqueInput | Prisma.RegistrationWhereUniqueInput[]
+}
+
+export type RegistrationUncheckedCreateNestedManyWithoutSessionInput = {
+  create?: Prisma.XOR<Prisma.RegistrationCreateWithoutSessionInput, Prisma.RegistrationUncheckedCreateWithoutSessionInput> | Prisma.RegistrationCreateWithoutSessionInput[] | Prisma.RegistrationUncheckedCreateWithoutSessionInput[]
+  connectOrCreate?: Prisma.RegistrationCreateOrConnectWithoutSessionInput | Prisma.RegistrationCreateOrConnectWithoutSessionInput[]
+  createMany?: Prisma.RegistrationCreateManySessionInputEnvelope
+  connect?: Prisma.RegistrationWhereUniqueInput | Prisma.RegistrationWhereUniqueInput[]
+}
+
+export type RegistrationUpdateManyWithoutSessionNestedInput = {
+  create?: Prisma.XOR<Prisma.RegistrationCreateWithoutSessionInput, Prisma.RegistrationUncheckedCreateWithoutSessionInput> | Prisma.RegistrationCreateWithoutSessionInput[] | Prisma.RegistrationUncheckedCreateWithoutSessionInput[]
+  connectOrCreate?: Prisma.RegistrationCreateOrConnectWithoutSessionInput | Prisma.RegistrationCreateOrConnectWithoutSessionInput[]
+  upsert?: Prisma.RegistrationUpsertWithWhereUniqueWithoutSessionInput | Prisma.RegistrationUpsertWithWhereUniqueWithoutSessionInput[]
+  createMany?: Prisma.RegistrationCreateManySessionInputEnvelope
+  set?: Prisma.RegistrationWhereUniqueInput | Prisma.RegistrationWhereUniqueInput[]
+  disconnect?: Prisma.RegistrationWhereUniqueInput | Prisma.RegistrationWhereUniqueInput[]
+  delete?: Prisma.RegistrationWhereUniqueInput | Prisma.RegistrationWhereUniqueInput[]
+  connect?: Prisma.RegistrationWhereUniqueInput | Prisma.RegistrationWhereUniqueInput[]
+  update?: Prisma.RegistrationUpdateWithWhereUniqueWithoutSessionInput | Prisma.RegistrationUpdateWithWhereUniqueWithoutSessionInput[]
+  updateMany?: Prisma.RegistrationUpdateManyWithWhereWithoutSessionInput | Prisma.RegistrationUpdateManyWithWhereWithoutSessionInput[]
+  deleteMany?: Prisma.RegistrationScalarWhereInput | Prisma.RegistrationScalarWhereInput[]
+}
+
+export type RegistrationUncheckedUpdateManyWithoutSessionNestedInput = {
+  create?: Prisma.XOR<Prisma.RegistrationCreateWithoutSessionInput, Prisma.RegistrationUncheckedCreateWithoutSessionInput> | Prisma.RegistrationCreateWithoutSessionInput[] | Prisma.RegistrationUncheckedCreateWithoutSessionInput[]
+  connectOrCreate?: Prisma.RegistrationCreateOrConnectWithoutSessionInput | Prisma.RegistrationCreateOrConnectWithoutSessionInput[]
+  upsert?: Prisma.RegistrationUpsertWithWhereUniqueWithoutSessionInput | Prisma.RegistrationUpsertWithWhereUniqueWithoutSessionInput[]
+  createMany?: Prisma.RegistrationCreateManySessionInputEnvelope
+  set?: Prisma.RegistrationWhereUniqueInput | Prisma.RegistrationWhereUniqueInput[]
+  disconnect?: Prisma.RegistrationWhereUniqueInput | Prisma.RegistrationWhereUniqueInput[]
+  delete?: Prisma.RegistrationWhereUniqueInput | Prisma.RegistrationWhereUniqueInput[]
+  connect?: Prisma.RegistrationWhereUniqueInput | Prisma.RegistrationWhereUniqueInput[]
+  update?: Prisma.RegistrationUpdateWithWhereUniqueWithoutSessionInput | Prisma.RegistrationUpdateWithWhereUniqueWithoutSessionInput[]
+  updateMany?: Prisma.RegistrationUpdateManyWithWhereWithoutSessionInput | Prisma.RegistrationUpdateManyWithWhereWithoutSessionInput[]
+  deleteMany?: Prisma.RegistrationScalarWhereInput | Prisma.RegistrationScalarWhereInput[]
+}
+
 export type RegistrationCreateNestedOneWithoutEvidenceInput = {
   create?: Prisma.XOR<Prisma.RegistrationCreateWithoutEvidenceInput, Prisma.RegistrationUncheckedCreateWithoutEvidenceInput>
   connectOrCreate?: Prisma.RegistrationCreateOrConnectWithoutEvidenceInput
@@ -942,6 +1008,7 @@ export type RegistrationCreateWithoutUserInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   activity: Prisma.ActivityCreateNestedOneWithoutRegistrationsInput
+  session?: Prisma.ActivitySessionCreateNestedOneWithoutRegistrationsInput
   evidence?: Prisma.EvidenceCreateNestedManyWithoutRegistrationInput
   appeals?: Prisma.AppealCreateNestedManyWithoutRegistrationInput
   certificate?: Prisma.CertificateCreateNestedOneWithoutRegistrationInput
@@ -950,6 +1017,7 @@ export type RegistrationCreateWithoutUserInput = {
 export type RegistrationUncheckedCreateWithoutUserInput = {
   id?: string
   activityId: string
+  sessionId?: string | null
   status?: string
   regAt?: Date | string
   approvedAt?: Date | string | null
@@ -1006,6 +1074,7 @@ export type RegistrationScalarWhereInput = {
   id?: Prisma.StringFilter<"Registration"> | string
   userId?: Prisma.StringFilter<"Registration"> | string
   activityId?: Prisma.StringFilter<"Registration"> | string
+  sessionId?: Prisma.StringNullableFilter<"Registration"> | string | null
   status?: Prisma.StringFilter<"Registration"> | string
   regAt?: Prisma.DateTimeFilter<"Registration"> | Date | string
   approvedAt?: Prisma.DateTimeNullableFilter<"Registration"> | Date | string | null
@@ -1049,6 +1118,7 @@ export type RegistrationCreateWithoutActivityInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutRegistrationsInput
+  session?: Prisma.ActivitySessionCreateNestedOneWithoutRegistrationsInput
   evidence?: Prisma.EvidenceCreateNestedManyWithoutRegistrationInput
   appeals?: Prisma.AppealCreateNestedManyWithoutRegistrationInput
   certificate?: Prisma.CertificateCreateNestedOneWithoutRegistrationInput
@@ -1057,6 +1127,7 @@ export type RegistrationCreateWithoutActivityInput = {
 export type RegistrationUncheckedCreateWithoutActivityInput = {
   id?: string
   userId: string
+  sessionId?: string | null
   status?: string
   regAt?: Date | string
   approvedAt?: Date | string | null
@@ -1106,6 +1177,87 @@ export type RegistrationUpdateManyWithWhereWithoutActivityInput = {
   data: Prisma.XOR<Prisma.RegistrationUpdateManyMutationInput, Prisma.RegistrationUncheckedUpdateManyWithoutActivityInput>
 }
 
+export type RegistrationCreateWithoutSessionInput = {
+  id?: string
+  status?: string
+  regAt?: Date | string
+  approvedAt?: Date | string | null
+  rejectedAt?: Date | string | null
+  rejectReason?: string | null
+  checkedInAt?: Date | string | null
+  checkedOutAt?: Date | string | null
+  checkinLat?: number | null
+  checkinLng?: number | null
+  checkinOutOfRange?: boolean
+  hoursComputed?: number
+  hoursAwarded?: number
+  hoursApprovedAt?: Date | string | null
+  cancelRequested?: boolean
+  cancelReason?: string | null
+  cancelStatus?: string | null
+  cancelledAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  user: Prisma.UserCreateNestedOneWithoutRegistrationsInput
+  activity: Prisma.ActivityCreateNestedOneWithoutRegistrationsInput
+  evidence?: Prisma.EvidenceCreateNestedManyWithoutRegistrationInput
+  appeals?: Prisma.AppealCreateNestedManyWithoutRegistrationInput
+  certificate?: Prisma.CertificateCreateNestedOneWithoutRegistrationInput
+}
+
+export type RegistrationUncheckedCreateWithoutSessionInput = {
+  id?: string
+  userId: string
+  activityId: string
+  status?: string
+  regAt?: Date | string
+  approvedAt?: Date | string | null
+  rejectedAt?: Date | string | null
+  rejectReason?: string | null
+  checkedInAt?: Date | string | null
+  checkedOutAt?: Date | string | null
+  checkinLat?: number | null
+  checkinLng?: number | null
+  checkinOutOfRange?: boolean
+  hoursComputed?: number
+  hoursAwarded?: number
+  hoursApprovedAt?: Date | string | null
+  cancelRequested?: boolean
+  cancelReason?: string | null
+  cancelStatus?: string | null
+  cancelledAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  evidence?: Prisma.EvidenceUncheckedCreateNestedManyWithoutRegistrationInput
+  appeals?: Prisma.AppealUncheckedCreateNestedManyWithoutRegistrationInput
+  certificate?: Prisma.CertificateUncheckedCreateNestedOneWithoutRegistrationInput
+}
+
+export type RegistrationCreateOrConnectWithoutSessionInput = {
+  where: Prisma.RegistrationWhereUniqueInput
+  create: Prisma.XOR<Prisma.RegistrationCreateWithoutSessionInput, Prisma.RegistrationUncheckedCreateWithoutSessionInput>
+}
+
+export type RegistrationCreateManySessionInputEnvelope = {
+  data: Prisma.RegistrationCreateManySessionInput | Prisma.RegistrationCreateManySessionInput[]
+}
+
+export type RegistrationUpsertWithWhereUniqueWithoutSessionInput = {
+  where: Prisma.RegistrationWhereUniqueInput
+  update: Prisma.XOR<Prisma.RegistrationUpdateWithoutSessionInput, Prisma.RegistrationUncheckedUpdateWithoutSessionInput>
+  create: Prisma.XOR<Prisma.RegistrationCreateWithoutSessionInput, Prisma.RegistrationUncheckedCreateWithoutSessionInput>
+}
+
+export type RegistrationUpdateWithWhereUniqueWithoutSessionInput = {
+  where: Prisma.RegistrationWhereUniqueInput
+  data: Prisma.XOR<Prisma.RegistrationUpdateWithoutSessionInput, Prisma.RegistrationUncheckedUpdateWithoutSessionInput>
+}
+
+export type RegistrationUpdateManyWithWhereWithoutSessionInput = {
+  where: Prisma.RegistrationScalarWhereInput
+  data: Prisma.XOR<Prisma.RegistrationUpdateManyMutationInput, Prisma.RegistrationUncheckedUpdateManyWithoutSessionInput>
+}
+
 export type RegistrationCreateWithoutEvidenceInput = {
   id?: string
   status?: string
@@ -1129,6 +1281,7 @@ export type RegistrationCreateWithoutEvidenceInput = {
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutRegistrationsInput
   activity: Prisma.ActivityCreateNestedOneWithoutRegistrationsInput
+  session?: Prisma.ActivitySessionCreateNestedOneWithoutRegistrationsInput
   appeals?: Prisma.AppealCreateNestedManyWithoutRegistrationInput
   certificate?: Prisma.CertificateCreateNestedOneWithoutRegistrationInput
 }
@@ -1137,6 +1290,7 @@ export type RegistrationUncheckedCreateWithoutEvidenceInput = {
   id?: string
   userId: string
   activityId: string
+  sessionId?: string | null
   status?: string
   regAt?: Date | string
   approvedAt?: Date | string | null
@@ -1199,6 +1353,7 @@ export type RegistrationUpdateWithoutEvidenceInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutRegistrationsNestedInput
   activity?: Prisma.ActivityUpdateOneRequiredWithoutRegistrationsNestedInput
+  session?: Prisma.ActivitySessionUpdateOneWithoutRegistrationsNestedInput
   appeals?: Prisma.AppealUpdateManyWithoutRegistrationNestedInput
   certificate?: Prisma.CertificateUpdateOneWithoutRegistrationNestedInput
 }
@@ -1207,6 +1362,7 @@ export type RegistrationUncheckedUpdateWithoutEvidenceInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   activityId?: Prisma.StringFieldUpdateOperationsInput | string
+  sessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
   regAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1253,6 +1409,7 @@ export type RegistrationCreateWithoutAppealsInput = {
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutRegistrationsInput
   activity: Prisma.ActivityCreateNestedOneWithoutRegistrationsInput
+  session?: Prisma.ActivitySessionCreateNestedOneWithoutRegistrationsInput
   evidence?: Prisma.EvidenceCreateNestedManyWithoutRegistrationInput
   certificate?: Prisma.CertificateCreateNestedOneWithoutRegistrationInput
 }
@@ -1261,6 +1418,7 @@ export type RegistrationUncheckedCreateWithoutAppealsInput = {
   id?: string
   userId: string
   activityId: string
+  sessionId?: string | null
   status?: string
   regAt?: Date | string
   approvedAt?: Date | string | null
@@ -1323,6 +1481,7 @@ export type RegistrationUpdateWithoutAppealsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutRegistrationsNestedInput
   activity?: Prisma.ActivityUpdateOneRequiredWithoutRegistrationsNestedInput
+  session?: Prisma.ActivitySessionUpdateOneWithoutRegistrationsNestedInput
   evidence?: Prisma.EvidenceUpdateManyWithoutRegistrationNestedInput
   certificate?: Prisma.CertificateUpdateOneWithoutRegistrationNestedInput
 }
@@ -1331,6 +1490,7 @@ export type RegistrationUncheckedUpdateWithoutAppealsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   activityId?: Prisma.StringFieldUpdateOperationsInput | string
+  sessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
   regAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1377,6 +1537,7 @@ export type RegistrationCreateWithoutCertificateInput = {
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutRegistrationsInput
   activity: Prisma.ActivityCreateNestedOneWithoutRegistrationsInput
+  session?: Prisma.ActivitySessionCreateNestedOneWithoutRegistrationsInput
   evidence?: Prisma.EvidenceCreateNestedManyWithoutRegistrationInput
   appeals?: Prisma.AppealCreateNestedManyWithoutRegistrationInput
 }
@@ -1385,6 +1546,7 @@ export type RegistrationUncheckedCreateWithoutCertificateInput = {
   id?: string
   userId: string
   activityId: string
+  sessionId?: string | null
   status?: string
   regAt?: Date | string
   approvedAt?: Date | string | null
@@ -1447,6 +1609,7 @@ export type RegistrationUpdateWithoutCertificateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutRegistrationsNestedInput
   activity?: Prisma.ActivityUpdateOneRequiredWithoutRegistrationsNestedInput
+  session?: Prisma.ActivitySessionUpdateOneWithoutRegistrationsNestedInput
   evidence?: Prisma.EvidenceUpdateManyWithoutRegistrationNestedInput
   appeals?: Prisma.AppealUpdateManyWithoutRegistrationNestedInput
 }
@@ -1455,6 +1618,7 @@ export type RegistrationUncheckedUpdateWithoutCertificateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   activityId?: Prisma.StringFieldUpdateOperationsInput | string
+  sessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
   regAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1481,6 +1645,7 @@ export type RegistrationUncheckedUpdateWithoutCertificateInput = {
 export type RegistrationCreateManyUserInput = {
   id?: string
   activityId: string
+  sessionId?: string | null
   status?: string
   regAt?: Date | string
   approvedAt?: Date | string | null
@@ -1524,6 +1689,7 @@ export type RegistrationUpdateWithoutUserInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   activity?: Prisma.ActivityUpdateOneRequiredWithoutRegistrationsNestedInput
+  session?: Prisma.ActivitySessionUpdateOneWithoutRegistrationsNestedInput
   evidence?: Prisma.EvidenceUpdateManyWithoutRegistrationNestedInput
   appeals?: Prisma.AppealUpdateManyWithoutRegistrationNestedInput
   certificate?: Prisma.CertificateUpdateOneWithoutRegistrationNestedInput
@@ -1532,6 +1698,7 @@ export type RegistrationUpdateWithoutUserInput = {
 export type RegistrationUncheckedUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   activityId?: Prisma.StringFieldUpdateOperationsInput | string
+  sessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
   regAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1559,6 +1726,7 @@ export type RegistrationUncheckedUpdateWithoutUserInput = {
 export type RegistrationUncheckedUpdateManyWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   activityId?: Prisma.StringFieldUpdateOperationsInput | string
+  sessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
   regAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1583,6 +1751,7 @@ export type RegistrationUncheckedUpdateManyWithoutUserInput = {
 export type RegistrationCreateManyActivityInput = {
   id?: string
   userId: string
+  sessionId?: string | null
   status?: string
   regAt?: Date | string
   approvedAt?: Date | string | null
@@ -1626,6 +1795,7 @@ export type RegistrationUpdateWithoutActivityInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutRegistrationsNestedInput
+  session?: Prisma.ActivitySessionUpdateOneWithoutRegistrationsNestedInput
   evidence?: Prisma.EvidenceUpdateManyWithoutRegistrationNestedInput
   appeals?: Prisma.AppealUpdateManyWithoutRegistrationNestedInput
   certificate?: Prisma.CertificateUpdateOneWithoutRegistrationNestedInput
@@ -1634,6 +1804,7 @@ export type RegistrationUpdateWithoutActivityInput = {
 export type RegistrationUncheckedUpdateWithoutActivityInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
+  sessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
   regAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1661,6 +1832,113 @@ export type RegistrationUncheckedUpdateWithoutActivityInput = {
 export type RegistrationUncheckedUpdateManyWithoutActivityInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
+  sessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  regAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  checkedInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  checkedOutAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  checkinLat?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  checkinLng?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  checkinOutOfRange?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hoursComputed?: Prisma.FloatFieldUpdateOperationsInput | number
+  hoursAwarded?: Prisma.FloatFieldUpdateOperationsInput | number
+  hoursApprovedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  cancelRequested?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  cancelReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cancelStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type RegistrationCreateManySessionInput = {
+  id?: string
+  userId: string
+  activityId: string
+  status?: string
+  regAt?: Date | string
+  approvedAt?: Date | string | null
+  rejectedAt?: Date | string | null
+  rejectReason?: string | null
+  checkedInAt?: Date | string | null
+  checkedOutAt?: Date | string | null
+  checkinLat?: number | null
+  checkinLng?: number | null
+  checkinOutOfRange?: boolean
+  hoursComputed?: number
+  hoursAwarded?: number
+  hoursApprovedAt?: Date | string | null
+  cancelRequested?: boolean
+  cancelReason?: string | null
+  cancelStatus?: string | null
+  cancelledAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type RegistrationUpdateWithoutSessionInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  regAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  checkedInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  checkedOutAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  checkinLat?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  checkinLng?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  checkinOutOfRange?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hoursComputed?: Prisma.FloatFieldUpdateOperationsInput | number
+  hoursAwarded?: Prisma.FloatFieldUpdateOperationsInput | number
+  hoursApprovedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  cancelRequested?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  cancelReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cancelStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  user?: Prisma.UserUpdateOneRequiredWithoutRegistrationsNestedInput
+  activity?: Prisma.ActivityUpdateOneRequiredWithoutRegistrationsNestedInput
+  evidence?: Prisma.EvidenceUpdateManyWithoutRegistrationNestedInput
+  appeals?: Prisma.AppealUpdateManyWithoutRegistrationNestedInput
+  certificate?: Prisma.CertificateUpdateOneWithoutRegistrationNestedInput
+}
+
+export type RegistrationUncheckedUpdateWithoutSessionInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  activityId?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  regAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  checkedInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  checkedOutAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  checkinLat?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  checkinLng?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  checkinOutOfRange?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hoursComputed?: Prisma.FloatFieldUpdateOperationsInput | number
+  hoursAwarded?: Prisma.FloatFieldUpdateOperationsInput | number
+  hoursApprovedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  cancelRequested?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  cancelReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cancelStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  evidence?: Prisma.EvidenceUncheckedUpdateManyWithoutRegistrationNestedInput
+  appeals?: Prisma.AppealUncheckedUpdateManyWithoutRegistrationNestedInput
+  certificate?: Prisma.CertificateUncheckedUpdateOneWithoutRegistrationNestedInput
+}
+
+export type RegistrationUncheckedUpdateManyWithoutSessionInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  activityId?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   regAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1726,6 +2004,7 @@ export type RegistrationSelect<ExtArgs extends runtime.Types.Extensions.Internal
   id?: boolean
   userId?: boolean
   activityId?: boolean
+  sessionId?: boolean
   status?: boolean
   regAt?: boolean
   approvedAt?: boolean
@@ -1747,6 +2026,7 @@ export type RegistrationSelect<ExtArgs extends runtime.Types.Extensions.Internal
   updatedAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   activity?: boolean | Prisma.ActivityDefaultArgs<ExtArgs>
+  session?: boolean | Prisma.Registration$sessionArgs<ExtArgs>
   evidence?: boolean | Prisma.Registration$evidenceArgs<ExtArgs>
   appeals?: boolean | Prisma.Registration$appealsArgs<ExtArgs>
   certificate?: boolean | Prisma.Registration$certificateArgs<ExtArgs>
@@ -1757,6 +2037,7 @@ export type RegistrationSelectCreateManyAndReturn<ExtArgs extends runtime.Types.
   id?: boolean
   userId?: boolean
   activityId?: boolean
+  sessionId?: boolean
   status?: boolean
   regAt?: boolean
   approvedAt?: boolean
@@ -1778,12 +2059,14 @@ export type RegistrationSelectCreateManyAndReturn<ExtArgs extends runtime.Types.
   updatedAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   activity?: boolean | Prisma.ActivityDefaultArgs<ExtArgs>
+  session?: boolean | Prisma.Registration$sessionArgs<ExtArgs>
 }, ExtArgs["result"]["registration"]>
 
 export type RegistrationSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   userId?: boolean
   activityId?: boolean
+  sessionId?: boolean
   status?: boolean
   regAt?: boolean
   approvedAt?: boolean
@@ -1805,12 +2088,14 @@ export type RegistrationSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.
   updatedAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   activity?: boolean | Prisma.ActivityDefaultArgs<ExtArgs>
+  session?: boolean | Prisma.Registration$sessionArgs<ExtArgs>
 }, ExtArgs["result"]["registration"]>
 
 export type RegistrationSelectScalar = {
   id?: boolean
   userId?: boolean
   activityId?: boolean
+  sessionId?: boolean
   status?: boolean
   regAt?: boolean
   approvedAt?: boolean
@@ -1832,10 +2117,11 @@ export type RegistrationSelectScalar = {
   updatedAt?: boolean
 }
 
-export type RegistrationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "activityId" | "status" | "regAt" | "approvedAt" | "rejectedAt" | "rejectReason" | "checkedInAt" | "checkedOutAt" | "checkinLat" | "checkinLng" | "checkinOutOfRange" | "hoursComputed" | "hoursAwarded" | "hoursApprovedAt" | "cancelRequested" | "cancelReason" | "cancelStatus" | "cancelledAt" | "createdAt" | "updatedAt", ExtArgs["result"]["registration"]>
+export type RegistrationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "activityId" | "sessionId" | "status" | "regAt" | "approvedAt" | "rejectedAt" | "rejectReason" | "checkedInAt" | "checkedOutAt" | "checkinLat" | "checkinLng" | "checkinOutOfRange" | "hoursComputed" | "hoursAwarded" | "hoursApprovedAt" | "cancelRequested" | "cancelReason" | "cancelStatus" | "cancelledAt" | "createdAt" | "updatedAt", ExtArgs["result"]["registration"]>
 export type RegistrationInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   activity?: boolean | Prisma.ActivityDefaultArgs<ExtArgs>
+  session?: boolean | Prisma.Registration$sessionArgs<ExtArgs>
   evidence?: boolean | Prisma.Registration$evidenceArgs<ExtArgs>
   appeals?: boolean | Prisma.Registration$appealsArgs<ExtArgs>
   certificate?: boolean | Prisma.Registration$certificateArgs<ExtArgs>
@@ -1844,10 +2130,12 @@ export type RegistrationInclude<ExtArgs extends runtime.Types.Extensions.Interna
 export type RegistrationIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   activity?: boolean | Prisma.ActivityDefaultArgs<ExtArgs>
+  session?: boolean | Prisma.Registration$sessionArgs<ExtArgs>
 }
 export type RegistrationIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   activity?: boolean | Prisma.ActivityDefaultArgs<ExtArgs>
+  session?: boolean | Prisma.Registration$sessionArgs<ExtArgs>
 }
 
 export type $RegistrationPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1855,6 +2143,7 @@ export type $RegistrationPayload<ExtArgs extends runtime.Types.Extensions.Intern
   objects: {
     user: Prisma.$UserPayload<ExtArgs>
     activity: Prisma.$ActivityPayload<ExtArgs>
+    session: Prisma.$ActivitySessionPayload<ExtArgs> | null
     evidence: Prisma.$EvidencePayload<ExtArgs>[]
     appeals: Prisma.$AppealPayload<ExtArgs>[]
     certificate: Prisma.$CertificatePayload<ExtArgs> | null
@@ -1863,6 +2152,11 @@ export type $RegistrationPayload<ExtArgs extends runtime.Types.Extensions.Intern
     id: string
     userId: string
     activityId: string
+    /**
+     * รอบที่ถูกจัดเข้า — ว่างได้ เพราะกิจกรรมส่วนใหญ่มีรอบเดียวและไม่ต้องแบ่ง
+     * ลบรอบแล้วใบลงทะเบียนต้องไม่หายไปด้วย จึงใช้ SetNull ไม่ใช่ Cascade
+     */
+    sessionId: string | null
     status: string
     regAt: Date
     approvedAt: Date | null
@@ -2278,6 +2572,7 @@ export interface Prisma__RegistrationClient<T, Null = never, ExtArgs extends run
   readonly [Symbol.toStringTag]: "PrismaPromise"
   user<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   activity<T extends Prisma.ActivityDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ActivityDefaultArgs<ExtArgs>>): Prisma.Prisma__ActivityClient<runtime.Types.Result.GetResult<Prisma.$ActivityPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  session<T extends Prisma.Registration$sessionArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Registration$sessionArgs<ExtArgs>>): Prisma.Prisma__ActivitySessionClient<runtime.Types.Result.GetResult<Prisma.$ActivitySessionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   evidence<T extends Prisma.Registration$evidenceArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Registration$evidenceArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$EvidencePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   appeals<T extends Prisma.Registration$appealsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Registration$appealsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AppealPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   certificate<T extends Prisma.Registration$certificateArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Registration$certificateArgs<ExtArgs>>): Prisma.Prisma__CertificateClient<runtime.Types.Result.GetResult<Prisma.$CertificatePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
@@ -2313,6 +2608,7 @@ export interface RegistrationFieldRefs {
   readonly id: Prisma.FieldRef<"Registration", 'String'>
   readonly userId: Prisma.FieldRef<"Registration", 'String'>
   readonly activityId: Prisma.FieldRef<"Registration", 'String'>
+  readonly sessionId: Prisma.FieldRef<"Registration", 'String'>
   readonly status: Prisma.FieldRef<"Registration", 'String'>
   readonly regAt: Prisma.FieldRef<"Registration", 'DateTime'>
   readonly approvedAt: Prisma.FieldRef<"Registration", 'DateTime'>
@@ -2728,6 +3024,25 @@ export type RegistrationDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.
    * Limit how many Registrations to delete.
    */
   limit?: number
+}
+
+/**
+ * Registration.session
+ */
+export type Registration$sessionArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ActivitySession
+   */
+  select?: Prisma.ActivitySessionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ActivitySession
+   */
+  omit?: Prisma.ActivitySessionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ActivitySessionInclude<ExtArgs> | null
+  where?: Prisma.ActivitySessionWhereInput
 }
 
 /**

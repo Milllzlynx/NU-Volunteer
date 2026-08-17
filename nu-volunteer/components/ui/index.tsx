@@ -482,3 +482,6 @@ export function SuccessNote({ children }: { children: ReactNode }) {
     </div>
   );
 }
+
+export { Timestamp } from '@/components/ui/Timestamp';
+export type { TimestampProps, TimestampVariant } from '@/components/ui/Timestamp';

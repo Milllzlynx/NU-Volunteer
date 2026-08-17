@@ -405,6 +405,7 @@ export const ModelName = {
   Faculty: 'Faculty',
   Category: 'Category',
   Activity: 'Activity',
+  ActivitySession: 'ActivitySession',
   Registration: 'Registration',
   Favorite: 'Favorite',
   CheckinToken: 'CheckinToken',
@@ -422,7 +423,9 @@ export const ModelName = {
   SystemLog: 'SystemLog',
   EmailLog: 'EmailLog',
   Backup: 'Backup',
-  Setting: 'Setting'
+  Setting: 'Setting',
+  CalendarEvent: 'CalendarEvent',
+  NotificationPreference: 'NotificationPreference'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -438,7 +441,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "session" | "passwordResetToken" | "twoFactor" | "authLog" | "faculty" | "category" | "activity" | "registration" | "favorite" | "checkinToken" | "evidence" | "appeal" | "hourAdjustment" | "certificate" | "review" | "notification" | "chatThread" | "chatMessage" | "contactMessage" | "news" | "banner" | "systemLog" | "emailLog" | "backup" | "setting"
+    modelProps: "user" | "session" | "passwordResetToken" | "twoFactor" | "authLog" | "faculty" | "category" | "activity" | "activitySession" | "registration" | "favorite" | "checkinToken" | "evidence" | "appeal" | "hourAdjustment" | "certificate" | "review" | "notification" | "chatThread" | "chatMessage" | "contactMessage" | "news" | "banner" | "systemLog" | "emailLog" | "backup" | "setting" | "calendarEvent" | "notificationPreference"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1031,6 +1034,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.ActivityCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.ActivityCountAggregateOutputType> | number
+        }
+      }
+    }
+    ActivitySession: {
+      payload: Prisma.$ActivitySessionPayload<ExtArgs>
+      fields: Prisma.ActivitySessionFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ActivitySessionFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ActivitySessionPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ActivitySessionFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ActivitySessionPayload>
+        }
+        findFirst: {
+          args: Prisma.ActivitySessionFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ActivitySessionPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ActivitySessionFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ActivitySessionPayload>
+        }
+        findMany: {
+          args: Prisma.ActivitySessionFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ActivitySessionPayload>[]
+        }
+        create: {
+          args: Prisma.ActivitySessionCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ActivitySessionPayload>
+        }
+        createMany: {
+          args: Prisma.ActivitySessionCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ActivitySessionCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ActivitySessionPayload>[]
+        }
+        delete: {
+          args: Prisma.ActivitySessionDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ActivitySessionPayload>
+        }
+        update: {
+          args: Prisma.ActivitySessionUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ActivitySessionPayload>
+        }
+        deleteMany: {
+          args: Prisma.ActivitySessionDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ActivitySessionUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ActivitySessionUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ActivitySessionPayload>[]
+        }
+        upsert: {
+          args: Prisma.ActivitySessionUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ActivitySessionPayload>
+        }
+        aggregate: {
+          args: Prisma.ActivitySessionAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateActivitySession>
+        }
+        groupBy: {
+          args: Prisma.ActivitySessionGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ActivitySessionGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ActivitySessionCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ActivitySessionCountAggregateOutputType> | number
         }
       }
     }
@@ -2366,6 +2443,154 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    CalendarEvent: {
+      payload: Prisma.$CalendarEventPayload<ExtArgs>
+      fields: Prisma.CalendarEventFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.CalendarEventFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CalendarEventPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.CalendarEventFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CalendarEventPayload>
+        }
+        findFirst: {
+          args: Prisma.CalendarEventFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CalendarEventPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.CalendarEventFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CalendarEventPayload>
+        }
+        findMany: {
+          args: Prisma.CalendarEventFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CalendarEventPayload>[]
+        }
+        create: {
+          args: Prisma.CalendarEventCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CalendarEventPayload>
+        }
+        createMany: {
+          args: Prisma.CalendarEventCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.CalendarEventCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CalendarEventPayload>[]
+        }
+        delete: {
+          args: Prisma.CalendarEventDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CalendarEventPayload>
+        }
+        update: {
+          args: Prisma.CalendarEventUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CalendarEventPayload>
+        }
+        deleteMany: {
+          args: Prisma.CalendarEventDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.CalendarEventUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.CalendarEventUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CalendarEventPayload>[]
+        }
+        upsert: {
+          args: Prisma.CalendarEventUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CalendarEventPayload>
+        }
+        aggregate: {
+          args: Prisma.CalendarEventAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateCalendarEvent>
+        }
+        groupBy: {
+          args: Prisma.CalendarEventGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.CalendarEventGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.CalendarEventCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.CalendarEventCountAggregateOutputType> | number
+        }
+      }
+    }
+    NotificationPreference: {
+      payload: Prisma.$NotificationPreferencePayload<ExtArgs>
+      fields: Prisma.NotificationPreferenceFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.NotificationPreferenceFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NotificationPreferencePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.NotificationPreferenceFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NotificationPreferencePayload>
+        }
+        findFirst: {
+          args: Prisma.NotificationPreferenceFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NotificationPreferencePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.NotificationPreferenceFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NotificationPreferencePayload>
+        }
+        findMany: {
+          args: Prisma.NotificationPreferenceFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NotificationPreferencePayload>[]
+        }
+        create: {
+          args: Prisma.NotificationPreferenceCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NotificationPreferencePayload>
+        }
+        createMany: {
+          args: Prisma.NotificationPreferenceCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.NotificationPreferenceCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NotificationPreferencePayload>[]
+        }
+        delete: {
+          args: Prisma.NotificationPreferenceDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NotificationPreferencePayload>
+        }
+        update: {
+          args: Prisma.NotificationPreferenceUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NotificationPreferencePayload>
+        }
+        deleteMany: {
+          args: Prisma.NotificationPreferenceDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.NotificationPreferenceUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.NotificationPreferenceUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NotificationPreferencePayload>[]
+        }
+        upsert: {
+          args: Prisma.NotificationPreferenceUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NotificationPreferencePayload>
+        }
+        aggregate: {
+          args: Prisma.NotificationPreferenceAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateNotificationPreference>
+        }
+        groupBy: {
+          args: Prisma.NotificationPreferenceGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.NotificationPreferenceGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.NotificationPreferenceCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.NotificationPreferenceCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -2413,8 +2638,12 @@ export const UserScalarFieldEnum = {
   loanStatus: 'loanStatus',
   avatarUrl: 'avatarUrl',
   phone: 'phone',
+  bio: 'bio',
   active: 'active',
   seeded: 'seeded',
+  shareContact: 'shareContact',
+  deletionRequestedAt: 'deletionRequestedAt',
+  deletionReason: 'deletionReason',
   tokensValidFrom: 'tokensValidFrom',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -2483,6 +2712,12 @@ export type AuthLogScalarFieldEnum = (typeof AuthLogScalarFieldEnum)[keyof typeo
 export const FacultyScalarFieldEnum = {
   id: 'id',
   name: 'name',
+  nameEn: 'nameEn',
+  abbr: 'abbr',
+  email: 'email',
+  phone: 'phone',
+  location: 'location',
+  active: 'active',
   colorName: 'colorName',
   color: 'color',
   order: 'order',
@@ -2496,6 +2731,8 @@ export const CategoryScalarFieldEnum = {
   id: 'id',
   label: 'label',
   labelEn: 'labelEn',
+  desc: 'desc',
+  icon: 'icon',
   color: 'color',
   order: 'order',
   active: 'active'
@@ -2528,6 +2765,7 @@ export const ActivityScalarFieldEnum = {
   mapImage: 'mapImage',
   perks: 'perks',
   prep: 'prep',
+  notes: 'notes',
   requiresApproval: 'requiresApproval',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -2536,10 +2774,28 @@ export const ActivityScalarFieldEnum = {
 export type ActivityScalarFieldEnum = (typeof ActivityScalarFieldEnum)[keyof typeof ActivityScalarFieldEnum]
 
 
+export const ActivitySessionScalarFieldEnum = {
+  id: 'id',
+  activityId: 'activityId',
+  name: 'name',
+  description: 'description',
+  location: 'location',
+  startAt: 'startAt',
+  endAt: 'endAt',
+  capacity: 'capacity',
+  status: 'status',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ActivitySessionScalarFieldEnum = (typeof ActivitySessionScalarFieldEnum)[keyof typeof ActivitySessionScalarFieldEnum]
+
+
 export const RegistrationScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
   activityId: 'activityId',
+  sessionId: 'sessionId',
   status: 'status',
   regAt: 'regAt',
   approvedAt: 'approvedAt',
@@ -2681,7 +2937,9 @@ export const ChatThreadScalarFieldEnum = {
   studentId: 'studentId',
   staffId: 'staffId',
   lastMessageAt: 'lastMessageAt',
-  createdAt: 'createdAt'
+  createdAt: 'createdAt',
+  studentMuted: 'studentMuted',
+  studentArchived: 'studentArchived'
 } as const
 
 export type ChatThreadScalarFieldEnum = (typeof ChatThreadScalarFieldEnum)[keyof typeof ChatThreadScalarFieldEnum]
@@ -2718,8 +2976,14 @@ export const NewsScalarFieldEnum = {
   id: 'id',
   title: 'title',
   body: 'body',
-  published: 'published',
+  status: 'status',
   publishedAt: 'publishedAt',
+  image: 'image',
+  pinned: 'pinned',
+  audience: 'audience',
+  views: 'views',
+  tags: 'tags',
+  authorId: 'authorId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -2792,6 +3056,38 @@ export const SettingScalarFieldEnum = {
 } as const
 
 export type SettingScalarFieldEnum = (typeof SettingScalarFieldEnum)[keyof typeof SettingScalarFieldEnum]
+
+
+export const CalendarEventScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  title: 'title',
+  note: 'note',
+  startAt: 'startAt',
+  endAt: 'endAt',
+  allDay: 'allDay',
+  color: 'color',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type CalendarEventScalarFieldEnum = (typeof CalendarEventScalarFieldEnum)[keyof typeof CalendarEventScalarFieldEnum]
+
+
+export const NotificationPreferenceScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  activityReminder: 'activityReminder',
+  deadlineReminder: 'deadlineReminder',
+  systemNotice: 'systemNotice',
+  chatMessage: 'chatMessage',
+  leadDays: 'leadDays',
+  emailEnabled: 'emailEnabled',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type NotificationPreferenceScalarFieldEnum = (typeof NotificationPreferenceScalarFieldEnum)[keyof typeof NotificationPreferenceScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -3009,6 +3305,7 @@ export type GlobalOmitConfig = {
   faculty?: Prisma.FacultyOmit
   category?: Prisma.CategoryOmit
   activity?: Prisma.ActivityOmit
+  activitySession?: Prisma.ActivitySessionOmit
   registration?: Prisma.RegistrationOmit
   favorite?: Prisma.FavoriteOmit
   checkinToken?: Prisma.CheckinTokenOmit
@@ -3027,6 +3324,8 @@ export type GlobalOmitConfig = {
   emailLog?: Prisma.EmailLogOmit
   backup?: Prisma.BackupOmit
   setting?: Prisma.SettingOmit
+  calendarEvent?: Prisma.CalendarEventOmit
+  notificationPreference?: Prisma.NotificationPreferenceOmit
 }
 
 /* Types for Logging */

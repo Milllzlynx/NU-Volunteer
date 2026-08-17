@@ -20,6 +20,7 @@ import { useLegalModal } from '@/components/legal/LegalModal';
 import { useT } from '@/components/providers/AppProviders';
 import { authApi, errorMessage } from '@/lib/api';
 import { BRAND_GRADIENT, COLOR } from '@/lib/design';
+import { landingFor } from '@/lib/routes';
 
 type Form = {
   name: string;
@@ -159,7 +160,7 @@ export function RegisterForm({
     setLoading(true);
     setError('');
     try {
-      await authApi.register({
+      const { account } = await authApi.register({
         email,
         password: form.password,
         name: form.name.trim(),
@@ -168,8 +169,8 @@ export function RegisterForm({
         loanStatus: form.loanStatus || undefined,
         acceptedTerms: consent,
       });
-      // TODO: เปลี่ยนเป็น homeFor(account.role) เมื่อหน้าแดชบอร์ดของแต่ละบทบาทพร้อมใช้งาน
-      router.replace('/');
+      // บทบาทที่ยังไม่มีแดชบอร์ดจะถูกส่งกลับหน้าแรกโดย landingFor()
+      router.replace(landingFor(account.role));
       router.refresh();
     } catch (e) {
       setError(errorMessage(e));

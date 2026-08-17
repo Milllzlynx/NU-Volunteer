@@ -68,11 +68,16 @@ export function Landing({
   stats,
   categories,
   activities,
+  myStatus = {},
+  myFavorites = [],
 }: {
   account: SessionAccount | null;
   stats: LandingStats;
   categories: PublicCategory[];
   activities: PublicActivity[];
+  /** activityId → สถานะการลงทะเบียนของผู้ใช้ที่ล็อกอินอยู่ */
+  myStatus?: Record<string, string>;
+  myFavorites?: string[];
 }) {
   const { t } = useApp();
   const legal = useLegalModal();
@@ -155,7 +160,13 @@ export function Landing({
         </div>
       </div>
 
-      <ActivityGrid activities={activities} categories={categories} signedIn={!!account} />
+      <ActivityGrid
+        activities={activities}
+        categories={categories}
+        signedIn={!!account}
+        myStatus={myStatus}
+        myFavorites={myFavorites}
+      />
 
       <div
         id="nuv-about"

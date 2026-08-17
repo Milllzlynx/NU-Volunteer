@@ -1,9 +1,15 @@
 // NU Volunteer — full domain schema
-// dev: sqlite / production: postgresql (เปลี่ยน provider + DATABASE_URL)
+// sqlite ทั้ง dev และ production (ไฟล์เดียวจบ — ดู DEPLOYMENT.md)
 //
-// หมายเหตุ SQLite: ไม่รองรับ enum และ scalar list
-//   - ฟิลด์สถานะทั้งหมดเก็บเป็น String (ค่าที่ใช้ได้ระบุไว้ในคอมเมนต์ของแต่ละฟิลด์)
-//   - ฟิลด์ที่เป็นรายการ (perks, prep, gallery) เก็บเป็น JSON string ผ่าน lib/json.ts
+// รูปแบบข้อมูลเหมือนเดิมทุกอย่าง ไม่ต้องแก้โค้ดที่อ่าน/เขียนฐานข้อมูล:
+//   - ฟิลด์สถานะเก็บเป็น String (ค่าที่ใช้ได้ระบุไว้ในคอมเมนต์ของแต่ละฟิลด์)
+//   - ฟิลด์ที่เป็นรายการ (perks, prep, gallery) ยังเก็บเป็น JSON string ผ่าน lib/json.ts
+//     ไม่เปลี่ยนเป็น String[] เพื่อให้โค้ดที่อ่าน/เขียนผ่าน lib/json.ts ใช้ได้เหมือนเดิม
+//
+// ข้อควรระวังของ SQLite (ไม่กระทบสคีมานี้ แต่ต้องรู้ตอนเขียน query เพิ่ม):
+//   - ไม่มี `mode: 'insensitive'` ใน where filter — ถ้าต้องค้นแบบไม่สนตัวพิมพ์
+//     ให้เก็บฟิลด์ตัวพิมพ์เล็กคู่ไว้ แล้วค้นจากฟิลด์นั้นแทน
+//   - เขียนได้ทีละ connection เท่านั้น จึงรันบน serverless (Vercel) ไม่ได้
 
 generator client {
   provider = "prisma-client"
@@ -28,8 +34,18 @@ model User {
   loanStatus   String? // yes | no  (ผู้กู้ยืม กยศ.)
   avatarUrl    String?
   phone        String?
+  bio          String  @default("") // แนะนำตัวสั้น ๆ บนหน้าโปรไฟล์
   active       Boolean @default(true)
   seeded       Boolean @default(false)
+
+  // ความเป็นส่วนตัว: ให้ผู้จัดกิจกรรมเห็นอีเมล/เบอร์โทรได้หรือไม่
+  // (แอดมินเห็นเสมอเพื่อการดูแลระบบ — บังคับใช้จริงใน app/api/v1/search/route.ts)
+  shareContact Boolean @default(true)
+
+  // คำขอลบบัญชี — ผู้ใช้ส่งคำขอ แล้วแอดมินเป็นผู้ดำเนินการ
+  // ไม่ลบทันทีเพราะชั่วโมงจิตอาสาและใบประกาศเป็นหลักฐานทางการศึกษา
+  deletionRequestedAt DateTime?
+  deletionReason      String?
 
   // ทุก token ที่ออกก่อนเวลานี้ถือว่าใช้ไม่ได้ (เปลี่ยนรหัสผ่าน / ออกจากทุกอุปกรณ์)
   tokensValidFrom DateTime @default(now())
@@ -54,6 +70,9 @@ model User {
   hourAdjustments HourAdjustment[]   @relation("AdjustmentStudent")
   adjustmentsMade HourAdjustment[]   @relation("AdjustmentAuthor")
   systemLogs    SystemLog[]
+  calendarEvents CalendarEvent[]
+  notifyPrefs   NotificationPreference?
+  news          News[]
 
   @@index([role])
   @@index([faculty])
@@ -120,6 +139,16 @@ model AuthLog {
 model Faculty {
   id        String   @id @default(cuid())
   name      String   @unique
+  /** ชื่อคณะภาษาอังกฤษ — ใช้ตอนสลับภาษาและตอนส่งออกไฟล์ให้หน่วยงานภายนอก */
+  nameEn    String   @default("")
+  /** ตัวย่อ เช่น "คณศ." — ใช้ในตารางแคบ ๆ ที่ชื่อเต็มยาวเกินไป */
+  abbr      String   @default("")
+  /** ข้อมูลติดต่อของคณะ (ไม่ใช่ของนิสิต) — เปิดให้เจ้าหน้าที่ใช้ประสานงาน */
+  email     String   @default("")
+  phone     String   @default("")
+  location  String   @default("")
+  /** ปิดคณะที่ยุบหรือควบรวมแล้ว โดยไม่ลบทิ้ง เพราะนิสิตเดิมยังอ้างถึงอยู่ */
+  active    Boolean  @default(true)
   colorName String   @default("")
   color     String   @default("#A774F7")
   order     Int      @default(0)
@@ -130,6 +159,10 @@ model Category {
   id        String     @id // slug: acad | service | morality | arts | health | recreation | public
   label     String
   labelEn   String     @default("")
+  /** คำอธิบายสั้น ๆ ว่าหมวดนี้ครอบคลุมกิจกรรมแบบไหน — แสดงในหน้าจัดการหมวดหมู่ */
+  desc      String     @default("")
+  /** ชื่อไอคอน Material Symbols เช่น "school" — ว่างไว้ได้ จะใช้จุดสีแทน */
+  icon      String     @default("")
   color     String     @default("#A774F7")
   order     Int        @default(0)
   active    Boolean    @default(true)
@@ -169,6 +202,8 @@ model Activity {
   mapImage String?
   perks   String  @default("[]") // JSON: string[]
   prep    String  @default("[]") // JSON: string[]
+  /// หมายเหตุพิเศษจากผู้จัด — ข้อความอิสระ ไม่ใช่รายการเหมือน perks/prep
+  notes   String  @default("")
 
   // ต้องอนุมัติผู้สมัครก่อนหรือไม่ (ค่าเริ่มต้น: ต้องอนุมัติ)
   requiresApproval Boolean @default(true)
@@ -182,10 +217,42 @@ model Activity {
   reviews       Review[]
   checkinTokens CheckinToken[]
   threads       ChatThread[]
+  sessions      ActivitySession[]
 
   @@index([status, startAt])
   @@index([organizerId])
   @@index([categoryId])
+}
+
+/// รอบ/ผลัดของกิจกรรมเดียวกัน เช่น "NU Run" มีรอบเช้า รอบบ่าย รอบเย็น
+///
+/// ตั้งชื่อ ActivitySession ไม่ใช่ Session เพราะ Session ถูกใช้เป็นเซสชันการเข้าสู่ระบบไปแล้ว
+///
+/// เป็นชั้นวางแผนของผู้จัดกิจกรรม — ใบลงทะเบียนยังผูกกับกิจกรรมเหมือนเดิม
+/// แล้วค่อยถูกจัดเข้ารอบผ่าน Registration.sessionId ซึ่งเป็นค่าที่ว่างได้
+/// จึงไม่กระทบการนับที่นั่งและการสมัครฝั่งนิสิตที่ทำงานอยู่แล้ว
+model ActivitySession {
+  id         String   @id @default(cuid())
+  activityId String
+  activity   Activity @relation(fields: [activityId], references: [id], onDelete: Cascade)
+
+  name        String // ชื่อรอบ เช่น "รอบเช้า" หรือ "ผลัดที่ 1"
+  description String @default("")
+  location    String @default("") // เว้นว่าง = ใช้สถานที่เดียวกับกิจกรรม
+
+  startAt DateTime
+  endAt   DateTime
+
+  capacity Int    @default(0) // 0 = ไม่จำกัด
+  status   String @default("draft") // draft | active | completed
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  registrations Registration[]
+
+  @@index([activityId, startAt])
+  @@index([status])
 }
 
 model Registration {
@@ -194,6 +261,11 @@ model Registration {
   user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   activityId String
   activity   Activity @relation(fields: [activityId], references: [id], onDelete: Cascade)
+
+  /// รอบที่ถูกจัดเข้า — ว่างได้ เพราะกิจกรรมส่วนใหญ่มีรอบเดียวและไม่ต้องแบ่ง
+  /// ลบรอบแล้วใบลงทะเบียนต้องไม่หายไปด้วย จึงใช้ SetNull ไม่ใช่ Cascade
+  sessionId String?
+  session   ActivitySession? @relation(fields: [sessionId], references: [id], onDelete: SetNull)
 
   // pending | approved | rejected | checked-in | checked-out | completed | cancelled | no-show
   status String @default("pending")
@@ -383,6 +455,11 @@ model ChatThread {
   lastMessageAt DateTime @default(now())
   createdAt     DateTime @default(now())
 
+  // ปิดเสียง/เก็บเข้าคลัง — ฝั่งนิสิตเท่านั้น เพราะยังไม่มีหน้าจอฝั่งผู้จัด
+  // เพิ่มคู่ของฝั่งเจ้าหน้าที่เมื่อสร้างหน้าแชทของผู้จัดแล้ว
+  studentMuted    Boolean @default(false)
+  studentArchived Boolean @default(false)
+
   messages ChatMessage[]
 
   @@unique([activityId, studentId, staffId])
@@ -400,7 +477,11 @@ model ChatMessage {
   text      String
   readAt    DateTime?
   deletedAt DateTime?
-  // me = ซ่อนเฉพาะผู้ส่ง | all = ลบให้ทุกคนเห็น (แอดมินหรือผู้ส่งภายในเวลาที่กำหนด)
+  // null = เห็นได้ทั้งสองฝ่าย
+  // 'me:<userId>[,me:<userId>]' = ฝ่ายที่ระบุกดลบสำหรับตัวเอง อีกฝ่ายยังเห็นข้อความเต็ม
+  // 'all' = ลบให้ทุกคนเห็น (แอดมินหรือผู้ส่งภายในเวลาที่กำหนด) ใช้คู่กับ deletedAt
+  // อ่าน/เขียนผ่าน visibleTo() กับ hiddenMark() ใน lib/chat.ts เท่านั้น —
+  // เงื่อนไข NOT ตรง ๆ จะตกแถวที่คอลัมน์นี้เป็น NULL ซึ่งคือข้อความปกติทั้งหมด
   deleteScope String?
 
   createdAt DateTime @default(now())
@@ -423,13 +504,36 @@ model ContactMessage {
 /* ───────────────── content & ops ───────────────── */
 
 model News {
-  id        String    @id @default(cuid())
-  title     String
-  body      String    @default("")
-  published Boolean   @default(false)
+  id    String @id @default(cuid())
+  title String
+  /** เนื้อหาเก็บเป็นข้อความล้วนที่ใส่เครื่องหมายอย่างมาร์กดาวน์ได้ (ดู lib/richText.ts)
+      ไม่เก็บเป็น HTML เพราะจะกลายเป็นช่องทางฝัง script เมื่อนำไปแสดง */
+  body  String @default("")
+
+  /** draft = ยังไม่เผยแพร่ · published = เผยแพร่แล้ว · archived = เก็บเข้ากรุ ไม่แสดงแต่ไม่ลบ */
+  status String @default("draft")
+  /** เวลาที่ตั้งให้เผยแพร่ — อนาคตคือตั้งเวลาไว้ล่วงหน้า ยังไม่ถือว่าออกสู่สาธารณะ */
   publishedAt DateTime?
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+
+  /** ที่อยู่ของภาพประกอบ (URL) — โปรเจกต์นี้ยังไม่มีปลายทางอัปโหลดไฟล์ */
+  image String?
+  /** ปักหมุดให้ลอยขึ้นบนสุดเสมอ ไม่ว่าจะลงวันไหน */
+  pinned Boolean @default(false)
+  /** public = ใครก็อ่านได้ · members = เฉพาะผู้ที่เข้าสู่ระบบแล้ว */
+  audience String @default("public")
+  /** จำนวนครั้งที่ถูกเปิดอ่าน — เพิ่มจากหน้าอ่านข่าว ไม่ใช่จากหน้าจัดการ */
+  views Int @default(0)
+  /** ป้ายกำกับ เก็บเป็น JSON array ของสตริง แบบเดียวกับ Activity.perks/gallery */
+  tags String @default("[]")
+
+  authorId String?
+  author   User?   @relation(fields: [authorId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status, publishedAt])
+  @@index([pinned, publishedAt])
 }
 
 model Banner {
@@ -493,5 +597,59 @@ model Backup {
 model Setting {
   key       String   @id
   value     String
+  updatedAt DateTime @updatedAt
+}
+
+/* ───────────────── ปฏิทินส่วนตัว ───────────────── */
+
+// นัดหมายที่นิสิตเพิ่มเองบนปฏิทิน (เตือนความจำ/ธุระส่วนตัว)
+// ไม่ใช่กิจกรรมจิตอาสา — ไม่นับชั่วโมง ไม่มีการอนุมัติ และเห็นได้เฉพาะเจ้าของ
+model CalendarEvent {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  title String
+  note  String @default("")
+
+  startAt DateTime
+  endAt   DateTime?
+  // จริง = ทั้งวัน (ไม่สนใจเวลาใน startAt/endAt)
+  allDay  Boolean   @default(true)
+
+  // สีป้ายบนปฏิทิน — เก็บเป็น hex ตามจานสีใน lib/design.ts
+  color String @default("#A774F7")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId, startAt])
+}
+
+/* ───────────────── ตั้งค่าการแจ้งเตือน ───────────────── */
+
+// ผู้ใช้เลือกได้ว่าอยากรับการแจ้งเตือนแบบไหนบ้าง — หนึ่งแถวต่อหนึ่งคน
+// ไม่มีแถว = ใช้ค่าเริ่มต้นทั้งหมด (ดู DEFAULT_PREFS ใน lib/alerts.ts)
+model NotificationPreference {
+  id     String @id @default(cuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // เตือนก่อนถึงวันกิจกรรมที่ลงทะเบียนไว้
+  activityReminder Boolean @default(true)
+  // เตือนก่อนปิดรับสมัครกิจกรรมที่กดถูกใจไว้
+  deadlineReminder Boolean @default(true)
+  // ประกาศจากระบบ/ผู้ดูแล
+  systemNotice     Boolean @default(true)
+  // ข้อความจากผู้จัดกิจกรรม
+  chatMessage      Boolean @default(true)
+
+  // เตือนล่วงหน้ากี่วัน (1–14)
+  leadDays Int @default(3)
+
+  // ส่งอีเมลด้วยหรือไม่ — ยังไม่มีตัวส่งจริง เก็บค่าไว้ให้พร้อมใช้
+  emailEnabled Boolean @default(false)
+
+  createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

@@ -58,6 +58,17 @@ export type Category = Prisma.CategoryModel
  */
 export type Activity = Prisma.ActivityModel
 /**
+ * Model ActivitySession
+ * รอบ/ผลัดของกิจกรรมเดียวกัน เช่น "NU Run" มีรอบเช้า รอบบ่าย รอบเย็น
+ * 
+ * ตั้งชื่อ ActivitySession ไม่ใช่ Session เพราะ Session ถูกใช้เป็นเซสชันการเข้าสู่ระบบไปแล้ว
+ * 
+ * เป็นชั้นวางแผนของผู้จัดกิจกรรม — ใบลงทะเบียนยังผูกกับกิจกรรมเหมือนเดิม
+ * แล้วค่อยถูกจัดเข้ารอบผ่าน Registration.sessionId ซึ่งเป็นค่าที่ว่างได้
+ * จึงไม่กระทบการนับที่นั่งและการสมัครฝั่งนิสิตที่ทำงานอยู่แล้ว
+ */
+export type ActivitySession = Prisma.ActivitySessionModel
+/**
  * Model Registration
  * 
  */
@@ -147,3 +158,13 @@ export type Backup = Prisma.BackupModel
  * 
  */
 export type Setting = Prisma.SettingModel
+/**
+ * Model CalendarEvent
+ * 
+ */
+export type CalendarEvent = Prisma.CalendarEventModel
+/**
+ * Model NotificationPreference
+ * 
+ */
+export type NotificationPreference = Prisma.NotificationPreferenceModel

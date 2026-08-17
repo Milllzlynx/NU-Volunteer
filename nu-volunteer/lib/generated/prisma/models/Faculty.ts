@@ -37,6 +37,12 @@ export type FacultySumAggregateOutputType = {
 export type FacultyMinAggregateOutputType = {
   id: string | null
   name: string | null
+  nameEn: string | null
+  abbr: string | null
+  email: string | null
+  phone: string | null
+  location: string | null
+  active: boolean | null
   colorName: string | null
   color: string | null
   order: number | null
@@ -46,6 +52,12 @@ export type FacultyMinAggregateOutputType = {
 export type FacultyMaxAggregateOutputType = {
   id: string | null
   name: string | null
+  nameEn: string | null
+  abbr: string | null
+  email: string | null
+  phone: string | null
+  location: string | null
+  active: boolean | null
   colorName: string | null
   color: string | null
   order: number | null
@@ -55,6 +67,12 @@ export type FacultyMaxAggregateOutputType = {
 export type FacultyCountAggregateOutputType = {
   id: number
   name: number
+  nameEn: number
+  abbr: number
+  email: number
+  phone: number
+  location: number
+  active: number
   colorName: number
   color: number
   order: number
@@ -74,6 +92,12 @@ export type FacultySumAggregateInputType = {
 export type FacultyMinAggregateInputType = {
   id?: true
   name?: true
+  nameEn?: true
+  abbr?: true
+  email?: true
+  phone?: true
+  location?: true
+  active?: true
   colorName?: true
   color?: true
   order?: true
@@ -83,6 +107,12 @@ export type FacultyMinAggregateInputType = {
 export type FacultyMaxAggregateInputType = {
   id?: true
   name?: true
+  nameEn?: true
+  abbr?: true
+  email?: true
+  phone?: true
+  location?: true
+  active?: true
   colorName?: true
   color?: true
   order?: true
@@ -92,6 +122,12 @@ export type FacultyMaxAggregateInputType = {
 export type FacultyCountAggregateInputType = {
   id?: true
   name?: true
+  nameEn?: true
+  abbr?: true
+  email?: true
+  phone?: true
+  location?: true
+  active?: true
   colorName?: true
   color?: true
   order?: true
@@ -188,6 +224,12 @@ export type FacultyGroupByArgs<ExtArgs extends runtime.Types.Extensions.Internal
 export type FacultyGroupByOutputType = {
   id: string
   name: string
+  nameEn: string
+  abbr: string
+  email: string
+  phone: string
+  location: string
+  active: boolean
   colorName: string
   color: string
   order: number
@@ -220,6 +262,12 @@ export type FacultyWhereInput = {
   NOT?: Prisma.FacultyWhereInput | Prisma.FacultyWhereInput[]
   id?: Prisma.StringFilter<"Faculty"> | string
   name?: Prisma.StringFilter<"Faculty"> | string
+  nameEn?: Prisma.StringFilter<"Faculty"> | string
+  abbr?: Prisma.StringFilter<"Faculty"> | string
+  email?: Prisma.StringFilter<"Faculty"> | string
+  phone?: Prisma.StringFilter<"Faculty"> | string
+  location?: Prisma.StringFilter<"Faculty"> | string
+  active?: Prisma.BoolFilter<"Faculty"> | boolean
   colorName?: Prisma.StringFilter<"Faculty"> | string
   color?: Prisma.StringFilter<"Faculty"> | string
   order?: Prisma.IntFilter<"Faculty"> | number
@@ -229,6 +277,12 @@ export type FacultyWhereInput = {
 export type FacultyOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
+  nameEn?: Prisma.SortOrder
+  abbr?: Prisma.SortOrder
+  email?: Prisma.SortOrder
+  phone?: Prisma.SortOrder
+  location?: Prisma.SortOrder
+  active?: Prisma.SortOrder
   colorName?: Prisma.SortOrder
   color?: Prisma.SortOrder
   order?: Prisma.SortOrder
@@ -241,6 +295,12 @@ export type FacultyWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.FacultyWhereInput | Prisma.FacultyWhereInput[]
   OR?: Prisma.FacultyWhereInput[]
   NOT?: Prisma.FacultyWhereInput | Prisma.FacultyWhereInput[]
+  nameEn?: Prisma.StringFilter<"Faculty"> | string
+  abbr?: Prisma.StringFilter<"Faculty"> | string
+  email?: Prisma.StringFilter<"Faculty"> | string
+  phone?: Prisma.StringFilter<"Faculty"> | string
+  location?: Prisma.StringFilter<"Faculty"> | string
+  active?: Prisma.BoolFilter<"Faculty"> | boolean
   colorName?: Prisma.StringFilter<"Faculty"> | string
   color?: Prisma.StringFilter<"Faculty"> | string
   order?: Prisma.IntFilter<"Faculty"> | number
@@ -250,6 +310,12 @@ export type FacultyWhereUniqueInput = Prisma.AtLeast<{
 export type FacultyOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
+  nameEn?: Prisma.SortOrder
+  abbr?: Prisma.SortOrder
+  email?: Prisma.SortOrder
+  phone?: Prisma.SortOrder
+  location?: Prisma.SortOrder
+  active?: Prisma.SortOrder
   colorName?: Prisma.SortOrder
   color?: Prisma.SortOrder
   order?: Prisma.SortOrder
@@ -267,6 +333,12 @@ export type FacultyScalarWhereWithAggregatesInput = {
   NOT?: Prisma.FacultyScalarWhereWithAggregatesInput | Prisma.FacultyScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"Faculty"> | string
   name?: Prisma.StringWithAggregatesFilter<"Faculty"> | string
+  nameEn?: Prisma.StringWithAggregatesFilter<"Faculty"> | string
+  abbr?: Prisma.StringWithAggregatesFilter<"Faculty"> | string
+  email?: Prisma.StringWithAggregatesFilter<"Faculty"> | string
+  phone?: Prisma.StringWithAggregatesFilter<"Faculty"> | string
+  location?: Prisma.StringWithAggregatesFilter<"Faculty"> | string
+  active?: Prisma.BoolWithAggregatesFilter<"Faculty"> | boolean
   colorName?: Prisma.StringWithAggregatesFilter<"Faculty"> | string
   color?: Prisma.StringWithAggregatesFilter<"Faculty"> | string
   order?: Prisma.IntWithAggregatesFilter<"Faculty"> | number
@@ -276,6 +348,12 @@ export type FacultyScalarWhereWithAggregatesInput = {
 export type FacultyCreateInput = {
   id?: string
   name: string
+  nameEn?: string
+  abbr?: string
+  email?: string
+  phone?: string
+  location?: string
+  active?: boolean
   colorName?: string
   color?: string
   order?: number
@@ -285,6 +363,12 @@ export type FacultyCreateInput = {
 export type FacultyUncheckedCreateInput = {
   id?: string
   name: string
+  nameEn?: string
+  abbr?: string
+  email?: string
+  phone?: string
+  location?: string
+  active?: boolean
   colorName?: string
   color?: string
   order?: number
@@ -294,6 +378,12 @@ export type FacultyUncheckedCreateInput = {
 export type FacultyUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  nameEn?: Prisma.StringFieldUpdateOperationsInput | string
+  abbr?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.StringFieldUpdateOperationsInput | string
+  location?: Prisma.StringFieldUpdateOperationsInput | string
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   colorName?: Prisma.StringFieldUpdateOperationsInput | string
   color?: Prisma.StringFieldUpdateOperationsInput | string
   order?: Prisma.IntFieldUpdateOperationsInput | number
@@ -303,6 +393,12 @@ export type FacultyUpdateInput = {
 export type FacultyUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  nameEn?: Prisma.StringFieldUpdateOperationsInput | string
+  abbr?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.StringFieldUpdateOperationsInput | string
+  location?: Prisma.StringFieldUpdateOperationsInput | string
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   colorName?: Prisma.StringFieldUpdateOperationsInput | string
   color?: Prisma.StringFieldUpdateOperationsInput | string
   order?: Prisma.IntFieldUpdateOperationsInput | number
@@ -312,6 +408,12 @@ export type FacultyUncheckedUpdateInput = {
 export type FacultyCreateManyInput = {
   id?: string
   name: string
+  nameEn?: string
+  abbr?: string
+  email?: string
+  phone?: string
+  location?: string
+  active?: boolean
   colorName?: string
   color?: string
   order?: number
@@ -321,6 +423,12 @@ export type FacultyCreateManyInput = {
 export type FacultyUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  nameEn?: Prisma.StringFieldUpdateOperationsInput | string
+  abbr?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.StringFieldUpdateOperationsInput | string
+  location?: Prisma.StringFieldUpdateOperationsInput | string
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   colorName?: Prisma.StringFieldUpdateOperationsInput | string
   color?: Prisma.StringFieldUpdateOperationsInput | string
   order?: Prisma.IntFieldUpdateOperationsInput | number
@@ -330,6 +438,12 @@ export type FacultyUpdateManyMutationInput = {
 export type FacultyUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  nameEn?: Prisma.StringFieldUpdateOperationsInput | string
+  abbr?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.StringFieldUpdateOperationsInput | string
+  location?: Prisma.StringFieldUpdateOperationsInput | string
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   colorName?: Prisma.StringFieldUpdateOperationsInput | string
   color?: Prisma.StringFieldUpdateOperationsInput | string
   order?: Prisma.IntFieldUpdateOperationsInput | number
@@ -339,6 +453,12 @@ export type FacultyUncheckedUpdateManyInput = {
 export type FacultyCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
+  nameEn?: Prisma.SortOrder
+  abbr?: Prisma.SortOrder
+  email?: Prisma.SortOrder
+  phone?: Prisma.SortOrder
+  location?: Prisma.SortOrder
+  active?: Prisma.SortOrder
   colorName?: Prisma.SortOrder
   color?: Prisma.SortOrder
   order?: Prisma.SortOrder
@@ -352,6 +472,12 @@ export type FacultyAvgOrderByAggregateInput = {
 export type FacultyMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
+  nameEn?: Prisma.SortOrder
+  abbr?: Prisma.SortOrder
+  email?: Prisma.SortOrder
+  phone?: Prisma.SortOrder
+  location?: Prisma.SortOrder
+  active?: Prisma.SortOrder
   colorName?: Prisma.SortOrder
   color?: Prisma.SortOrder
   order?: Prisma.SortOrder
@@ -361,6 +487,12 @@ export type FacultyMaxOrderByAggregateInput = {
 export type FacultyMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
+  nameEn?: Prisma.SortOrder
+  abbr?: Prisma.SortOrder
+  email?: Prisma.SortOrder
+  phone?: Prisma.SortOrder
+  location?: Prisma.SortOrder
+  active?: Prisma.SortOrder
   colorName?: Prisma.SortOrder
   color?: Prisma.SortOrder
   order?: Prisma.SortOrder
@@ -384,6 +516,12 @@ export type IntFieldUpdateOperationsInput = {
 export type FacultySelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   name?: boolean
+  nameEn?: boolean
+  abbr?: boolean
+  email?: boolean
+  phone?: boolean
+  location?: boolean
+  active?: boolean
   colorName?: boolean
   color?: boolean
   order?: boolean
@@ -393,6 +531,12 @@ export type FacultySelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
 export type FacultySelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   name?: boolean
+  nameEn?: boolean
+  abbr?: boolean
+  email?: boolean
+  phone?: boolean
+  location?: boolean
+  active?: boolean
   colorName?: boolean
   color?: boolean
   order?: boolean
@@ -402,6 +546,12 @@ export type FacultySelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
 export type FacultySelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   name?: boolean
+  nameEn?: boolean
+  abbr?: boolean
+  email?: boolean
+  phone?: boolean
+  location?: boolean
+  active?: boolean
   colorName?: boolean
   color?: boolean
   order?: boolean
@@ -411,13 +561,19 @@ export type FacultySelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
 export type FacultySelectScalar = {
   id?: boolean
   name?: boolean
+  nameEn?: boolean
+  abbr?: boolean
+  email?: boolean
+  phone?: boolean
+  location?: boolean
+  active?: boolean
   colorName?: boolean
   color?: boolean
   order?: boolean
   createdAt?: boolean
 }
 
-export type FacultyOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "colorName" | "color" | "order" | "createdAt", ExtArgs["result"]["faculty"]>
+export type FacultyOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "nameEn" | "abbr" | "email" | "phone" | "location" | "active" | "colorName" | "color" | "order" | "createdAt", ExtArgs["result"]["faculty"]>
 
 export type $FacultyPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Faculty"
@@ -425,6 +581,24 @@ export type $FacultyPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     name: string
+    /**
+     * * ชื่อคณะภาษาอังกฤษ — ใช้ตอนสลับภาษาและตอนส่งออกไฟล์ให้หน่วยงานภายนอก
+     */
+    nameEn: string
+    /**
+     * * ตัวย่อ เช่น "คณศ." — ใช้ในตารางแคบ ๆ ที่ชื่อเต็มยาวเกินไป
+     */
+    abbr: string
+    /**
+     * * ข้อมูลติดต่อของคณะ (ไม่ใช่ของนิสิต) — เปิดให้เจ้าหน้าที่ใช้ประสานงาน
+     */
+    email: string
+    phone: string
+    location: string
+    /**
+     * * ปิดคณะที่ยุบหรือควบรวมแล้ว โดยไม่ลบทิ้ง เพราะนิสิตเดิมยังอ้างถึงอยู่
+     */
+    active: boolean
     colorName: string
     color: string
     order: number
@@ -854,6 +1028,12 @@ export interface Prisma__FacultyClient<T, Null = never, ExtArgs extends runtime.
 export interface FacultyFieldRefs {
   readonly id: Prisma.FieldRef<"Faculty", 'String'>
   readonly name: Prisma.FieldRef<"Faculty", 'String'>
+  readonly nameEn: Prisma.FieldRef<"Faculty", 'String'>
+  readonly abbr: Prisma.FieldRef<"Faculty", 'String'>
+  readonly email: Prisma.FieldRef<"Faculty", 'String'>
+  readonly phone: Prisma.FieldRef<"Faculty", 'String'>
+  readonly location: Prisma.FieldRef<"Faculty", 'String'>
+  readonly active: Prisma.FieldRef<"Faculty", 'Boolean'>
   readonly colorName: Prisma.FieldRef<"Faculty", 'String'>
   readonly color: Prisma.FieldRef<"Faculty", 'String'>
   readonly order: Prisma.FieldRef<"Faculty", 'Int'>
