@@ -154,20 +154,23 @@ turso db tokens create nu-volunteer     # ได้ token สำหรับ DAT
 > `datasource: { url, shadowDatabaseUrl }` ใน `prisma.config.ts` ยังไม่รองรับ driver adapter
 > สำหรับคำสั่ง migrate ตัว migration engine ของ sqlite จึงเข้าใจแค่ URL แบบ `file:`
 
-วิธีที่ใช้ได้คือสร้างไฟล์ฐานข้อมูลเปล่าจาก migration ชุดเดิมบนเครื่องตัวเอง แล้วอัปโหลดไฟล์นั้นขึ้น Turso:
+**วิธีที่แนะนำ — ไม่ต้องมี CLI ของ Turso เลย** สร้างฐานข้อมูลเปล่าจากหน้าเว็บ app.turso.tech
+เอา URL กับ token ใส่ `.env` แล้วสั่ง:
 
 ```bash
-# 1) สร้างไฟล์เปล่าที่มีครบทุกตาราง (ไม่มีข้อมูลตัวอย่าง)
-DATABASE_URL="file:./nu-volunteer-empty.db" npx prisma migrate deploy
-
-# 2) สร้างฐานข้อมูลบน Turso จากไฟล์นั้น (ตรวจชื่อ flag ด้วย `turso db create --help` อีกครั้ง)
-turso db create nu-volunteer --from-file ./nu-volunteer-empty.db
+npm run db:migrate:turso
 ```
 
-ไฟล์ที่ได้มีตาราง `_prisma_migrations` ติดไปด้วย ประวัติ migration บน Turso จึงตรงกับในโปรเจกต์
-เวลามี migration ใหม่ให้ทำซ้ำวิธีเดิม (สร้างไฟล์ใหม่แล้วอัปโหลด) หรือรัน SQL ของ migration นั้น
-ผ่าน `turso db shell nu-volunteer < prisma/migrations/<ชื่อ>/migration.sql` แล้วเพิ่มแถวใน
-`_prisma_migrations` เอง
+สคริปต์ `scripts/turso-migrate.ts` ต่อผ่าน `@libsql/client` แล้วไล่ลง `migration.sql`
+ตามลำดับ พร้อมบันทึกลง `_prisma_migrations` ให้ประวัติตรงกับในโปรเจกต์
+รันซ้ำได้ ของที่ลงไปแล้วจะถูกข้าม — มี migration ใหม่เมื่อไหร่ก็สั่งคำสั่งเดิมอีกครั้ง
+
+ถ้ามี CLI อยู่แล้ว จะสร้างจากไฟล์ทีเดียวก็ได้เหมือนกัน:
+
+```bash
+DATABASE_URL="file:./nu-volunteer-empty.db" npx prisma migrate deploy
+turso db create nu-volunteer --from-file ./nu-volunteer-empty.db   # ตรวจชื่อ flag ด้วย --help
+```
 
 > ถ้าอยากได้หมวดหมู่/คณะเริ่มต้นแต่ไม่เอาข้อมูลตัวอย่าง ให้ใส่มือผ่านหน้าแอดมิน
 > อย่ารัน `db:seed` ใส่ฐานข้อมูลที่คนอื่นจะเข้าใช้จริง — ในนั้นมีบัญชีทดสอบพร้อมรหัสผ่านที่รู้กันทั้งไฟล์
