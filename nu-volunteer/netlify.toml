@@ -1,0 +1,17 @@
+# การตั้งค่า deploy บน Netlify
+#
+# ฐานข้อมูลต้องเป็น Turso (libsql://) ไม่ใช่ไฟล์ SQLite บนดิสก์ — ฟังก์ชันบน Netlify
+# ได้ดิสก์ใหม่ทุกครั้งที่ถูกเรียก ไฟล์ .db ที่เขียนไว้จะหายไปทันที
+# ดูขั้นตอนเต็มที่ DEPLOYMENT.md หัวข้อ "Netlify + Turso"
+
+[build]
+  command = "npm run build"
+  publish = ".next"
+
+[build.environment]
+  # better-sqlite3 เป็น native module ที่ใช้เฉพาะตอน dev บนเครื่องที่มีดิสก์
+  # บน Netlify ไม่ได้ถูกเรียกใช้ แต่ยังต้องติดตั้งให้ผ่านตอน build
+  NODE_VERSION = "20"
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
