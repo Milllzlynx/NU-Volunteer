@@ -49,6 +49,18 @@ async function main() {
   const remote = url.startsWith('libsql://') || url.startsWith('http://') || url.startsWith('https://');
   if (remote && !authToken) throw new Error('DATABASE_AUTH_TOKEN is not set (required for libsql:// URLs)');
 
+  /*
+    บอกให้ชัดว่ากำลังลงกับฐานข้อมูลไหน — ชื่อคำสั่งมีคำว่า turso อยู่ แต่ถ้า .env
+    ยังชี้ไฟล์ในเครื่องอยู่ มันจะลงกับ dev.db เงียบ ๆ แล้วขึ้นว่าสำเร็จ
+    ซึ่งอ่านแล้วเข้าใจว่าฐานข้อมูลบนคลาวด์พร้อมแล้วทั้งที่ยังไม่ได้แตะเลย
+  */
+  if (remote) {
+    console.log(`เป้าหมาย: ${new URL(url).host} (Turso)\n`);
+  } else {
+    console.log(`เป้าหมาย: ไฟล์ในเครื่อง ${url}`);
+    console.log('หมายเหตุ: ยังไม่ได้ชี้ไป Turso — ตั้ง DATABASE_URL เป็น libsql://… ถ้าตั้งใจลงบนคลาวด์\n');
+  }
+
   const client = createClient(remote ? { url, authToken } : { url });
   await client.executeMultiple(CREATE_HISTORY);
 
