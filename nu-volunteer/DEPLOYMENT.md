@@ -150,12 +150,24 @@ turso db tokens create nu-volunteer     # ได้ token สำหรับ DAT
 
 ### 2. สร้างตารางบน Turso
 
-migration ชุดเดิมใน `prisma/migrations/` ใช้ได้เลย เพราะยังเป็นสคีมา sqlite ตัวเดิม
-รันจากเครื่องตัวเองโดยชี้ env ไปที่ Turso ชั่วคราว:
+> **`prisma migrate deploy` ชี้ไปที่ `libsql://` ไม่ได้** — Prisma 7.9 รับเฉพาะ
+> `datasource: { url, shadowDatabaseUrl }` ใน `prisma.config.ts` ยังไม่รองรับ driver adapter
+> สำหรับคำสั่ง migrate ตัว migration engine ของ sqlite จึงเข้าใจแค่ URL แบบ `file:`
+
+วิธีที่ใช้ได้คือสร้างไฟล์ฐานข้อมูลเปล่าจาก migration ชุดเดิมบนเครื่องตัวเอง แล้วอัปโหลดไฟล์นั้นขึ้น Turso:
 
 ```bash
-DATABASE_URL="libsql://…" DATABASE_AUTH_TOKEN="…" npm run db:migrate
+# 1) สร้างไฟล์เปล่าที่มีครบทุกตาราง (ไม่มีข้อมูลตัวอย่าง)
+DATABASE_URL="file:./nu-volunteer-empty.db" npx prisma migrate deploy
+
+# 2) สร้างฐานข้อมูลบน Turso จากไฟล์นั้น (ตรวจชื่อ flag ด้วย `turso db create --help` อีกครั้ง)
+turso db create nu-volunteer --from-file ./nu-volunteer-empty.db
 ```
+
+ไฟล์ที่ได้มีตาราง `_prisma_migrations` ติดไปด้วย ประวัติ migration บน Turso จึงตรงกับในโปรเจกต์
+เวลามี migration ใหม่ให้ทำซ้ำวิธีเดิม (สร้างไฟล์ใหม่แล้วอัปโหลด) หรือรัน SQL ของ migration นั้น
+ผ่าน `turso db shell nu-volunteer < prisma/migrations/<ชื่อ>/migration.sql` แล้วเพิ่มแถวใน
+`_prisma_migrations` เอง
 
 > ถ้าอยากได้หมวดหมู่/คณะเริ่มต้นแต่ไม่เอาข้อมูลตัวอย่าง ให้ใส่มือผ่านหน้าแอดมิน
 > อย่ารัน `db:seed` ใส่ฐานข้อมูลที่คนอื่นจะเข้าใช้จริง — ในนั้นมีบัญชีทดสอบพร้อมรหัสผ่านที่รู้กันทั้งไฟล์
