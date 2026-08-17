@@ -1,16 +1,19 @@
 # การตั้งค่า deploy บน Netlify
 #
+# ไฟล์นี้อยู่ราก repo เพราะ Netlify อ่าน netlify.toml จากรากเสมอ
+# ส่วนตัวแอป Next.js อยู่ในโฟลเดอร์ย่อย จึงต้องบอก base ให้ชัด
+# ไม่งั้น build จะไปรันที่รากซึ่งไม่มี package.json
+#
 # ฐานข้อมูลต้องเป็น Turso (libsql://) ไม่ใช่ไฟล์ SQLite บนดิสก์ — ฟังก์ชันบน Netlify
 # ได้ดิสก์ใหม่ทุกครั้งที่ถูกเรียก ไฟล์ .db ที่เขียนไว้จะหายไปทันที
-# ดูขั้นตอนเต็มที่ DEPLOYMENT.md หัวข้อ "Netlify + Turso"
+# ดูขั้นตอนเต็มที่ nu-volunteer/DEPLOYMENT.md หัวข้อ "Netlify + Turso"
 
 [build]
+  base = "nu-volunteer"
   command = "npm run build"
   publish = ".next"
 
 [build.environment]
-  # better-sqlite3 เป็น native module ที่ใช้เฉพาะตอน dev บนเครื่องที่มีดิสก์
-  # บน Netlify ไม่ได้ถูกเรียกใช้ แต่ยังต้องติดตั้งให้ผ่านตอน build
   NODE_VERSION = "20"
 
 [[plugins]]
