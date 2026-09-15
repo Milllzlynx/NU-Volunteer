@@ -233,6 +233,25 @@ export const organizerApi = {
       { method: 'PATCH', body: payload },
     ),
 
+  /** ออกใบประกาศที่ค้างให้ใบลงทะเบียนที่รับรองชั่วโมงแล้ว — ใบที่ไม่เข้าเงื่อนไขจะถูกข้าม */
+  issueCertificates: (registrationIds: string[]) =>
+    apiPost<{ ok: true; issued: number; skipped: number }>('/organizer/certificates', {
+      registrationIds,
+    }),
+
+  revokeCertificate: (id: string, reason: string) =>
+    apiFetch<{ ok: true }>(`/organizer/certificates/${id}`, {
+      method: 'PATCH',
+      body: { action: 'revoke', reason },
+    }),
+
+  /** ออกใบใหม่แทนใบที่ถูกเพิกถอน — ได้รหัสอ้างอิงใหม่ ใบเดิมยังขึ้นว่าถูกเพิกถอน */
+  reissueCertificate: (id: string) =>
+    apiFetch<{ ok: true; certificate: { id: string; ref: string } }>(`/organizer/certificates/${id}`, {
+      method: 'PATCH',
+      body: { action: 'reissue' },
+    }),
+
   reviewEvidence: (id: string, status: 'approved' | 'rejected', note?: string) =>
     apiFetch<{ ok: true; evidence: { id: string; status: string; reviewNote: string | null } }>(
       `/organizer/evidence/${id}`,

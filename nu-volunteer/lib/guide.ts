@@ -576,9 +576,50 @@ export const GUIDE_ORGANIZER: GuideSection[] = [
       },
       {
         kind: 'note',
-        text: 'เมื่อรับรองแล้ว ใบลงทะเบียนจะเปลี่ยนเป็นสถานะเสร็จสิ้น และชั่วโมงจะไปแสดงในหน้าชั่วโมงสะสมของนิสิตทันที',
+        text: 'เมื่อรับรองแล้ว ใบลงทะเบียนจะเปลี่ยนเป็นสถานะเสร็จสิ้น ชั่วโมงจะไปแสดงในหน้าชั่วโมงสะสมของนิสิตทันที และระบบออกใบประกาศให้ในขั้นเดียวกัน',
         textEn:
-          'Once approved, the registration becomes completed and the hours appear on the student’s hours page immediately.',
+          'Once approved, the registration becomes completed, the hours appear on the student’s hours page immediately, and a certificate is issued in the same step.',
+      },
+    ],
+  },
+  {
+    id: 'org-certificates',
+    icon: 'workspace_premium',
+    title: 'ใบประกาศนียบัตร',
+    titleEn: 'Certificates',
+    summary: 'ใบประกาศออกอย่างไร นิสิตได้รับอย่างไร และเพิกถอนเมื่อไร',
+    summaryEn: 'How certificates are issued, how students receive them, and when to revoke one.',
+    pageKey: 'certificates',
+    items: [
+      {
+        kind: 'step',
+        text: 'รับรองชั่วโมงที่หน้าอนุมัติชั่วโมง ระบบออกใบประกาศพร้อมรหัสอ้างอิงให้ทันทีถ้าได้ชั่วโมงมากกว่าศูนย์',
+        textEn:
+          'Approve hours on the Approve Hours page. A certificate with its own reference is issued immediately when more than zero hours are approved.',
+      },
+      {
+        kind: 'step',
+        text: 'นิสิตได้รับการแจ้งเตือนในระบบและอีเมลที่มีรหัสอ้างอิงกับลิงก์หน้าตรวจสอบ แล้วดาวน์โหลดหรือพิมพ์ใบได้จากหน้าใบประกาศของตัวเอง',
+        textEn:
+          'The student gets an in-app notification and an email with the reference and verification link, then downloads or prints it from their Certificates page.',
+      },
+      {
+        kind: 'bullet',
+        text: 'แท็บรอออกใบคือผู้ที่รับรองชั่วโมงแล้วแต่ยังไม่มีใบ เช่น รับรองไว้ก่อนระบบจะออกใบอัตโนมัติ กดออกใบทีละคนหรือทั้งหมดได้',
+        textEn:
+          'The Awaiting tab lists people whose hours are approved but who have no certificate yet — for example, approved before automatic issuing. Issue one at a time or all at once.',
+      },
+      {
+        kind: 'bullet',
+        text: 'เพิกถอนใบที่ออกผิดได้โดยต้องระบุเหตุผล ใบนั้นยังเปิดบนหน้าตรวจสอบได้แต่จะขึ้นว่าถูกเพิกถอน และกดออกใบใหม่แทนได้เมื่อแก้ไขข้อมูลแล้ว',
+        textEn:
+          'Revoke a certificate issued in error by giving a reason. It still opens on the verification page but shows as revoked, and you can issue a replacement once the details are fixed.',
+      },
+      {
+        kind: 'note',
+        text: 'ไม่รับรองชั่วโมง หรือรับรองใหม่ด้วยจำนวนชั่วโมงที่ต่างไป ระบบจะเพิกถอนใบเดิมให้เอง เพราะตัวเลขบนใบที่พิมพ์ออกไปแล้วแก้ไม่ได้',
+        textEn:
+          'Declining hours, or re-approving with a different number, revokes the earlier certificate automatically, because the figures on a printed certificate cannot be changed.',
       },
     ],
   },

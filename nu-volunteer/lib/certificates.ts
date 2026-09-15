@@ -6,8 +6,12 @@
  * ใบที่นิสิตพิมพ์ออกไปกับใบที่หน่วยงานภายนอกเห็นอาจไม่ตรงกัน
  */
 
-import { DATE_EN, DATE_TH } from '@/lib/activities';
+import { randomInt } from 'node:crypto';
+import { academicYearOf } from '@/lib/academic';
+import { DATE_EN, DATE_LONG_EN, DATE_LONG_TH, DATE_TH } from '@/lib/activities';
 import { prisma } from '@/lib/db';
+import { fail } from '@/lib/errors';
+import { sendMail } from '@/lib/mailer';
 
 /** ที่อยู่ของหน้าตรวจสอบสาธารณะ — พิมพ์ลงบนใบประกาศและส่งไปในอีเมล */
 export function verifyPath(ref: string): string {
@@ -46,11 +50,16 @@ export type CertificateView = {
   academicYear: number | null;
   issuedTh: string;
   issuedEn: string;
+  /** วันที่ออกใบแบบเดือนเต็ม สำหรับพิมพ์บนตัวเอกสาร */
+  issuedLongTh: string;
+  issuedLongEn: string;
   issuedAtMs: number;
   revoked: boolean;
   revokeReason: string | null;
   revokedTh: string | null;
   revokedEn: string | null;
+  revokedLongTh: string | null;
+  revokedLongEn: string | null;
 };
 
 /** ฟิลด์ที่ต้อง select มาให้ครบก่อนเรียก toView() */
@@ -105,11 +114,15 @@ function toView(row: Row, opts: { includeIdentity: boolean }): CertificateView {
     academicYear: yearOfRef(row.ref),
     issuedTh: DATE_TH.format(row.issuedAt),
     issuedEn: DATE_EN.format(row.issuedAt),
+    issuedLongTh: DATE_LONG_TH.format(row.issuedAt),
+    issuedLongEn: DATE_LONG_EN.format(row.issuedAt),
     issuedAtMs: row.issuedAt.getTime(),
     revoked: row.revokedAt != null,
     revokeReason: row.revokeReason,
     revokedTh: row.revokedAt ? DATE_TH.format(row.revokedAt) : null,
     revokedEn: row.revokedAt ? DATE_EN.format(row.revokedAt) : null,
+    revokedLongTh: row.revokedAt ? DATE_LONG_TH.format(row.revokedAt) : null,
+    revokedLongEn: row.revokedAt ? DATE_LONG_EN.format(row.revokedAt) : null,
   };
 }
 
@@ -136,4 +149,180 @@ export async function findCertificateByRef(ref: string): Promise<CertificateView
 
   const row = await prisma.certificate.findUnique({ where: { ref: normalized }, include });
   return row ? toView(row, { includeIdentity: false }) : null;
+}
+
+/* ───────────────────────── ฝั่งผู้จัด: รายการ ออกใบ เพิกถอน ───────────────────────── */
+
+/** ใบประกาศบนหน้าจัดการของผู้จัด — เพิ่มข้อมูลที่ต้องใช้ตัดสินใจว่าออกใบใหม่ได้หรือไม่ */
+export type OrganizerCertificateView = CertificateView & {
+  registrationId: string | null;
+  avatarUrl: string | null;
+  /** ใบที่ถูกเพิกถอนแต่ใบลงทะเบียนยังรับรองชั่วโมงอยู่ — กดออกใบใหม่แทนได้ */
+  canReissue: boolean;
+};
+
+/** ใบประกาศทั้งหมดของกิจกรรมที่อยู่ในขอบเขต (ส่ง ownedActivityFilter มา) ใบใหม่สุดขึ้นก่อน */
+export async function listOrganizerCertificates(
+  activityScope: Record<string, unknown>,
+): Promise<OrganizerCertificateView[]> {
+  const rows = await prisma.certificate.findMany({
+    where: { activity: activityScope },
+    orderBy: { issuedAt: 'desc' },
+    take: 1000,
+    include: {
+      ...include,
+      user: { select: { name: true, studentId: true, faculty: true, avatarUrl: true } },
+      registration: { select: { status: true, hoursApprovedAt: true, hoursAwarded: true } },
+    },
+  });
+
+  return rows.map((r) => ({
+    ...toView(r, { includeIdentity: true }),
+    registrationId: r.registrationId,
+    avatarUrl: r.user.avatarUrl,
+    canReissue: r.revokedAt != null && r.registration != null && isEligible(r.registration),
+  }));
+}
+
+/** ออกใบได้เมื่อรับรองชั่วโมงแล้วและได้ชั่วโมงมากกว่าศูนย์ — ไม่รับรองก็ไม่มีอะไรให้ยืนยันบนใบ */
+function isEligible(r: { status: string; hoursApprovedAt: Date | null; hoursAwarded: number }) {
+  return r.status === 'completed' && r.hoursApprovedAt != null && r.hoursAwarded > 0;
+}
+
+/** ตัดตัวที่อ่านสับสนออก (0/O, 1/I) เพราะคนต้องพิมพ์รหัสตามใบกระดาษ */
+const REF_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+
+function newRef(issuedAt: Date): string {
+  let code = '';
+  for (let i = 0; i < 5; i++) code += REF_ALPHABET[randomInt(REF_ALPHABET.length)];
+  return `NUV-${academicYearOf(issuedAt).year}-${code}`;
+}
+
+export type IssueResult = { id: string; ref: string; hours: number; created: boolean };
+
+/**
+ * ออกใบประกาศให้ใบลงทะเบียนหนึ่งใบ — เรียกซ้ำได้โดยไม่ออกใบซ้ำ
+ *
+ * - มีใบที่ใช้ได้และชั่วโมงตรงกันอยู่แล้ว → คืนใบเดิม (created: false)
+ * - มีใบที่ใช้ได้แต่ชั่วโมงไม่ตรง (ผู้จัดรับรองชั่วโมงใหม่) → เพิกถอนใบเดิมแล้วออกใบใหม่
+ *   ไม่แก้ตัวเลขบนใบเดิม เพราะใบนั้นอาจถูกพิมพ์ส่งหน่วยงานภายนอกไปแล้ว
+ * - มีใบที่ถูกเพิกถอน → ออกใบใหม่แทน ใบเดิมยังเปิดตรวจสอบได้และขึ้นว่าถูกเพิกถอน
+ *
+ * Certificate.registrationId เป็น unique ใบเดิมจึงต้องปลดออกจากใบลงทะเบียนก่อนสร้างใบใหม่
+ * ไม่ส่งการแจ้งเตือนเอง — ผู้เรียกเลือกถ้อยคำให้ตรงกับเหตุการณ์ (ดู notifyCertificateIssued)
+ */
+export async function issueCertificate(registrationId: string): Promise<IssueResult> {
+  const registration = await prisma.registration.findUnique({
+    where: { id: registrationId },
+    select: {
+      id: true,
+      userId: true,
+      activityId: true,
+      status: true,
+      hoursApprovedAt: true,
+      hoursAwarded: true,
+      certificate: { select: { id: true, ref: true, hours: true, revokedAt: true } },
+    },
+  });
+  if (!registration) fail('NOT_FOUND');
+  if (!isEligible(registration)) {
+    fail('VALIDATION_ERROR', 'ออกใบประกาศได้เฉพาะผู้ที่ได้รับการรับรองชั่วโมงแล้ว');
+  }
+
+  const current = registration.certificate;
+  if (current && !current.revokedAt && current.hours === registration.hoursAwarded) {
+    return { id: current.id, ref: current.ref, hours: current.hours, created: false };
+  }
+
+  const issuedAt = new Date();
+
+  // รหัสสุ่ม 5 ตัวมีโอกาสชนน้อยมาก แต่ถ้าชนจริง unique constraint จะปฏิเสธ — สุ่มใหม่แล้วลองอีกครั้ง
+  for (let attempt = 0; attempt < 5; attempt++) {
+    try {
+      const created = await prisma.$transaction(async (tx) => {
+        if (current) {
+          await tx.certificate.update({
+            where: { id: current.id },
+            data: {
+              registrationId: null,
+              ...(current.revokedAt
+                ? {}
+                : {
+                    revokedAt: issuedAt,
+                    revokeReason: 'ออกใบใหม่แทน เนื่องจากจำนวนชั่วโมงที่รับรองเปลี่ยนไป',
+                  }),
+            },
+          });
+        }
+        return tx.certificate.create({
+          data: {
+            ref: newRef(issuedAt),
+            userId: registration.userId,
+            activityId: registration.activityId,
+            registrationId: registration.id,
+            hours: registration.hoursAwarded,
+            issuedAt,
+          },
+          select: { id: true, ref: true, hours: true },
+        });
+      });
+      return { ...created, created: true };
+    } catch (e) {
+      const clash = (e as { code?: string }).code === 'P2002';
+      if (!clash || attempt === 4) throw e;
+    }
+  }
+  throw new Error('unreachable');
+}
+
+/**
+ * เพิกถอนใบที่ยังใช้ได้ของใบลงทะเบียนหนึ่งใบ (ถ้ามี) — ใช้ตอนผู้จัดเปลี่ยนใจไม่รับรองชั่วโมง
+ * คืนรหัสอ้างอิงของใบที่ถูกเพิกถอน หรือ null ถ้าไม่มีใบให้เพิกถอน
+ */
+export async function revokeActiveCertificate(
+  registrationId: string,
+  reason: string,
+): Promise<string | null> {
+  const cert = await prisma.certificate.findUnique({
+    where: { registrationId },
+    select: { id: true, ref: true, revokedAt: true },
+  });
+  if (!cert || cert.revokedAt) return null;
+
+  await prisma.certificate.update({
+    where: { id: cert.id },
+    data: { revokedAt: new Date(), revokeReason: reason },
+  });
+  return cert.ref;
+}
+
+/**
+ * แจ้งนิสิตว่าใบประกาศพร้อมแล้ว — การแจ้งเตือนในระบบและอีเมล
+ *
+ * อีเมลส่งเสมอโดยไม่ดู NotificationPreference.emailEnabled เพราะใบประกาศเป็นเอกสารสำคัญ
+ * แบบเดียวกับอีเมลเรื่องรหัสผ่าน และค่านั้นยังขึ้นว่า "ยังไม่เปิดใช้งานจริง" บนหน้าตั้งค่า
+ * ส่งอีเมลไม่สำเร็จต้องไม่ทำให้การออกใบล้มเหลว (sendMail บันทึกลง EmailLog ให้แล้ว)
+ */
+export async function notifyCertificateIssued(input: {
+  userId: string;
+  email: string;
+  activityTitle: string;
+  ref: string;
+  title?: string;
+  body?: string;
+}) {
+  await prisma.notification.create({
+    data: {
+      userId: input.userId,
+      type: 'certificate',
+      title: input.title ?? `ใบประกาศพร้อมดาวน์โหลด: ${input.activityTitle}`,
+      body: input.body ?? `รหัสอ้างอิง ${input.ref} ดูตัวอย่าง พิมพ์ หรือส่งให้หน่วยงานภายนอกตรวจสอบได้`,
+      link: '/student/certificates',
+    },
+  });
+
+  sendMail('certificate.issued', {
+    to: input.email,
+    vars: { activity: input.activityTitle, ref: input.ref, verifyUrl: verifyUrl(input.ref) },
+  }).catch(() => {});
 }

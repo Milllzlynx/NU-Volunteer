@@ -30,6 +30,7 @@ export const AVAILABLE_PAGES: Record<string, string[]> = {
     'cancellations',
     'qr',
     'hoursApproval',
+    'certificates',
     'stats',
     'feedback',
     'reports',

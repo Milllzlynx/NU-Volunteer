@@ -29,6 +29,19 @@ export const DATE_EN = new Intl.DateTimeFormat('en-GB', {
   year: 'numeric',
   timeZone: TZ,
 });
+/** ชื่อเดือนเต็ม เช่น 17 สิงหาคม 2569 — ใช้บนเอกสารทางการอย่างใบประกาศ */
+export const DATE_LONG_TH = new Intl.DateTimeFormat('th-TH', {
+  day: 'numeric',
+  month: 'long',
+  year: 'numeric',
+  timeZone: TZ,
+});
+export const DATE_LONG_EN = new Intl.DateTimeFormat('en-GB', {
+  day: 'numeric',
+  month: 'long',
+  year: 'numeric',
+  timeZone: TZ,
+});
 
 // en-CA ให้รูปแบบ YYYY-MM-DD พอดี — ใช้เป็นคีย์จัดกลุ่มรายการลงช่องวันของปฏิทิน
 const DAY_KEY = new Intl.DateTimeFormat('en-CA', {

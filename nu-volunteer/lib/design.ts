@@ -96,6 +96,7 @@ export const ROLE_NAV: Record<string, NavItem[]> = {
     { key: 'cancellations', label: 'คำขอยกเลิก', labelEn: 'Cancellation Requests', icon: 'event_busy', href: '/organizer/cancellations' },
     { key: 'qr', label: 'QR Code', labelEn: 'QR Code', icon: 'qr_code_2', href: '/organizer/qr' },
     { key: 'hoursApproval', label: 'อนุมัติชั่วโมง', labelEn: 'Approve Hours', icon: 'fact_check', href: '/organizer/hours-approval' },
+    { key: 'certificates', label: 'ใบประกาศ', labelEn: 'Certificates', icon: 'workspace_premium', href: '/organizer/certificates' },
     { key: 'stats', label: 'สถิติ', labelEn: 'Statistics', icon: 'insights', href: '/organizer/stats' },
     { key: 'feedback', label: 'รีวิว', labelEn: 'Reviews', icon: 'reviews', href: '/organizer/feedback' },
     { key: 'reports', label: 'รายงาน', labelEn: 'Reports', icon: 'summarize', href: '/organizer/reports' },
@@ -135,7 +136,7 @@ export const NAV_GROUPS: Record<string, { label: string; labelEn: string; keys: 
     { label: 'ทั่วไป', labelEn: 'General', keys: ['wishlist', 'feed', 'notifications', 'chat', 'profile', 'settings', 'guide'] },
   ],
   organizer: [
-    { label: 'จัดการกิจกรรม', labelEn: 'Manage Activities', keys: ['home', 'activities', 'calendar', 'registrations', 'cancellations', 'qr', 'hoursApproval'] },
+    { label: 'จัดการกิจกรรม', labelEn: 'Manage Activities', keys: ['home', 'activities', 'calendar', 'registrations', 'cancellations', 'qr', 'hoursApproval', 'certificates'] },
     { label: 'ข้อมูลเชิงลึก', labelEn: 'Insights', keys: ['stats', 'feedback', 'reports'] },
     { label: 'ทั่วไป', labelEn: 'General', keys: ['notifications', 'chat', 'profile', 'settings', 'guide'] },
   ],

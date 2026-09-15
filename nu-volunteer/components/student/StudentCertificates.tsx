@@ -2,7 +2,11 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
-import { CertificateSheet } from '@/components/certificate/CertificateSheet';
+import {
+  CertificateDocument,
+  CertificatePrint,
+  documentPropsOf,
+} from '@/components/certificate/CertificateDocument';
 import { useApp } from '@/components/providers/AppProviders';
 import { Badge, Button, ColorBadge, EmptyState, Icon, IconButton, inputStyle } from '@/components/ui';
 import { COLOR, SEMANTIC, glass, solidGlass } from '@/lib/design';
@@ -27,22 +31,6 @@ export function StudentCertificates({
   const [copied, setCopied] = useState<string | null>(null);
 
   const urlOf = (ref: string) => `${verifyBase}/verify/${encodeURIComponent(ref)}`;
-
-  /**
-   * สั่งพิมพ์ใบที่เลือก — วาดใบลง DOM ก่อนหนึ่งเฟรม แล้วค่อยเปิดหน้าต่างพิมพ์
-   * เก็บใบออกเมื่อได้รับ afterprint ไม่ใช่ทันทีหลัง print() เพราะบางเบราว์เซอร์
-   * เตรียมหน้ากระดาษแบบไม่บล็อก ถ้าเก็บเร็วเกินไปจะได้กระดาษเปล่า
-   */
-  useEffect(() => {
-    if (!printing) return;
-    const done = () => setPrinting(null);
-    window.addEventListener('afterprint', done);
-    const frame = requestAnimationFrame(() => requestAnimationFrame(() => window.print()));
-    return () => {
-      window.removeEventListener('afterprint', done);
-      cancelAnimationFrame(frame);
-    };
-  }, [printing]);
 
   /* ปิดพรีวิวด้วย Esc และล็อกการเลื่อนหน้าหลังระหว่างเปิด */
   useEffect(() => {
@@ -316,7 +304,7 @@ export function StudentCertificates({
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            style={{ ...solidGlass(22), width: 'min(760px,100%)', padding: 18, display: 'grid', gap: 14 }}
+            style={{ ...solidGlass(22), width: 'min(1040px,100%)', padding: 18, display: 'grid', gap: 14 }}
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
               <span style={{ fontSize: 15, fontWeight: 600, color: COLOR.ink }}>{t('ตัวอย่างใบประกาศ')}</span>
@@ -328,34 +316,19 @@ export function StudentCertificates({
               />
             </div>
 
-            <CertificateSheet certificate={preview} verifyUrl={urlOf(preview.ref)} />
-
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, justifyContent: 'flex-end' }}>
-              {!preview.revoked ? (
-                <Button
-                  variant="primary"
-                  icon="download"
-                  onClick={() => {
-                    setPreview(null);
-                    setPrinting(preview);
-                  }}
-                  style={{ padding: '10px 16px' }}
-                >
-                  {t('ดาวน์โหลด / พิมพ์')}
-                </Button>
-              ) : null}
-              <Button variant="secondary" onClick={() => setPreview(null)} style={{ padding: '10px 16px' }}>
-                {t('ปิด')}
-              </Button>
-            </div>
+            {/* ปุ่มคัดลอกลิงก์และพิมพ์อยู่ในแถบเครื่องมือของเอกสารแล้ว */}
+            <CertificateDocument {...documentPropsOf(preview, urlOf(preview.ref), isEn)} />
           </div>
         </div>
       ) : null}
 
-      {/* ใบที่กำลังสั่งพิมพ์ — ซ่อนบนจอ ปรากฏเฉพาะบนกระดาษ */}
-      <div className="nuv-cert-print">
-        {printing ? <CertificateSheet certificate={printing} verifyUrl={urlOf(printing.ref)} /> : null}
-      </div>
+      {/* ปุ่มดาวน์โหลดบนการ์ด — พิมพ์ได้เลยโดยไม่ต้องเปิดพรีวิวก่อน */}
+      {printing ? (
+        <CertificatePrint
+          {...documentPropsOf(printing, urlOf(printing.ref), isEn)}
+          onDone={() => setPrinting(null)}
+        />
+      ) : null}
     </div>
   );
 }

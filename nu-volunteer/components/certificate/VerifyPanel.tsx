@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { CertificateSheet } from '@/components/certificate/CertificateSheet';
+import { CertificateDocument, documentPropsOf } from '@/components/certificate/CertificateDocument';
 import { BrandMark } from '@/components/layout/BrandMark';
 import { useApp } from '@/components/providers/AppProviders';
 import { Button, EmptyState, Icon, inputStyle } from '@/components/ui';
@@ -45,7 +45,7 @@ export function VerifyPanel({
         : 'valid';
 
   return (
-    <div style={{ maxWidth: 780, margin: '0 auto', padding: '28px 18px 56px', display: 'grid', gap: 16 }}>
+    <div style={{ maxWidth: 1040, margin: '0 auto', padding: '28px 18px 56px', display: 'grid', gap: 16 }}>
       <div className="nuv-no-print" style={{ display: 'grid', gap: 16 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
           <Link href="/" aria-label="NU Volunteer">
@@ -123,7 +123,9 @@ export function VerifyPanel({
       </div>
 
       {certificate ? (
-        <CertificateSheet certificate={certificate} verifyUrl={`${verifyBase}/verify/${encodeURIComponent(certificate.ref)}`} />
+        <CertificateDocument
+          {...documentPropsOf(certificate, `${verifyBase}/verify/${encodeURIComponent(certificate.ref)}`, isEn)}
+        />
       ) : status === 'idle' ? (
         <div className="nuv-no-print" style={{ ...glass(22) }}>
           <EmptyState

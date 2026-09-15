@@ -23,6 +23,8 @@ export type HoursRow = {
   hoursComputed: number;
   hoursAwarded: number;
   approved: boolean;
+  /** รหัสใบประกาศที่ยังใช้ได้ — ออกให้อัตโนมัติตอนรับรองชั่วโมง */
+  certificateRef: string | null;
   checkedOutTh: string;
   checkedOutEn: string;
   evidence: {
@@ -327,6 +329,9 @@ export function OrganizerHours({
                   {r.approved ? (
                     <Badge tone="success" icon="verified" label={`${r.hoursAwarded} ${t('ชม.')}`} />
                   ) : null}
+                  {r.certificateRef ? (
+                    <Badge tone="purple" icon="workspace_premium" label={r.certificateRef} />
+                  ) : null}
                 </div>
 
                 {!r.approved ? (
@@ -358,7 +363,7 @@ export function OrganizerHours({
                         onClick={() => decide(r, 'approve')}
                         style={SMALL_BTN}
                       >
-                        {t('รับรองชั่วโมง')}
+                        {t('รับรองและออกใบประกาศ')}
                       </Button>
                       <Button
                         variant="secondary"

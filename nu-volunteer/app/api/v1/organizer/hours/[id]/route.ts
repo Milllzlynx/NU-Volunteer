@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { requireStaff } from '@/lib/auth';
+import { issueCertificate, notifyCertificateIssued, revokeActiveCertificate } from '@/lib/certificates';
 import { prisma } from '@/lib/db';
 import { fail, handler } from '@/lib/errors';
 import { requireOwnedActivity } from '@/lib/organizer';
@@ -13,6 +14,9 @@ import { readJson } from '@/lib/validation';
  *
  * ผู้จัดปรับจำนวนชั่วโมงได้ ไม่ผูกกับ hoursComputed ตายตัว เพราะบางคนมาสายหรือกลับก่อน
  * แต่เพดานคือชั่วโมงของกิจกรรม กันการแจกเกินที่ประกาศไว้ตอนเปิดรับสมัคร
+ *
+ * รับรองแล้วออกใบประกาศให้ในขั้นเดียวกัน (ถ้าได้ชั่วโมงมากกว่าศูนย์)
+ * ไม่รับรอง หรือรับรองใหม่เป็นศูนย์ชั่วโมง → เพิกถอนใบที่เคยออกไว้ เพราะไม่มีชั่วโมงให้ใบยืนยันแล้ว
  */
 
 const ACTIONS = ['approve', 'reject'] as const;
@@ -28,7 +32,14 @@ export const PATCH = handler(async (req, ctx: { params: Promise<{ id: string }> 
 
   const registration = await prisma.registration.findUnique({
     where: { id },
-    select: { id: true, status: true, activityId: true, userId: true, hoursComputed: true },
+    select: {
+      id: true,
+      status: true,
+      activityId: true,
+      userId: true,
+      hoursComputed: true,
+      user: { select: { email: true } },
+    },
   });
   if (!registration) fail('NOT_FOUND');
 
@@ -47,6 +58,8 @@ export const PATCH = handler(async (req, ctx: { params: Promise<{ id: string }> 
       data: { hoursAwarded: 0, hoursApprovedAt: new Date() },
       select: { id: true, hoursAwarded: true, status: true },
     });
+
+    await revokeActiveCertificate(id, `ไม่รับรองชั่วโมง: ${note}`);
 
     await prisma.notification.create({
       data: {
@@ -78,15 +91,33 @@ export const PATCH = handler(async (req, ctx: { params: Promise<{ id: string }> 
     select: { id: true, hoursAwarded: true, status: true },
   });
 
-  await prisma.notification.create({
-    data: {
-      userId: registration.userId,
-      type: 'certificate',
-      title: `รับรองชั่วโมงแล้ว: ${activity.title}`,
-      body: `คุณได้รับ ${raw} ชั่วโมงจิตอาสาจากกิจกรรมนี้`,
-      link: '/student/hours',
-    },
-  });
+  if (raw === 0) {
+    await revokeActiveCertificate(id, 'รับรองชั่วโมงใหม่เป็น 0 ชั่วโมง');
+    await prisma.notification.create({
+      data: {
+        userId: registration.userId,
+        type: 'approval',
+        title: `รับรองชั่วโมงแล้ว: ${activity.title}`,
+        body: 'กิจกรรมนี้รับรองให้ 0 ชั่วโมง จึงไม่มีใบประกาศ',
+        link: '/student/hours',
+      },
+    });
+    return NextResponse.json({ ok: true, registration: updated, certificate: null });
+  }
 
-  return NextResponse.json({ ok: true, registration: updated });
+  const certificate = await issueCertificate(id);
+
+  // รับรองซ้ำด้วยชั่วโมงเดิมไม่ได้ออกใบใหม่ — ไม่ต้องแจ้งนิสิตซ้ำ
+  if (certificate.created) {
+    await notifyCertificateIssued({
+      userId: registration.userId,
+      email: registration.user.email,
+      activityTitle: activity.title,
+      ref: certificate.ref,
+      title: `รับรองชั่วโมงแล้ว: ${activity.title}`,
+      body: `คุณได้รับ ${raw} ชั่วโมงจิตอาสา และใบประกาศพร้อมดาวน์โหลดแล้ว (รหัสอ้างอิง ${certificate.ref})`,
+    });
+  }
+
+  return NextResponse.json({ ok: true, registration: updated, certificate });
 });

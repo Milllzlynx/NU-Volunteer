@@ -21,6 +21,7 @@ export default async function OrganizerHoursPage() {
         user: { select: { name: true, studentId: true, faculty: true, avatarUrl: true } },
         activity: { select: { id: true, title: true, hours: true } },
         evidence: { orderBy: { createdAt: 'desc' }, take: 1 },
+        certificate: { select: { ref: true, revokedAt: true } },
       },
     }),
     prisma.activity.findMany({
@@ -45,6 +46,7 @@ export default async function OrganizerHoursPage() {
       hoursComputed: r.hoursComputed,
       hoursAwarded: r.hoursAwarded,
       approved: r.hoursApprovedAt != null,
+      certificateRef: r.certificate && !r.certificate.revokedAt ? r.certificate.ref : null,
       checkedOutTh: r.checkedOutAt ? DATE_TH.format(r.checkedOutAt) : '—',
       checkedOutEn: r.checkedOutAt ? DATE_EN.format(r.checkedOutAt) : '—',
       evidence: ev

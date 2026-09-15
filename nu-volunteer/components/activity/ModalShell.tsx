@@ -23,6 +23,7 @@ export function ModalShell({
   children,
   footer,
   variant = 'center',
+  maxWidth = 520,
 }: {
   title: string;
   /** จำนวนรายการ แสดงต่อท้ายหัวเรื่อง — ไม่ส่งมาก็ไม่แสดง */
@@ -40,6 +41,8 @@ export function ModalShell({
    * (อนุมัติชั่วโมง ดูหลักฐาน พิจารณาคำขอยกเลิก) จึงคงเป็นค่าเริ่มต้นไว้
    */
   variant?: 'center' | 'drawer';
+  /** ความกว้างสูงสุดของกล่องกลางจอ — เอกสารอย่างใบประกาศต้องการที่มากกว่ากล่องตัดสินใจ */
+  maxWidth?: number;
 }) {
   const { t } = useApp();
   const panelRef = useRef<HTMLDivElement>(null);
@@ -95,7 +98,7 @@ export function ModalShell({
         onClick={(e) => e.stopPropagation()}
         style={{
           width: '100%',
-          maxWidth: drawer ? 420 : 520,
+          maxWidth: drawer ? 420 : maxWidth,
           maxHeight: drawer ? '100%' : '86vh',
           display: 'flex',
           flexDirection: 'column',

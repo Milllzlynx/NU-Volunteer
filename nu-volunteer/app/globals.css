@@ -156,9 +156,6 @@ input, textarea, select, button {
 /* หน้าแชท: บนจอกว้างแสดงรายการห้องคู่กับบทสนทนา ปุ่มย้อนกลับจึงไม่จำเป็น */
 .nuv-chat-back { display: none; }
 
-/* ใบประกาศที่รอสั่งพิมพ์ — อยู่ในหน้าเสมอแต่เห็นเฉพาะบนกระดาษ */
-.nuv-cert-print { display: none; }
-
 /* ช่องค้นหาแถวล่างมีไว้สำหรับจอแคบเท่านั้น — จอกว้างใช้ช่องที่อยู่กลางแถบหัวเรื่องแทน */
 .nuv-header-search-mobile { display: none; }
 
@@ -455,15 +452,6 @@ html[data-nuv-motion='reduced'] .nuv-card:hover { transform: none !important; }
   /* กันการ์ดในรายงานถูกตัดคาหน้ากระดาษ */
   .nuv-print-root > * { break-inside: avoid; page-break-inside: avoid; }
 
-  /* ใบประกาศ: หนึ่งใบต่อหนึ่งแผ่น ใช้แนวนอนตาม @page ด้านบน */
-  .nuv-cert-print { display: block !important; }
-  .nuv-cert-print .nuv-cert-sheet { border-radius: 0; border: none; }
-  .nuv-cert-sheet { break-inside: avoid; page-break-inside: avoid; }
-  /* พื้นหลังและแถบสีของใบต้องพิมพ์ออกมาด้วย ไม่ใช่ถูกตัดทิ้งเพื่อประหยัดหมึก */
-  .nuv-cert-sheet, .nuv-cert-sheet * {
-    -webkit-print-color-adjust: exact;
-    print-color-adjust: exact;
-  }
 }
 
 /* ---- Dark mode ----
@@ -554,4 +542,258 @@ html[data-nuv-mood='neon'] select {
 html[data-nuv-mood='neon'] div[style*='font-weight:600'] {
   font-weight: 600;
   letter-spacing: 0.2px;
+}
+
+/* ---- ใบประกาศนียบัตร (components/certificate/CertificateDocument.tsx) ----
+ * เอกสารทางการ ไม่ใช่การ์ดเว็บ: มุมฉาก จัดชิดซ้าย ใช้ชุดสีของตัวเอง ไม่ใช้สีไล่ของแอป
+ * ขนาดทุกอย่างเป็น cqw ของ .nuv-cd-sizer (กว้างเท่ากระดาษพอดี) กระดาษจึงย่อขยายทั้งแผ่นอย่างได้สัดส่วน
+ * ตัวอักษรเล็กบางตัวใช้ max(px, cqw) กันอ่านไม่ออกบนจอ — ตอนพิมพ์ 1cqw ≈ 3 มม. ค่า cqw จึงชนะเสมอ
+ */
+.nuv-cd,
+.nuv-cd-print {
+  --cd-ink: #262A30;
+  --cd-body: #5B616A;
+  --cd-faint: #9AA0A8;
+  --cd-rule: #DCDDDF;
+  --cd-orange: #E0620D;
+  --cd-orange-soft: #FDF0E6;
+  --cd-gray: #4A4F57;
+}
+.nuv-cd { display: grid; gap: 12px; }
+.nuv-cd-print { display: none; }
+
+.nuv-cd-toolbar { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; }
+.nuv-cd-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 42px;
+  padding: 0 16px;
+  border: 1px solid #C9CBCF;
+  border-radius: 4px;
+  background: #fff;
+  color: var(--cd-ink);
+  font: 500 14px/1.2 var(--font-cert-sans), 'IBM Plex Sans Thai', system-ui, sans-serif;
+  cursor: pointer;
+  transition: background-color .15s ease, border-color .15s ease;
+}
+.nuv-cd-btn:hover { background: #F4F4F5; border-color: #B5B8BD; }
+.nuv-cd-btn-primary { background: var(--cd-orange); border-color: var(--cd-orange); color: #fff; }
+.nuv-cd-btn-primary:hover { background: #C4550B; border-color: #C4550B; }
+/* วงโฟกัสเว้นระยะจากปุ่ม — ปุ่มสีแสดยังเห็นวงสีแสดได้ชัดเพราะมีช่องขาวคั่น */
+.nuv-cd-btn:focus-visible { outline: 3px solid var(--cd-orange); outline-offset: 3px; }
+
+.nuv-cd-desk { background: #ECEDEF; padding: clamp(10px, 3.5vw, 32px); }
+
+.nuv-cd-sizer { container: nuvcd / inline-size; width: 100%; }
+
+.nuv-cd-paper {
+  position: relative;
+  box-sizing: border-box;
+  width: 100%;
+  aspect-ratio: 297 / 210;
+  overflow: hidden;
+  background: #fff;
+  color: var(--cd-ink);
+  font-family: var(--font-cert-sans), 'IBM Plex Sans Thai', system-ui, sans-serif;
+  box-shadow: 0 1px 2px rgba(38, 42, 48, .08), 0 10px 28px rgba(38, 42, 48, .10);
+  padding: 4.2cqw 5cqw 3.4cqw 7.4cqw;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 24cqw;
+  grid-template-rows: auto 1fr auto auto;
+  grid-template-areas: "head head" "body stamp" "note note" "foot foot";
+  column-gap: 4cqw;
+  text-align: left;
+}
+.nuv-cd-paper p, .nuv-cd-paper h1, .nuv-cd-paper dl, .nuv-cd-paper dd { margin: 0; }
+.nuv-cd-paper > :not(.nuv-cd-band):not(.nuv-cd-watermark) { position: relative; z-index: 1; }
+
+/* แถบสีขอบซ้าย: บน 62% แสด ล่างเทา */
+.nuv-cd-band {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 1.4cqw;
+  background: linear-gradient(to bottom, var(--cd-orange) 0 62%, var(--cd-gray) 62% 100%);
+}
+/* ลายน้ำวงกลมซ้อนมุมขวาล่าง จางลงเมื่อห่างจากมุม */
+.nuv-cd-watermark {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 44cqw;
+  aspect-ratio: 1;
+  pointer-events: none;
+  background: repeating-radial-gradient(circle at 100% 100%, rgba(38, 42, 48, .07) 0 .14cqw, transparent .14cqw 1.15cqw);
+  -webkit-mask-image: radial-gradient(circle at 100% 100%, #000 0 35%, transparent 100%);
+  mask-image: radial-gradient(circle at 100% 100%, #000 0 35%, transparent 100%);
+}
+
+/* ── ส่วนหัว ── */
+.nuv-cd-head { grid-area: head; display: flex; justify-content: space-between; align-items: flex-start; gap: 3cqw; }
+.nuv-cd-brand { display: flex; align-items: center; gap: 1.5cqw; }
+.nuv-cd-seal { width: 5.2cqw; height: 5.2cqw; flex-shrink: 0; display: block; }
+.nuv-cd-uni { font-family: var(--font-cert-serif), 'Noto Serif Thai', Georgia, serif; font-weight: 600; font-size: 1.8cqw; line-height: 1.35; }
+.nuv-cd-system { font-size: max(10px, 1.12cqw); color: var(--cd-body); line-height: 1.5; }
+.nuv-cd-ref { text-align: right; }
+.nuv-cd-label { font-size: max(9.5px, .98cqw); color: var(--cd-faint); letter-spacing: .04em; line-height: 1.5; }
+.nuv-cd-refcode { font-size: 1.6cqw; font-weight: 600; letter-spacing: .08em; font-variant-numeric: tabular-nums; line-height: 1.4; }
+
+/* ── เนื้อหาหลัก ── */
+.nuv-cd-body { grid-area: body; align-self: center; min-width: 0; padding-block: 2cqw; }
+.nuv-cd-title { font-family: var(--font-cert-serif), 'Noto Serif Thai', Georgia, serif; font-weight: 400; font-size: 2.5cqw; line-height: 1.4; color: var(--cd-orange); }
+.nuv-cd-paper .nuv-cd-lead { font-size: 1.5cqw; color: var(--cd-body); margin-top: 1.9cqw; line-height: 1.5; }
+.nuv-cd-paper .nuv-cd-name {
+  font-family: var(--font-cert-serif), 'Noto Serif Thai', Georgia, serif;
+  font-weight: 800;
+  font-size: 5.4cqw;
+  line-height: 1.28;
+  margin-top: .5cqw;
+  overflow-wrap: anywhere;
+}
+.nuv-cd-idrow { display: flex; flex-wrap: wrap; align-items: center; gap: .4cqw 0; margin-top: .9cqw; font-size: 1.45cqw; color: var(--cd-body); line-height: 1.5; }
+.nuv-cd-idrow strong { color: var(--cd-ink); font-weight: 500; letter-spacing: .03em; }
+/* ตัวคั่นเป็นเส้นตั้ง ไม่ใช่จุดกลาง */
+.nuv-cd-idrow > span + span { border-left: max(1px, .1cqw) solid var(--cd-rule); margin-left: 1.8cqw; padding-left: 1.8cqw; }
+.nuv-cd-paper .nuv-cd-statement { font-size: 1.6cqw; line-height: 1.8; color: var(--cd-body); max-width: 50cqw; margin-top: 2.2cqw; overflow-wrap: anywhere; }
+.nuv-cd-statement strong { color: var(--cd-ink); font-weight: 600; }
+
+/* ── ตราประทับ ── */
+.nuv-cd-stampcell { grid-area: stamp; align-self: center; justify-self: end; }
+.nuv-cd-stamp {
+  position: relative;
+  box-sizing: border-box;
+  width: 20cqw;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: .38cqw solid var(--cd-orange);
+  background: var(--cd-orange-soft);
+  color: var(--cd-orange);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  transform: rotate(-6deg);
+  animation: nuvCdStamp .62s cubic-bezier(.2, .8, .3, 1.15) .2s both;
+}
+.nuv-cd-stamp::before {
+  content: "";
+  position: absolute;
+  inset: .9cqw;
+  border-radius: 50%;
+  border: .16cqw dashed currentColor;
+  opacity: .75;
+}
+.nuv-cd-stamp-hours { font-family: var(--font-cert-serif), 'Noto Serif Thai', Georgia, serif; font-weight: 800; font-size: 6.4cqw; line-height: 1; font-variant-numeric: tabular-nums; }
+.nuv-cd-stamp-unit { font-size: 1.3cqw; font-weight: 600; margin-top: .5cqw; line-height: 1.3; }
+.nuv-cd-stamp-status {
+  font-size: 1.05cqw;
+  font-weight: 600;
+  /* ระยะห่างตัวอักษรกว้าง ๆ ทำให้สระและวรรณยุกต์ไทยหลุดจากพยัญชนะ จึงเว้นแค่เล็กน้อย */
+  letter-spacing: .03em;
+  margin-top: .55cqw;
+  padding-top: .45cqw;
+  border-top: max(1px, .12cqw) solid currentColor;
+  line-height: 1.3;
+}
+.nuv-cd-stamp.is-revoked { border-color: var(--cd-gray); background: #F1F2F3; color: var(--cd-gray); }
+
+/* ปั๊มตรา: ตกลงมาจากมุมเอียงและขนาดใหญ่ แล้วหยุดที่ -6° */
+@keyframes nuvCdStamp {
+  0% { opacity: 0; transform: rotate(-32deg) scale(1.75); }
+  65% { opacity: 1; transform: rotate(-4deg) scale(.95); }
+  100% { opacity: 1; transform: rotate(-6deg) scale(1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .nuv-cd-stamp { animation: none; }
+}
+
+/* ── หมายเหตุใบที่ถูกเพิกถอน ── */
+.nuv-cd-paper .nuv-cd-revoked {
+  grid-area: note;
+  margin-top: 1.2cqw;
+  padding: .9cqw 1.3cqw;
+  background: #F1F2F3;
+  border-left: .35cqw solid var(--cd-gray);
+  font-size: 1.2cqw;
+  line-height: 1.6;
+  color: var(--cd-ink);
+}
+
+/* ── ส่วนท้าย ── */
+.nuv-cd-foot {
+  grid-area: foot;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 18cqw auto;
+  align-items: end;
+  gap: 3.2cqw;
+  margin-top: 1.8cqw;
+  padding-top: 1.9cqw;
+  border-top: max(1px, .1cqw) solid var(--cd-rule);
+}
+.nuv-cd-facts { display: grid; grid-template-columns: 1.25fr .8fr 1.15fr; gap: 2.4cqw; align-self: end; }
+.nuv-cd-facts dt { font-size: max(9.5px, .98cqw); color: var(--cd-faint); letter-spacing: .04em; line-height: 1.5; }
+.nuv-cd-paper .nuv-cd-facts dd { font-size: 1.4cqw; font-weight: 500; color: var(--cd-ink); margin-top: .35cqw; line-height: 1.45; overflow-wrap: anywhere; }
+.nuv-cd-signline { border-top: max(1px, .1cqw) solid var(--cd-body); margin-top: 4.2cqw; }
+.nuv-cd-signrole { font-size: max(10px, 1.08cqw); color: var(--cd-body); margin-top: .6cqw; line-height: 1.5; }
+.nuv-cd-qr { display: flex; align-items: flex-end; gap: 1.1cqw; }
+.nuv-cd-qrcap { font-size: max(9.5px, .95cqw); color: var(--cd-body); line-height: 1.5; max-width: 10.5cqw; text-align: right; }
+.nuv-cd-qrsvg { display: block; width: 8.6cqw; height: auto; flex-shrink: 0; }
+
+/* ── กระดาษแคบ (จอมือถือ หรือกล่องพรีวิวที่แคบ): คอลัมน์เดียว ขนาดเป็น px ── */
+@container nuvcd (max-width: 640px) {
+  .nuv-cd-paper {
+    aspect-ratio: auto;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto;
+    grid-template-areas: "head" "body" "stamp" "note" "foot";
+    column-gap: 0;
+    padding: 24px 18px 22px 32px;
+  }
+  .nuv-cd-band { width: 10px; }
+  .nuv-cd-watermark { width: 240px; }
+  .nuv-cd-head { flex-wrap: wrap; gap: 12px 16px; }
+  .nuv-cd-brand { gap: 10px; }
+  .nuv-cd-seal { width: 40px; height: 40px; }
+  .nuv-cd-uni { font-size: 16px; }
+  .nuv-cd-system { font-size: 11.5px; }
+  .nuv-cd-ref { text-align: left; }
+  .nuv-cd-label, .nuv-cd-facts dt { font-size: 11px; }
+  .nuv-cd-refcode { font-size: 14px; }
+  .nuv-cd-body { padding-block: 22px 0; }
+  .nuv-cd-title { font-size: 18px; }
+  .nuv-cd-paper .nuv-cd-lead { font-size: 13px; margin-top: 14px; }
+  .nuv-cd-paper .nuv-cd-name { font-size: 30px; margin-top: 4px; }
+  .nuv-cd-idrow { font-size: 13px; margin-top: 8px; gap: 4px 0; }
+  .nuv-cd-idrow > span + span { border-left-width: 1px; margin-left: 12px; padding-left: 12px; }
+  .nuv-cd-paper .nuv-cd-statement { font-size: 14px; max-width: none; margin-top: 14px; }
+  .nuv-cd-stampcell { justify-self: start; margin-top: 22px; }
+  .nuv-cd-stamp { width: 130px; border-width: 3px; }
+  .nuv-cd-stamp::before { inset: 7px; border-width: 1.5px; }
+  .nuv-cd-stamp-hours { font-size: 40px; }
+  .nuv-cd-stamp-unit { font-size: 11px; margin-top: 3px; }
+  .nuv-cd-stamp-status { font-size: 9.5px; margin-top: 4px; padding-top: 3px; border-top-width: 1px; }
+  .nuv-cd-paper .nuv-cd-revoked { margin-top: 18px; padding: 10px 12px; border-left-width: 3px; font-size: 12.5px; }
+  .nuv-cd-foot { grid-template-columns: 1fr 1fr; gap: 18px 16px; margin-top: 22px; padding-top: 16px; border-top-width: 1px; }
+  .nuv-cd-facts { grid-column: 1 / -1; grid-template-columns: 1fr 1fr; gap: 12px 16px; }
+  .nuv-cd-paper .nuv-cd-facts dd { font-size: 13.5px; margin-top: 2px; }
+  .nuv-cd-signline { margin-top: 32px; border-top-width: 1px; }
+  .nuv-cd-signrole { font-size: 11.5px; margin-top: 5px; }
+  .nuv-cd-qr { justify-content: flex-end; gap: 8px; }
+  .nuv-cd-qrcap { font-size: 10.5px; max-width: 96px; }
+  .nuv-cd-qrsvg { width: 76px; }
+}
+
+/* ── พิมพ์: เอกสารเต็มแผ่น A4 แนวนอน ──
+ * สำเนาที่จะพิมพ์ถูกวางไว้ใต้ <body> โดยตรง (CertificatePrint) และประกาศ @page ขอบศูนย์ของตัวเองระหว่างพิมพ์
+ * ระหว่างนั้นซ่อนทุกอย่างที่เป็นลูกของ body ยกเว้นสำเนานี้ กระดาษจึงไม่ล้นไปหน้าที่สอง */
+@media print {
+  html.nuv-cd-printing, html.nuv-cd-printing body { margin: 0 !important; padding: 0 !important; background: #fff !important; }
+  html.nuv-cd-printing body > :not(.nuv-cd-print) { display: none !important; }
+  .nuv-cd-print { display: block !important; width: 297mm; height: 210mm; overflow: hidden; }
+  .nuv-cd-toolbar { display: none !important; }
+  .nuv-cd-print .nuv-cd-sizer { width: 297mm; }
+  .nuv-cd-print .nuv-cd-paper { width: 297mm; height: 210mm; aspect-ratio: auto; box-shadow: none; break-inside: avoid; }
+  .nuv-cd-paper, .nuv-cd-paper * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .nuv-cd-stamp { animation: none; }
 }
