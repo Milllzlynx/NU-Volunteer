@@ -36,33 +36,46 @@ const CATEGORIES = [
   { id: 'public', label: 'ด้านจิตสาธารณะ', labelEn: 'Public service', color: '#21B0B0' },
 ];
 
-const FACULTIES: [string, string, string][] = [
-  ['คณะเกษตรศาสตร์ ทรัพยากรธรรมชาติและสิ่งแวดล้อม', 'สีเขียว', '#1B8A3A'],
-  ['คณะนิติศาสตร์', 'สีขาว', '#FFFFFF'],
-  ['คณะบริหารธุรกิจ เศรษฐศาสตร์และการสื่อสาร', 'สีฟ้า', '#4FA8E8'],
-  ['คณะพยาบาลศาสตร์', 'สีชมพู', '#F49AC1'],
-  ['คณะแพทยศาสตร์', 'สีเขียวใบไม้', '#4CA64C'],
-  ['คณะเภสัชศาสตร์', 'สีม่วง', '#7B3FA0'],
-  ['คณะมนุษยศาสตร์', 'สีแสด', '#F07C1E'],
-  ['คณะวิทยาศาสตร์', 'สีเหลือง', '#F2C314'],
-  ['คณะวิทยาศาสตร์การแพทย์', 'สีแสดทอง', '#E0932A'],
-  ['คณะวิศวกรรมศาสตร์', 'สีเลือดหมู', '#7B2D33'],
-  ['คณะศึกษาศาสตร์', 'สีฟ้า', '#5BA7D6'],
-  ['คณะสถาปัตยกรรมศาสตร์และการออกแบบ', 'สีเขียวตองอ่อน', '#A8D14B'],
-  ['คณะสหเวชศาสตร์', 'สีน้ำเงิน', '#1F3F94'],
-  ['คณะสัตวแพทยศาสตร์', 'สีแสดแดง', '#E2542B'],
-  ['คณะสาธารณสุขศาสตร์', 'สีฟ้าน้ำทะเล', '#17A7A0'],
-  ['คณะศิลปกรรมศาสตร์และวัฒนธรรมศาสตร์', 'สีม่วงลาเวนเดอร์', '#B49BE0'],
-  ['คณะสังคมศาสตร์', 'สีบัวโรย', '#B48FA8'],
+/** [ชื่อคณะ, ชื่อสี, สี, รหัสย่อสำหรับอีเมลบัญชีผู้จัดประจำคณะ] */
+const FACULTIES: [string, string, string, string][] = [
+  ['คณะเกษตรศาสตร์ ทรัพยากรธรรมชาติและสิ่งแวดล้อม', 'สีเขียว', '#1B8A3A', 'agi'],
+  ['คณะนิติศาสตร์', 'สีขาว', '#FFFFFF', 'law'],
+  ['คณะบริหารธุรกิจ เศรษฐศาสตร์และการสื่อสาร', 'สีฟ้า', '#4FA8E8', 'bec'],
+  ['คณะพยาบาลศาสตร์', 'สีชมพู', '#F49AC1', 'nurse'],
+  ['คณะแพทยศาสตร์', 'สีเขียวใบไม้', '#4CA64C', 'med'],
+  ['คณะเภสัชศาสตร์', 'สีม่วง', '#7B3FA0', 'pharm'],
+  ['คณะมนุษยศาสตร์', 'สีแสด', '#F07C1E', 'hum'],
+  ['คณะวิทยาศาสตร์', 'สีเหลือง', '#F2C314', 'sci'],
+  ['คณะวิทยาศาสตร์การแพทย์', 'สีแสดทอง', '#E0932A', 'medsci'],
+  ['คณะวิศวกรรมศาสตร์', 'สีเลือดหมู', '#7B2D33', 'eng'],
+  ['คณะศึกษาศาสตร์', 'สีฟ้า', '#5BA7D6', 'edu'],
+  ['คณะสถาปัตยกรรมศาสตร์และการออกแบบ', 'สีเขียวตองอ่อน', '#A8D14B', 'arch'],
+  ['คณะสหเวชศาสตร์', 'สีน้ำเงิน', '#1F3F94', 'ahs'],
+  ['คณะสัตวแพทยศาสตร์', 'สีแสดแดง', '#E2542B', 'vet'],
+  ['คณะสาธารณสุขศาสตร์', 'สีฟ้าน้ำทะเล', '#17A7A0', 'ph'],
+  ['คณะศิลปกรรมศาสตร์และวัฒนธรรมศาสตร์', 'สีม่วงลาเวนเดอร์', '#B49BE0', 'fa'],
+  ['คณะสังคมศาสตร์', 'สีบัวโรย', '#B48FA8', 'soc'],
 ];
 
 /** รหัสผ่านของทุกบัญชีตัวอย่าง — ใช้เฉพาะเครื่องพัฒนาเท่านั้น */
 const DEMO_PASSWORD = 'Volunteer2569';
 
+/**
+ * ผู้จัดกิจกรรมประจำคณะ คณะละหนึ่งบัญชี — อีเมล org<รหัสย่อ>@nu.ac.th เช่น orgeng@nu.ac.th
+ * คณะวิทยาศาสตร์ได้ orgsci@ ซึ่งเป็นบัญชีเดิม จึงเข้าระบบด้วยอีเมลเดิมได้ต่อ
+ */
+const FACULTY_ORGANIZERS = FACULTIES.map(([faculty, , , code]) => ({
+  email: `org${code}@nu.ac.th`,
+  name: `สโมสรนิสิต${faculty}`,
+  role: 'organizer',
+  faculty,
+}));
+
 const STAFF = [
   { email: 'admin@nu.ac.th', name: 'ผู้ดูแลระบบ NU Volunteer', role: 'admin' },
   { email: 'organizer@nu.ac.th', name: 'กองกิจการนิสิต', role: 'organizer' },
-  { email: 'orgsci@nu.ac.th', name: 'สโมสรนิสิตคณะวิทยาศาสตร์', role: 'organizer' },
+  { email: 'volunteer@nu.ac.th', name: 'ศูนย์จิตอาสา มหาวิทยาลัยนเรศวร', role: 'organizer' },
+  ...FACULTY_ORGANIZERS,
 ];
 
 const STUDENTS = [
@@ -235,7 +248,7 @@ const ACTIVITIES: ActivitySeed[] = [
     title: 'Workshop Coding เบื้องต้น',
     cat: 'acad',
     org: 'คณะวิศวกรรมศาสตร์',
-    orgEmail: 'orgsci@nu.ac.th',
+    orgEmail: 'orgeng@nu.ac.th',
     location: 'อาคารเรียนรวม คณะวิศวกรรมศาสตร์',
     photo: 'https://images.unsplash.com/photo-1517180102446-f3ece451e9d8?auto=format&fit=crop&w=900&q=70',
     seatsTotal: 30,
@@ -263,7 +276,7 @@ const ACTIVITIES: ActivitySeed[] = [
     title: 'อบรมปฐมพยาบาลเบื้องต้น',
     cat: 'health',
     org: 'คณะพยาบาลศาสตร์',
-    orgEmail: 'orgsci@nu.ac.th',
+    orgEmail: 'orgnurse@nu.ac.th',
     location: 'คณะพยาบาลศาสตร์ มหาวิทยาลัยนเรศวร',
     photo: 'https://images.unsplash.com/photo-1584515933487-779824d29309?auto=format&fit=crop&w=900&q=70',
     seatsTotal: 40,
@@ -320,7 +333,7 @@ const ACTIVITIES: ActivitySeed[] = [
     title: 'ติวเข้มน้องมัธยมก่อนสอบ TCAS',
     cat: 'acad',
     org: 'สโมสรนิสิตคณะศึกษาศาสตร์',
-    orgEmail: 'orgsci@nu.ac.th',
+    orgEmail: 'orgedu@nu.ac.th',
     location: 'โรงเรียนพิษณุโลกพิทยาคม',
     photo: 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&w=900&q=70',
     seatsTotal: 35,
@@ -334,7 +347,7 @@ const ACTIVITIES: ActivitySeed[] = [
     title: 'ตรวจสุขภาพเบื้องต้นชุมชนท่าโพธิ์',
     cat: 'health',
     org: 'คณะสหเวชศาสตร์',
-    orgEmail: 'orgsci@nu.ac.th',
+    orgEmail: 'orgahs@nu.ac.th',
     location: 'ศาลาประชาคม ต.ท่าโพธิ์ จ.พิษณุโลก',
     photo: 'https://images.unsplash.com/photo-1587560699334-cc4ff634909a?auto=format&fit=crop&w=900&q=70',
     seatsTotal: 50,
@@ -382,16 +395,18 @@ async function main() {
 
   for (const s of [...STAFF, ...STUDENTS]) {
     const student = 'studentId' in s ? s : null;
+    const faculty = 'faculty' in s ? s.faculty : null;
     await prisma.user.upsert({
       where: { email: s.email },
-      update: {},
+      // ผู้จัดประจำคณะที่มีบัญชีอยู่ก่อน (orgsci@) ต้องได้คณะติดไปด้วย ส่วนข้อมูลอื่นที่ผู้ใช้แก้เองไม่แตะ
+      update: !student && faculty ? { faculty } : {},
       create: {
         email: s.email,
         passwordHash,
         role: 'role' in s ? s.role : 'student',
         name: s.name,
         studentId: student?.studentId ?? null,
-        faculty: student?.faculty ?? null,
+        faculty,
         loanStatus: student?.loanStatus ?? null,
         seeded: true,
       },

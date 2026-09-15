@@ -97,11 +97,12 @@ export const DELETE = handler(async (_req, ctx: { params: Promise<{ id: string }
   const target = await prisma.faculty.findUnique({ where: { id } });
   if (!target) fail('NOT_FOUND');
 
-  const students = await prisma.user.count({ where: { faculty: target.name } });
-  if (students > 0) {
+  // นับทุกบทบาท ไม่ใช่แค่นิสิต — บัญชีผู้จัดประจำคณะก็อ้างชื่อคณะนี้อยู่ ลบไปจะหลุดสังกัด
+  const members = await prisma.user.count({ where: { faculty: target.name } });
+  if (members > 0) {
     fail(
       'VALIDATION_ERROR',
-      `คณะนี้มีนิสิตสังกัดอยู่ ${students} คน ย้ายนิสิตออกก่อน หรือปิดการใช้งานแทนการลบ`,
+      `คณะนี้มีผู้ใช้สังกัดอยู่ ${members} คน (นิสิตหรือผู้จัดกิจกรรม) ย้ายออกก่อน หรือปิดการใช้งานแทนการลบ`,
     );
   }
 

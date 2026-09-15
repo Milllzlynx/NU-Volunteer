@@ -19,7 +19,8 @@ export const GET = handler(async () => {
 
   const [rows, grouped] = await Promise.all([
     prisma.faculty.findMany({ orderBy: { order: 'asc' } }),
-    prisma.user.groupBy({ by: ['faculty'], _count: { _all: true } }),
+    // นับเฉพาะนิสิต — บัญชีผู้จัดประจำคณะก็มี faculty แต่ไม่ใช่นิสิตในคณะ
+    prisma.user.groupBy({ by: ['faculty'], where: { role: 'student' }, _count: { _all: true } }),
   ]);
 
   const studentsBy = new Map<string, number>();
