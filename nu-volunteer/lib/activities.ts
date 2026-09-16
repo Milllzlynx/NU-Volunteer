@@ -75,6 +75,7 @@ export type ActivityRow = {
   endAt: Date;
   regOpenAt: Date | null;
   regCloseAt: Date | null;
+  createdAt: Date;
   hours: number;
   location: string;
   seatsTotal: number;
@@ -107,6 +108,55 @@ export function registrationBlock(
   return null;
 }
 
+/** เฉพาะฟิลด์ที่ใช้ตัดสินลำดับ — รับได้ทั้งแถวของหน้าสาธารณะและหน้าผู้ดูแล/ผู้จัด */
+export type ActivityOrderRow = {
+  status: string;
+  endAt: Date;
+  regOpenAt: Date | null;
+  createdAt: Date;
+};
+
+/**
+ * กิจกรรมนี้จบไปแล้วหรือยัง
+ *
+ * จบได้สองทาง — ผู้จัดปิดเอง (closed/cancelled/done) หรือเลยวันสิ้นสุดไปแล้วทั้งที่ยังเป็น open
+ * ต้องนับทางหลังด้วย ไม่งั้นกิจกรรมที่ผ่านไปแล้วแต่ไม่มีใครกดปิดจะยังลอยอยู่กลุ่มบน
+ */
+export function isFinished(a: { status: string; endAt: Date }, now: Date = new Date()): boolean {
+  return a.status === 'closed' || a.status === 'cancelled' || a.status === 'done' || a.endAt < now;
+}
+
+/**
+ * เวลาที่ถือว่ากิจกรรม "เพิ่งเปิดรับสมัคร"
+ *
+ * ใช้ regOpenAt เป็นหลักเพราะตรงกับสิ่งที่ผู้ใช้เห็น ส่วนกิจกรรมที่เปิดรับตั้งแต่ประกาศ
+ * (regOpenAt เป็น null) ใช้วันที่สร้างแทน — เป็นเวลาที่ใกล้เคียงที่สุดที่มีอยู่จริง
+ */
+const openedAtMs = (a: ActivityOrderRow) => (a.regOpenAt ?? a.createdAt).getTime();
+
+/**
+ * ลำดับมาตรฐานของรายการกิจกรรมทุกหน้า
+ *
+ * กติกาชั้นแรกคือกิจกรรมที่จบแล้วต้องอยู่ท้ายเสมอ ไม่ว่าจะเรียงด้วยอะไรก็ตาม
+ * ภายในกลุ่มที่ยังเปิดอยู่เรียงตามวันเปิดรับสมัครล่าสุดขึ้นก่อน ส่วนกลุ่มท้ายเรียงจาก
+ * กิจกรรมที่เพิ่งจบขึ้นก่อน เพราะเป็นอันที่ผู้ใช้ยังนึกออกและอยากย้อนดูมากที่สุด
+ *
+ * ทำฝั่ง JS ไม่ใช่ orderBy ของ Prisma เพราะกลุ่ม "จบแล้ว" เป็นค่าที่คำนวณจาก status คู่กับ
+ * endAt เทียบเวลาปัจจุบัน ซึ่งสั่งเรียงในฐานข้อมูลตรง ๆ ไม่ได้
+ */
+export function compareActivities(a: ActivityOrderRow, b: ActivityOrderRow, now: Date = new Date()): number {
+  const aDone = isFinished(a, now);
+  const bDone = isFinished(b, now);
+  if (aDone !== bDone) return aDone ? 1 : -1;
+  if (aDone) return b.endAt.getTime() - a.endAt.getTime();
+  return openedAtMs(b) - openedAtMs(a);
+}
+
+/** เรียงรายการกิจกรรมตาม compareActivities โดยไม่แก้อาร์เรย์เดิม */
+export function sortActivities<T extends ActivityOrderRow>(rows: T[], now: Date = new Date()): T[] {
+  return [...rows].sort((a, b) => compareActivities(a, b, now));
+}
+
 /** จำนวนที่นั่งที่ถูกจองแล้วของแต่ละกิจกรรม */
 export async function seatFillMap(activityIds: string[]): Promise<Map<string, number>> {
   if (!activityIds.length) return new Map();
@@ -121,6 +171,7 @@ export async function seatFillMap(activityIds: string[]): Promise<Map<string, nu
 export function toPublicActivity(a: ActivityRow, filled: Map<string, number>): PublicActivity {
   const block = registrationBlock(a);
   return {
+    finished: isFinished(a),
     notOpenYet: block === 'not-open-yet',
     regOpenTh: a.regOpenAt ? DATE_TH.format(a.regOpenAt) : null,
     regOpenEn: a.regOpenAt ? DATE_EN.format(a.regOpenAt) : null,

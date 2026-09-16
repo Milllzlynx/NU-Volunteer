@@ -78,7 +78,8 @@ export function CategoryActivities({
     );
   }, [activities, search]);
 
-  const openCount = activities.filter((a) => !a.notOpenYet).length;
+  // นับเฉพาะกิจกรรมที่สมัครได้จริงตอนนี้ — ที่จบแล้วยังอยู่ในรายการแต่ไม่ใช่ของที่เปิดรับ
+  const openCount = activities.filter((a) => !a.notOpenYet && !a.finished).length;
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16, animation: 'nuFadeUp .3s ease' }}>

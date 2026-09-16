@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation';
 import { StudentDiscover } from '@/components/student/StudentDiscover';
-import { toPublicActivities } from '@/lib/activities';
+import { sortActivities, toPublicActivities } from '@/lib/activities';
 import { getCurrentUser } from '@/lib/auth';
 import { prisma } from '@/lib/db';
 import type { PublicCategory } from '@/components/landing/types';
@@ -13,9 +13,9 @@ async function loadDiscover(userId: string) {
       where: { active: true },
       orderBy: [{ order: 'asc' }, { label: 'asc' }],
     }),
+    // เอาฉบับร่างออกอย่างเดียว — กิจกรรมที่จบแล้วยังต้องเห็น เพียงแต่ถูกเรียงไปท้ายสุด
     prisma.activity.findMany({
-      where: { status: 'open', endAt: { gte: now } },
-      orderBy: { startAt: 'asc' },
+      where: { status: { not: 'draft' } },
       include: { category: true },
     }),
     prisma.favorite.findMany({ where: { userId }, select: { activityId: true } }),
@@ -31,7 +31,7 @@ async function loadDiscover(userId: string) {
 
   return {
     categories,
-    activities: await toPublicActivities(activityRows),
+    activities: await toPublicActivities(sortActivities(activityRows, now)),
     favorites: favoriteRows.map((f) => f.activityId),
     registrations: Object.fromEntries(registrationRows.map((r) => [r.activityId, r.status])),
   };

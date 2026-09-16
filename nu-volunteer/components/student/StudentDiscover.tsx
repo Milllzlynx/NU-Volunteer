@@ -75,7 +75,7 @@ export function StudentDiscover({
   const counts = useMemo(() => {
     const c: Record<Availability, number> = { all: byText.length, open: 0, almost: 0, full: 0 };
     for (const a of byText) {
-      const key = seatStatus(a.seatsFilled, a.seatsTotal).key;
+      const key = seatStatus(a.seatsFilled, a.seatsTotal, a.finished).key;
       if (key === 'open') c.open += 1;
       else if (key === 'almost') c.almost += 1;
       else if (key === 'full') c.full += 1;
@@ -87,7 +87,7 @@ export function StudentDiscover({
     () =>
       avail === 'all'
         ? byText
-        : byText.filter((a) => seatStatus(a.seatsFilled, a.seatsTotal).key === avail),
+        : byText.filter((a) => seatStatus(a.seatsFilled, a.seatsTotal, a.finished).key === avail),
     [byText, avail],
   );
 

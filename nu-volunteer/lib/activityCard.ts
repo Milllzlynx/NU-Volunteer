@@ -52,6 +52,7 @@ export function toActivityCardProps(a: PublicActivity, extras: CardExtras = {}):
     registeredSlots: a.seatsFilled,
     totalSlots: a.seatsTotal,
     notOpenYet: a.notOpenYet,
+    finished: a.finished,
     regOpenDate: (isEn ? a.regOpenEn : a.regOpenTh) ?? null,
     hoursReward: a.hours,
     status: toCardStatus(registrationStatus),

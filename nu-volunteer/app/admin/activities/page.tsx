@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { AdminActivities, type AdminActivityRow } from '@/components/admin/AdminActivities';
-import { DATE_EN, DATE_TH, SEAT_TAKEN, dayKeyOf, timeOf } from '@/lib/activities';
+import { DATE_EN, DATE_TH, SEAT_TAKEN, dayKeyOf, sortActivities, timeOf } from '@/lib/activities';
 import { requireAdmin } from '@/lib/auth';
 import { prisma } from '@/lib/db';
 
@@ -17,7 +17,6 @@ export default async function AdminActivitiesPage() {
 
   const now = new Date();
   const rows = await prisma.activity.findMany({
-    orderBy: { startAt: 'desc' },
     include: {
       category: { select: { id: true, label: true, labelEn: true, color: true } },
       organizer: { select: { name: true } },
@@ -26,7 +25,8 @@ export default async function AdminActivitiesPage() {
     },
   });
 
-  const list: AdminActivityRow[] = rows.map((a) => {
+  // กิจกรรมที่จบแล้วลงไปอยู่ท้ายรายการ ที่เหลือเรียงตามวันเปิดรับสมัครล่าสุด
+  const list: AdminActivityRow[] = sortActivities(rows, now).map((a) => {
     const multiDay = dayKeyOf(a.startAt) !== dayKeyOf(a.endAt);
     return {
       id: a.id,

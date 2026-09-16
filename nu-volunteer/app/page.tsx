@@ -1,7 +1,7 @@
 import { Shell } from '@/components/layout/Shell';
 import { Landing } from '@/components/landing/Landing';
 import type { PublicCategory } from '@/components/landing/types';
-import { SEAT_TAKEN, toPublicActivities } from '@/lib/activities';
+import { SEAT_TAKEN, sortActivities, toPublicActivities } from '@/lib/activities';
 import { getCurrentUser } from '@/lib/auth';
 import { prisma } from '@/lib/db';
 
@@ -13,10 +13,10 @@ async function loadLanding() {
       where: { active: true },
       orderBy: [{ order: 'asc' }, { label: 'asc' }],
     }),
+    // ไม่ take ตรงนี้เพราะ 24 อันแรกต้องเลือกหลังเรียงแล้ว ไม่งั้นกิจกรรมที่จบแล้ว
+    // อาจกินโควตาจนกิจกรรมที่ยังเปิดรับสมัครหลุดออกจากหน้าแรก
     prisma.activity.findMany({
-      where: { status: 'open', endAt: { gte: now } },
-      orderBy: { startAt: 'asc' },
-      take: 24,
+      where: { status: { not: 'draft' } },
       include: { category: true },
     }),
     prisma.activity.count({ where: { status: { not: 'draft' } } }),
@@ -34,7 +34,7 @@ async function loadLanding() {
 
   return {
     categories,
-    activities: await toPublicActivities(activityRows),
+    activities: await toPublicActivities(sortActivities(activityRows, now).slice(0, 24)),
     stats: {
       activities: activityTotal,
       participants: participantRows.length,

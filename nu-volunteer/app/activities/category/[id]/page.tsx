@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation';
 import { CategoryActivities } from '@/components/activity/CategoryActivities';
 import { AppShell } from '@/components/layout/AppShell';
 import { Shell } from '@/components/layout/Shell';
-import { toPublicActivities } from '@/lib/activities';
+import { sortActivities, toPublicActivities } from '@/lib/activities';
 import { getCurrentUser, publicUser } from '@/lib/auth';
 import { prisma } from '@/lib/db';
 import { AVAILABLE_PAGES } from '@/lib/routes';
@@ -36,8 +36,7 @@ export default async function ActivityCategoryPage({ params }: Params) {
 
   const now = new Date();
   const activityRows = await prisma.activity.findMany({
-    where: { categoryId: id, status: 'open', endAt: { gte: now } },
-    orderBy: { startAt: 'asc' },
+    where: { categoryId: id, status: { not: 'draft' } },
     include: { category: true },
   });
 
@@ -62,7 +61,7 @@ export default async function ActivityCategoryPage({ params }: Params) {
   const body = (
     <CategoryActivities
       category={category}
-      activities={await toPublicActivities(activityRows)}
+      activities={await toPublicActivities(sortActivities(activityRows, now))}
       signedIn={Boolean(user)}
       /* ไม่มีหน้า /activities ที่รวมทุกหมวด — นิสิตกลับไปหน้าค้นหากิจกรรม ที่เหลือกลับหน้าแรก */
       backHref={user?.role === 'student' ? '/student/discover' : '/#nuv-activities'}

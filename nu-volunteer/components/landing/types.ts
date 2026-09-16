@@ -25,6 +25,8 @@ export type PublicActivity = {
   seatsTotal: number;
   /** ยังไม่ถึงวันเปิดรับสมัคร — การ์ดต้องปิดปุ่มไว้ ไม่งั้นกดแล้วเซิร์ฟเวอร์ปฏิเสธอยู่ดี */
   notOpenYet: boolean;
+  /** กิจกรรมจบไปแล้ว — ยังแสดงในรายการได้แต่ต้องอยู่ท้ายสุดและสมัครไม่ได้ */
+  finished: boolean;
   /** วันที่เปิดรับสมัคร จัดรูปแบบไว้ฝั่งเซิร์ฟเวอร์ — null คือเปิดรับตั้งแต่ประกาศ */
   regOpenTh: string | null;
   regOpenEn: string | null;

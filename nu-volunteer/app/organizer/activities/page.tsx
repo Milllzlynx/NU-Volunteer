@@ -3,7 +3,7 @@ import {
   OrganizerActivities,
   type OrganizerActivityRow,
 } from '@/components/organizer/OrganizerActivities';
-import { DATE_EN, DATE_TH, SEAT_TAKEN, timeOf } from '@/lib/activities';
+import { DATE_EN, DATE_TH, SEAT_TAKEN, sortActivities, timeOf } from '@/lib/activities';
 import { getCurrentUser } from '@/lib/auth';
 import { prisma } from '@/lib/db';
 import { ownedActivityFilter } from '@/lib/organizer';
@@ -15,7 +15,6 @@ export default async function OrganizerActivitiesPage() {
   const now = new Date();
   const rows = await prisma.activity.findMany({
     where: ownedActivityFilter(user),
-    orderBy: { startAt: 'desc' },
     include: {
       category: { select: { label: true, labelEn: true, color: true } },
       _count: { select: { registrations: { where: { status: 'pending' } } } },
@@ -23,7 +22,8 @@ export default async function OrganizerActivitiesPage() {
     },
   });
 
-  const list: OrganizerActivityRow[] = rows.map((a) => ({
+  // กิจกรรมที่จบแล้วลงไปอยู่ท้ายรายการ ที่เหลือเรียงตามวันเปิดรับสมัครล่าสุด
+  const list: OrganizerActivityRow[] = sortActivities(rows, now).map((a) => ({
     id: a.id,
     title: a.title,
     categoryLabel: a.category.label,

@@ -53,6 +53,8 @@ export interface ActivityCardProps {
 
   /** ยังไม่ถึงวันเปิดรับสมัคร — ปุ่มต้องปิด เพราะเซิร์ฟเวอร์จะปฏิเสธการสมัครอยู่ดี */
   notOpenYet?: boolean;
+  /** กิจกรรมจบไปแล้ว — ป้ายต้องบอกว่าจบ และปุ่มสมัครต้องปิด ด้วยเหตุผลเดียวกับ notOpenYet */
+  finished?: boolean;
   /** วันที่เปิดรับสมัคร จัดรูปแบบมาแล้ว — ใช้บอกผู้ใช้ว่ารออีกถึงเมื่อไหร่ */
   regOpenDate?: string | null;
 
@@ -99,6 +101,7 @@ export function ActivityCard(props: ActivityCardProps) {
     hoursReward,
     maxHours,
     notOpenYet = false,
+    finished = false,
     regOpenDate = null,
     status = null,
     signedIn = true,
@@ -206,7 +209,7 @@ export function ActivityCard(props: ActivityCardProps) {
         <div style={{ position: 'absolute', top: 10, insetInlineStart: 10, maxWidth: 'calc(60% - 12px)' }}>
           <Pill
             bg={
-              notOpenYet
+              finished || notOpenYet
                 ? SEMANTIC.neutral.dot
                 : full
                   ? SEMANTIC.danger.dot
@@ -215,13 +218,15 @@ export function ActivityCard(props: ActivityCardProps) {
                     : SEMANTIC.success.dot
             }
             label={
-              notOpenYet
-                ? t('ยังไม่เปิดรับสมัคร')
-                : full
-                  ? t('ที่นั่งเต็ม')
-                  : pct >= 80
-                    ? t('ใกล้เต็ม')
-                    : t('เปิดรับสมัคร')
+              finished
+                ? t('จบกิจกรรมแล้ว')
+                : notOpenYet
+                  ? t('ยังไม่เปิดรับสมัคร')
+                  : full
+                    ? t('ที่นั่งเต็ม')
+                    : pct >= 80
+                      ? t('ใกล้เต็ม')
+                      : t('เปิดรับสมัคร')
             }
           />
         </div>
@@ -352,34 +357,38 @@ export function ActivityCard(props: ActivityCardProps) {
             <button
               type="button"
               onClick={() => run(onRegister, setRegBusy)}
-              disabled={regBusy || full || notOpenYet}
+              disabled={regBusy || full || notOpenYet || finished}
               title={notOpenYet && regOpenDate ? `${t('เปิดรับสมัคร')} ${regOpenDate}` : undefined}
               style={{
                 ...mainButton,
-                opacity: regBusy || full || notOpenYet ? 0.55 : 1,
-                cursor: full || notOpenYet ? 'not-allowed' : 'pointer',
+                opacity: regBusy || full || notOpenYet || finished ? 0.55 : 1,
+                cursor: full || notOpenYet || finished ? 'not-allowed' : 'pointer',
               }}
             >
               <Icon
                 name={
                   regBusy
                     ? 'progress_activity'
-                    : notOpenYet
-                      ? 'lock_clock'
-                      : full
-                        ? 'block'
-                        : 'how_to_reg'
+                    : finished
+                      ? 'event_busy'
+                      : notOpenYet
+                        ? 'lock_clock'
+                        : full
+                          ? 'block'
+                          : 'how_to_reg'
                 }
                 size={17}
                 style={regBusy ? { animation: 'nuSpin 1s linear infinite' } : undefined}
               />
-              {notOpenYet
-                ? regOpenDate
-                  ? `${t('เปิดรับสมัคร')} ${regOpenDate}`
-                  : t('ยังไม่เปิดรับสมัคร')
-                : full
-                  ? t('ที่นั่งเต็ม')
-                  : t('ลงทะเบียน')}
+              {finished
+                ? t('จบกิจกรรมแล้ว')
+                : notOpenYet
+                  ? regOpenDate
+                    ? `${t('เปิดรับสมัคร')} ${regOpenDate}`
+                    : t('ยังไม่เปิดรับสมัคร')
+                  : full
+                    ? t('ที่นั่งเต็ม')
+                    : t('ลงทะเบียน')}
             </button>
           ) : href ? (
             <Link href={href} style={{ ...mainButton, textDecoration: 'none' }}>
