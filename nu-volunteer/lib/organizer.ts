@@ -23,16 +23,28 @@ export type ActivityStatus = (typeof ACTIVITY_STATUSES)[number];
  * แยกไม่พบกับไม่มีสิทธิ์ไม่ได้ตั้งใจ — ทั้งสองกรณีคืน NOT_FOUND เหมือนกัน
  * เพื่อไม่ให้ใครเดารหัสกิจกรรมของหน่วยงานอื่นได้จากความต่างของข้อความ error
  */
-export async function requireOwnedActivity(user: User, activityId: string) {
+export async function requireOwnedActivity(
+  user: User,
+  activityId: string,
+  /** true = ยอมให้เข้าถึงกิจกรรมที่ถูกลบไปแล้ว ใช้เฉพาะเส้นทางที่จัดการตัวการลบเอง */
+  opts: { includeDeleted?: boolean } = {},
+) {
   const activity = await prisma.activity.findUnique({ where: { id: activityId } });
   if (!activity) fail('NOT_FOUND');
   if (user.role !== 'admin' && activity.organizerId !== user.id) fail('NOT_FOUND');
+  // กิจกรรมที่ถูกลบแล้วต้องเสมือนไม่มีอยู่ ไม่ใช่ตอบว่า "ห้าม" ซึ่งเป็นการยืนยันว่าเคยมี
+  if (activity.deletedAt && !opts.includeDeleted) fail('NOT_FOUND');
   return activity;
 }
 
-/** เงื่อนไข where ของรายการกิจกรรมตามบทบาท — แอดมินไม่ถูกกรอง */
+/**
+ * เงื่อนไข where ของรายการกิจกรรมตามบทบาท — แอดมินไม่ถูกกรองด้วยเจ้าของ
+ *
+ * ใส่ deletedAt: null ไว้ในนี้เลย เพราะเป็นตัวกรองที่หน้าฝั่งผู้จัดและแอดมินใช้ร่วมกันแทบทุกหน้า
+ * ถ้าปล่อยให้แต่ละหน้าเติมเอง จะมีหน้าที่ลืมแล้วกิจกรรมที่ลบไปโผล่กลับมาเฉพาะหน้านั้น
+ */
 export function ownedActivityFilter(user: User) {
-  return user.role === 'admin' ? {} : { organizerId: user.id };
+  return user.role === 'admin' ? { deletedAt: null } : { organizerId: user.id, deletedAt: null };
 }
 
 /**

@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation';
 import { CategoryActivities } from '@/components/activity/CategoryActivities';
 import { AppShell } from '@/components/layout/AppShell';
 import { Shell } from '@/components/layout/Shell';
-import { sortActivities, toPublicActivities } from '@/lib/activities';
+import { NOT_DELETED, sortActivities, toPublicActivities } from '@/lib/activities';
 import { getCurrentUser, publicUser } from '@/lib/auth';
 import { prisma } from '@/lib/db';
 import { AVAILABLE_PAGES } from '@/lib/routes';
@@ -36,7 +36,7 @@ export default async function ActivityCategoryPage({ params }: Params) {
 
   const now = new Date();
   const activityRows = await prisma.activity.findMany({
-    where: { categoryId: id, status: { not: 'draft' } },
+    where: { ...NOT_DELETED, categoryId: id, status: { not: 'draft' } },
     include: { category: true },
   });
 

@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { AdminProfile } from '@/components/admin/AdminProfile';
-import { DATE_EN, DATE_TH } from '@/lib/activities';
+import { DATE_EN, DATE_TH, NOT_DELETED } from '@/lib/activities';
 import { requireAdmin } from '@/lib/auth';
 import { prisma } from '@/lib/db';
 
@@ -17,7 +17,7 @@ export default async function AdminProfilePage() {
 
   const [users, activities, hours, myActions] = await Promise.all([
     prisma.user.count(),
-    prisma.activity.count(),
+    prisma.activity.count({ where: NOT_DELETED }),
     prisma.registration.aggregate({ _sum: { hoursAwarded: true } }),
     prisma.systemLog.count({ where: { actorId: user.id } }),
   ]);

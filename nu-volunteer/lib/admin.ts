@@ -6,6 +6,7 @@
  * ที่ไม่มีใครอื่นทำแทนได้ (คำขอลบบัญชี ข้อความถึงผู้ดูแล ฯลฯ)
  */
 
+import { NOT_DELETED } from '@/lib/activities';
 import { prisma } from '@/lib/db';
 import type { ActionAlert } from '@/components/notifications/NotificationsView';
 
@@ -20,7 +21,7 @@ export async function deriveAdminAlerts(): Promise<ActionAlert[]> {
   const [deletionRequests, unreadContact, draftActivities, suspendedUsers] = await Promise.all([
     prisma.user.count({ where: { deletionRequestedAt: { not: null } } }),
     prisma.contactMessage.count({ where: { read: false } }),
-    prisma.activity.count({ where: { status: 'draft' } }),
+    prisma.activity.count({ where: { ...NOT_DELETED, status: 'draft' } }),
     prisma.user.count({ where: { active: false } }),
   ]);
 

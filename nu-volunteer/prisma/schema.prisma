@@ -211,6 +211,16 @@ model Activity {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  /// เวลาที่ถูกลบ — null คือยังอยู่
+  ///
+  /// ลบแบบนิ่ม ไม่ลบแถวจริง เพราะทุกความสัมพันธ์เป็น onDelete: Cascade การลบจริงจะพา
+  /// ใบลงทะเบียน ชั่วโมงที่รับรองแล้ว และใบประกาศของนิสิตหายไปด้วย ใบประกาศที่หายไป
+  /// ทำให้หน้าตรวจสอบสาธารณะขึ้นว่า "ไม่พบ" กับคนที่ถือใบกระดาษอยู่จริง
+  ///
+  /// แยกจาก status เพราะเป็นคนละเรื่องกัน — ลบกิจกรรมสถานะไหนก็ได้ และเก็บสถานะเดิมไว้
+  /// ทำให้กู้คืนได้ถ้าลบผิด
+  deletedAt DateTime?
+
   registrations Registration[]
   favorites     Favorite[]
   certificates  Certificate[]
@@ -222,6 +232,7 @@ model Activity {
   @@index([status, startAt])
   @@index([organizerId])
   @@index([categoryId])
+  @@index([deletedAt])
 }
 
 /// รอบ/ผลัดของกิจกรรมเดียวกัน เช่น "NU Run" มีรอบเช้า รอบบ่าย รอบเย็น

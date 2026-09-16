@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { NOT_DELETED } from '@/lib/activities';
 import { requireAdmin } from '@/lib/auth';
 import { prisma, systemLog } from '@/lib/db';
 import { fail, handler } from '@/lib/errors';
@@ -30,7 +31,7 @@ export const PATCH = handler(async (req) => {
 
   // อ่านชื่อไว้ก่อนแก้ เพื่อให้บันทึกระบบอ่านรู้เรื่องว่าแตะอะไรไปบ้าง
   const targets = await prisma.activity.findMany({
-    where: { id: { in: ids } },
+    where: { ...NOT_DELETED, id: { in: ids } },
     select: { id: true, title: true, status: true },
   });
   if (!targets.length) fail('NOT_FOUND');

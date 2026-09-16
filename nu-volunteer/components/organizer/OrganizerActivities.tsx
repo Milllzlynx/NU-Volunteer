@@ -3,8 +3,9 @@
 import { useMemo, useState, useTransition } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Badge, Button, EmptyState, ErrorNote, Icon, Tabs, inputStyle } from '@/components/ui';
+import { Badge, Button, EmptyState, ErrorNote, Icon, SuccessNote, Tabs, inputStyle } from '@/components/ui';
 import { useApp } from '@/components/providers/AppProviders';
+import { DeleteActivityDialog } from '@/components/organizer/DeleteActivityDialog';
 import { errorMessage, organizerApi } from '@/lib/api';
 import { COLOR, SEMANTIC, glass } from '@/lib/design';
 import type { SemanticTone } from '@/lib/design';
@@ -54,7 +55,8 @@ export function OrganizerActivities({ rows }: { rows: OrganizerActivityRow[] }) 
   const [query, setQuery] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
-  const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
+  const [confirmDelete, setConfirmDelete] = useState<OrganizerActivityRow | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
 
   const counts = useMemo(
     () => ({
@@ -90,23 +92,21 @@ export function OrganizerActivities({ rows }: { rows: OrganizerActivityRow[] }) 
     }
   }
 
-  async function remove(id: string) {
-    setBusy(id);
-    setError(null);
-    try {
-      await organizerApi.deleteActivity(id);
-      setConfirmDelete(null);
-      startTransition(() => router.refresh());
-    } catch (e) {
-      setError(errorMessage(e));
-    } finally {
-      setBusy(null);
-    }
+  /* ตัวกล่องยืนยันเป็นคนเรียก API เอง (ต้องรู้ผลกระทบก่อนถึงจะให้กดลบ) ที่นี่เหลือแค่เก็บผล */
+  function onDeleted(row: OrganizerActivityRow, affectedStudents: number) {
+    setNotice(
+      affectedStudents > 0
+        ? `${t('ลบกิจกรรมแล้ว')}: ${row.title} · ${t('แจ้งเตือนนิสิต {n} คนแล้ว').replace('{n}', String(affectedStudents))}`
+        : `${t('ลบกิจกรรมแล้ว')}: ${row.title}`,
+    );
+    setConfirmDelete(null);
+    startTransition(() => router.refresh());
   }
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 14, animation: 'nuFadeUp .3s ease' }}>
       {error ? <ErrorNote>{error}</ErrorNote> : null}
+      {notice ? <SuccessNote>{notice}</SuccessNote> : null}
 
       <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', alignItems: 'center' }}>
         <div style={{ position: 'relative', flex: 1, minWidth: 220 }}>
@@ -261,34 +261,9 @@ export function OrganizerActivities({ rows }: { rows: OrganizerActivityRow[] }) 
                     </Button>
                   ) : null}
 
-                  {/* ลบได้เฉพาะฉบับร่าง — กิจกรรมที่เผยแพร่แล้วให้ยกเลิกเพื่อไม่ให้ข้อมูลนิสิตหายไปด้วย */}
-                  {r.status === 'draft' ? (
-                    confirmDelete === r.id ? (
-                      <>
-                        <Button
-                          variant="danger"
-                          icon="delete"
-                          loading={working}
-                          onClick={() => remove(r.id)}
-                          style={SMALL_BTN}
-                        >
-                          {t('ยืนยันลบ')}
-                        </Button>
-                        <Button variant="secondary" onClick={() => setConfirmDelete(null)} style={SMALL_BTN}>
-                          {t('ไม่ลบ')}
-                        </Button>
-                      </>
-                    ) : (
-                      <Button
-                        variant="secondary"
-                        icon="delete"
-                        onClick={() => setConfirmDelete(r.id)}
-                        style={SMALL_BTN}
-                      >
-                        {t('ลบ')}
-                      </Button>
-                    )
-                  ) : r.status !== 'cancelled' && r.status !== 'done' ? (
+                  {/* ยกเลิก = ยังอยู่ในระบบแต่ไม่รับสมัครแล้ว · ลบ = เอาออกจากทุกหน้า
+                      จึงเป็นคนละปุ่มกัน และกิจกรรมที่ยังเปิดอยู่ควรเห็นทั้งสองทางเลือก */}
+                  {r.status !== 'cancelled' && r.status !== 'done' ? (
                     <Button
                       variant="danger"
                       icon="block"
@@ -299,12 +274,31 @@ export function OrganizerActivities({ rows }: { rows: OrganizerActivityRow[] }) 
                       {t('ยกเลิกกิจกรรม')}
                     </Button>
                   ) : null}
+
+                  <Button
+                    variant="secondary"
+                    icon="delete"
+                    disabled={busy !== null}
+                    onClick={() => setConfirmDelete(r)}
+                    style={SMALL_BTN}
+                  >
+                    {t('ลบ')}
+                  </Button>
                 </div>
               </div>
             );
           })}
         </div>
       )}
+
+      {confirmDelete ? (
+        <DeleteActivityDialog
+          activityId={confirmDelete.id}
+          title={confirmDelete.title}
+          onCancel={() => setConfirmDelete(null)}
+          onDeleted={(n) => onDeleted(confirmDelete, n)}
+        />
+      ) : null}
     </div>
   );
 }

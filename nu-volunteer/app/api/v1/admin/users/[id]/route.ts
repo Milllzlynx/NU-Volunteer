@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { NOT_DELETED } from '@/lib/activities';
 import { requireAdmin } from '@/lib/auth';
 import { prisma, systemLog } from '@/lib/db';
 import { fail, handler } from '@/lib/errors';
@@ -149,7 +150,7 @@ export const DELETE = handler(async (_req, ctx: { params: Promise<{ id: string }
 
   // นับสิ่งที่จะหายไปด้วย — ใช้ทั้งเป็นด่านกันลบและเป็นหลักฐานใน SystemLog
   const [organized, adjustmentsMade, registrations, certificates] = await Promise.all([
-    prisma.activity.count({ where: { organizerId: id } }),
+    prisma.activity.count({ where: { ...NOT_DELETED, organizerId: id } }),
     prisma.hourAdjustment.count({ where: { authorId: id } }),
     prisma.registration.count({ where: { userId: id } }),
     prisma.certificate.count({ where: { userId: id } }),

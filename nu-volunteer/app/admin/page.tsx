@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { AdminHome, type LogRow } from '@/components/admin/AdminHome';
-import { DATE_EN, DATE_TH, timeOf } from '@/lib/activities';
+import { DATE_EN, DATE_TH, NOT_DELETED, timeOf } from '@/lib/activities';
 import { requireAdmin } from '@/lib/auth';
 import { prisma } from '@/lib/db';
 
@@ -32,8 +32,8 @@ export default async function AdminHomePage() {
     prisma.user.count({ where: { role: 'student' } }),
     prisma.user.count({ where: { role: 'organizer' } }),
     prisma.user.count({ where: { active: false } }),
-    prisma.activity.count(),
-    prisma.activity.count({ where: { status: 'open', endAt: { gte: now } } }),
+    prisma.activity.count({ where: NOT_DELETED }),
+    prisma.activity.count({ where: { ...NOT_DELETED, status: 'open', endAt: { gte: now } } }),
     prisma.registration.aggregate({ _sum: { hoursAwarded: true } }),
     prisma.user.count({ where: { deletionRequestedAt: { not: null } } }),
     prisma.contactMessage.count({ where: { read: false } }),

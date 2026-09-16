@@ -6,7 +6,7 @@
  * การใส่ทั้งหมดลง PublicActivity จะทำให้ทุกหน้าที่แสดงการ์ดต้องส่งข้อมูลเกินจำเป็น
  */
 
-import { DATE_EN, DATE_TH, SEAT_TAKEN, dayKeyOf, registrationBlock, timeOf } from '@/lib/activities';
+import { DATE_EN, DATE_TH, NOT_DELETED, SEAT_TAKEN, dayKeyOf, registrationBlock, timeOf } from '@/lib/activities';
 import { prisma } from '@/lib/db';
 
 export type ActivityDetailView = {
@@ -151,8 +151,9 @@ export async function getActivityDetail(
   /** บทบาทของผู้เปิดดู — ใช้ตัดสินว่าจะส่งรหัสนิสิตลงไปด้วยหรือไม่ */
   viewerRole: string | null = null,
 ): Promise<ActivityDetailView | null> {
-  const activity = await prisma.activity.findUnique({
-    where: { id },
+  // กิจกรรมที่ถูกลบต้องเปิดหน้ารายละเอียดไม่ได้ ไม่ว่าจะมีลิงก์ตรงอยู่ในมือหรือไม่
+  const activity = await prisma.activity.findFirst({
+    where: { ...NOT_DELETED, id },
     include: { category: true, organizer: { select: { name: true } } },
   });
   if (!activity) return null;

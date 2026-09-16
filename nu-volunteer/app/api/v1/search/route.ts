@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { requireUser } from '@/lib/auth';
-import { DATE_EN, DATE_TH } from '@/lib/activities';
+import { DATE_EN, DATE_TH, NOT_DELETED } from '@/lib/activities';
 import { prisma } from '@/lib/db';
 import { fail, handler } from '@/lib/errors';
 
@@ -47,6 +47,7 @@ export const GET = handler(async (req) => {
   if (wants('activities')) {
     const rows = await prisma.activity.findMany({
       where: {
+        ...NOT_DELETED,
         status: status ? status : { notIn: ['draft'] },
         ...(category ? { categoryId: category } : {}),
         OR: [

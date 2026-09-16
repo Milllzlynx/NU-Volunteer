@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { AdminCalendar, type AdminCalendarItem } from '@/components/admin/AdminCalendar';
-import { SEAT_TAKEN, dayKeyOf, timeOf } from '@/lib/activities';
+import { NOT_DELETED, SEAT_TAKEN, dayKeyOf, timeOf } from '@/lib/activities';
 import { requireAdmin } from '@/lib/auth';
 import { prisma } from '@/lib/db';
 
@@ -14,6 +14,7 @@ export default async function AdminCalendarPage() {
   await requireAdmin();
 
   const rows = await prisma.activity.findMany({
+    where: NOT_DELETED,
     orderBy: { startAt: 'asc' },
     include: {
       category: { select: { id: true, label: true, labelEn: true, color: true } },

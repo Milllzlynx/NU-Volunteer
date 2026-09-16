@@ -70,6 +70,7 @@ export type ActivityMinAggregateOutputType = {
   requiresApproval: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
+  deletedAt: Date | null
 }
 
 export type ActivityMaxAggregateOutputType = {
@@ -100,6 +101,7 @@ export type ActivityMaxAggregateOutputType = {
   requiresApproval: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
+  deletedAt: Date | null
 }
 
 export type ActivityCountAggregateOutputType = {
@@ -130,6 +132,7 @@ export type ActivityCountAggregateOutputType = {
   requiresApproval: number
   createdAt: number
   updatedAt: number
+  deletedAt: number
   _all: number
 }
 
@@ -178,6 +181,7 @@ export type ActivityMinAggregateInputType = {
   requiresApproval?: true
   createdAt?: true
   updatedAt?: true
+  deletedAt?: true
 }
 
 export type ActivityMaxAggregateInputType = {
@@ -208,6 +212,7 @@ export type ActivityMaxAggregateInputType = {
   requiresApproval?: true
   createdAt?: true
   updatedAt?: true
+  deletedAt?: true
 }
 
 export type ActivityCountAggregateInputType = {
@@ -238,6 +243,7 @@ export type ActivityCountAggregateInputType = {
   requiresApproval?: true
   createdAt?: true
   updatedAt?: true
+  deletedAt?: true
   _all?: true
 }
 
@@ -355,6 +361,7 @@ export type ActivityGroupByOutputType = {
   requiresApproval: boolean
   createdAt: Date
   updatedAt: Date
+  deletedAt: Date | null
   _count: ActivityCountAggregateOutputType | null
   _avg: ActivityAvgAggregateOutputType | null
   _sum: ActivitySumAggregateOutputType | null
@@ -408,6 +415,7 @@ export type ActivityWhereInput = {
   requiresApproval?: Prisma.BoolFilter<"Activity"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Activity"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Activity"> | Date | string
+  deletedAt?: Prisma.DateTimeNullableFilter<"Activity"> | Date | string | null
   category?: Prisma.XOR<Prisma.CategoryScalarRelationFilter, Prisma.CategoryWhereInput>
   organizer?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   registrations?: Prisma.RegistrationListRelationFilter
@@ -447,6 +455,7 @@ export type ActivityOrderByWithRelationInput = {
   requiresApproval?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   category?: Prisma.CategoryOrderByWithRelationInput
   organizer?: Prisma.UserOrderByWithRelationInput
   registrations?: Prisma.RegistrationOrderByRelationAggregateInput
@@ -489,6 +498,7 @@ export type ActivityWhereUniqueInput = Prisma.AtLeast<{
   requiresApproval?: Prisma.BoolFilter<"Activity"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Activity"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Activity"> | Date | string
+  deletedAt?: Prisma.DateTimeNullableFilter<"Activity"> | Date | string | null
   category?: Prisma.XOR<Prisma.CategoryScalarRelationFilter, Prisma.CategoryWhereInput>
   organizer?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   registrations?: Prisma.RegistrationListRelationFilter
@@ -528,6 +538,7 @@ export type ActivityOrderByWithAggregationInput = {
   requiresApproval?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.ActivityCountOrderByAggregateInput
   _avg?: Prisma.ActivityAvgOrderByAggregateInput
   _max?: Prisma.ActivityMaxOrderByAggregateInput
@@ -566,6 +577,7 @@ export type ActivityScalarWhereWithAggregatesInput = {
   requiresApproval?: Prisma.BoolWithAggregatesFilter<"Activity"> | boolean
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Activity"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Activity"> | Date | string
+  deletedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Activity"> | Date | string | null
 }
 
 export type ActivityCreateInput = {
@@ -594,6 +606,7 @@ export type ActivityCreateInput = {
   requiresApproval?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  deletedAt?: Date | string | null
   category: Prisma.CategoryCreateNestedOneWithoutActivitiesInput
   organizer: Prisma.UserCreateNestedOneWithoutOrganizedInput
   registrations?: Prisma.RegistrationCreateNestedManyWithoutActivityInput
@@ -633,6 +646,7 @@ export type ActivityUncheckedCreateInput = {
   requiresApproval?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  deletedAt?: Date | string | null
   registrations?: Prisma.RegistrationUncheckedCreateNestedManyWithoutActivityInput
   favorites?: Prisma.FavoriteUncheckedCreateNestedManyWithoutActivityInput
   certificates?: Prisma.CertificateUncheckedCreateNestedManyWithoutActivityInput
@@ -668,6 +682,7 @@ export type ActivityUpdateInput = {
   requiresApproval?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   category?: Prisma.CategoryUpdateOneRequiredWithoutActivitiesNestedInput
   organizer?: Prisma.UserUpdateOneRequiredWithoutOrganizedNestedInput
   registrations?: Prisma.RegistrationUpdateManyWithoutActivityNestedInput
@@ -707,6 +722,7 @@ export type ActivityUncheckedUpdateInput = {
   requiresApproval?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   registrations?: Prisma.RegistrationUncheckedUpdateManyWithoutActivityNestedInput
   favorites?: Prisma.FavoriteUncheckedUpdateManyWithoutActivityNestedInput
   certificates?: Prisma.CertificateUncheckedUpdateManyWithoutActivityNestedInput
@@ -744,6 +760,7 @@ export type ActivityCreateManyInput = {
   requiresApproval?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  deletedAt?: Date | string | null
 }
 
 export type ActivityUpdateManyMutationInput = {
@@ -772,6 +789,7 @@ export type ActivityUpdateManyMutationInput = {
   requiresApproval?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 export type ActivityUncheckedUpdateManyInput = {
@@ -802,6 +820,7 @@ export type ActivityUncheckedUpdateManyInput = {
   requiresApproval?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 export type ActivityListRelationFilter = {
@@ -842,6 +861,7 @@ export type ActivityCountOrderByAggregateInput = {
   requiresApproval?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrder
 }
 
 export type ActivityAvgOrderByAggregateInput = {
@@ -880,6 +900,7 @@ export type ActivityMaxOrderByAggregateInput = {
   requiresApproval?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrder
 }
 
 export type ActivityMinOrderByAggregateInput = {
@@ -910,6 +931,7 @@ export type ActivityMinOrderByAggregateInput = {
   requiresApproval?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrder
 }
 
 export type ActivitySumOrderByAggregateInput = {
@@ -1156,6 +1178,7 @@ export type ActivityCreateWithoutOrganizerInput = {
   requiresApproval?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  deletedAt?: Date | string | null
   category: Prisma.CategoryCreateNestedOneWithoutActivitiesInput
   registrations?: Prisma.RegistrationCreateNestedManyWithoutActivityInput
   favorites?: Prisma.FavoriteCreateNestedManyWithoutActivityInput
@@ -1193,6 +1216,7 @@ export type ActivityUncheckedCreateWithoutOrganizerInput = {
   requiresApproval?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  deletedAt?: Date | string | null
   registrations?: Prisma.RegistrationUncheckedCreateNestedManyWithoutActivityInput
   favorites?: Prisma.FavoriteUncheckedCreateNestedManyWithoutActivityInput
   certificates?: Prisma.CertificateUncheckedCreateNestedManyWithoutActivityInput
@@ -1258,6 +1282,7 @@ export type ActivityScalarWhereInput = {
   requiresApproval?: Prisma.BoolFilter<"Activity"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Activity"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Activity"> | Date | string
+  deletedAt?: Prisma.DateTimeNullableFilter<"Activity"> | Date | string | null
 }
 
 export type ActivityCreateWithoutCategoryInput = {
@@ -1286,6 +1311,7 @@ export type ActivityCreateWithoutCategoryInput = {
   requiresApproval?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  deletedAt?: Date | string | null
   organizer: Prisma.UserCreateNestedOneWithoutOrganizedInput
   registrations?: Prisma.RegistrationCreateNestedManyWithoutActivityInput
   favorites?: Prisma.FavoriteCreateNestedManyWithoutActivityInput
@@ -1323,6 +1349,7 @@ export type ActivityUncheckedCreateWithoutCategoryInput = {
   requiresApproval?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  deletedAt?: Date | string | null
   registrations?: Prisma.RegistrationUncheckedCreateNestedManyWithoutActivityInput
   favorites?: Prisma.FavoriteUncheckedCreateNestedManyWithoutActivityInput
   certificates?: Prisma.CertificateUncheckedCreateNestedManyWithoutActivityInput
@@ -1383,6 +1410,7 @@ export type ActivityCreateWithoutSessionsInput = {
   requiresApproval?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  deletedAt?: Date | string | null
   category: Prisma.CategoryCreateNestedOneWithoutActivitiesInput
   organizer: Prisma.UserCreateNestedOneWithoutOrganizedInput
   registrations?: Prisma.RegistrationCreateNestedManyWithoutActivityInput
@@ -1421,6 +1449,7 @@ export type ActivityUncheckedCreateWithoutSessionsInput = {
   requiresApproval?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  deletedAt?: Date | string | null
   registrations?: Prisma.RegistrationUncheckedCreateNestedManyWithoutActivityInput
   favorites?: Prisma.FavoriteUncheckedCreateNestedManyWithoutActivityInput
   certificates?: Prisma.CertificateUncheckedCreateNestedManyWithoutActivityInput
@@ -1471,6 +1500,7 @@ export type ActivityUpdateWithoutSessionsInput = {
   requiresApproval?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   category?: Prisma.CategoryUpdateOneRequiredWithoutActivitiesNestedInput
   organizer?: Prisma.UserUpdateOneRequiredWithoutOrganizedNestedInput
   registrations?: Prisma.RegistrationUpdateManyWithoutActivityNestedInput
@@ -1509,6 +1539,7 @@ export type ActivityUncheckedUpdateWithoutSessionsInput = {
   requiresApproval?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   registrations?: Prisma.RegistrationUncheckedUpdateManyWithoutActivityNestedInput
   favorites?: Prisma.FavoriteUncheckedUpdateManyWithoutActivityNestedInput
   certificates?: Prisma.CertificateUncheckedUpdateManyWithoutActivityNestedInput
@@ -1543,6 +1574,7 @@ export type ActivityCreateWithoutRegistrationsInput = {
   requiresApproval?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  deletedAt?: Date | string | null
   category: Prisma.CategoryCreateNestedOneWithoutActivitiesInput
   organizer: Prisma.UserCreateNestedOneWithoutOrganizedInput
   favorites?: Prisma.FavoriteCreateNestedManyWithoutActivityInput
@@ -1581,6 +1613,7 @@ export type ActivityUncheckedCreateWithoutRegistrationsInput = {
   requiresApproval?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  deletedAt?: Date | string | null
   favorites?: Prisma.FavoriteUncheckedCreateNestedManyWithoutActivityInput
   certificates?: Prisma.CertificateUncheckedCreateNestedManyWithoutActivityInput
   reviews?: Prisma.ReviewUncheckedCreateNestedManyWithoutActivityInput
@@ -1631,6 +1664,7 @@ export type ActivityUpdateWithoutRegistrationsInput = {
   requiresApproval?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   category?: Prisma.CategoryUpdateOneRequiredWithoutActivitiesNestedInput
   organizer?: Prisma.UserUpdateOneRequiredWithoutOrganizedNestedInput
   favorites?: Prisma.FavoriteUpdateManyWithoutActivityNestedInput
@@ -1669,6 +1703,7 @@ export type ActivityUncheckedUpdateWithoutRegistrationsInput = {
   requiresApproval?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   favorites?: Prisma.FavoriteUncheckedUpdateManyWithoutActivityNestedInput
   certificates?: Prisma.CertificateUncheckedUpdateManyWithoutActivityNestedInput
   reviews?: Prisma.ReviewUncheckedUpdateManyWithoutActivityNestedInput
@@ -1703,6 +1738,7 @@ export type ActivityCreateWithoutFavoritesInput = {
   requiresApproval?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  deletedAt?: Date | string | null
   category: Prisma.CategoryCreateNestedOneWithoutActivitiesInput
   organizer: Prisma.UserCreateNestedOneWithoutOrganizedInput
   registrations?: Prisma.RegistrationCreateNestedManyWithoutActivityInput
@@ -1741,6 +1777,7 @@ export type ActivityUncheckedCreateWithoutFavoritesInput = {
   requiresApproval?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  deletedAt?: Date | string | null
   registrations?: Prisma.RegistrationUncheckedCreateNestedManyWithoutActivityInput
   certificates?: Prisma.CertificateUncheckedCreateNestedManyWithoutActivityInput
   reviews?: Prisma.ReviewUncheckedCreateNestedManyWithoutActivityInput
@@ -1791,6 +1828,7 @@ export type ActivityUpdateWithoutFavoritesInput = {
   requiresApproval?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   category?: Prisma.CategoryUpdateOneRequiredWithoutActivitiesNestedInput
   organizer?: Prisma.UserUpdateOneRequiredWithoutOrganizedNestedInput
   registrations?: Prisma.RegistrationUpdateManyWithoutActivityNestedInput
@@ -1829,6 +1867,7 @@ export type ActivityUncheckedUpdateWithoutFavoritesInput = {
   requiresApproval?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   registrations?: Prisma.RegistrationUncheckedUpdateManyWithoutActivityNestedInput
   certificates?: Prisma.CertificateUncheckedUpdateManyWithoutActivityNestedInput
   reviews?: Prisma.ReviewUncheckedUpdateManyWithoutActivityNestedInput
@@ -1863,6 +1902,7 @@ export type ActivityCreateWithoutCheckinTokensInput = {
   requiresApproval?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  deletedAt?: Date | string | null
   category: Prisma.CategoryCreateNestedOneWithoutActivitiesInput
   organizer: Prisma.UserCreateNestedOneWithoutOrganizedInput
   registrations?: Prisma.RegistrationCreateNestedManyWithoutActivityInput
@@ -1901,6 +1941,7 @@ export type ActivityUncheckedCreateWithoutCheckinTokensInput = {
   requiresApproval?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  deletedAt?: Date | string | null
   registrations?: Prisma.RegistrationUncheckedCreateNestedManyWithoutActivityInput
   favorites?: Prisma.FavoriteUncheckedCreateNestedManyWithoutActivityInput
   certificates?: Prisma.CertificateUncheckedCreateNestedManyWithoutActivityInput
@@ -1951,6 +1992,7 @@ export type ActivityUpdateWithoutCheckinTokensInput = {
   requiresApproval?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   category?: Prisma.CategoryUpdateOneRequiredWithoutActivitiesNestedInput
   organizer?: Prisma.UserUpdateOneRequiredWithoutOrganizedNestedInput
   registrations?: Prisma.RegistrationUpdateManyWithoutActivityNestedInput
@@ -1989,6 +2031,7 @@ export type ActivityUncheckedUpdateWithoutCheckinTokensInput = {
   requiresApproval?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   registrations?: Prisma.RegistrationUncheckedUpdateManyWithoutActivityNestedInput
   favorites?: Prisma.FavoriteUncheckedUpdateManyWithoutActivityNestedInput
   certificates?: Prisma.CertificateUncheckedUpdateManyWithoutActivityNestedInput
@@ -2023,6 +2066,7 @@ export type ActivityCreateWithoutCertificatesInput = {
   requiresApproval?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  deletedAt?: Date | string | null
   category: Prisma.CategoryCreateNestedOneWithoutActivitiesInput
   organizer: Prisma.UserCreateNestedOneWithoutOrganizedInput
   registrations?: Prisma.RegistrationCreateNestedManyWithoutActivityInput
@@ -2061,6 +2105,7 @@ export type ActivityUncheckedCreateWithoutCertificatesInput = {
   requiresApproval?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  deletedAt?: Date | string | null
   registrations?: Prisma.RegistrationUncheckedCreateNestedManyWithoutActivityInput
   favorites?: Prisma.FavoriteUncheckedCreateNestedManyWithoutActivityInput
   reviews?: Prisma.ReviewUncheckedCreateNestedManyWithoutActivityInput
@@ -2111,6 +2156,7 @@ export type ActivityUpdateWithoutCertificatesInput = {
   requiresApproval?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   category?: Prisma.CategoryUpdateOneRequiredWithoutActivitiesNestedInput
   organizer?: Prisma.UserUpdateOneRequiredWithoutOrganizedNestedInput
   registrations?: Prisma.RegistrationUpdateManyWithoutActivityNestedInput
@@ -2149,6 +2195,7 @@ export type ActivityUncheckedUpdateWithoutCertificatesInput = {
   requiresApproval?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   registrations?: Prisma.RegistrationUncheckedUpdateManyWithoutActivityNestedInput
   favorites?: Prisma.FavoriteUncheckedUpdateManyWithoutActivityNestedInput
   reviews?: Prisma.ReviewUncheckedUpdateManyWithoutActivityNestedInput
@@ -2183,6 +2230,7 @@ export type ActivityCreateWithoutReviewsInput = {
   requiresApproval?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  deletedAt?: Date | string | null
   category: Prisma.CategoryCreateNestedOneWithoutActivitiesInput
   organizer: Prisma.UserCreateNestedOneWithoutOrganizedInput
   registrations?: Prisma.RegistrationCreateNestedManyWithoutActivityInput
@@ -2221,6 +2269,7 @@ export type ActivityUncheckedCreateWithoutReviewsInput = {
   requiresApproval?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  deletedAt?: Date | string | null
   registrations?: Prisma.RegistrationUncheckedCreateNestedManyWithoutActivityInput
   favorites?: Prisma.FavoriteUncheckedCreateNestedManyWithoutActivityInput
   certificates?: Prisma.CertificateUncheckedCreateNestedManyWithoutActivityInput
@@ -2271,6 +2320,7 @@ export type ActivityUpdateWithoutReviewsInput = {
   requiresApproval?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   category?: Prisma.CategoryUpdateOneRequiredWithoutActivitiesNestedInput
   organizer?: Prisma.UserUpdateOneRequiredWithoutOrganizedNestedInput
   registrations?: Prisma.RegistrationUpdateManyWithoutActivityNestedInput
@@ -2309,6 +2359,7 @@ export type ActivityUncheckedUpdateWithoutReviewsInput = {
   requiresApproval?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   registrations?: Prisma.RegistrationUncheckedUpdateManyWithoutActivityNestedInput
   favorites?: Prisma.FavoriteUncheckedUpdateManyWithoutActivityNestedInput
   certificates?: Prisma.CertificateUncheckedUpdateManyWithoutActivityNestedInput
@@ -2343,6 +2394,7 @@ export type ActivityCreateWithoutThreadsInput = {
   requiresApproval?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  deletedAt?: Date | string | null
   category: Prisma.CategoryCreateNestedOneWithoutActivitiesInput
   organizer: Prisma.UserCreateNestedOneWithoutOrganizedInput
   registrations?: Prisma.RegistrationCreateNestedManyWithoutActivityInput
@@ -2381,6 +2433,7 @@ export type ActivityUncheckedCreateWithoutThreadsInput = {
   requiresApproval?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  deletedAt?: Date | string | null
   registrations?: Prisma.RegistrationUncheckedCreateNestedManyWithoutActivityInput
   favorites?: Prisma.FavoriteUncheckedCreateNestedManyWithoutActivityInput
   certificates?: Prisma.CertificateUncheckedCreateNestedManyWithoutActivityInput
@@ -2431,6 +2484,7 @@ export type ActivityUpdateWithoutThreadsInput = {
   requiresApproval?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   category?: Prisma.CategoryUpdateOneRequiredWithoutActivitiesNestedInput
   organizer?: Prisma.UserUpdateOneRequiredWithoutOrganizedNestedInput
   registrations?: Prisma.RegistrationUpdateManyWithoutActivityNestedInput
@@ -2469,6 +2523,7 @@ export type ActivityUncheckedUpdateWithoutThreadsInput = {
   requiresApproval?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   registrations?: Prisma.RegistrationUncheckedUpdateManyWithoutActivityNestedInput
   favorites?: Prisma.FavoriteUncheckedUpdateManyWithoutActivityNestedInput
   certificates?: Prisma.CertificateUncheckedUpdateManyWithoutActivityNestedInput
@@ -2504,6 +2559,7 @@ export type ActivityCreateManyOrganizerInput = {
   requiresApproval?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  deletedAt?: Date | string | null
 }
 
 export type ActivityUpdateWithoutOrganizerInput = {
@@ -2532,6 +2588,7 @@ export type ActivityUpdateWithoutOrganizerInput = {
   requiresApproval?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   category?: Prisma.CategoryUpdateOneRequiredWithoutActivitiesNestedInput
   registrations?: Prisma.RegistrationUpdateManyWithoutActivityNestedInput
   favorites?: Prisma.FavoriteUpdateManyWithoutActivityNestedInput
@@ -2569,6 +2626,7 @@ export type ActivityUncheckedUpdateWithoutOrganizerInput = {
   requiresApproval?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   registrations?: Prisma.RegistrationUncheckedUpdateManyWithoutActivityNestedInput
   favorites?: Prisma.FavoriteUncheckedUpdateManyWithoutActivityNestedInput
   certificates?: Prisma.CertificateUncheckedUpdateManyWithoutActivityNestedInput
@@ -2605,6 +2663,7 @@ export type ActivityUncheckedUpdateManyWithoutOrganizerInput = {
   requiresApproval?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 export type ActivityCreateManyCategoryInput = {
@@ -2634,6 +2693,7 @@ export type ActivityCreateManyCategoryInput = {
   requiresApproval?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  deletedAt?: Date | string | null
 }
 
 export type ActivityUpdateWithoutCategoryInput = {
@@ -2662,6 +2722,7 @@ export type ActivityUpdateWithoutCategoryInput = {
   requiresApproval?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   organizer?: Prisma.UserUpdateOneRequiredWithoutOrganizedNestedInput
   registrations?: Prisma.RegistrationUpdateManyWithoutActivityNestedInput
   favorites?: Prisma.FavoriteUpdateManyWithoutActivityNestedInput
@@ -2699,6 +2760,7 @@ export type ActivityUncheckedUpdateWithoutCategoryInput = {
   requiresApproval?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   registrations?: Prisma.RegistrationUncheckedUpdateManyWithoutActivityNestedInput
   favorites?: Prisma.FavoriteUncheckedUpdateManyWithoutActivityNestedInput
   certificates?: Prisma.CertificateUncheckedUpdateManyWithoutActivityNestedInput
@@ -2735,6 +2797,7 @@ export type ActivityUncheckedUpdateManyWithoutCategoryInput = {
   requiresApproval?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 
@@ -2850,6 +2913,7 @@ export type ActivitySelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   requiresApproval?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  deletedAt?: boolean
   category?: boolean | Prisma.CategoryDefaultArgs<ExtArgs>
   organizer?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   registrations?: boolean | Prisma.Activity$registrationsArgs<ExtArgs>
@@ -2890,6 +2954,7 @@ export type ActivitySelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
   requiresApproval?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  deletedAt?: boolean
   category?: boolean | Prisma.CategoryDefaultArgs<ExtArgs>
   organizer?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["activity"]>
@@ -2922,6 +2987,7 @@ export type ActivitySelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
   requiresApproval?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  deletedAt?: boolean
   category?: boolean | Prisma.CategoryDefaultArgs<ExtArgs>
   organizer?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["activity"]>
@@ -2954,9 +3020,10 @@ export type ActivitySelectScalar = {
   requiresApproval?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  deletedAt?: boolean
 }
 
-export type ActivityOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "categoryId" | "organizerId" | "orgName" | "description" | "location" | "lat" | "lng" | "mapLink" | "geoRadiusM" | "startAt" | "endAt" | "regOpenAt" | "regCloseAt" | "seatsTotal" | "hours" | "status" | "photo" | "gallery" | "mapImage" | "perks" | "prep" | "notes" | "requiresApproval" | "createdAt" | "updatedAt", ExtArgs["result"]["activity"]>
+export type ActivityOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "categoryId" | "organizerId" | "orgName" | "description" | "location" | "lat" | "lng" | "mapLink" | "geoRadiusM" | "startAt" | "endAt" | "regOpenAt" | "regCloseAt" | "seatsTotal" | "hours" | "status" | "photo" | "gallery" | "mapImage" | "perks" | "prep" | "notes" | "requiresApproval" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["activity"]>
 export type ActivityInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   category?: boolean | Prisma.CategoryDefaultArgs<ExtArgs>
   organizer?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -3022,6 +3089,17 @@ export type $ActivityPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     requiresApproval: boolean
     createdAt: Date
     updatedAt: Date
+    /**
+     * เวลาที่ถูกลบ — null คือยังอยู่
+     * 
+     * ลบแบบนิ่ม ไม่ลบแถวจริง เพราะทุกความสัมพันธ์เป็น onDelete: Cascade การลบจริงจะพา
+     * ใบลงทะเบียน ชั่วโมงที่รับรองแล้ว และใบประกาศของนิสิตหายไปด้วย ใบประกาศที่หายไป
+     * ทำให้หน้าตรวจสอบสาธารณะขึ้นว่า "ไม่พบ" กับคนที่ถือใบกระดาษอยู่จริง
+     * 
+     * แยกจาก status เพราะเป็นคนละเรื่องกัน — ลบกิจกรรมสถานะไหนก็ได้ และเก็บสถานะเดิมไว้
+     * ทำให้กู้คืนได้ถ้าลบผิด
+     */
+    deletedAt: Date | null
   }, ExtArgs["result"]["activity"]>
   composites: {}
 }
@@ -3481,6 +3559,7 @@ export interface ActivityFieldRefs {
   readonly requiresApproval: Prisma.FieldRef<"Activity", 'Boolean'>
   readonly createdAt: Prisma.FieldRef<"Activity", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Activity", 'DateTime'>
+  readonly deletedAt: Prisma.FieldRef<"Activity", 'DateTime'>
 }
     
 

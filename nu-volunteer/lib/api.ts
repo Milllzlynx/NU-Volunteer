@@ -211,7 +211,21 @@ export const organizerApi = {
     ),
 
   deleteActivity: (id: string) =>
-    apiFetch<{ ok: true }>(`/organizer/activities/${id}`, { method: 'DELETE' }),
+    apiFetch<{ ok: true; affectedStudents: number }>(`/organizer/activities/${id}`, { method: 'DELETE' }),
+
+  /** ผลกระทบของการลบกิจกรรม — เรียกตอนเปิดกล่องยืนยัน ไม่ได้มากับข้อมูลของแถว */
+  activityImpact: (id: string) =>
+    apiFetch<{
+      ok: true;
+      impact: {
+        students: number;
+        registrations: number;
+        hours: number;
+        certificates: number;
+        activeCertificates: number;
+        reviews: number;
+      };
+    }>(`/organizer/activities/${id}/impact`),
 
   decideRegistration: (id: string, action: 'approve' | 'reject', reason?: string) =>
     apiFetch<{ ok: true; registration: { id: string; status: string } }>(

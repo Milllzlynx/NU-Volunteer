@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { AdminActivities, type AdminActivityRow } from '@/components/admin/AdminActivities';
-import { DATE_EN, DATE_TH, SEAT_TAKEN, dayKeyOf, sortActivities, timeOf } from '@/lib/activities';
+import { DATE_EN, DATE_TH, NOT_DELETED, SEAT_TAKEN, dayKeyOf, sortActivities, timeOf } from '@/lib/activities';
 import { requireAdmin } from '@/lib/auth';
 import { prisma } from '@/lib/db';
 
@@ -17,6 +17,7 @@ export default async function AdminActivitiesPage() {
 
   const now = new Date();
   const rows = await prisma.activity.findMany({
+    where: NOT_DELETED,
     include: {
       category: { select: { id: true, label: true, labelEn: true, color: true } },
       organizer: { select: { name: true } },

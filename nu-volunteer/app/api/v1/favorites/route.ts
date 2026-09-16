@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { NOT_DELETED } from '@/lib/activities';
 import { requireRole } from '@/lib/auth';
 import { prisma } from '@/lib/db';
 import { fail, handler } from '@/lib/errors';
@@ -19,7 +20,7 @@ export const POST = handler(async (req) => {
     return NextResponse.json({ ok: true, favorited: false });
   }
 
-  const activity = await prisma.activity.findUnique({ where: { id: activityId }, select: { id: true } });
+  const activity = await prisma.activity.findFirst({ where: { ...NOT_DELETED, id: activityId }, select: { id: true } });
   if (!activity) fail('NOT_FOUND');
 
   await prisma.favorite.create({ data: { userId: user.id, activityId } });

@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { DATE_TH, dayKeyOf } from '@/lib/activities';
+import { DATE_TH, NOT_DELETED, dayKeyOf } from '@/lib/activities';
 import { requireAdmin } from '@/lib/auth';
 import { prisma, systemLog } from '@/lib/db';
 import { fail, handler } from '@/lib/errors';
@@ -31,8 +31,8 @@ export const PATCH = handler(async (req, ctx: { params: Promise<{ id: string }> 
   const day = String(body.day ?? '');
   if (!DAY_KEY.test(day)) fail('VALIDATION_ERROR', 'รูปแบบวันที่ต้องเป็น YYYY-MM-DD');
 
-  const activity = await prisma.activity.findUnique({
-    where: { id },
+  const activity = await prisma.activity.findFirst({
+    where: { ...NOT_DELETED, id },
     select: {
       id: true,
       title: true,

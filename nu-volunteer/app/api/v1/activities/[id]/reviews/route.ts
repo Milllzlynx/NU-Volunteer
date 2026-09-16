@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { DATE_EN, DATE_TH } from '@/lib/activities';
+import { DATE_EN, DATE_TH, NOT_DELETED } from '@/lib/activities';
 import { requireRole } from '@/lib/auth';
 import { prisma } from '@/lib/db';
 import { fail, handler } from '@/lib/errors';
@@ -34,8 +34,8 @@ export const POST = handler(async (req, ctx: { params: Promise<{ id: string }> }
     fail('VALIDATION_ERROR', `ความเห็นยาวได้ไม่เกิน ${MAX_COMMENT} ตัวอักษร`);
   }
 
-  const activity = await prisma.activity.findUnique({
-    where: { id: activityId },
+  const activity = await prisma.activity.findFirst({
+    where: { ...NOT_DELETED, id: activityId },
     select: { id: true },
   });
   if (!activity) fail('NOT_FOUND');

@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation';
 import { StudentCalendar, type CalendarItem } from '@/components/student/StudentCalendar';
-import { dayKeyOf, seatFillMap, timeOf, toPublicActivity } from '@/lib/activities';
+import { NOT_DELETED, dayKeyOf, seatFillMap, timeOf, toPublicActivity } from '@/lib/activities';
 import { getCurrentUser } from '@/lib/auth';
 import { prisma } from '@/lib/db';
 
@@ -17,7 +17,7 @@ async function loadItems(userId: string): Promise<CalendarItem[]> {
     // ระบบขนาดนี้มีกิจกรรมหลักสิบรายการ จึงดึงมาทั้งหมดแล้วให้ปฏิทินเลื่อนดูได้ทุกเดือน
     // ถ้าวันหนึ่งกิจกรรมเยอะขึ้นมาก ค่อยจำกัดช่วงวันที่ตามเดือนที่ผู้ใช้เปิดอยู่
     prisma.activity.findMany({
-      where: { status: { notIn: HIDDEN_ACTIVITY_STATUS } },
+      where: { ...NOT_DELETED, status: { notIn: HIDDEN_ACTIVITY_STATUS } },
       include: { category: true },
     }),
   ]);

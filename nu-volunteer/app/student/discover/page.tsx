@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation';
 import { StudentDiscover } from '@/components/student/StudentDiscover';
-import { sortActivities, toPublicActivities } from '@/lib/activities';
+import { NOT_DELETED, sortActivities, toPublicActivities } from '@/lib/activities';
 import { getCurrentUser } from '@/lib/auth';
 import { prisma } from '@/lib/db';
 import type { PublicCategory } from '@/components/landing/types';
@@ -15,7 +15,7 @@ async function loadDiscover(userId: string) {
     }),
     // เอาฉบับร่างออกอย่างเดียว — กิจกรรมที่จบแล้วยังต้องเห็น เพียงแต่ถูกเรียงไปท้ายสุด
     prisma.activity.findMany({
-      where: { status: { not: 'draft' } },
+      where: { ...NOT_DELETED, status: { not: 'draft' } },
       include: { category: true },
     }),
     prisma.favorite.findMany({ where: { userId }, select: { activityId: true } }),

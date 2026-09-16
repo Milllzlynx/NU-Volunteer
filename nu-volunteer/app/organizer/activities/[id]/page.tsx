@@ -1,5 +1,6 @@
 import { notFound, redirect } from 'next/navigation';
 import { ActivityForm, type ActivityFormValues } from '@/components/organizer/ActivityForm';
+import { NOT_DELETED } from '@/lib/activities';
 import { getCurrentUser } from '@/lib/auth';
 import { prisma } from '@/lib/db';
 import { toDateTimeLocal } from '@/lib/organizer';
@@ -26,7 +27,7 @@ export default async function EditActivityPage({ params }: { params: Promise<{ i
   if (!user) redirect('/login');
 
   const [activity, categoryRows] = await Promise.all([
-    prisma.activity.findUnique({ where: { id } }),
+    prisma.activity.findFirst({ where: { ...NOT_DELETED, id } }),
     prisma.category.findMany({ where: { active: true }, orderBy: [{ order: 'asc' }, { label: 'asc' }] }),
   ]);
 

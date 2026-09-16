@@ -1,7 +1,7 @@
 import { redirect } from 'next/navigation';
 import { StudentHome, type StudentBanner } from '@/components/student/StudentHome';
 import { DEFAULT_HOURS_GOAL, HOURS_GOAL_KEY, academicYearOf } from '@/lib/academic';
-import { DATE_EN, DATE_TH, JOINED, toPublicActivities } from '@/lib/activities';
+import { DATE_EN, DATE_TH, JOINED, NOT_DELETED, toPublicActivities } from '@/lib/activities';
 import { getCurrentUser } from '@/lib/auth';
 import { prisma } from '@/lib/db';
 import { ROLE_NAV } from '@/lib/design';
@@ -26,7 +26,7 @@ async function loadStudentHome(userId: string, isLoanStudent: boolean) {
         take: 6,
       }),
       prisma.activity.findMany({
-        where: { status: 'open', endAt: { gte: now } },
+        where: { ...NOT_DELETED, status: 'open', endAt: { gte: now } },
         orderBy: { startAt: 'asc' },
         take: 5,
         include: { category: true },

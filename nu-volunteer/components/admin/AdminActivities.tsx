@@ -6,9 +6,9 @@ import { useRouter } from 'next/navigation';
 import { Badge, Button, EmptyState, ErrorNote, SuccessNote, Tabs, inputStyle } from '@/components/ui';
 import { DateTimeField } from '@/components/ui/DateTimeField';
 import { useApp } from '@/components/providers/AppProviders';
-import { ConfirmDialog } from '@/components/admin/ConfirmDialog';
+import { DeleteActivityDialog } from '@/components/organizer/DeleteActivityDialog';
 import { ACTIVITY_STATUS_META } from '@/components/organizer/OrganizerActivities';
-import { adminContentApi, errorMessage, organizerApi } from '@/lib/api';
+import { adminContentApi, errorMessage } from '@/lib/api';
 import { COLOR, glass } from '@/lib/design';
 
 export type AdminActivityRow = {
@@ -144,19 +144,15 @@ export function AdminActivities({ rows }: { rows: AdminActivityRow[] }) {
     }
   }
 
-  async function remove(row: AdminActivityRow) {
-    setBusy(true);
-    setError(null);
-    try {
-      await organizerApi.deleteActivity(row.id);
-      setNotice(`${t('ลบกิจกรรมแล้ว')}: ${row.title}`);
-      setConfirmDelete(null);
-      router.refresh();
-    } catch (e) {
-      setError(errorMessage(e));
-    } finally {
-      setBusy(false);
-    }
+  /* ตัวกล่องยืนยันเป็นคนเรียก API เอง (ต้องรู้ผลกระทบก่อนถึงจะให้กดลบ) ที่นี่เหลือแค่เก็บผล */
+  function onDeleted(row: AdminActivityRow, affectedStudents: number) {
+    setNotice(
+      affectedStudents > 0
+        ? `${t('ลบกิจกรรมแล้ว')}: ${row.title} · ${t('แจ้งเตือนนิสิต {n} คนแล้ว').replace('{n}', String(affectedStudents))}`
+        : `${t('ลบกิจกรรมแล้ว')}: ${row.title}`,
+    );
+    setConfirmDelete(null);
+    router.refresh();
   }
 
   function exportCsv() {
@@ -422,19 +418,11 @@ export function AdminActivities({ rows }: { rows: AdminActivityRow[] }) {
       )}
 
       {confirmDelete ? (
-        <ConfirmDialog
-          icon="delete"
-          tone="danger"
-          title={t('ลบกิจกรรมนี้?')}
-          body={`${confirmDelete.title} — ${
-            confirmDelete.seatsFilled > 0
-              ? `${t('มีผู้ลงทะเบียนไว้แล้ว')} ${confirmDelete.seatsFilled} ${t('คน')} ${t('การลบย้อนกลับไม่ได้')}`
-              : t('การลบย้อนกลับไม่ได้')
-          }`}
-          confirmLabel={t('ลบ')}
-          busy={busy}
+        <DeleteActivityDialog
+          activityId={confirmDelete.id}
+          title={confirmDelete.title}
           onCancel={() => setConfirmDelete(null)}
-          onConfirm={() => remove(confirmDelete)}
+          onDeleted={(n) => onDeleted(confirmDelete, n)}
         />
       ) : null}
     </div>
