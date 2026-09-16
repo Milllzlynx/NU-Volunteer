@@ -245,6 +245,13 @@ export const organizerApi = {
       body: { action: 'revoke', reason },
     }),
 
+  /** เพิกถอนหลายใบพร้อมกันด้วยเหตุผลเดียว — ใบที่ถูกเพิกถอนไปแล้วจะถูกนับใน skipped */
+  revokeCertificates: (ids: string[], reason: string) =>
+    apiFetch<{ ok: true; revoked: number; skipped: number }>('/organizer/certificates', {
+      method: 'PATCH',
+      body: { action: 'revoke', ids, reason },
+    }),
+
   /** ออกใบใหม่แทนใบที่ถูกเพิกถอน — ได้รหัสอ้างอิงใหม่ ใบเดิมยังขึ้นว่าถูกเพิกถอน */
   reissueCertificate: (id: string) =>
     apiFetch<{ ok: true; certificate: { id: string; ref: string } }>(`/organizer/certificates/${id}`, {

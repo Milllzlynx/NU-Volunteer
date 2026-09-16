@@ -3,7 +3,7 @@ import {
   OrganizerCertificates,
   type PendingCertificateRow,
 } from '@/components/organizer/OrganizerCertificates';
-import { DATE_EN, DATE_TH } from '@/lib/activities';
+import { DATE_EN, DATE_TH, dayKeyOf } from '@/lib/activities';
 import { getCurrentUser } from '@/lib/auth';
 import { appBaseUrl, listOrganizerCertificates } from '@/lib/certificates';
 import { prisma } from '@/lib/db';
@@ -51,6 +51,7 @@ export default async function OrganizerCertificatesPage() {
     hours: r.hoursAwarded,
     approvedTh: DATE_TH.format(r.hoursApprovedAt!),
     approvedEn: DATE_EN.format(r.hoursApprovedAt!),
+    approvedKey: dayKeyOf(r.hoursApprovedAt!),
   }));
 
   return (

@@ -4,10 +4,13 @@ import { useMemo, useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Badge, Button, EmptyState, ErrorNote, Icon, SuccessNote, Tabs, inputStyle } from '@/components/ui';
+import { DateEcho } from '@/components/ui/DateEcho';
 import { useApp } from '@/components/providers/AppProviders';
 import { Avatar } from '@/components/activity/Avatar';
 import { ModalShell } from '@/components/activity/ModalShell';
 import { CertificateDocument, documentPropsOf } from '@/components/certificate/CertificateDocument';
+import { CertificatesSummary, CertificatesTable } from '@/components/organizer/CertificatesTable';
+import { Pagination } from '@/components/reports/Pagination';
 import { errorMessage, organizerApi } from '@/lib/api';
 import { COLOR, SEMANTIC, glass } from '@/lib/design';
 import type { OrganizerCertificateView } from '@/lib/certificates';
@@ -24,9 +27,14 @@ export type PendingCertificateRow = {
   hours: number;
   approvedTh: string;
   approvedEn: string;
+  /** วันที่รับรองชั่วโมงเป็นคีย์ YYYY-MM-DD — ตัวกรองช่วงวันใช้ค่านี้บนแท็บรอออกใบ */
+  approvedKey: string;
 };
 
 type TabKey = 'pending' | 'issued' | 'revoked';
+
+/** ครั้งละไม่เกินเท่านี้ ต้องตรงกับ MAX_BATCH ของ /api/v1/organizer/certificates */
+const MAX_BATCH = 200;
 
 export function OrganizerCertificates({
   certificates,
@@ -45,42 +53,124 @@ export function OrganizerCertificates({
   const [, startTransition] = useTransition();
 
   // เปิดมาที่ใบที่ค้างก่อนถ้ามี เพราะเป็นงานเดียวบนหน้านี้ที่ต้องลงมือ
-  const [tab, setTab] = useState<TabKey>(pending.length ? 'pending' : 'issued');
+  const [tab, setTabRaw] = useState<TabKey>(pending.length ? 'pending' : 'issued');
   const [activityId, setActivityId] = useState('all');
+  const [faculty, setFaculty] = useState('all');
+  const [from, setFrom] = useState('');
+  const [to, setTo] = useState('');
   const [query, setQuery] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
   const [preview, setPreview] = useState<OrganizerCertificateView | null>(null);
   const [revoking, setRevoking] = useState<OrganizerCertificateView | null>(null);
+  const [bulkOpen, setBulkOpen] = useState(false);
   const [reason, setReason] = useState('');
 
-  const matches = (activity: string, fields: string[]) => {
-    if (activityId !== 'all' && activity !== activityId) return false;
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [perPage, setPerPage] = useState(50);
+  const [page, setPage] = useState(1);
+
+  /* เปลี่ยนแท็บหรือตัวกรองแล้วต้องกลับไปหน้าแรก ไม่งั้นจะค้างอยู่หน้าที่ไม่มีข้อมูล */
+  const setTab = (next: TabKey) => {
+    setTabRaw(next);
+    setPage(1);
+  };
+  const filter = <T,>(set: (v: T) => void) => (v: T) => {
+    set(v);
+    setPage(1);
+  };
+
+  /* รายชื่อคณะอ่านจากข้อมูลจริงบนหน้านี้ ไม่ใช่ตารางคณะทั้งมหาวิทยาลัย
+     เพราะผู้จัดเห็นเฉพาะกิจกรรมของตัวเอง — คณะที่ไม่มีใบเลยก็ไม่ควรมีให้เลือก */
+  const faculties = useMemo(() => {
+    const set = new Set<string>();
+    for (const c of certificates) if (c.faculty) set.add(c.faculty);
+    for (const r of pending) if (r.faculty) set.add(r.faculty);
+    return [...set].sort((a, b) => a.localeCompare(b, 'th'));
+  }, [certificates, pending]);
+
+  const matches = (row: {
+    activityId: string;
+    faculty: string | null;
+    dayKey: string;
+    fields: string[];
+  }) => {
+    if (activityId !== 'all' && row.activityId !== activityId) return false;
+    if (faculty !== 'all' && (row.faculty ?? '') !== faculty) return false;
+    if (from && row.dayKey < from) return false;
+    if (to && row.dayKey > to) return false;
     const q = query.trim().toLowerCase();
-    return !q || fields.some((f) => f.toLowerCase().includes(q));
+    return !q || row.fields.some((f) => f.toLowerCase().includes(q));
   };
 
   const shownPending = useMemo(
     () =>
-      pending.filter((r) => matches(r.activityId, [r.studentName, r.studentId, r.activityTitle])),
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- matches อ่านแค่ activityId กับ query
-    [pending, activityId, query],
+      pending.filter((r) =>
+        matches({
+          activityId: r.activityId,
+          faculty: r.faculty,
+          dayKey: r.approvedKey,
+          fields: [r.studentName, r.studentId, r.activityTitle],
+        }),
+      ),
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- matches อ่านแค่ค่าตัวกรองด้านล่างนี้
+    [pending, activityId, faculty, from, to, query],
   );
 
   const shownCerts = useMemo(
     () =>
       certificates.filter((c) =>
-        matches(c.activityId, [c.holderName, c.studentId ?? '', c.activityTitle, c.ref]),
+        matches({
+          activityId: c.activityId,
+          faculty: c.faculty,
+          dayKey: c.issuedKey,
+          fields: [c.holderName, c.studentId ?? '', c.activityTitle, c.ref],
+        }),
       ),
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- matches อ่านแค่ activityId กับ query
-    [certificates, activityId, query],
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- matches อ่านแค่ค่าตัวกรองด้านล่างนี้
+    [certificates, activityId, faculty, from, to, query],
   );
 
-  const issued = shownCerts.filter((c) => !c.revoked);
-  const revoked = shownCerts.filter((c) => c.revoked);
+  const issued = useMemo(() => shownCerts.filter((c) => !c.revoked), [shownCerts]);
+  const revoked = useMemo(() => shownCerts.filter((c) => c.revoked), [shownCerts]);
+
+  const list = tab === 'issued' ? issued : revoked;
+  /** จำนวนแถวของแท็บที่เปิดอยู่ — ใช้คุมการแบ่งหน้าทั้งสามแท็บด้วยตัวเดียว */
+  const rowCount = tab === 'pending' ? shownPending.length : list.length;
+
+  const totalPages = Math.max(1, Math.ceil(rowCount / perPage));
+  // หนีบหน้าปัจจุบันตอนเรนเดอร์แทนการ setState ใน effect — ตัวกรองที่แคบลงจะไม่ทำให้ค้างหน้าว่าง
+  const safePage = Math.min(page, totalPages);
+  const start = (safePage - 1) * perPage;
+  const pagedPending = shownPending.slice(start, start + perPage);
+  const pagedList = list.slice(start, start + perPage);
+
+  /** ใบที่เลือกไว้และยังอยู่ในผลลัพธ์ของตัวกรอง — เลือกไว้แล้วกรองออกไปก็ไม่ควรโดนเพิกถอน */
+  const selectedRows = useMemo(
+    () => issued.filter((c) => selected.has(c.id)),
+    [issued, selected],
+  );
 
   const urlOf = (ref: string) => `${verifyBase}/verify/${encodeURIComponent(ref)}`;
+
+  const toggleRow = (id: string) =>
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+
+  const togglePage = (ids: string[], select: boolean) =>
+    setSelected((prev) => {
+      const next = new Set(prev);
+      for (const id of ids) {
+        if (select) next.add(id);
+        else next.delete(id);
+      }
+      return next;
+    });
 
   async function run(key: string, work: () => Promise<string | null>) {
     setBusy(key);
@@ -122,6 +212,27 @@ export function OrganizerCertificates({
     });
   };
 
+  const confirmBulkRevoke = () => {
+    const ids = selectedRows.slice(0, MAX_BATCH).map((c) => c.id);
+    return run('bulk', async () => {
+      const res = await organizerApi.revokeCertificates(ids, reason.trim());
+      setBulkOpen(false);
+      setReason('');
+      // ล้างที่เลือกหลังทำสำเร็จ ไม่งั้นแถวเดิมยังติ๊กค้างทั้งที่เพิกถอนไปแล้ว
+      setSelected(new Set());
+      const done = t('เพิกถอนใบประกาศแล้ว {n} ใบ').replace('{n}', String(res.revoked));
+      return res.skipped
+        ? `${done} · ${t('ข้าม {n} รายการที่ถูกเพิกถอนไปแล้ว').replace('{n}', String(res.skipped))}`
+        : done;
+    });
+  };
+
+  const openRevoke = (c: OrganizerCertificateView) => {
+    setReason('');
+    setError(null);
+    setRevoking(c);
+  };
+
   /** ส่งออกรายการใบประกาศที่กรองอยู่ — เปิดใน Excel ได้ตรง ๆ ด้วย BOM */
   function exportCsv() {
     const head = ['รหัสอ้างอิง', 'ชื่อนิสิต', 'รหัสนิสิต', 'คณะ', 'กิจกรรม', 'ชั่วโมง', 'วันที่ออกใบ', 'สถานะ', 'เหตุผลที่เพิกถอน'];
@@ -158,11 +269,29 @@ export function OrganizerCertificates({
     { key: 'revoked', label: t('ถูกเพิกถอน'), count: revoked.length },
   ];
 
-  const list = tab === 'issued' ? issued : revoked;
+  const activeFilters =
+    (activityId !== 'all' ? 1 : 0) + (faculty !== 'all' ? 1 : 0) + (from ? 1 : 0) + (to ? 1 : 0);
+
+  const pager = (
+    <Pagination
+      page={safePage}
+      totalPages={totalPages}
+      perPage={perPage}
+      onPage={setPage}
+      onPerPage={(n) => {
+        setPerPage(n);
+        setPage(1);
+      }}
+      rangeFrom={rowCount === 0 ? 0 : start + 1}
+      rangeTo={Math.min(start + perPage, rowCount)}
+      total={rowCount}
+      t={t}
+    />
+  );
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 14, animation: 'nuFadeUp .3s ease' }}>
-      {error ? <ErrorNote>{error}</ErrorNote> : null}
+      {error && !revoking && !bulkOpen ? <ErrorNote>{error}</ErrorNote> : null}
       {notice ? <SuccessNote>{notice}</SuccessNote> : null}
 
       {/* ── วิธีออกใบ ── */}
@@ -193,7 +322,7 @@ export function OrganizerCertificates({
           />
           <input
             value={query}
-            onChange={(e) => setQuery(e.target.value)}
+            onChange={(e) => filter(setQuery)(e.target.value)}
             placeholder={t('ค้นหาชื่อนิสิต รหัสนิสิต กิจกรรม หรือรหัสอ้างอิง...')}
             aria-label={t('ค้นหา')}
             style={{ ...inputStyle(), paddingLeft: 42 }}
@@ -202,7 +331,7 @@ export function OrganizerCertificates({
 
         <select
           value={activityId}
-          onChange={(e) => setActivityId(e.target.value)}
+          onChange={(e) => filter(setActivityId)(e.target.value)}
           aria-label={t('กรองตามกิจกรรม')}
           style={{ ...inputStyle(), width: 'auto', minWidth: 200, maxWidth: '100%', flexShrink: 0 }}
         >
@@ -214,12 +343,107 @@ export function OrganizerCertificates({
           ))}
         </select>
 
+        <select
+          value={faculty}
+          onChange={(e) => filter(setFaculty)(e.target.value)}
+          aria-label={t('กรองตามคณะ')}
+          style={{ ...inputStyle(), width: 'auto', minWidth: 170, maxWidth: '100%', flexShrink: 0 }}
+        >
+          <option value="all">{t('ทุกคณะ')}</option>
+          {faculties.map((f) => (
+            <option key={f} value={f}>
+              {f}
+            </option>
+          ))}
+        </select>
+
         <Button variant="secondary" icon="download" onClick={exportCsv} disabled={shownCerts.length === 0}>
           {t('ส่งออก CSV')}
         </Button>
       </div>
 
+      {/* ── ช่วงวันที่ ──
+          แท็บใบประกาศกรองด้วยวันที่ออกใบ ส่วนแท็บรอออกใบยังไม่มีใบ จึงใช้วันที่รับรองชั่วโมงแทน */}
+      <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', alignItems: 'flex-end' }}>
+        <label style={{ display: 'grid', gap: 5 }}>
+          <span style={{ fontSize: 11.5, color: COLOR.label }}>
+            {tab === 'pending' ? t('รับรองตั้งแต่วันที่') : t('ออกใบตั้งแต่วันที่')}
+          </span>
+          <input
+            type="date"
+            value={from}
+            onChange={(e) => filter(setFrom)(e.target.value)}
+            style={{ ...inputStyle(false), width: 'auto' }}
+          />
+          <DateEcho value={from} />
+        </label>
+
+        <label style={{ display: 'grid', gap: 5 }}>
+          <span style={{ fontSize: 11.5, color: COLOR.label }}>{t('ถึงวันที่')}</span>
+          <input
+            type="date"
+            value={to}
+            onChange={(e) => filter(setTo)(e.target.value)}
+            style={{ ...inputStyle(false), width: 'auto' }}
+          />
+          <DateEcho value={to} />
+        </label>
+
+        {activeFilters ? (
+          <Button
+            variant="secondary"
+            icon="filter_alt_off"
+            onClick={() => {
+              setActivityId('all');
+              setFaculty('all');
+              setFrom('');
+              setTo('');
+              setPage(1);
+            }}
+          >
+            {`${t('ล้างตัวกรอง')} (${activeFilters})`}
+          </Button>
+        ) : null}
+      </div>
+
       <Tabs items={tabs} value={tab} onChange={setTab} />
+
+      {/* ── แถบคำสั่งกับที่เลือกไว้ ── */}
+      {tab === 'issued' && selectedRows.length ? (
+        <div
+          style={{
+            ...glass(18),
+            padding: 12,
+            display: 'flex',
+            gap: 10,
+            alignItems: 'center',
+            flexWrap: 'wrap',
+          }}
+        >
+          <Badge tone="purple" label={`${t('เลือกไว้')} ${selectedRows.length}`} />
+          <Button variant="secondary" icon="deselect" onClick={() => setSelected(new Set())}>
+            {t('ล้างที่เลือก')}
+          </Button>
+          {selectedRows.length > MAX_BATCH ? (
+            <span style={{ fontSize: 12, color: SEMANTIC.warning.color, lineHeight: 1.7 }}>
+              {t('เพิกถอนได้ครั้งละไม่เกิน {n} ใบ ระบบจะทำให้เท่าที่ทำได้').replace('{n}', String(MAX_BATCH))}
+            </span>
+          ) : null}
+          <Button
+            variant="danger"
+            icon="gpp_bad"
+            disabled={busy !== null}
+            onClick={() => {
+              setReason('');
+              setError(null);
+              setBulkOpen(true);
+            }}
+            style={{ marginInlineStart: 'auto' }}
+          >
+            {`${t('เพิกถอน')} (${Math.min(selectedRows.length, MAX_BATCH)})`}
+          </Button>
+        </div>
+      ) : null}
 
       {/* ── รอออกใบ ── */}
       {tab === 'pending' ? (
@@ -242,14 +466,14 @@ export function OrganizerCertificates({
                 icon="workspace_premium"
                 loading={busy === 'all'}
                 disabled={busy !== null}
-                onClick={() => issue(shownPending.slice(0, 200).map((r) => r.registrationId), 'all')}
+                onClick={() => issue(shownPending.slice(0, MAX_BATCH).map((r) => r.registrationId), 'all')}
               >
-                {`${t('ออกใบทั้งหมด')} (${Math.min(shownPending.length, 200)})`}
+                {`${t('ออกใบทั้งหมด')} (${Math.min(shownPending.length, MAX_BATCH)})`}
               </Button>
             </div>
 
             <div style={{ display: 'grid', gap: 10 }}>
-              {shownPending.map((r) => (
+              {pagedPending.map((r) => (
                 <div key={r.registrationId} style={{ ...glass(18), padding: 14, display: 'flex', gap: 13, alignItems: 'center', flexWrap: 'wrap' }}>
                   <Avatar name={r.studentName} src={r.avatarUrl} />
                   <div style={{ flex: 1, minWidth: 190 }}>
@@ -278,6 +502,8 @@ export function OrganizerCertificates({
                 </div>
               ))}
             </div>
+
+            {pager}
           </>
         )
       ) : list.length === 0 ? (
@@ -293,94 +519,25 @@ export function OrganizerCertificates({
           />
         </div>
       ) : (
-        <div style={{ display: 'grid', gap: 10 }}>
-          {list.map((c) => (
-            <div
-              key={c.id}
-              style={{
-                ...glass(18),
-                padding: 14,
-                display: 'grid',
-                gap: 10,
-                borderInlineStart: c.revoked ? `4px solid ${SEMANTIC.danger.dot}` : undefined,
-              }}
-            >
-              <div style={{ display: 'flex', gap: 13, alignItems: 'center', flexWrap: 'wrap' }}>
-                <Avatar name={c.holderName} src={c.avatarUrl} />
-                <div style={{ flex: 1, minWidth: 190 }}>
-                  <div style={{ fontSize: 14, fontWeight: 500, color: COLOR.ink }}>{c.holderName}</div>
-                  <div style={{ fontSize: 11.5, color: COLOR.hint, marginTop: 3, lineHeight: 1.7 }}>
-                    {c.studentId ? `${c.studentId} · ` : ''}
-                    {c.faculty ? `${c.faculty} · ` : ''}
-                    {`${t('ออกให้เมื่อ')} ${isEn ? c.issuedEn : c.issuedTh}`}
-                  </div>
-                  <div style={{ fontSize: 12, color: COLOR.label, marginTop: 4 }}>
-                    <Icon name="campaign" size={14} style={{ verticalAlign: -2, marginInlineEnd: 5, color: COLOR.hint }} />
-                    {c.activityTitle}
-                  </div>
-                </div>
-                <code
-                  style={{
-                    fontSize: 12,
-                    letterSpacing: 0.5,
-                    color: COLOR.body,
-                    background: 'rgba(31,41,55,.06)',
-                    padding: '6px 10px',
-                    borderRadius: 9,
-                  }}
-                >
-                  {c.ref}
-                </code>
-                <Badge tone={c.revoked ? 'danger' : 'info'} label={`${c.hours} ${t('ชม.')}`} />
-              </div>
-
-              {c.revoked ? (
-                <div style={{ fontSize: 12, color: SEMANTIC.danger.color, lineHeight: 1.7 }}>
-                  {`${t('เพิกถอนเมื่อ')} ${isEn ? c.revokedEn : c.revokedTh}`}
-                  {c.revokeReason ? ` · ${c.revokeReason}` : ''}
-                </div>
-              ) : null}
-
-              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
-                <Button variant="secondary" icon="visibility" onClick={() => setPreview(c)} style={SMALL_BTN}>
-                  {t('ดูใบ')}
-                </Button>
-                <Link href={`/verify/${encodeURIComponent(c.ref)}`} target="_blank">
-                  <Button variant="secondary" icon="open_in_new" style={SMALL_BTN}>
-                    {t('หน้าตรวจสอบ')}
-                  </Button>
-                </Link>
-                {c.revoked ? (
-                  c.canReissue ? (
-                    <Button
-                      variant="primary"
-                      icon="autorenew"
-                      loading={busy === c.id}
-                      disabled={busy !== null}
-                      onClick={() => reissue(c)}
-                      style={SMALL_BTN}
-                    >
-                      {t('ออกใบใหม่แทน')}
-                    </Button>
-                  ) : null
-                ) : (
-                  <Button
-                    variant="danger"
-                    icon="gpp_bad"
-                    disabled={busy !== null}
-                    onClick={() => {
-                      setReason('');
-                      setError(null);
-                      setRevoking(c);
-                    }}
-                    style={SMALL_BTN}
-                  >
-                    {t('เพิกถอน')}
-                  </Button>
-                )}
-              </div>
-            </div>
-          ))}
+        <div style={{ ...glass(22), padding: 18, display: 'grid', gap: 14 }}>
+          <CertificatesTable
+            rows={pagedList}
+            selected={selected}
+            onToggleRow={toggleRow}
+            onTogglePage={togglePage}
+            onPreview={setPreview}
+            onRevoke={openRevoke}
+            onReissue={reissue}
+            busy={busy}
+            isEn={isEn}
+            t={t}
+          />
+          <CertificatesSummary
+            count={list.length}
+            hours={list.reduce((s, c) => s + c.hours, 0)}
+            t={t}
+          />
+          {pager}
         </div>
       )}
 
@@ -396,7 +553,7 @@ export function OrganizerCertificates({
         </ModalShell>
       ) : null}
 
-      {/* ── เพิกถอน ── */}
+      {/* ── เพิกถอนใบเดียว ── */}
       {revoking ? (
         <ModalShell
           icon="gpp_bad"
@@ -429,6 +586,75 @@ export function OrganizerCertificates({
             <div style={{ fontSize: 12.5, color: COLOR.label, lineHeight: 1.8 }}>
               {t('ใบนี้จะใช้อ้างอิงไม่ได้อีก หน้าตรวจสอบสาธารณะจะแสดงว่าถูกเพิกถอนพร้อมเหตุผล ชั่วโมงที่รับรองไว้ไม่เปลี่ยน และออกใบใหม่แทนได้ภายหลัง')}
             </div>
+
+            <textarea
+              value={reason}
+              onChange={(e) => setReason(e.target.value)}
+              rows={3}
+              maxLength={300}
+              autoFocus
+              placeholder={t('เหตุผลที่เพิกถอน เช่น ชื่อบนใบไม่ถูกต้อง')}
+              aria-label={t('เหตุผลที่เพิกถอน')}
+              style={{ ...inputStyle(), resize: 'vertical', lineHeight: 1.7, fontFamily: 'inherit' }}
+            />
+            <div style={{ fontSize: 11.5, color: COLOR.hint }}>
+              {t('นิสิตและผู้ที่ตรวจสอบใบนี้จะเห็นเหตุผลนี้')}
+            </div>
+          </div>
+        </ModalShell>
+      ) : null}
+
+      {/* ── เพิกถอนหลายใบ ── */}
+      {bulkOpen ? (
+        <ModalShell
+          icon="gpp_bad"
+          title={`${t('เพิกถอนใบประกาศ')} ${Math.min(selectedRows.length, MAX_BATCH)} ${t('ใบ')}`}
+          onClose={() => setBulkOpen(false)}
+          footer={
+            <div style={{ display: 'flex', gap: 9, justifyContent: 'flex-end', flexWrap: 'wrap' }}>
+              <Button variant="secondary" onClick={() => setBulkOpen(false)} disabled={busy === 'bulk'}>
+                {t('ย้อนกลับ')}
+              </Button>
+              <Button
+                variant="danger"
+                icon="gpp_bad"
+                loading={busy === 'bulk'}
+                disabled={!reason.trim() || selectedRows.length === 0}
+                onClick={confirmBulkRevoke}
+              >
+                {t('ยืนยันการเพิกถอน')}
+              </Button>
+            </div>
+          }
+        >
+          <div style={{ display: 'grid', gap: 12 }}>
+            {error ? <ErrorNote>{error}</ErrorNote> : null}
+
+            <div style={{ fontSize: 12.5, color: COLOR.label, lineHeight: 1.8 }}>
+              {t('ใบทั้งหมดที่เลือกไว้จะถูกเพิกถอนด้วยเหตุผลเดียวกัน นิสิตทุกคนที่ถือใบเหล่านี้จะได้รับการแจ้งเตือน')}
+            </div>
+
+            {/* รายชื่อย่อ ๆ ให้ตรวจก่อนกดยืนยัน — ยาวเกินก็ตัดแล้วบอกว่าเหลืออีกกี่คน */}
+            <ul
+              style={{
+                margin: 0,
+                paddingInlineStart: 18,
+                maxHeight: 180,
+                overflowY: 'auto',
+                fontSize: 12.5,
+                color: COLOR.body,
+                lineHeight: 1.9,
+              }}
+            >
+              {selectedRows.slice(0, 12).map((c) => (
+                <li key={c.id}>{`${c.holderName} · ${c.ref}`}</li>
+              ))}
+            </ul>
+            {selectedRows.length > 12 ? (
+              <div style={{ fontSize: 11.5, color: COLOR.hint }}>
+                {t('และอีก {n} รายการ').replace('{n}', String(selectedRows.length - 12))}
+              </div>
+            ) : null}
 
             <textarea
               value={reason}

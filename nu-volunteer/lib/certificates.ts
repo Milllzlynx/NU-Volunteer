@@ -8,7 +8,7 @@
 
 import { randomInt } from 'node:crypto';
 import { academicYearOf } from '@/lib/academic';
-import { DATE_EN, DATE_LONG_EN, DATE_LONG_TH, DATE_TH } from '@/lib/activities';
+import { DATE_EN, DATE_LONG_EN, DATE_LONG_TH, DATE_TH, dayKeyOf } from '@/lib/activities';
 import { prisma } from '@/lib/db';
 import { fail } from '@/lib/errors';
 import { sendMail } from '@/lib/mailer';
@@ -54,6 +54,8 @@ export type CertificateView = {
   issuedLongTh: string;
   issuedLongEn: string;
   issuedAtMs: number;
+  /** วันที่ออกใบเป็นคีย์ YYYY-MM-DD ตามเวลาไทย — ตัวกรองช่วงวันเทียบสตริงตรง ๆ ได้เลย */
+  issuedKey: string;
   revoked: boolean;
   revokeReason: string | null;
   revokedTh: string | null;
@@ -117,6 +119,7 @@ function toView(row: Row, opts: { includeIdentity: boolean }): CertificateView {
     issuedLongTh: DATE_LONG_TH.format(row.issuedAt),
     issuedLongEn: DATE_LONG_EN.format(row.issuedAt),
     issuedAtMs: row.issuedAt.getTime(),
+    issuedKey: dayKeyOf(row.issuedAt),
     revoked: row.revokedAt != null,
     revokeReason: row.revokeReason,
     revokedTh: row.revokedAt ? DATE_TH.format(row.revokedAt) : null,

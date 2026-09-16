@@ -16,6 +16,7 @@ import { readJson } from '@/lib/validation';
  */
 
 const MAX_BATCH = 200;
+const MAX_REASON = 300;
 
 export const POST = handler(async (req) => {
   const user = await requireStaff();
@@ -79,4 +80,80 @@ export const POST = handler(async (req) => {
   }
 
   return NextResponse.json({ ok: true, issued, skipped });
+});
+
+/**
+ * PATCH /api/v1/organizer/certificates — เพิกถอนใบประกาศหลายใบพร้อมกัน
+ *
+ * body: { action: 'revoke', ids: string[], reason: string }
+ *
+ * แยกจาก PATCH รายใบที่ /:id เพราะหน้าใบประกาศเลือกได้ทีละหลายสิบแถว การยิงทีละใบ
+ * จากเบราว์เซอร์ช้าและพังกลางคันได้ — ล้มใบที่สิบจากยี่สิบใบแล้วผู้ใช้ไม่รู้ว่าใบไหนผ่านบ้าง
+ *
+ * ใช้เหตุผลเดียวกันทั้งชุด เพราะการเลือกหลายใบพร้อมกันมักมาจากเหตุเดียวกัน
+ * ใบที่ถูกเพิกถอนไปแล้วหรือไม่ได้อยู่ในขอบเขตของผู้ใช้จะถูกข้ามและนับไว้ใน skipped
+ * ไม่ใช่ทำให้ทั้งชุดล้ม — ผู้ใช้จะได้ไม่ต้องไล่หาว่าใบไหนเป็นตัวปัญหา
+ */
+export const PATCH = handler(async (req) => {
+  const user = await requireStaff();
+  const body = await readJson<{ action?: unknown; ids?: unknown; reason?: unknown }>(req);
+
+  if (String(body.action ?? '') !== 'revoke') fail('VALIDATION_ERROR', 'คำสั่งไม่ถูกต้อง');
+
+  const ids = Array.isArray(body.ids)
+    ? [...new Set(body.ids.map((v) => String(v)).filter(Boolean))]
+    : [];
+  if (ids.length === 0) fail('VALIDATION_ERROR', 'ยังไม่ได้เลือกรายการ');
+  if (ids.length > MAX_BATCH) fail('VALIDATION_ERROR', `เลือกได้ครั้งละไม่เกิน ${MAX_BATCH} รายการ`);
+
+  const reason = String(body.reason ?? '').trim();
+  if (!reason) fail('VALIDATION_ERROR', 'กรุณาระบุเหตุผลที่เพิกถอน');
+  if (reason.length > MAX_REASON) fail('VALIDATION_ERROR', 'เหตุผลยาวเกินไป');
+
+  const rows = await prisma.certificate.findMany({
+    where: { id: { in: ids } },
+    select: {
+      id: true,
+      ref: true,
+      userId: true,
+      activityId: true,
+      revokedAt: true,
+      user: { select: { name: true } },
+    },
+  });
+
+  // ตรวจสิทธิ์ครั้งเดียวต่อกิจกรรม ไม่ใช่ต่อใบ — ชุดหนึ่งมักมาจากกิจกรรมเดียวกัน
+  const titles = new Map<string, string>();
+  for (const activityId of new Set(rows.map((r) => r.activityId))) {
+    const a = await requireOwnedActivity(user, activityId);
+    titles.set(activityId, a.title);
+  }
+
+  const targets = rows.filter((r) => r.revokedAt == null);
+  const skipped = ids.length - targets.length;
+  const revokedAt = new Date();
+
+  if (targets.length > 0) {
+    await prisma.certificate.updateMany({
+      where: { id: { in: targets.map((r) => r.id) } },
+      data: { revokedAt, revokeReason: reason },
+    });
+
+    await prisma.notification.createMany({
+      data: targets.map((r) => ({
+        userId: r.userId,
+        type: 'certificate',
+        title: `ใบประกาศถูกเพิกถอน: ${titles.get(r.activityId) ?? ''}`,
+        body: `รหัสอ้างอิง ${r.ref} · ${reason}`,
+        link: '/student/certificates',
+      })),
+    });
+
+    await systemLog('warning', `เพิกถอนใบประกาศ ${targets.length} ใบ`, {
+      actorId: user.id,
+      meta: { certificateIds: targets.map((r) => r.id), refs: targets.map((r) => r.ref), reason, skipped },
+    });
+  }
+
+  return NextResponse.json({ ok: true, revoked: targets.length, skipped });
 });
