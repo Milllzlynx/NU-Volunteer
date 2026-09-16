@@ -48,13 +48,30 @@ export function ModalShell({
   const panelRef = useRef<HTMLDivElement>(null);
   const headingId = `nuv-modal-${icon}`;
 
+  /*
+   * ตัวปิดล่าสุดเก็บไว้ใน ref เพื่อให้เอฟเฟกต์ด้านล่างไม่ต้องมี onClose เป็น dependency
+   *
+   * ผู้เรียกทุกที่ส่ง onClose={() => setX(null)} ซึ่งเป็นฟังก์ชันใหม่ทุกครั้งที่ parent เรนเดอร์
+   * ถ้าใส่ไว้ใน dependency เอฟเฟกต์จะ cleanup แล้วรันใหม่ทุกการเรนเดอร์ — cleanup จะโยนโฟกัส
+   * กลับไปที่ปุ่มที่เปิดโมดัล แล้วรอบใหม่ก็ย้ายโฟกัสไปที่ตัวแผง ผลคือช่องกรอกในโมดัลที่อัปเดต
+   * state ของ parent ทุกตัวอักษร (เช่น เหตุผลที่เพิกถอนใบประกาศ) เสียโฟกัสหลังพิมพ์ตัวแรก
+   */
+  const onCloseRef = useRef(onClose);
+  useEffect(() => {
+    onCloseRef.current = onClose;
+  }, [onClose]);
+
   useEffect(() => {
     // จำปุ่มที่เปิดโมดัลไว้ เพื่อคืนโฟกัสกลับไปตอนปิด (ผู้ใช้คีย์บอร์ดจะได้ไม่หลงตำแหน่ง)
     const opener = document.activeElement as HTMLElement | null;
-    panelRef.current?.focus();
+
+    /* โฟกัสตัวแผงเฉพาะตอนที่ยังไม่มีอะไรข้างในถูกโฟกัส — ไม่อย่างนั้นจะไปแย่งโฟกัส
+       จากช่องที่ตั้ง autoFocus ไว้ ซึ่งเป็นช่องที่ผู้ใช้ต้องพิมพ์ต่อทันที */
+    const panel = panelRef.current;
+    if (panel && !panel.contains(document.activeElement)) panel.focus();
 
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
+      if (e.key === 'Escape') onCloseRef.current();
     };
     document.addEventListener('keydown', onKey);
 
@@ -66,7 +83,8 @@ export function ModalShell({
       document.body.style.overflow = prevOverflow;
       opener?.focus?.();
     };
-  }, [onClose]);
+    // ตั้งใจให้รันครั้งเดียวตอนเปิดและเก็บกวาดตอนปิด ไม่ใช่ทุกการเรนเดอร์
+  }, []);
 
   const drawer = variant === 'drawer';
 
