@@ -195,7 +195,7 @@ function isEligible(r: { status: string; hoursApprovedAt: Date | null; hoursAwar
 /** ตัดตัวที่อ่านสับสนออก (0/O, 1/I) เพราะคนต้องพิมพ์รหัสตามใบกระดาษ */
 const REF_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 
-function newRef(issuedAt: Date): string {
+export function newRef(issuedAt: Date): string {
   let code = '';
   for (let i = 0; i < 5; i++) code += REF_ALPHABET[randomInt(REF_ALPHABET.length)];
   return `NUV-${academicYearOf(issuedAt).year}-${code}`;
