@@ -1,36 +1,113 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+<div align="center">
 
-## Getting Started
+# 🌱 NU Volunteer
 
-First, run the development server:
+**ระบบจัดการกิจกรรมจิตอาสาและชั่วโมงบำเพ็ญประโยชน์ มหาวิทยาลัยนเรศวร**
+
+ลงทะเบียนกิจกรรม · อนุมัติชั่วโมง · ออกใบรับรองอัตโนมัติ — ครบในที่เดียว
+
+[![Netlify Status](https://img.shields.io/badge/deploy-netlify-00C7B7?logo=netlify&logoColor=white)](https://www.netlify.com/)
+[![License](https://img.shields.io/badge/license-private-lightgrey)]()
+
+</div>
+
+---
+
+## 📖 เกี่ยวกับโปรเจกต์
+
+**NU Volunteer** เป็นระบบเว็บแอปพลิเคชันสำหรับบริหารจัดการกิจกรรมจิตอาสาของมหาวิทยาลัยนเรศวร ตั้งแต่การประกาศกิจกรรม เปิดรับสมัคร อนุมัติชั่วโมงจิตอาสา ไปจนถึงการออกใบรับรองดิจิทัลที่ตรวจสอบความถูกต้องได้ โดยรองรับผู้ใช้งาน 3 บทบาทหลัก:
+
+| บทบาท | สามารถทำอะไรได้บ้าง |
+|---|---|
+| 🎓 **นิสิต** | ค้นหา/ลงทะเบียนกิจกรรม ติดตามชั่วโมงสะสม ดาวน์โหลดใบรับรอง |
+| 🧑‍💼 **ผู้จัดกิจกรรม (Organizer)** | สร้าง/แก้ไขกิจกรรม อนุมัติชั่วโมง ออก-เพิกถอนใบรับรอง ดูสถิติ |
+| 🛠️ **ผู้ดูแลระบบ (Admin)** | จัดการผู้ใช้ทุกคน ภาพรวมทุกคณะ/หน่วยงาน ดูรายงานทั้งระบบ |
+
+---
+
+## ✨ ฟีเจอร์เด่น
+
+- 📋 **จัดการกิจกรรม** — เปิด/ปิดรับสมัคร กำหนดจำนวนที่นั่ง ชั่วโมงที่ได้รับ พร้อมสถานะกิจกรรม (เปิดรับ / เสร็จสิ้น / ยกเลิก)
+- ✅ **อนุมัติชั่วโมงอัตโนมัติออกใบรับรอง** — เมื่อ organizer อนุมัติชั่วโมง ระบบออกใบรับรองให้นิสิตทันที พร้อมแจ้งเตือนในแอปและอีเมล
+- 🔎 **ตรวจสอบใบรับรองสาธารณะ** — ใบรับรองทุกใบมีรหัสอ้างอิงและหน้าตรวจสอบสาธารณะ ป้องกันการปลอมแปลง
+- ↩️ **เพิกถอน/ออกใหม่** — organizer และ admin เพิกถอนใบรับรองพร้อมระบุเหตุผลได้ ตรวจสอบย้อนหลังได้ครบถ้วน
+- 📊 **แดชบอร์ดผู้ดูแล** — ดูภาพรวมผู้จัดกิจกรรมแต่ละคน จำนวนกิจกรรมที่สร้าง แยกตามสถานะ
+- 🗑️ **จัดการกิจกรรมอย่างปลอดภัย** — ลบกิจกรรมแบบ soft-delete ย้อนกลับได้ ไม่กระทบชั่วโมง/ใบรับรองที่ออกไปแล้ว
+
+---
+
+## 🧱 เทคโนโลยีที่ใช้
+
+- **Framework:** [Next.js](https://nextjs.org/) 16 (App Router) + React 19 — ทั้งหน้าเว็บและ API (`app/api/v1`)
+- **ภาษา:** TypeScript
+- **ORM:** [Prisma](https://www.prisma.io/) 7
+- **Database:** SQLite (ไฟล์ `dev.db`) ตอนพัฒนา · [Turso](https://turso.tech/) (libSQL) บน production
+- **Auth:** JWT ([jose](https://github.com/panva/jose)) + bcrypt
+- **อื่น ๆ:** Nodemailer (อีเมล) · qrcode/jsQR (เช็กอินด้วย QR) · Zod (ตรวจสอบข้อมูล)
+- **Deployment:** [Netlify](https://www.netlify.com/)
+- **พัฒนาโดยใช้:** [Claude Code](https://claude.com/claude-code)
+
+---
+
+## 🚀 เริ่มต้นใช้งาน (Development)
 
 ```bash
+npm install            # ติดตั้งแพ็กเกจ (รัน prisma generate ให้อัตโนมัติ)
+cp .env.example .env
+npm run db:migrate     # สร้างตารางในฐานข้อมูลตาม prisma/migrations
+npm run db:seed        # ใส่ข้อมูลตัวอย่าง (ต้องตั้ง SEED_ENABLED=true)
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+เปิดเบราว์เซอร์ไปที่ `http://localhost:3000` (หรือพอร์ตที่ระบบกำหนด)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### คำสั่งอื่นที่ใช้บ่อย
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run typecheck          # ตรวจชนิดข้อมูล (tsc --noEmit)
+npm run lint               # ESLint
+npm run build              # build สำหรับ production
+npm run db:push            # sync schema เข้าฐานข้อมูลโดยไม่สร้าง migration
+npm run db:migrate:turso   # รัน migration บนฐานข้อมูล Turso
+```
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+## 📂 โครงสร้างโปรเจกต์ (โดยสังเขป)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```
+nu-volunteer/
+├── app/               # หน้าเว็บแยกตามบทบาท (student, organizer, admin) และ API (app/api/v1)
+├── components/        # UI components แยกตามบทบาทผู้ใช้
+├── lib/               # โค้ดหลักฝั่งเซิร์ฟเวอร์ (certificates, db, ฯลฯ)
+├── prisma/            # schema, migrations และ seed.ts
+├── scripts/           # สคริปต์นำเข้าข้อมูล / จัดการบัญชีทดสอบ
+├── data/              # ไฟล์ต้นฉบับสำหรับนำเข้ากิจกรรม (เก็บในเครื่องเท่านั้น ไม่ commit)
+└── .env               # ตัวแปรแวดล้อม (ไม่ commit)
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+---
 
-## Deploy on Vercel
+## 🔐 บัญชีทดสอบ
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+โปรเจกต์นี้มีบัญชีนิสิตตัวอย่าง (`seeded: true`) สำหรับสาธิตการทำงานของระบบในสัดส่วนการเข้าร่วมกิจกรรมที่แตกต่างกัน — ดูรายละเอียดในโฟลเดอร์ `scripts/seed-test-student.ts`
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+
+## 🌐 การ Deploy
+
+โปรเจกต์นี้ deploy ผ่าน **Netlify** โดย build อัตโนมัติทุกครั้งที่มีการ push เข้า branch `main`
+
+---
+
+## 📄 License
+
+โปรเจกต์ภายในสำหรับมหาวิทยาลัยนเรศวร — สงวนสิทธิ์ (Private)
+
+---
+
+<div align="center">
+
+สร้างด้วย 💚 เพื่อสนับสนุนงานจิตอาสาของนิสิตมหาวิทยาลัยนเรศวร
+
+</div>
