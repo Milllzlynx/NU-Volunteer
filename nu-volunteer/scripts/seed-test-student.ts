@@ -1,11 +1,11 @@
 /**
- * บัญชีนิสิตทดสอบสำหรับสาธิตและทดสอบ — สองแบบ
+ * บัญชีนิสิตทดสอบสำหรับสาธิตและทดสอบ — สามแบบ
  *
- *   npx tsx scripts/seed-test-student.ts [--profile full|half]            # dry run — ไม่เขียนฐานข้อมูล
+ *   npx tsx scripts/seed-test-student.ts [--profile full|half|none]       # dry run — ไม่เขียนฐานข้อมูล
  *   npx tsx scripts/seed-test-student.ts --profile half --commit          # เขียนจริง
  *   npx tsx scripts/seed-test-student.ts --profile half --remove --commit # ลบบัญชีและทุกอย่างที่ผูกอยู่
  *
- * ไม่ระบุ --profile = full รหัสผ่านอ่านจาก TEST_STUDENT_PASSWORD ใน .env (ใช้ร่วมกันทั้งสองบัญชี)
+ * ไม่ระบุ --profile = full รหัสผ่านอ่านจาก TEST_STUDENT_PASSWORD ใน .env (ใช้ร่วมกันทุกบัญชี)
  *
  * full — เข้าร่วมทุกกิจกรรม:
  * - จบแล้ว → อนุมัติ เช็กอิน/เช็กเอาต์ตามเวลากิจกรรม รับรองชั่วโมงเต็ม และออกใบประกาศ
@@ -21,11 +21,13 @@
  * - กิจกรรมที่ยังไม่จบแบ่ง "อนุมัติแล้ว" กับ "รออนุมัติ" (รออนุมัติเฉพาะที่ยังไม่ปิดรับสมัคร)
  * - กิจกรรมที่ไม่ได้เลือก → ไม่มีใบลงทะเบียน
  *
+ * none — นิสิตใหม่ที่ยังไม่เข้าร่วมอะไรเลย สำหรับหน้าว่าง: สร้างบัญชีอย่างเดียว ไม่มีใบลงทะเบียน
+ *
  * รันซ้ำไม่เปลี่ยนสิ่งที่เกิดขึ้นแล้ว: ใบที่รับรองชั่วโมง ใบประกาศ และใบไม่มา/ไม่อนุมัติคงเดิม
  * ใบอนุมัติ/รออนุมัติของกิจกรรมที่จบหลังรันครั้งก่อนจะได้ผลลัพธ์ (เข้าร่วม ไม่มา หรือไม่อนุมัติ)
  * ชั่วโมงนับเป้าต่อปีการศึกษา — ปีใหม่เติมใหม่ ไม่แตะชั่วโมงของปีก่อน
  *
- * ทั้งสองแบบข้ามกิจกรรมที่ยกเลิก ฉบับร่าง และยังไม่ถึงวันเปิดรับสมัคร
+ * ทุกแบบข้ามกิจกรรมที่ยกเลิก ฉบับร่าง และยังไม่ถึงวันเปิดรับสมัคร
  * ไม่ส่งอีเมล สร้างเฉพาะการแจ้งเตือนในระบบ ลงเวลาย้อนหลังตามวันที่ของกิจกรรม
  * ใบประกาศลงวันที่ออกเป็นเวลาสิ้นสุดกิจกรรม รหัสอ้างอิงจึงได้ปีการศึกษาของกิจกรรมนั้น
  *
@@ -40,7 +42,7 @@ import { newRef } from '@/lib/certificates';
 import { prisma } from '@/lib/db';
 import { hashPassword } from '@/lib/tokens';
 
-type ProfileKey = 'full' | 'half';
+type ProfileKey = 'full' | 'half' | 'none';
 
 const PROFILES: Record<ProfileKey, { email: string; name: string; studentId: string; faculty: string; loanStatus: string }> = {
   full: {
@@ -57,6 +59,13 @@ const PROFILES: Record<ProfileKey, { email: string; name: string; studentId: str
     faculty: 'คณะวิศวกรรมศาสตร์',
     loanStatus: 'no',
   },
+  none: {
+    email: 'test.student3@nu.ac.th',
+    name: 'นิสิตทดสอบ ยังไม่เริ่ม',
+    studentId: '00000003',
+    faculty: 'คณะสังคมศาสตร์',
+    loanStatus: 'yes',
+  },
 };
 
 /** สถานะเป้าหมายของใบลงทะเบียนในแต่ละกิจกรรม — none คือไม่มีใบ */
@@ -67,7 +76,7 @@ const commit = args.includes('--commit');
 const remove = args.includes('--remove');
 const profileArg = args[args.indexOf('--profile') + 1];
 const profile: ProfileKey = args.includes('--profile') ? (profileArg as ProfileKey) : 'full';
-if (!(profile in PROFILES)) throw new Error(`--profile ต้องเป็น full หรือ half (ได้ "${profileArg}")`);
+if (!(profile in PROFILES)) throw new Error(`--profile ต้องเป็น full, half หรือ none (ได้ "${profileArg}")`);
 const ACCOUNT = PROFILES[profile];
 
 const HOUR = 3_600_000;
@@ -165,6 +174,10 @@ function planFull(activities: Activity[], now: Date): Map<string, Target> {
   return new Map(
     activities.map((a) => [a.id, !eligible(a, now) ? 'skip' : a.endAt < now ? 'full' : 'approved']),
   );
+}
+
+function planNone(activities: Activity[], now: Date): Map<string, Target> {
+  return new Map(activities.map((a) => [a.id, eligible(a, now) ? 'none' : 'skip']));
 }
 
 async function planHalf(activities: Activity[], now: Date): Promise<Map<string, Target>> {
@@ -311,8 +324,11 @@ async function main() {
   }
 
   const activities = await loadActivities(existing?.id ?? '');
-  const plan = profile === 'full' ? planFull(activities, now) : await planHalf(activities, now);
-  if (profile === 'full') console.log('');
+  const plan =
+    profile === 'full' ? planFull(activities, now)
+    : profile === 'none' ? planNone(activities, now)
+    : await planHalf(activities, now);
+  if (profile !== 'half') console.log('');
 
   let userId = existing?.id ?? '';
   if (commit && !existing) {
