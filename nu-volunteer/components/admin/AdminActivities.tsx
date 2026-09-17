@@ -7,9 +7,11 @@ import { Badge, Button, EmptyState, ErrorNote, SuccessNote, Tabs, inputStyle } f
 import { DateTimeField } from '@/components/ui/DateTimeField';
 import { useApp } from '@/components/providers/AppProviders';
 import { DeleteActivityDialog } from '@/components/organizer/DeleteActivityDialog';
+import { DeletedActivities } from '@/components/organizer/DeletedActivities';
 import { ACTIVITY_STATUS_META } from '@/components/organizer/OrganizerActivities';
 import { adminContentApi, errorMessage } from '@/lib/api';
 import { COLOR, glass } from '@/lib/design';
+import type { DeletedActivityRow } from '@/lib/organizer';
 
 export type AdminActivityRow = {
   id: string;
@@ -44,8 +46,8 @@ const CRLF = '\r\n';
  * ตรงกับ ACTIVITY_STATUSES ใน lib/organizer.ts ซึ่งเป็นชุดที่ปลายทางยอมรับ
  * ไม่รวม "done" เพราะระบบเป็นผู้ตั้งให้เองเมื่อกิจกรรมจบ ไม่ใช่สิ่งที่คนกดตั้งย้อนหลัง
  */
-type TabKey = 'all' | 'draft' | 'open' | 'closed' | 'done' | 'cancelled' | 'past';
-const TAB_KEYS: readonly string[] = ['all', 'draft', 'open', 'closed', 'done', 'cancelled', 'past'];
+type TabKey = 'all' | 'draft' | 'open' | 'closed' | 'done' | 'cancelled' | 'past' | 'deleted';
+const TAB_KEYS: readonly string[] = ['all', 'draft', 'open', 'closed', 'done', 'cancelled', 'past', 'deleted'];
 
 /**
  * จัดการกิจกรรมทั้งระบบ
@@ -59,10 +61,13 @@ const TAB_KEYS: readonly string[] = ['all', 'draft', 'open', 'closed', 'done', '
  */
 export function AdminActivities({
   rows,
+  deleted,
   initialOrganizer,
   initialStatus,
 }: {
   rows: AdminActivityRow[];
+  /** แท็บ "ลบแล้ว" — ไม่ได้อยู่ใน rows เพราะไม่นับรวมในแท็บอื่นและทำทีเดียวหลายรายการไม่ได้ */
+  deleted: DeletedActivityRow[];
   /** จาก ?organizer= และ ?status= ที่ลิงก์ในหน้า /admin/organizers ส่งมา */
   initialOrganizer?: string;
   initialStatus?: string;
@@ -116,8 +121,9 @@ export function AdminActivities({
       done: scoped.filter((r) => r.status === 'done').length,
       cancelled: scoped.filter((r) => r.status === 'cancelled').length,
       past: scoped.filter((r) => r.past).length,
+      deleted: deleted.length,
     };
-  }, [rows, organizer]);
+  }, [rows, deleted, organizer]);
 
   const visible = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -215,6 +221,7 @@ export function AdminActivities({
     { key: 'done', label: t('จบแล้ว'), count: counts.done },
     { key: 'cancelled', label: t('ยกเลิกแล้ว'), count: counts.cancelled },
     { key: 'past', label: t('เลยวันไปแล้ว'), count: counts.past },
+    { key: 'deleted', label: t('ลบแล้ว'), count: counts.deleted },
   ];
 
   return (
@@ -233,227 +240,234 @@ export function AdminActivities({
 
       <Tabs items={tabItems} value={tab} onChange={setTab} />
 
-      {/* ── ตัวกรอง ── */}
-      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-        <input
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder={t('ค้นหาชื่อกิจกรรม สถานที่ หรือผู้จัด...')}
-          aria-label={t('ค้นหาชื่อกิจกรรม สถานที่ หรือผู้จัด...')}
-          style={{ ...inputStyle(false), flex: 1, minWidth: 200 }}
-        />
-        <select
-          value={category}
-          onChange={(e) => setCategory(e.target.value)}
-          aria-label={t('หมวดหมู่')}
-          style={{ ...inputStyle(false), width: 'auto', minWidth: 160 }}
-        >
-          <option value="">{t('ทุกหมวดหมู่')}</option>
-          {categories.map((c) => (
-            <option key={c.id} value={c.id}>
-              {isEn && c.labelEn ? c.labelEn : c.label}
-            </option>
-          ))}
-        </select>
-        <select
-          value={organizer}
-          onChange={(e) => setOrganizer(e.target.value)}
-          aria-label={t('ผู้จัด')}
-          style={{ ...inputStyle(false), width: 'auto', minWidth: 160, maxWidth: '100%' }}
-        >
-          <option value="">{t('ทุกผู้จัด')}</option>
-          {organizers.map((o) => (
-            <option key={o.id} value={o.id}>
-              {o.name}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'flex-start' }}>
-        {/* ช่องวันที่ของเบราว์เซอร์เรียงวัน-เดือนตามภาษาของเครื่องผู้ใช้ เครื่อง en-US จึงเห็น
-            mm/dd/yyyy — DateTimeField บังคับให้เป็น วัน/เดือน/ปี เหมือนกันทุกเครื่อง
-            ค่าที่ส่งออกยังเป็น "YYYY-MM-DD" เท่าเดิม ตัวกรองด้านบนจึงไม่ต้องแก้ */}
-        <DateRangeField
-          label={t('ตั้งแต่')}
-          ariaLabel={t('กรองตั้งแต่วันที่ (วัน/เดือน/ปี)')}
-          value={from}
-          onChange={setFrom}
-        />
-        <DateRangeField
-          label={t('ถึง')}
-          ariaLabel={t('กรองถึงวันที่ (วัน/เดือน/ปี)')}
-          value={to}
-          onChange={setTo}
-        />
-        {/* ช่องวันที่สูงขึ้นเพราะมีชื่อช่องด้านบนกับบรรทัดบอกรูปแบบด้านล่าง
-            เยื้องปุ่มลงมาให้อยู่ระดับเดียวกับตัวช่องกรอก ไม่ใช่ระดับชื่อช่อง */}
-        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center', flex: 1, paddingTop: 22 }}>
-          {from || to ? (
-            <Button variant="secondary" icon="close" onClick={() => { setFrom(''); setTo(''); }} style={{ padding: '8px 13px', fontSize: 12.5 }}>
-              {t('ล้างช่วงวันที่')}
-            </Button>
-          ) : null}
-          <Button variant="secondary" icon="download" onClick={exportCsv} disabled={!visible.length} style={{ marginInlineStart: 'auto' }}>
-            {t('ส่งออก CSV')}
-          </Button>
-        </div>
-      </div>
-
-      {/* ── แถบทำทีเดียวหลายรายการ ── */}
-      {pickedVisible.length ? (
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 9,
-            flexWrap: 'wrap',
-            padding: '12px 15px',
-            borderRadius: 15,
-            background: 'rgba(167,116,247,.14)',
-          }}
-        >
-          <span style={{ fontSize: 13, fontWeight: 600, color: '#7C2FD9' }}>
-            {`${t('เลือกไว้')} ${pickedVisible.length} ${t('รายการ')}`}
-          </span>
-          <Button variant="secondary" icon="how_to_reg" disabled={busy} onClick={() => bulk('open')} style={{ padding: '8px 14px', fontSize: 12.5 }}>
-            {t('เปิดรับสมัคร')}
-          </Button>
-          <Button variant="secondary" icon="lock_clock" disabled={busy} onClick={() => bulk('closed')} style={{ padding: '8px 14px', fontSize: 12.5 }}>
-            {t('ปิดรับสมัคร')}
-          </Button>
-          <Button variant="secondary" icon="block" disabled={busy} onClick={() => bulk('cancelled')} style={{ padding: '8px 14px', fontSize: 12.5 }}>
-            {t('ยกเลิก')}
-          </Button>
-          <Button variant="secondary" icon="close" disabled={busy} onClick={() => setPicked(new Set())} style={{ padding: '8px 14px', fontSize: 12.5, marginInlineStart: 'auto' }}>
-            {t('ล้างที่เลือก')}
-          </Button>
-        </div>
-      ) : null}
-
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 12, color: COLOR.hint }}>
-        {visible.length ? (
-          <label style={{ display: 'inline-flex', alignItems: 'center', gap: 7, cursor: 'pointer' }}>
-            <input
-              type="checkbox"
-              checked={allPicked}
-              onChange={() => setPicked(allPicked ? new Set() : new Set(visible.map((r) => r.id)))}
-              style={{ width: 15, height: 15, cursor: 'pointer' }}
-            />
-            {t('เลือกทั้งหมดที่แสดงอยู่')}
-          </label>
-        ) : null}
-        <span style={{ marginInlineStart: 'auto' }}>
-          {`${t('แสดง')} ${visible.length} ${t('จาก')} ${rows.length} ${t('รายการ')}`}
-        </span>
-      </div>
-
-      {/* ── รายการ ── */}
-      {visible.length === 0 ? (
-        <div style={{ ...glass(20) }}>
-          <EmptyState icon="event_busy" title={t('ไม่พบกิจกรรมที่ตรงกับเงื่อนไข')} desc={t('ลองเปลี่ยนแท็บ คำค้น หมวดหมู่ หรือช่วงวันที่')} />
-        </div>
+      {/* กิจกรรมที่ลบแล้วกรอง/ส่งออก/ทำทีเดียวหลายรายการไม่ได้ จึงแสดงแค่รายการพร้อมปุ่มกู้คืน */}
+      {tab === 'deleted' ? (
+        <DeletedActivities rows={deleted} showOrganizer onRestored={setNotice} />
       ) : (
-        <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'grid', gap: 10 }}>
-          {visible.map((r) => {
-            const meta = ACTIVITY_STATUS_META[r.status] ?? ACTIVITY_STATUS_META.draft;
-            const on = picked.has(r.id);
-            return (
-              <li
-                key={r.id}
-                style={{
-                  ...glass(18),
-                  padding: 16,
-                  display: 'grid',
-                  gap: 12,
-                  outline: on ? '2px solid rgba(167,116,247,.55)' : 'none',
-                }}
-              >
-                <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, flexWrap: 'wrap' }}>
-                  <input
-                    type="checkbox"
-                    checked={on}
-                    onChange={() => toggle(r.id)}
-                    aria-label={`${t('เลือก')} ${r.title}`}
-                    style={{ width: 16, height: 16, marginTop: 3, cursor: 'pointer', flexShrink: 0 }}
-                  />
+        <>
+          {/* ── ตัวกรอง ── */}
+          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+            <input
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder={t('ค้นหาชื่อกิจกรรม สถานที่ หรือผู้จัด...')}
+              aria-label={t('ค้นหาชื่อกิจกรรม สถานที่ หรือผู้จัด...')}
+              style={{ ...inputStyle(false), flex: 1, minWidth: 200 }}
+            />
+            <select
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              aria-label={t('หมวดหมู่')}
+              style={{ ...inputStyle(false), width: 'auto', minWidth: 160 }}
+            >
+              <option value="">{t('ทุกหมวดหมู่')}</option>
+              {categories.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {isEn && c.labelEn ? c.labelEn : c.label}
+                </option>
+              ))}
+            </select>
+            <select
+              value={organizer}
+              onChange={(e) => setOrganizer(e.target.value)}
+              aria-label={t('ผู้จัด')}
+              style={{ ...inputStyle(false), width: 'auto', minWidth: 160, maxWidth: '100%' }}
+            >
+              <option value="">{t('ทุกผู้จัด')}</option>
+              {organizers.map((o) => (
+                <option key={o.id} value={o.id}>
+                  {o.name}
+                </option>
+              ))}
+            </select>
+          </div>
 
-                  <div style={{ flex: 1, minWidth: 190 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-                      <Link
-                        href={`/activities/${r.id}`}
-                        style={{ fontSize: 14.5, fontWeight: 600, color: COLOR.ink, textDecoration: 'none' }}
-                      >
-                        {r.title}
-                      </Link>
-                      <span
-                        style={{
-                          padding: '3px 10px',
-                          borderRadius: 999,
-                          fontSize: 11,
-                          background: `${r.categoryColor}26`,
-                          color: r.categoryColor,
-                        }}
-                      >
-                        {isEn && r.categoryLabelEn ? r.categoryLabelEn : r.categoryLabel}
-                      </span>
-                      <Badge tone={meta.tone} label={t(meta.label)} />
-                      {r.pending > 0 ? (
-                        <Badge tone="warning" icon="hourglass_top" label={`${t('รออนุมัติ')} ${r.pending}`} />
-                      ) : null}
-                    </div>
+          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'flex-start' }}>
+            {/* ช่องวันที่ของเบราว์เซอร์เรียงวัน-เดือนตามภาษาของเครื่องผู้ใช้ เครื่อง en-US จึงเห็น
+                mm/dd/yyyy — DateTimeField บังคับให้เป็น วัน/เดือน/ปี เหมือนกันทุกเครื่อง
+                ค่าที่ส่งออกยังเป็น "YYYY-MM-DD" เท่าเดิม ตัวกรองด้านบนจึงไม่ต้องแก้ */}
+            <DateRangeField
+              label={t('ตั้งแต่')}
+              ariaLabel={t('กรองตั้งแต่วันที่ (วัน/เดือน/ปี)')}
+              value={from}
+              onChange={setFrom}
+            />
+            <DateRangeField
+              label={t('ถึง')}
+              ariaLabel={t('กรองถึงวันที่ (วัน/เดือน/ปี)')}
+              value={to}
+              onChange={setTo}
+            />
+            {/* ช่องวันที่สูงขึ้นเพราะมีชื่อช่องด้านบนกับบรรทัดบอกรูปแบบด้านล่าง
+                เยื้องปุ่มลงมาให้อยู่ระดับเดียวกับตัวช่องกรอก ไม่ใช่ระดับชื่อช่อง */}
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center', flex: 1, paddingTop: 22 }}>
+              {from || to ? (
+                <Button variant="secondary" icon="close" onClick={() => { setFrom(''); setTo(''); }} style={{ padding: '8px 13px', fontSize: 12.5 }}>
+                  {t('ล้างช่วงวันที่')}
+                </Button>
+              ) : null}
+              <Button variant="secondary" icon="download" onClick={exportCsv} disabled={!visible.length} style={{ marginInlineStart: 'auto' }}>
+                {t('ส่งออก CSV')}
+              </Button>
+            </div>
+          </div>
 
-                    <div style={{ fontSize: 12, color: COLOR.hint, marginTop: 5, lineHeight: 1.8 }}>
-                      {`${isEn ? r.dateEn : r.dateTh}${
-                        (isEn ? r.endDateEn : r.endDateTh) ? ` - ${isEn ? r.endDateEn : r.endDateTh}` : ''
-                      } · ${r.time}`}
-                      {r.location ? ` · ${r.location}` : ''}
-                    </div>
-                    <div style={{ fontSize: 11.5, color: COLOR.hint, marginTop: 2, lineHeight: 1.8 }}>
-                      {`${r.organizerName}${r.orgName ? ` · ${r.orgName}` : ''}`}
-                    </div>
-                  </div>
+          {/* ── แถบทำทีเดียวหลายรายการ ── */}
+          {pickedVisible.length ? (
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 9,
+                flexWrap: 'wrap',
+                padding: '12px 15px',
+                borderRadius: 15,
+                background: 'rgba(167,116,247,.14)',
+              }}
+            >
+              <span style={{ fontSize: 13, fontWeight: 600, color: '#7C2FD9' }}>
+                {`${t('เลือกไว้')} ${pickedVisible.length} ${t('รายการ')}`}
+              </span>
+              <Button variant="secondary" icon="how_to_reg" disabled={busy} onClick={() => bulk('open')} style={{ padding: '8px 14px', fontSize: 12.5 }}>
+                {t('เปิดรับสมัคร')}
+              </Button>
+              <Button variant="secondary" icon="lock_clock" disabled={busy} onClick={() => bulk('closed')} style={{ padding: '8px 14px', fontSize: 12.5 }}>
+                {t('ปิดรับสมัคร')}
+              </Button>
+              <Button variant="secondary" icon="block" disabled={busy} onClick={() => bulk('cancelled')} style={{ padding: '8px 14px', fontSize: 12.5 }}>
+                {t('ยกเลิก')}
+              </Button>
+              <Button variant="secondary" icon="close" disabled={busy} onClick={() => setPicked(new Set())} style={{ padding: '8px 14px', fontSize: 12.5, marginInlineStart: 'auto' }}>
+                {t('ล้างที่เลือก')}
+              </Button>
+            </div>
+          ) : null}
 
-                  {/* สถิติย่อของกิจกรรมนี้ */}
-                  <div style={{ display: 'grid', gap: 3, textAlign: 'end', flexShrink: 0, fontSize: 11.5, color: COLOR.hint }}>
-                    <span style={{ fontSize: 15, fontWeight: 700, color: COLOR.ink }}>
-                      {r.seatsTotal > 0 ? `${r.seatsFilled}/${r.seatsTotal}` : r.seatsFilled}
-                    </span>
-                    <span>{t('ที่นั่ง')}</span>
-                    <span>{`${r.hours} ${t('ชม.')}`}</span>
-                  </div>
-                </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 12, color: COLOR.hint }}>
+            {visible.length ? (
+              <label style={{ display: 'inline-flex', alignItems: 'center', gap: 7, cursor: 'pointer' }}>
+                <input
+                  type="checkbox"
+                  checked={allPicked}
+                  onChange={() => setPicked(allPicked ? new Set() : new Set(visible.map((r) => r.id)))}
+                  style={{ width: 15, height: 15, cursor: 'pointer' }}
+                />
+                {t('เลือกทั้งหมดที่แสดงอยู่')}
+              </label>
+            ) : null}
+            <span style={{ marginInlineStart: 'auto' }}>
+              {`${t('แสดง')} ${visible.length} ${t('จาก')} ${rows.length} ${t('รายการ')}`}
+            </span>
+          </div>
 
-                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', paddingTop: 11, borderTop: '1px solid rgba(31,41,55,.08)' }}>
-                  <Link href={`/activities/${r.id}`}>
-                    <Button variant="secondary" icon="visibility" style={{ padding: '8px 14px', fontSize: 12.5 }}>
-                      {t('ดู')}
-                    </Button>
-                  </Link>
-                  <Link href={`/organizer/activities/${r.id}`}>
-                    <Button variant="secondary" icon="edit" style={{ padding: '8px 14px', fontSize: 12.5 }}>
-                      {t('แก้ไข')}
-                    </Button>
-                  </Link>
-                  <Link href={`/activities/${r.id}/participants`}>
-                    <Button variant="secondary" icon="groups" style={{ padding: '8px 14px', fontSize: 12.5 }}>
-                      {t('ผู้เข้าร่วม')}
-                    </Button>
-                  </Link>
-                  <Button
-                    variant="secondary"
-                    icon="delete"
-                    disabled={busy}
-                    onClick={() => setConfirmDelete(r)}
-                    style={{ padding: '8px 14px', fontSize: 12.5, marginInlineStart: 'auto' }}
+          {/* ── รายการ ── */}
+          {visible.length === 0 ? (
+            <div style={{ ...glass(20) }}>
+              <EmptyState icon="event_busy" title={t('ไม่พบกิจกรรมที่ตรงกับเงื่อนไข')} desc={t('ลองเปลี่ยนแท็บ คำค้น หมวดหมู่ หรือช่วงวันที่')} />
+            </div>
+          ) : (
+            <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'grid', gap: 10 }}>
+              {visible.map((r) => {
+                const meta = ACTIVITY_STATUS_META[r.status] ?? ACTIVITY_STATUS_META.draft;
+                const on = picked.has(r.id);
+                return (
+                  <li
+                    key={r.id}
+                    style={{
+                      ...glass(18),
+                      padding: 16,
+                      display: 'grid',
+                      gap: 12,
+                      outline: on ? '2px solid rgba(167,116,247,.55)' : 'none',
+                    }}
                   >
-                    {t('ลบ')}
-                  </Button>
-                </div>
-              </li>
-            );
-          })}
-        </ul>
+                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, flexWrap: 'wrap' }}>
+                      <input
+                        type="checkbox"
+                        checked={on}
+                        onChange={() => toggle(r.id)}
+                        aria-label={`${t('เลือก')} ${r.title}`}
+                        style={{ width: 16, height: 16, marginTop: 3, cursor: 'pointer', flexShrink: 0 }}
+                      />
+
+                      <div style={{ flex: 1, minWidth: 190 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+                          <Link
+                            href={`/activities/${r.id}`}
+                            style={{ fontSize: 14.5, fontWeight: 600, color: COLOR.ink, textDecoration: 'none' }}
+                          >
+                            {r.title}
+                          </Link>
+                          <span
+                            style={{
+                              padding: '3px 10px',
+                              borderRadius: 999,
+                              fontSize: 11,
+                              background: `${r.categoryColor}26`,
+                              color: r.categoryColor,
+                            }}
+                          >
+                            {isEn && r.categoryLabelEn ? r.categoryLabelEn : r.categoryLabel}
+                          </span>
+                          <Badge tone={meta.tone} label={t(meta.label)} />
+                          {r.pending > 0 ? (
+                            <Badge tone="warning" icon="hourglass_top" label={`${t('รออนุมัติ')} ${r.pending}`} />
+                          ) : null}
+                        </div>
+
+                        <div style={{ fontSize: 12, color: COLOR.hint, marginTop: 5, lineHeight: 1.8 }}>
+                          {`${isEn ? r.dateEn : r.dateTh}${
+                            (isEn ? r.endDateEn : r.endDateTh) ? ` - ${isEn ? r.endDateEn : r.endDateTh}` : ''
+                          } · ${r.time}`}
+                          {r.location ? ` · ${r.location}` : ''}
+                        </div>
+                        <div style={{ fontSize: 11.5, color: COLOR.hint, marginTop: 2, lineHeight: 1.8 }}>
+                          {`${r.organizerName}${r.orgName ? ` · ${r.orgName}` : ''}`}
+                        </div>
+                      </div>
+
+                      {/* สถิติย่อของกิจกรรมนี้ */}
+                      <div style={{ display: 'grid', gap: 3, textAlign: 'end', flexShrink: 0, fontSize: 11.5, color: COLOR.hint }}>
+                        <span style={{ fontSize: 15, fontWeight: 700, color: COLOR.ink }}>
+                          {r.seatsTotal > 0 ? `${r.seatsFilled}/${r.seatsTotal}` : r.seatsFilled}
+                        </span>
+                        <span>{t('ที่นั่ง')}</span>
+                        <span>{`${r.hours} ${t('ชม.')}`}</span>
+                      </div>
+                    </div>
+
+                    <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', paddingTop: 11, borderTop: '1px solid rgba(31,41,55,.08)' }}>
+                      <Link href={`/activities/${r.id}`}>
+                        <Button variant="secondary" icon="visibility" style={{ padding: '8px 14px', fontSize: 12.5 }}>
+                          {t('ดู')}
+                        </Button>
+                      </Link>
+                      <Link href={`/organizer/activities/${r.id}`}>
+                        <Button variant="secondary" icon="edit" style={{ padding: '8px 14px', fontSize: 12.5 }}>
+                          {t('แก้ไข')}
+                        </Button>
+                      </Link>
+                      <Link href={`/activities/${r.id}/participants`}>
+                        <Button variant="secondary" icon="groups" style={{ padding: '8px 14px', fontSize: 12.5 }}>
+                          {t('ผู้เข้าร่วม')}
+                        </Button>
+                      </Link>
+                      <Button
+                        variant="secondary"
+                        icon="delete"
+                        disabled={busy}
+                        onClick={() => setConfirmDelete(r)}
+                        style={{ padding: '8px 14px', fontSize: 12.5, marginInlineStart: 'auto' }}
+                      >
+                        {t('ลบ')}
+                      </Button>
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+        </>
       )}
 
       {confirmDelete ? (

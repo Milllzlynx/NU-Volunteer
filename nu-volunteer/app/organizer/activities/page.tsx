@@ -6,7 +6,7 @@ import {
 import { DATE_EN, DATE_TH, SEAT_TAKEN, sortActivities, timeOf } from '@/lib/activities';
 import { getCurrentUser } from '@/lib/auth';
 import { prisma } from '@/lib/db';
-import { ownedActivityFilter } from '@/lib/organizer';
+import { loadDeletedActivities, ownedActivityFilter } from '@/lib/organizer';
 
 export default async function OrganizerActivitiesPage() {
   const user = await getCurrentUser();
@@ -40,5 +40,5 @@ export default async function OrganizerActivitiesPage() {
     past: a.endAt.getTime() < now.getTime(),
   }));
 
-  return <OrganizerActivities rows={list} />;
+  return <OrganizerActivities rows={list} deleted={await loadDeletedActivities(user, now)} />;
 }

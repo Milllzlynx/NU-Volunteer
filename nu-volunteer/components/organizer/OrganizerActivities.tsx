@@ -6,9 +6,11 @@ import { useRouter } from 'next/navigation';
 import { Badge, Button, EmptyState, ErrorNote, Icon, SuccessNote, Tabs, inputStyle } from '@/components/ui';
 import { useApp } from '@/components/providers/AppProviders';
 import { DeleteActivityDialog } from '@/components/organizer/DeleteActivityDialog';
+import { DeletedActivities } from '@/components/organizer/DeletedActivities';
 import { errorMessage, organizerApi } from '@/lib/api';
 import { COLOR, SEMANTIC, glass } from '@/lib/design';
 import type { SemanticTone } from '@/lib/design';
+import type { DeletedActivityRow } from '@/lib/organizer';
 
 export type OrganizerActivityRow = {
   id: string;
@@ -37,16 +39,24 @@ export const ACTIVITY_STATUS_META: Record<string, { label: string; tone: Semanti
   done: { label: 'จบแล้ว', tone: 'purple', icon: 'verified' },
 };
 
-type TabKey = 'all' | 'draft' | 'open' | 'past';
+type TabKey = 'all' | 'draft' | 'open' | 'past' | 'deleted';
 
 const TABS: { key: TabKey; label: string }[] = [
   { key: 'all', label: 'ทั้งหมด' },
   { key: 'draft', label: 'ฉบับร่าง' },
   { key: 'open', label: 'เปิดรับสมัคร' },
   { key: 'past', label: 'ผ่านมาแล้ว' },
+  { key: 'deleted', label: 'ลบแล้ว' },
 ];
 
-export function OrganizerActivities({ rows }: { rows: OrganizerActivityRow[] }) {
+export function OrganizerActivities({
+  rows,
+  deleted,
+}: {
+  rows: OrganizerActivityRow[];
+  /** แท็บ "ลบแล้ว" — ไม่ได้อยู่ใน rows เพราะไม่นับรวมในแท็บอื่น */
+  deleted: DeletedActivityRow[];
+}) {
   const { t, isEn } = useApp();
   const router = useRouter();
   const [, startTransition] = useTransition();
@@ -64,8 +74,9 @@ export function OrganizerActivities({ rows }: { rows: OrganizerActivityRow[] }) 
       draft: rows.filter((r) => r.status === 'draft').length,
       open: rows.filter((r) => r.status === 'open' && !r.past).length,
       past: rows.filter((r) => r.past).length,
+      deleted: deleted.length,
     }),
-    [rows],
+    [rows, deleted],
   );
 
   const visible = useMemo(() => {
@@ -143,7 +154,12 @@ export function OrganizerActivities({ rows }: { rows: OrganizerActivityRow[] }) 
         onChange={setTab}
       />
 
-      {visible.length === 0 ? (
+      {tab === 'deleted' ? (
+        <DeletedActivities
+          rows={deleted.filter((r) => r.title.toLowerCase().includes(query.trim().toLowerCase()))}
+          onRestored={setNotice}
+        />
+      ) : visible.length === 0 ? (
         <div style={{ ...glass(20) }}>
           <EmptyState
             icon="campaign"

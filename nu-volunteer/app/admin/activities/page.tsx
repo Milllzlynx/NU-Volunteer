@@ -3,6 +3,7 @@ import { AdminActivities, type AdminActivityRow } from '@/components/admin/Admin
 import { DATE_EN, DATE_TH, NOT_DELETED, SEAT_TAKEN, dayKeyOf, sortActivities, timeOf } from '@/lib/activities';
 import { requireAdmin } from '@/lib/auth';
 import { prisma } from '@/lib/db';
+import { loadDeletedActivities } from '@/lib/organizer';
 
 export const metadata: Metadata = { title: 'กิจกรรมทั้งหมด · NU Volunteer' };
 
@@ -17,7 +18,7 @@ export default async function AdminActivitiesPage({
 }: {
   searchParams: Promise<{ organizer?: string; status?: string }>;
 }) {
-  await requireAdmin();
+  const admin = await requireAdmin();
   // มาจากลิงก์ตัวเลขในหน้า /admin/organizers — ค่าที่ไม่รู้จักตัวคอมโพเนนต์จะไม่สนใจเอง
   const { organizer, status } = await searchParams;
 
@@ -62,5 +63,12 @@ export default async function AdminActivitiesPage({
     };
   });
 
-  return <AdminActivities rows={list} initialOrganizer={organizer} initialStatus={status} />;
+  return (
+    <AdminActivities
+      rows={list}
+      deleted={await loadDeletedActivities(admin, now)}
+      initialOrganizer={organizer}
+      initialStatus={status}
+    />
+  );
 }

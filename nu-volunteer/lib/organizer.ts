@@ -48,6 +48,69 @@ export function ownedActivityFilter(user: User) {
 }
 
 /**
+ * สถานะที่กิจกรรมจะได้หลังกู้คืน
+ *
+ * กิจกรรมที่ยังไม่จบและเคยเผยแพร่อยู่ (open/closed) กลับมาเป็นฉบับร่าง — นิสิตได้รับแจ้งไปแล้วว่า
+ * กิจกรรมถูกนำออก ผู้จัดควรตรวจวันเวลาและที่นั่งก่อนกดเผยแพร่ให้เห็นอีกครั้ง
+ *
+ * ที่เหลือคงสถานะเดิม: กิจกรรมที่จบแล้วเป็นฉบับร่างไม่ได้ เพราะปุ่ม "เผยแพร่" จะตั้งเป็น open
+ * ทั้งที่วันจัดผ่านไปแล้ว ส่วนที่ยกเลิก จบแล้ว หรือเป็นฉบับร่างอยู่แล้ว ไม่มีอะไรให้ทบทวน
+ */
+export function restoredStatus(a: { status: string; endAt: Date }, now: Date = new Date()): string {
+  const upcomingPublished = a.endAt >= now && (a.status === 'open' || a.status === 'closed');
+  return upcomingPublished ? 'draft' : a.status;
+}
+
+/** แถวของแท็บ "ลบแล้ว" — ใช้ร่วมกันทั้งหน้าผู้จัดและหน้าแอดมิน */
+export type DeletedActivityRow = {
+  id: string;
+  title: string;
+  categoryLabel: string;
+  categoryLabelEn: string;
+  categoryColor: string;
+  organizerName: string;
+  status: string;
+  /** สถานะที่จะได้ถ้ากดกู้คืนตอนนี้ — บอกไว้บนการ์ดก่อนกด */
+  restoreStatus: string;
+  dateTh: string;
+  dateEn: string;
+  time: string;
+  deletedTh: string;
+  deletedEn: string;
+  /** นิสิตที่ถือใบลงทะเบียนอยู่ — คนกลุ่มนี้จะได้รับแจ้งเมื่อกู้คืน */
+  students: number;
+};
+
+/** กิจกรรมที่ถูกลบซึ่งผู้ใช้คนนี้กู้คืนได้ — ผู้จัดเห็นของตัวเอง แอดมินเห็นทั้งหมด ลบล่าสุดก่อน */
+export async function loadDeletedActivities(user: User, now: Date = new Date()): Promise<DeletedActivityRow[]> {
+  const rows = await prisma.activity.findMany({
+    where: { ...ownedActivityFilter(user), deletedAt: { not: null } },
+    orderBy: { deletedAt: 'desc' },
+    include: {
+      category: { select: { label: true, labelEn: true, color: true } },
+      organizer: { select: { name: true } },
+      registrations: { select: { userId: true } },
+    },
+  });
+  return rows.map((a) => ({
+    id: a.id,
+    title: a.title,
+    categoryLabel: a.category.label,
+    categoryLabelEn: a.category.labelEn,
+    categoryColor: a.category.color,
+    organizerName: a.organizer.name,
+    status: a.status,
+    restoreStatus: restoredStatus(a, now),
+    dateTh: DATE_TH.format(a.startAt),
+    dateEn: DATE_EN.format(a.startAt),
+    time: `${timeOf(a.startAt)} - ${timeOf(a.endAt)}`,
+    deletedTh: DATE_TH.format(a.deletedAt!),
+    deletedEn: DATE_EN.format(a.deletedAt!),
+    students: new Set(a.registrations.map((r) => r.userId)).size,
+  }));
+}
+
+/**
  * งานที่ผู้จัดต้องลงมือทำ — คำนวณสด ไม่ได้เก็บเป็นแถวใน Notification
  *
  * ต่างจากการแจ้งเตือนของนิสิตที่เป็นการเตือนกำหนดการ ของผู้จัดคือ "คิวงานค้าง"

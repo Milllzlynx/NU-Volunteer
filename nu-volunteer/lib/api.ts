@@ -213,6 +213,12 @@ export const organizerApi = {
   deleteActivity: (id: string) =>
     apiFetch<{ ok: true; affectedStudents: number }>(`/organizer/activities/${id}`, { method: 'DELETE' }),
 
+  /** กู้คืนกิจกรรมที่ถูกลบ — status คือสถานะที่ได้หลังกู้คืน (ยังไม่จบ = ฉบับร่าง) */
+  restoreActivity: (id: string) =>
+    apiFetch<{ ok: true; status: string; affectedStudents: number }>(`/organizer/activities/${id}/restore`, {
+      method: 'POST',
+    }),
+
   /** ผลกระทบของการลบกิจกรรม — เรียกตอนเปิดกล่องยืนยัน ไม่ได้มากับข้อมูลของแถว */
   activityImpact: (id: string) =>
     apiFetch<{
