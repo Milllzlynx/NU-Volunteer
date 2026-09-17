@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Badge, Button, ColorBadge, EmptyState, Icon, inputStyle } from '@/components/ui';
 import { DateEcho } from '@/components/ui/DateEcho';
 import { useApp } from '@/components/providers/AppProviders';
+import { ACTIVITY_STATUS_META } from '@/components/organizer/OrganizerActivities';
 import { monthLabel } from '@/lib/calendarMath';
 import { COLOR, glass } from '@/lib/design';
 import { round1, summarize, type ActivityReportRow } from '@/lib/organizerStats';
@@ -130,6 +131,15 @@ export function OrganizerStats({ rows }: { rows: ActivityReportRow[] }) {
     ];
   }, [filtered, totals]);
 
+  /** จำนวนกิจกรรมต่อสถานะ ลำดับเดียวกับหน้า /admin/organizers — ซ่อนสถานะที่เป็นศูนย์ */
+  const byStatus = useMemo(
+    () =>
+      (['draft', 'open', 'closed', 'done', 'cancelled'] as const)
+        .map((key) => ({ key, ...ACTIVITY_STATUS_META[key], count: filtered.filter((r) => r.status === key).length }))
+        .filter((s) => s.count > 0),
+    [filtered],
+  );
+
   const top = useMemo(
     () => [...filtered].sort((a, b) => b.attended - a.attended).slice(0, TOP_N),
     [filtered],
@@ -226,6 +236,17 @@ export function OrganizerStats({ rows }: { rows: ActivityReportRow[] }) {
             <StatCard icon="schedule" color="#E97171" label={t('ชั่วโมงที่รับรองแล้ว')} value={String(totals.hoursAwarded)} hint={`${totals.completed} ${t('ใบ')}`} />
             <StatCard icon="event_seat" color="#F5A623" label={t('อัตราที่นั่งเต็ม')} value={totals.fillRate != null ? `${totals.fillRate}%` : '—'} hint={t('เฉพาะกิจกรรมที่จำกัดที่นั่ง')} />
             <StatCard icon="star" color="#F5A623" label={t('คะแนนเฉลี่ย')} value={totals.ratingAvg != null ? `${totals.ratingAvg}` : '—'} hint={`${totals.reviewCount} ${t('รีวิว')}`} />
+          </div>
+
+          {/* ── กิจกรรมแยกตามสถานะ ── นับตามตัวกรองด้านบน */}
+          <div style={{ ...glass(22), padding: 18, display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+            <Icon name="donut_small" size={19} style={{ color: '#A774F7' }} />
+            <span style={{ fontSize: 14.5, fontWeight: 600, color: COLOR.ink, marginInlineEnd: 6 }}>
+              {t('กิจกรรมแยกตามสถานะ')}
+            </span>
+            {byStatus.map((s) => (
+              <Badge key={s.key} tone={s.tone} icon={s.icon} label={`${t(s.label)} ${s.count}`} />
+            ))}
           </div>
 
           {/* ── ผู้เข้าร่วมรายเดือน ── */}

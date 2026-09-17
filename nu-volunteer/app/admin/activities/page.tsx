@@ -12,15 +12,21 @@ export const metadata: Metadata = { title: 'กิจกรรมทั้งห
  * ไม่ใส่ where — ต่างจากหน้าเดียวกันของฝั่งผู้จัดที่กรองด้วย ownedActivityFilter
  * แอดมินต้องเห็นของทุกคนรวมถึงฉบับร่างที่ยังไม่เผยแพร่ด้วย
  */
-export default async function AdminActivitiesPage() {
+export default async function AdminActivitiesPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ organizer?: string; status?: string }>;
+}) {
   await requireAdmin();
+  // มาจากลิงก์ตัวเลขในหน้า /admin/organizers — ค่าที่ไม่รู้จักตัวคอมโพเนนต์จะไม่สนใจเอง
+  const { organizer, status } = await searchParams;
 
   const now = new Date();
   const rows = await prisma.activity.findMany({
     where: NOT_DELETED,
     include: {
       category: { select: { id: true, label: true, labelEn: true, color: true } },
-      organizer: { select: { name: true } },
+      organizer: { select: { id: true, name: true } },
       _count: { select: { registrations: { where: { status: 'pending' } } } },
       registrations: { where: { status: { in: SEAT_TAKEN } }, select: { id: true } },
     },
@@ -36,6 +42,7 @@ export default async function AdminActivitiesPage() {
       categoryLabel: a.category.label,
       categoryLabelEn: a.category.labelEn,
       categoryColor: a.category.color,
+      organizerId: a.organizer.id,
       organizerName: a.organizer.name,
       orgName: a.orgName,
       status: a.status,
@@ -55,5 +62,5 @@ export default async function AdminActivitiesPage() {
     };
   });
 
-  return <AdminActivities rows={list} />;
+  return <AdminActivities rows={list} initialOrganizer={organizer} initialStatus={status} />;
 }

@@ -18,6 +18,7 @@ export type AdminActivityRow = {
   categoryLabel: string;
   categoryLabelEn: string;
   categoryColor: string;
+  organizerId: string;
   organizerName: string;
   orgName: string;
   status: string;
@@ -44,6 +45,7 @@ const CRLF = '\r\n';
  * ไม่รวม "done" เพราะระบบเป็นผู้ตั้งให้เองเมื่อกิจกรรมจบ ไม่ใช่สิ่งที่คนกดตั้งย้อนหลัง
  */
 type TabKey = 'all' | 'draft' | 'open' | 'closed' | 'done' | 'cancelled' | 'past';
+const TAB_KEYS: readonly string[] = ['all', 'draft', 'open', 'closed', 'done', 'cancelled', 'past'];
 
 /**
  * จัดการกิจกรรมทั้งระบบ
@@ -55,13 +57,27 @@ type TabKey = 'all' | 'draft' | 'open' | 'closed' | 'done' | 'cancelled' | 'past
  * ข้อมูลมาครบตั้งแต่เรนเดอร์ฝั่งเซิร์ฟเวอร์ การกรองทั้งหมดจึงทำในหน่วยความจำ
  * ระบบนี้มีกิจกรรมหลักสิบถึงหลักร้อยรายการ ไม่ใช่หลักแสน
  */
-export function AdminActivities({ rows }: { rows: AdminActivityRow[] }) {
+export function AdminActivities({
+  rows,
+  initialOrganizer,
+  initialStatus,
+}: {
+  rows: AdminActivityRow[];
+  /** จาก ?organizer= และ ?status= ที่ลิงก์ในหน้า /admin/organizers ส่งมา */
+  initialOrganizer?: string;
+  initialStatus?: string;
+}) {
   const { t, isEn } = useApp();
   const router = useRouter();
 
-  const [tab, setTab] = useState<TabKey>('all');
+  const [tab, setTab] = useState<TabKey>(
+    typeof initialStatus === 'string' && TAB_KEYS.includes(initialStatus) ? (initialStatus as TabKey) : 'all',
+  );
   const [query, setQuery] = useState('');
   const [category, setCategory] = useState('');
+  const [organizer, setOrganizer] = useState(
+    typeof initialOrganizer === 'string' && rows.some((r) => r.organizerId === initialOrganizer) ? initialOrganizer : '',
+  );
   const [from, setFrom] = useState('');
   const [to, setTo] = useState('');
 
@@ -81,24 +97,34 @@ export function AdminActivities({ rows }: { rows: AdminActivityRow[] }) {
     return [...seen.values()];
   }, [rows]);
 
-  const counts = useMemo(
-    () => ({
-      all: rows.length,
-      draft: rows.filter((r) => r.status === 'draft').length,
-      open: rows.filter((r) => r.status === 'open').length,
-      closed: rows.filter((r) => r.status === 'closed').length,
-      done: rows.filter((r) => r.status === 'done').length,
-      cancelled: rows.filter((r) => r.status === 'cancelled').length,
-      past: rows.filter((r) => r.past).length,
-    }),
-    [rows],
-  );
+  const organizers = useMemo(() => {
+    const seen = new Map<string, string>();
+    for (const r of rows) if (!seen.has(r.organizerId)) seen.set(r.organizerId, r.organizerName);
+    return [...seen.entries()]
+      .map(([id, name]) => ({ id, name }))
+      .sort((a, b) => a.name.localeCompare(b.name, 'th'));
+  }, [rows]);
+
+  /* ตัวเลขบนแท็บนับตามผู้จัดที่เลือกไว้ด้วย ให้ตรงกับจำนวนที่เห็นในหน้า /admin/organizers */
+  const counts = useMemo(() => {
+    const scoped = organizer ? rows.filter((r) => r.organizerId === organizer) : rows;
+    return {
+      all: scoped.length,
+      draft: scoped.filter((r) => r.status === 'draft').length,
+      open: scoped.filter((r) => r.status === 'open').length,
+      closed: scoped.filter((r) => r.status === 'closed').length,
+      done: scoped.filter((r) => r.status === 'done').length,
+      cancelled: scoped.filter((r) => r.status === 'cancelled').length,
+      past: scoped.filter((r) => r.past).length,
+    };
+  }, [rows, organizer]);
 
   const visible = useMemo(() => {
     const q = query.trim().toLowerCase();
     return rows.filter((r) => {
       if (tab === 'past' ? !r.past : tab !== 'all' && r.status !== tab) return false;
       if (category && r.categoryId !== category) return false;
+      if (organizer && r.organizerId !== organizer) return false;
       // เทียบเป็นข้อความ YYYY-MM-DD ได้ตรง ๆ เพราะรูปแบบนี้เรียงตามเวลาอยู่แล้ว
       if (from && r.startIso < from) return false;
       if (to && r.startIso > to) return false;
@@ -110,7 +136,7 @@ export function AdminActivities({ rows }: { rows: AdminActivityRow[] }) {
         r.orgName.toLowerCase().includes(q)
       );
     });
-  }, [rows, tab, query, category, from, to]);
+  }, [rows, tab, query, category, organizer, from, to]);
 
   /** เลือกไว้แต่ถูกกรองออกไปแล้วต้องไม่ถูกนับ — ไม่งั้นกดทำทีเดียวจะโดนของที่มองไม่เห็น */
   const pickedVisible = useMemo(
@@ -226,6 +252,19 @@ export function AdminActivities({ rows }: { rows: AdminActivityRow[] }) {
           {categories.map((c) => (
             <option key={c.id} value={c.id}>
               {isEn && c.labelEn ? c.labelEn : c.label}
+            </option>
+          ))}
+        </select>
+        <select
+          value={organizer}
+          onChange={(e) => setOrganizer(e.target.value)}
+          aria-label={t('ผู้จัด')}
+          style={{ ...inputStyle(false), width: 'auto', minWidth: 160, maxWidth: '100%' }}
+        >
+          <option value="">{t('ทุกผู้จัด')}</option>
+          {organizers.map((o) => (
+            <option key={o.id} value={o.id}>
+              {o.name}
             </option>
           ))}
         </select>
