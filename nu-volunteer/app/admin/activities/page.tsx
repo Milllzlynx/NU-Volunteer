@@ -19,7 +19,7 @@ export default async function AdminActivitiesPage({
   searchParams: Promise<{ organizer?: string; status?: string }>;
 }) {
   const admin = await requireAdmin();
-  // มาจากลิงก์ตัวเลขในหน้า /admin/organizers — ค่าที่ไม่รู้จักตัวคอมโพเนนต์จะไม่สนใจเอง
+  // ตั้งค่าตัวกรองเริ่มต้นจาก URL ได้ — ค่าที่ไม่รู้จักตัวคอมโพเนนต์จะไม่สนใจเอง
   const { organizer, status } = await searchParams;
 
   const now = new Date();

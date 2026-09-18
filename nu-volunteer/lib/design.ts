@@ -110,7 +110,6 @@ export const ROLE_NAV: Record<string, NavItem[]> = {
     { key: 'home', label: 'หน้าหลัก', labelEn: 'Home', icon: 'home', href: '/admin' },
     { key: 'users', label: 'ผู้ใช้งาน', labelEn: 'Users', icon: 'manage_accounts', href: '/admin/users' },
     { key: 'activities', label: 'กิจกรรม', labelEn: 'All Activities', icon: 'campaign', href: '/admin/activities' },
-    { key: 'organizers', label: 'ผู้จัดกิจกรรม', labelEn: 'Organizers', icon: 'badge', href: '/admin/organizers' },
     { key: 'calendar', label: 'ปฏิทินกิจกรรม', labelEn: 'Activity Calendar', icon: 'calendar_month', href: '/admin/calendar' },
     { key: 'categories', label: 'หมวดหมู่', labelEn: 'Categories', icon: 'category', href: '/admin/categories' },
     { key: 'faculties', label: 'คณะ', labelEn: 'Faculties', icon: 'school', href: '/admin/faculties' },

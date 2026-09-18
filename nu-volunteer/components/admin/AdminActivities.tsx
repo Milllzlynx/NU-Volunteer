@@ -68,7 +68,7 @@ export function AdminActivities({
   rows: AdminActivityRow[];
   /** แท็บ "ลบแล้ว" — ไม่ได้อยู่ใน rows เพราะไม่นับรวมในแท็บอื่นและทำทีเดียวหลายรายการไม่ได้ */
   deleted: DeletedActivityRow[];
-  /** จาก ?organizer= และ ?status= ที่ลิงก์ในหน้า /admin/organizers ส่งมา */
+  /** จาก ?organizer= และ ?status= บน URL — ตั้งค่าตัวกรองเริ่มต้นตอนเปิดหน้า */
   initialOrganizer?: string;
   initialStatus?: string;
 }) {
@@ -110,7 +110,7 @@ export function AdminActivities({
       .sort((a, b) => a.name.localeCompare(b.name, 'th'));
   }, [rows]);
 
-  /* ตัวเลขบนแท็บนับตามผู้จัดที่เลือกไว้ด้วย ให้ตรงกับจำนวนที่เห็นในหน้า /admin/organizers */
+  /* ตัวเลขบนแท็บนับตามผู้จัดที่เลือกไว้ด้วย ให้ตรงกับรายการที่เห็นอยู่ */
   const counts = useMemo(() => {
     const scoped = organizer ? rows.filter((r) => r.organizerId === organizer) : rows;
     return {

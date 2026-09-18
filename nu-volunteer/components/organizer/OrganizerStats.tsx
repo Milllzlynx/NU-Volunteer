@@ -131,7 +131,7 @@ export function OrganizerStats({ rows }: { rows: ActivityReportRow[] }) {
     ];
   }, [filtered, totals]);
 
-  /** จำนวนกิจกรรมต่อสถานะ ลำดับเดียวกับหน้า /admin/organizers — ซ่อนสถานะที่เป็นศูนย์ */
+  /** จำนวนกิจกรรมต่อสถานะ ลำดับเดียวกับแท็บในหน้ากิจกรรม — ซ่อนสถานะที่เป็นศูนย์ */
   const byStatus = useMemo(
     () =>
       (['draft', 'open', 'closed', 'done', 'cancelled'] as const)
