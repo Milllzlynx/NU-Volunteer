@@ -380,7 +380,9 @@ export function ChatWorkspace({
         style={{ display: 'grid', gridTemplateColumns: '320px 1fr', gap: 14, alignItems: 'start' }}
       >
         {/* ── รายการห้องแชท ── */}
-        <div className="nuv-chat-list" style={{ ...glass(20), padding: 14, display: 'grid', gap: 12 }}>
+        {/* minWidth: 0 — ไม่งั้นความกว้างขั้นต่ำของกล่องจะเท่ากับข้อความบรรทัดยาวสุดที่ nowrap ไว้
+            การ์ดจะดันล้นออกนอกคอลัมน์ 320px แทนที่จะตัดท้ายด้วย … */}
+        <div className="nuv-chat-list" style={{ ...glass(20), padding: 14, display: 'grid', gap: 12, minWidth: 0 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
             <Icon name="forum" size={20} style={{ color: '#7C2FD9' }} />
             <span style={{ fontSize: 14.5, fontWeight: 600, color: COLOR.ink }}>{t('ข้อความ')}</span>
@@ -470,7 +472,7 @@ export function ChatWorkspace({
               }
             />
           ) : isStudent ? (
-            <div style={{ display: 'grid', gap: 8 }}>
+            <div style={{ display: 'grid', gap: 8, minWidth: 0 }}>
               {shown.map((x) => (
                 <ThreadRow key={x.id} thread={x} on={x.id === activeId} onOpen={openThread} t={t} isEn={isEn} />
               ))}
@@ -478,9 +480,9 @@ export function ChatWorkspace({
           ) : (
             /* ฝั่งผู้จัด: แยกห้องเป็นกลุ่มตามกิจกรรม จะได้ไม่ต้องไล่อ่านชื่อกิจกรรมทีละบรรทัด
                ว่าข้อความนี้มาจากงานไหน กลุ่มที่เพิ่งมีความเคลื่อนไหวอยู่บนสุด */
-            <div style={{ display: 'grid', gap: 16 }}>
+            <div style={{ display: 'grid', gap: 16, minWidth: 0 }}>
               {groups.map((g) => (
-                <div key={g.key} style={{ display: 'grid', gap: 8 }}>
+                <div key={g.key} style={{ display: 'grid', gap: 8, minWidth: 0 }}>
                   <div
                     style={{
                       display: 'flex',
@@ -526,7 +528,9 @@ export function ChatWorkspace({
         </div>
 
         {/* ── บทสนทนา ── */}
-        <div className="nuv-chat-pane" style={{ ...glass(20), display: 'flex', flexDirection: 'column', minHeight: 520 }}>
+        {/* minWidth: 0 ด้วยเหตุผลเดียวกับรายการห้อง — คอลัมน์ 1fr มีความกว้างขั้นต่ำเป็น min-content
+            ชื่อหรือชื่อกิจกรรมที่เป็นคำยาวไม่มีช่องว่างจะดันแผงนี้จนล้นออกนอกตาราง */}
+        <div className="nuv-chat-pane" style={{ ...glass(20), display: 'flex', flexDirection: 'column', minHeight: 520, minWidth: 0 }}>
           {!active ? (
             <EmptyState
               icon="chat_bubble"
@@ -552,8 +556,29 @@ export function ChatWorkspace({
                 <Avatar name={active.otherName} url={active.otherAvatar} online={active.otherOnline} onlineLabel={t('ออนไลน์')} />
 
                 <div style={{ minWidth: 0, flex: 1 }}>
-                  <div style={{ fontSize: 14.5, fontWeight: 600, color: COLOR.ink }}>{active.otherName}</div>
-                  <div style={{ fontSize: 11.5, color: COLOR.label, marginTop: 2 }}>
+                  <div
+                    title={active.otherName}
+                    style={{
+                      fontSize: 14.5,
+                      fontWeight: 600,
+                      color: COLOR.ink,
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
+                    {active.otherName}
+                  </div>
+                  <div
+                    style={{
+                      fontSize: 11.5,
+                      color: COLOR.label,
+                      marginTop: 2,
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
                     {active.activityTitle ?? t('ข้อความทั่วไป')}
                     {' · '}
                     {active.otherOnline ? t('ออนไลน์') : t('ออฟไลน์')}
@@ -622,7 +647,7 @@ export function ChatWorkspace({
               {/* ข้อความ */}
               <div
                 ref={scrollRef}
-                style={{ flex: 1, overflowY: 'auto', padding: 16, display: 'grid', gap: 10, alignContent: 'start', maxHeight: 460 }}
+                style={{ flex: 1, overflowY: 'auto', padding: 16, display: 'grid', gap: 10, alignContent: 'start', maxHeight: 460, minWidth: 0 }}
               >
                 {loadingMessages && !messages.length ? (
                   <div style={{ fontSize: 12.5, color: COLOR.hint, textAlign: 'center', padding: 20 }}>
@@ -636,7 +661,7 @@ export function ChatWorkspace({
                   />
                 ) : (
                   withDayMarks.map(({ message: m, dayMark }) => (
-                    <div key={m.id} style={{ display: 'grid', gap: 10 }}>
+                    <div key={m.id} style={{ display: 'grid', gap: 10, minWidth: 0 }}>
                       {dayMark ? (
                         <div style={{ textAlign: 'center' }}>
                           <span
@@ -712,9 +737,19 @@ export function ChatWorkspace({
                 )}
 
                 {/* ป้ายกำลังพิมพ์ — ประกาศให้เครื่องอ่านหน้าจอทราบแบบไม่ขัดจังหวะ */}
-                <div aria-live="polite" style={{ minHeight: 18 }}>
+                <div aria-live="polite" style={{ minHeight: 18, minWidth: 0 }}>
                   {peerTyping ? (
-                    <span style={{ fontSize: 12, color: COLOR.label, fontStyle: 'italic' }}>
+                    <span
+                      style={{
+                        display: 'block',
+                        fontSize: 12,
+                        color: COLOR.label,
+                        fontStyle: 'italic',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap',
+                      }}
+                    >
                       {`${active.otherName} ${t('กำลังพิมพ์')}`}
                     </span>
                   ) : null}
@@ -739,7 +774,8 @@ export function ChatWorkspace({
                     maxLength={TEXT_MAX}
                     placeholder={t(isStudent ? 'พิมพ์ข้อความถึงผู้จัดกิจกรรม' : 'พิมพ์ข้อความถึงนิสิต')}
                     aria-label={t('ข้อความใหม่')}
-                    style={{ ...inputStyle(), flex: 1, resize: 'none', lineHeight: 1.7 }}
+                    // minWidth: 0 — textarea มีความกว้างตั้งต้นของตัวเอง ถ้าไม่ปลดออกแถวนี้จะล้นบนจอแคบ
+                    style={{ ...inputStyle(), flex: 1, minWidth: 0, resize: 'none', lineHeight: 1.7 }}
                   />
                   <Button
                     variant="primary"
@@ -858,6 +894,9 @@ function ThreadRow({
         background: on ? 'rgba(167,116,247,.16)' : 'rgba(255,255,255,.6)',
         cursor: 'pointer',
         fontFamily: 'inherit',
+        // การ์ดกว้างเท่าคอลัมน์เสมอ ไม่ยืดตามความยาวข้อความข้างใน
+        width: '100%',
+        minWidth: 0,
       }}
     >
       <Avatar name={x.otherName} url={x.otherAvatar} online={x.otherOnline} onlineLabel={t('ออนไลน์')} />
