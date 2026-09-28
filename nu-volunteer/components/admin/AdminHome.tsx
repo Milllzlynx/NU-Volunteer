@@ -14,7 +14,6 @@ export type AdminStats = {
   openActivities: number;
   hoursAwarded: number;
   deletionRequests: number;
-  unreadContact: number;
 };
 
 export type LogRow = {
@@ -69,14 +68,6 @@ export function AdminHome({
           icon: 'person_remove',
           text: `${t('คำขอลบบัญชีรอพิจารณา')} ${stats.deletionRequests} ${t('รายการ')}`,
           href: '/admin/users?filter=deletion',
-        }
-      : null,
-    stats.unreadContact > 0
-      ? {
-          key: 'contact',
-          icon: 'mail',
-          text: `${t('ข้อความที่ยังไม่ได้อ่าน')} ${stats.unreadContact} ${t('รายการ')}`,
-          href: '/admin/contact',
         }
       : null,
   ].filter((x): x is { key: string; icon: string; text: string; href: string } => x != null);

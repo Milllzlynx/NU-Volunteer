@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { requireUser } from '@/lib/auth';
-import { visibleTo } from '@/lib/chat';
+import { findThreadFor, peersOf, visibleTo } from '@/lib/chat';
 import { publishTo, touch } from '@/lib/chatBus';
 import { prisma } from '@/lib/db';
 import { fail, handler } from '@/lib/errors';
@@ -9,14 +9,16 @@ import { readJson } from '@/lib/validation';
 const TEXT_MAX = 2000;
 const PAGE = 100;
 
-/** ตรวจว่าผู้ใช้เป็นคู่สนทนาในห้องนี้จริง แล้วคืนคู่สนทนาอีกฝ่าย */
-async function requireMembership(threadId: string, userId: string) {
-  const thread = await prisma.chatThread.findFirst({
-    where: { id: threadId, OR: [{ studentId: userId }, { staffId: userId }] },
-    select: { id: true, studentId: true, staffId: true },
-  });
+/**
+ * ตรวจว่าผู้ใช้เข้าถึงห้องนี้ได้จริง แล้วคืนผู้ที่ต้องได้รับเหตุการณ์ของห้อง
+ *
+ * คืนเป็นรายการ ไม่ใช่คนเดียว เพราะห้อง support มีแอดมินหลายคนอยู่ฝั่งผู้ตอบ —
+ * ข้อความหนึ่งฉบับต้องไปถึงทุกคนที่เห็นห้องนั้น ไม่ใช่คนที่เผอิญตอบอยู่
+ */
+async function requireMembership(threadId: string, userId: string, role: string) {
+  const thread = await findThreadFor(threadId, userId, role);
   if (!thread) fail('NOT_FOUND');
-  return { thread, otherId: thread.studentId === userId ? thread.staffId : thread.studentId };
+  return { thread, peerIds: await peersOf(thread, userId) };
 }
 
 /* GET /api/v1/chat/messages?threadId=...  — ประวัติข้อความ + ทำเครื่องหมายว่าอ่านแล้ว */
@@ -26,7 +28,7 @@ export const GET = handler(async (req) => {
 
   const threadId = new URL(req.url).searchParams.get('threadId') ?? '';
   if (!threadId) fail('VALIDATION_ERROR');
-  const { otherId } = await requireMembership(threadId, user.id);
+  const { peerIds } = await requireMembership(threadId, user.id, user.role);
 
   const rows = await prisma.chatMessage.findMany({
     where: {
@@ -44,7 +46,7 @@ export const GET = handler(async (req) => {
     where: { threadId, senderId: { not: user.id }, readAt: null },
     data: { readAt: new Date() },
   });
-  if (count) publishTo([otherId], { type: 'read', threadId, byUserId: user.id, at: Date.now() });
+  if (count) publishTo(peerIds, { type: 'read', threadId, byUserId: user.id, at: Date.now() });
 
   return NextResponse.json({
     ok: true,
@@ -72,7 +74,7 @@ export const POST = handler(async (req) => {
   if (!text) fail('VALIDATION_ERROR', 'กรุณาพิมพ์ข้อความ');
   if (text.length > TEXT_MAX) fail('VALIDATION_ERROR', `ข้อความต้องไม่เกิน ${TEXT_MAX} ตัวอักษร`);
 
-  const { otherId } = await requireMembership(threadId, user.id);
+  const { peerIds } = await requireMembership(threadId, user.id, user.role);
 
   const msg = await prisma.chatMessage.create({
     data: { threadId, senderId: user.id, text },
@@ -83,8 +85,8 @@ export const POST = handler(async (req) => {
     data: { lastMessageAt: msg.createdAt },
   });
 
-  // ส่งให้ทั้งสองฝ่าย — ผู้ส่งเองก็ได้รับ เพื่อให้แท็บอื่นของเขาอัปเดตตาม
-  publishTo([otherId, user.id], {
+  // ส่งให้ทุกฝ่ายในห้อง — ผู้ส่งเองก็ได้รับ เพื่อให้แท็บอื่นของเขาอัปเดตตาม
+  publishTo([...peerIds, user.id], {
     type: 'message',
     threadId,
     messageId: msg.id,

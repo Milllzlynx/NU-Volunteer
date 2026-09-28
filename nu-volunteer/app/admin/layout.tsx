@@ -20,10 +20,9 @@ export default async function AdminLayout({ children }: { children: ReactNode })
   if (!user) redirect('/login');
   if (user.role !== 'admin') redirect('/');
 
-  const [unread, unreadChat, unreadContact, pendingDeletions] = await Promise.all([
+  const [unread, unreadChat, pendingDeletions] = await Promise.all([
     prisma.notification.count({ where: { userId: user.id, read: false } }),
     countUnreadChat(user.id, user.role),
-    prisma.contactMessage.count({ where: { read: false } }),
     prisma.user.count({ where: { deletionRequestedAt: { not: null } } }),
   ]);
 
@@ -38,7 +37,6 @@ export default async function AdminLayout({ children }: { children: ReactNode })
       badges={{
         notifications: unread,
         chat: unreadChat,
-        contact: unreadContact,
         users: pendingDeletions,
       }}
       available={AVAILABLE_PAGES[user.role] ?? []}

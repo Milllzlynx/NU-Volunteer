@@ -117,7 +117,7 @@ export const ROLE_NAV: Record<string, NavItem[]> = {
     { key: 'reports', label: 'รายงาน', labelEn: 'Reports', icon: 'summarize', href: '/admin/reports' },
     { key: 'logs', label: 'System Log', labelEn: 'System Log', icon: 'receipt_long', href: '/admin/logs' },
     { key: 'ops', label: 'การเชื่อมต่อระบบ', labelEn: 'System Integrations', icon: 'hub', href: '/admin/ops' },
-    { key: 'contact', label: 'ข้อความ', labelEn: 'Inbox', icon: 'mail', href: '/admin/contact' },
+    { key: 'chat', label: 'แชทกับผู้จัดกิจกรรม', labelEn: 'Organizer Chat', icon: 'forum', href: '/admin/chat' },
     { key: 'notifications', label: 'การแจ้งเตือน', labelEn: 'Notifications', icon: 'notifications', href: '/admin/notifications' },
     { key: 'profile', label: 'โปรไฟล์', labelEn: 'Profile', icon: 'account_circle', href: '/admin/profile' },
     { key: 'guide', label: 'คู่มือผู้ใช้งาน', labelEn: 'User Guide', icon: 'help_center', href: '/admin/guide' },
@@ -142,7 +142,7 @@ export const NAV_GROUPS: Record<string, { label: string; labelEn: string; keys: 
   ],
   admin: [
     { label: 'จัดการระบบ', labelEn: 'System', keys: ['home', 'users', 'activities', 'calendar', 'categories', 'faculties'] },
-    { label: 'สื่อสารและตรวจสอบ', labelEn: 'Communication & Audit', keys: ['newsBanners', 'reports', 'logs', 'ops', 'contact'] },
+    { label: 'สื่อสารและตรวจสอบ', labelEn: 'Communication & Audit', keys: ['newsBanners', 'reports', 'logs', 'ops', 'chat'] },
     { label: 'ทั่วไป', labelEn: 'General', keys: ['notifications', 'profile', 'guide', 'settings'] },
   ],
 };

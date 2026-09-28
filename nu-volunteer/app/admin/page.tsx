@@ -25,7 +25,6 @@ export default async function AdminHomePage() {
     openActivities,
     hours,
     deletionRequests,
-    unreadContact,
     logRows,
   ] = await Promise.all([
     prisma.user.count(),
@@ -36,7 +35,6 @@ export default async function AdminHomePage() {
     prisma.activity.count({ where: { ...NOT_DELETED, status: 'open', endAt: { gte: now } } }),
     prisma.registration.aggregate({ _sum: { hoursAwarded: true } }),
     prisma.user.count({ where: { deletionRequestedAt: { not: null } } }),
-    prisma.contactMessage.count({ where: { read: false } }),
     prisma.systemLog.findMany({
       orderBy: { createdAt: 'desc' },
       take: 8,
@@ -65,7 +63,6 @@ export default async function AdminHomePage() {
         openActivities,
         hoursAwarded: Math.round(hours._sum.hoursAwarded ?? 0),
         deletionRequests,
-        unreadContact,
       }}
       logs={logs}
     />

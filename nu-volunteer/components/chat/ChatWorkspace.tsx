@@ -15,14 +15,34 @@ import { COLOR, SEMANTIC, glass } from '@/lib/design';
  * ห้องที่กิจกรรมถูกลบไปแล้วจะได้ activityId เป็น null จึงรวมไว้ในกลุ่มเดียวท้ายสุด
  */
 const NO_ACTIVITY = '__none__';
-const activityKeyOf = (t: { activityId: string | null }) => t.activityId ?? NO_ACTIVITY;
+/** ห้องที่คุยกับทีมผู้ดูแลระบบไม่ผูกกับกิจกรรม แต่ต้องแยกจากห้องที่กิจกรรมถูกลบ */
+const SUPPORT_KEY = '__support__';
+const activityKeyOf = (t: { kind: string; activityId: string | null }) =>
+  t.kind === 'support' ? SUPPORT_KEY : (t.activityId ?? NO_ACTIVITY);
 
-/** กิจกรรมที่นิสิตลงทะเบียนไว้ — ใช้เลือกผู้จัดที่จะเปิดห้องคุยด้วย */
-export type ChatContact = {
-  activityId: string;
-  title: string;
-  organizerName: string;
-};
+/**
+ * ชื่อคู่สนทนาที่แสดงบนหน้าจอ
+ *
+ * ปกติเป็นชื่อคน ซึ่งไม่แปล — ยกเว้นห้องที่คุยกับทีมผู้ดูแลระบบเมื่อมองจากฝั่งผู้จัด
+ * ฝั่งนั้นไม่มีผู้ใช้จริงอยู่ ชื่อที่เซิร์ฟเวอร์ส่งมาจึงเป็นชื่อทีมที่ต้องแปลตามภาษา
+ */
+const peerNameOf = (x: ChatThreadDto, t: (s: string) => string) =>
+  x.kind === 'support' && x.own ? t(x.otherName) : x.otherName;
+
+/** หัวกลุ่มของรายการห้องฝั่งผู้จัด — ห้องที่ถามแอดมินไม่ใช่ "กิจกรรมที่ถูกลบ" */
+const groupTitle = (x: { kind: string; activityTitle: string | null }, t: (s: string) => string) =>
+  x.kind === 'support' ? t('ติดต่อผู้ดูแลระบบ') : (x.activityTitle ?? t('ไม่ผูกกับกิจกรรม'));
+
+/**
+ * คู่สนทนาที่เปิดห้องใหม่ได้
+ *
+ * นิสิตเลือกจากกิจกรรมที่ลงทะเบียนไว้ (ห้องละกิจกรรม) ส่วนผู้จัดกิจกรรมมีตัวเลือกเดียว
+ * คือทีมผู้ดูแลระบบ ซึ่งไม่ผูกกับกิจกรรมใด — แยกด้วย kind ไม่ใช่ด้วยการเช็กว่า
+ * activityId ว่างหรือไม่ เพราะทั้งสองกรณีจะไปเรียก API ต่างตัวกัน
+ */
+export type ChatContact =
+  | { kind: 'activity'; activityId: string; title: string; subtitle: string }
+  | { kind: 'support'; title: string; subtitle: string };
 
 /*
  * จัดรูปแบบเวลาโดยตรึงเขตเวลาไว้ที่ไทย เพื่อให้ HTML ที่เรนเดอร์ฝั่งเซิร์ฟเวอร์
@@ -55,13 +75,18 @@ const TYPING_HIDE_MS = 4000;
 type TabKey = 'all' | 'unread' | 'archived';
 
 /**
- * หน้าจอแชทที่ใช้ร่วมกันทั้งสองฝั่ง
+ * หน้าจอแชทที่ใช้ร่วมกันทั้งสามฝั่ง
  *
- * นิสิตเป็นฝ่ายเปิดห้องเสมอ (POST /chat/threads บังคับ role=student ไว้) ฝั่งผู้จัดจึงมีแต่
- * ห้องที่ถูกเปิดมาแล้ว — ปุ่ม "เริ่มบทสนทนาใหม่" จะไม่ขึ้นเลยเมื่อ variant='staff'
+ * variant บอกแค่ "หน้าตาของรายการห้อง" ไม่ใช่สิทธิ์ —
+ *   'student' | 'admin' : รายการเรียงเดี่ยว เพราะห้องทุกห้องเป็นชนิดเดียวกันหมด
+ *   'staff'             : แบ่งกลุ่มตามกิจกรรม เพราะผู้จัดมีห้องจากหลายงานปนกัน
+ *                         (รวมห้องที่ตัวเองถามทีมผู้ดูแลระบบ ซึ่งอยู่กลุ่มของตัวเอง)
  *
- * ปิดเสียง/เก็บเข้าคลังยังเป็นของฝั่งนิสิตอย่างเดียว เพราะ ChatThread มีแต่คอลัมน์
- * studentMuted/studentArchived — ถ้าโชว์ปุ่มให้ผู้จัดกดจะไปแก้ค่าของนิสิตแทน
+ * สิทธิ์ดูจากข้อมูลเป็นห้อง ๆ ไป ไม่ดูจาก variant — ผู้จัดกิจกรรมเป็นได้ทั้งฝ่ายที่ถูกทัก
+ * (ห้องของนิสิต) และฝ่ายที่เปิดห้อง (ห้องที่ถามแอดมิน) ในหน้าจอเดียวกัน
+ *   เปิดห้องใหม่ได้           — เมื่อมี contacts ส่งมาให้
+ *   ปิดเสียง/เก็บเข้าคลังได้   — เฉพาะห้องที่ own = true (เราเป็นฝ่ายเปิดห้อง) เพราะ
+ *                              ChatThread มีคอลัมน์ openerMuted/openerArchived ฝั่งเดียว
  */
 export function ChatWorkspace({
   initialThreads,
@@ -72,10 +97,11 @@ export function ChatWorkspace({
   initialThreads: ChatThreadDto[];
   contacts?: ChatContact[];
   meName: string;
-  variant?: 'student' | 'staff';
+  variant?: 'student' | 'staff' | 'admin';
 }) {
-  /** ฝั่งนิสิตเท่านั้นที่เปิดห้องใหม่และตั้งค่าปิดเสียง/คลังข้อความได้ */
-  const isStudent = variant === 'student';
+  /** แบ่งกลุ่มห้องตามกิจกรรม — เฉพาะฝั่งผู้จัดที่มีห้องจากหลายงาน */
+  const grouped = variant === 'staff';
+  const canStart = contacts.length > 0;
   const { t, isEn } = useApp();
   const router = useRouter();
   const [, startTransition] = useTransition();
@@ -278,11 +304,14 @@ export function ChatWorkspace({
     }
   };
 
-  const startWith = async (activityId: string) => {
+  const startWith = async (c: ChatContact) => {
     setBusy(true);
     setError(null);
     try {
-      const res = await chatApi.openThread(activityId);
+      const res =
+        c.kind === 'support'
+          ? await chatApi.openSupportThread()
+          : await chatApi.openThread(c.activityId);
       const list = await chatApi.threads();
       setThreads(list.threads);
       setShowNew(false);
@@ -297,6 +326,8 @@ export function ChatWorkspace({
 
   const unreadTotal = threads.reduce((s, x) => s + (x.archived ? 0 : x.unread), 0);
   const archivedCount = threads.filter((x) => x.archived).length;
+  /** มีห้องที่เราเป็นฝ่ายเปิดอยู่ไหม — ตัวชี้ว่าควรมีแท็บคลังข้อความให้เลือกหรือไม่ */
+  const ownsAny = threads.some((x) => x.own);
 
   const shown = useMemo(() => {
     const byActivity = activityFilter
@@ -324,7 +355,7 @@ export function ChatWorkspace({
       } else {
         map.set(key, {
           key,
-          title: x.activityTitle ?? t('ไม่ผูกกับกิจกรรม'),
+          title: groupTitle(x, t),
           count: 1,
           unread: x.unread,
           lastAtMs: x.lastAtMs,
@@ -344,7 +375,7 @@ export function ChatWorkspace({
         cur.items.push(x);
         cur.unread += x.unread;
       } else {
-        map.set(key, { key, title: x.activityTitle ?? t('ไม่ผูกกับกิจกรรม'), unread: x.unread, items: [x] });
+        map.set(key, { key, title: groupTitle(x, t), unread: x.unread, items: [x] });
       }
     }
     // shown เรียงตามเวลาล่าสุดอยู่แล้ว กลุ่มแรกจึงเป็นกลุ่มที่เพิ่งมีความเคลื่อนไหว
@@ -354,8 +385,8 @@ export function ChatWorkspace({
   const tabs = [
     { key: 'all' as TabKey, label: t('ทั้งหมด'), count: threads.filter((x) => !x.archived).length },
     { key: 'unread' as TabKey, label: t('ยังไม่อ่าน'), count: unreadTotal },
-    // คลังข้อความเป็นค่าของฝั่งนิสิต ฝั่งผู้จัดจึงไม่มีแท็บนี้ให้เลือก
-    ...(isStudent
+    // คลังข้อความเก็บได้เฉพาะห้องที่เราเป็นฝ่ายเปิด — ไม่มีห้องแบบนั้นก็ไม่ต้องมีแท็บ
+    ...(ownsAny
       ? [{ key: 'archived' as TabKey, label: t('คลังข้อความ'), count: archivedCount }]
       : []),
   ];
@@ -395,11 +426,11 @@ export function ChatWorkspace({
             />
           </div>
 
-          {isStudent ? (
+          {canStart ? (
             <Button
               variant="secondary"
               icon="add_comment"
-              disabled={!contacts.length || busy}
+              disabled={busy}
               onClick={() => setShowNew((v) => !v)}
               style={{ padding: '10px 14px' }}
             >
@@ -407,18 +438,22 @@ export function ChatWorkspace({
             </Button>
           ) : null}
 
-          {/* เลือกกิจกรรมเพื่อคุยกับผู้จัดของกิจกรรมนั้น */}
+          {/* เลือกคู่สนทนา — กิจกรรมที่ลงทะเบียนไว้ (นิสิต) หรือทีมผู้ดูแลระบบ (ผู้จัด) */}
           {showNew ? (
             <div style={{ display: 'grid', gap: 8, padding: 12, borderRadius: 14, background: 'rgba(167,116,247,.10)' }}>
               <div style={{ fontSize: 12, color: COLOR.label, lineHeight: 1.7 }}>
-                {t('เลือกกิจกรรมที่คุณลงทะเบียนไว้ ระบบจะเปิดห้องคุยกับผู้จัดของกิจกรรมนั้น')}
+                {t(
+                  variant === 'student'
+                    ? 'เลือกกิจกรรมที่คุณลงทะเบียนไว้ ระบบจะเปิดห้องคุยกับผู้จัดของกิจกรรมนั้น'
+                    : 'ส่งคำถามถึงทีมผู้ดูแลระบบได้จากที่นี่ ผู้ดูแลคนใดว่างก่อนจะเป็นคนตอบ',
+                )}
               </div>
               {contacts.map((c) => (
                 <button
-                  key={c.activityId}
+                  key={c.kind === 'support' ? SUPPORT_KEY : c.activityId}
                   type="button"
                   disabled={busy}
-                  onClick={() => startWith(c.activityId)}
+                  onClick={() => startWith(c)}
                   style={{
                     textAlign: 'start',
                     padding: '10px 12px',
@@ -430,10 +465,10 @@ export function ChatWorkspace({
                   }}
                 >
                   <span style={{ display: 'block', fontSize: 13, fontWeight: 600, color: COLOR.ink }}>
-                    {c.title}
+                    {c.kind === 'support' ? t(c.title) : c.title}
                   </span>
                   <span style={{ display: 'block', fontSize: 11.5, color: COLOR.label, marginTop: 3 }}>
-                    {c.organizerName}
+                    {c.kind === 'support' ? t(c.subtitle) : c.subtitle}
                   </span>
                 </button>
               ))}
@@ -441,7 +476,7 @@ export function ChatWorkspace({
           ) : null}
 
           {/* เลือกดูเฉพาะกิจกรรมเดียว — ขึ้นเมื่อผู้จัดมีห้องจากกิจกรรมมากกว่าหนึ่งงานเท่านั้น */}
-          {!isStudent && activityOptions.length > 1 ? (
+          {grouped && activityOptions.length > 1 ? (
             <select
               value={activityFilter}
               onChange={(e) => setActivityFilter(e.target.value)}
@@ -464,14 +499,16 @@ export function ChatWorkspace({
               icon="forum"
               title={tab === 'archived' ? t('คลังข้อความว่างอยู่') : t('ยังไม่มีบทสนทนา')}
               desc={
-                !isStudent
-                  ? t('นิสิตเป็นฝ่ายเริ่มบทสนทนา ห้องจะขึ้นที่นี่เมื่อมีคนทักเข้ามา')
-                  : contacts.length
-                    ? t('เริ่มบทสนทนาใหม่เพื่อสอบถามผู้จัดกิจกรรมที่คุณลงทะเบียนไว้')
-                    : t('เมื่อคุณลงทะเบียนกิจกรรมแล้ว จะติดต่อผู้จัดได้จากหน้านี้')
+                variant === 'admin'
+                  ? t('ผู้จัดกิจกรรมเป็นฝ่ายเริ่มบทสนทนา ห้องจะขึ้นที่นี่เมื่อมีคนทักเข้ามา')
+                  : variant === 'staff'
+                    ? t('นิสิตเป็นฝ่ายเริ่มบทสนทนา หรือกดเริ่มบทสนทนาใหม่เพื่อถามทีมผู้ดูแลระบบ')
+                    : contacts.length
+                      ? t('เริ่มบทสนทนาใหม่เพื่อสอบถามผู้จัดกิจกรรมที่คุณลงทะเบียนไว้')
+                      : t('เมื่อคุณลงทะเบียนกิจกรรมแล้ว จะติดต่อผู้จัดได้จากหน้านี้')
               }
             />
-          ) : isStudent ? (
+          ) : !grouped ? (
             <div style={{ display: 'grid', gap: 8, minWidth: 0 }}>
               {shown.map((x) => (
                 <ThreadRow key={x.id} thread={x} on={x.id === activeId} onOpen={openThread} t={t} isEn={isEn} />
@@ -493,7 +530,13 @@ export function ChatWorkspace({
                     }}
                   >
                     <Icon
-                      name={g.key === NO_ACTIVITY ? 'help' : 'campaign'}
+                      name={
+                        g.key === SUPPORT_KEY
+                          ? 'admin_panel_settings'
+                          : g.key === NO_ACTIVITY
+                            ? 'help'
+                            : 'campaign'
+                      }
                       size={15}
                       style={{ color: '#7C2FD9', flexShrink: 0 }}
                     />
@@ -553,11 +596,11 @@ export function ChatWorkspace({
                 <span className="nuv-chat-back">
                   <IconButton icon="arrow_back" label={t('กลับไปรายการบทสนทนา')} onClick={closeThread} />
                 </span>
-                <Avatar name={active.otherName} url={active.otherAvatar} online={active.otherOnline} onlineLabel={t('ออนไลน์')} />
+                <Avatar name={peerNameOf(active, t)} url={active.otherAvatar} online={active.otherOnline} onlineLabel={t('ออนไลน์')} />
 
                 <div style={{ minWidth: 0, flex: 1 }}>
                   <div
-                    title={active.otherName}
+                    title={peerNameOf(active, t)}
                     style={{
                       fontSize: 14.5,
                       fontWeight: 600,
@@ -567,7 +610,7 @@ export function ChatWorkspace({
                       whiteSpace: 'nowrap',
                     }}
                   >
-                    {active.otherName}
+                    {peerNameOf(active, t)}
                   </div>
                   <div
                     style={{
@@ -585,7 +628,8 @@ export function ChatWorkspace({
                   </div>
                 </div>
 
-                {isStudent ? (
+                {/* ห้องที่เราเป็นฝ่ายเปิดเท่านั้น — คอลัมน์ปิดเสียง/คลังข้อความมีฝั่งเดียว */}
+                {active.own ? (
                   <>
                     <IconButton
                       icon={active.muted ? 'notifications_off' : 'notifications_active'}
@@ -657,7 +701,15 @@ export function ChatWorkspace({
                   <EmptyState
                     icon="waving_hand"
                     title={t('ยังไม่มีข้อความในห้องนี้')}
-                    desc={t(isStudent ? 'ทักทายผู้จัดกิจกรรมเพื่อเริ่มบทสนทนาได้เลย' : 'ตอบกลับนิสิตเพื่อเริ่มบทสนทนาได้เลย')}
+                    desc={t(
+                      active.kind === 'support'
+                        ? active.own
+                          ? 'พิมพ์คำถามถึงทีมผู้ดูแลระบบเพื่อเริ่มบทสนทนาได้เลย'
+                          : 'ตอบกลับผู้จัดกิจกรรมเพื่อเริ่มบทสนทนาได้เลย'
+                        : variant === 'student'
+                          ? 'ทักทายผู้จัดกิจกรรมเพื่อเริ่มบทสนทนาได้เลย'
+                          : 'ตอบกลับนิสิตเพื่อเริ่มบทสนทนาได้เลย',
+                    )}
                   />
                 ) : (
                   withDayMarks.map(({ message: m, dayMark }) => (
@@ -750,7 +802,7 @@ export function ChatWorkspace({
                         whiteSpace: 'nowrap',
                       }}
                     >
-                      {`${active.otherName} ${t('กำลังพิมพ์')}`}
+                      {`${peerNameOf(active, t)} ${t('กำลังพิมพ์')}`}
                     </span>
                   ) : null}
                 </div>
@@ -772,7 +824,15 @@ export function ChatWorkspace({
                     }}
                     rows={2}
                     maxLength={TEXT_MAX}
-                    placeholder={t(isStudent ? 'พิมพ์ข้อความถึงผู้จัดกิจกรรม' : 'พิมพ์ข้อความถึงนิสิต')}
+                    placeholder={t(
+                      active.kind === 'support'
+                        ? active.own
+                          ? 'พิมพ์ข้อความถึงทีมผู้ดูแลระบบ'
+                          : 'พิมพ์ข้อความถึงผู้จัดกิจกรรม'
+                        : variant === 'student'
+                          ? 'พิมพ์ข้อความถึงผู้จัดกิจกรรม'
+                          : 'พิมพ์ข้อความถึงนิสิต',
+                    )}
                     aria-label={t('ข้อความใหม่')}
                     // minWidth: 0 — textarea มีความกว้างตั้งต้นของตัวเอง ถ้าไม่ปลดออกแถวนี้จะล้นบนจอแคบ
                     style={{ ...inputStyle(), flex: 1, minWidth: 0, resize: 'none', lineHeight: 1.7 }}
@@ -899,7 +959,7 @@ function ThreadRow({
         minWidth: 0,
       }}
     >
-      <Avatar name={x.otherName} url={x.otherAvatar} online={x.otherOnline} onlineLabel={t('ออนไลน์')} />
+      <Avatar name={peerNameOf(x, t)} url={x.otherAvatar} online={x.otherOnline} onlineLabel={t('ออนไลน์')} />
 
       <span style={{ minWidth: 0, flex: 1 }}>
         <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
@@ -915,7 +975,7 @@ function ThreadRow({
               whiteSpace: 'nowrap',
             }}
           >
-            {x.otherName}
+            {peerNameOf(x, t)}
           </span>
           {x.muted ? (
             <Icon name="notifications_off" size={15} style={{ color: COLOR.hint, flexShrink: 0 }} />

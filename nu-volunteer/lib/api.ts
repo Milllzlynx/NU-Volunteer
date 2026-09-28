@@ -450,7 +450,9 @@ export const accountApi = {
 
 export type ChatThreadDto = {
   id: string;
-  /** null = ห้องที่ไม่ผูกกับกิจกรรม เพราะกิจกรรมถูกลบไปแล้ว */
+  /** 'activity' = นิสิต ↔ ผู้จัด, 'support' = ผู้จัด ↔ ทีมผู้ดูแลระบบ */
+  kind: string;
+  /** null = ห้องที่ไม่ผูกกับกิจกรรม (ห้อง support หรือกิจกรรมถูกลบไปแล้ว) */
   activityId: string | null;
   activityTitle: string | null;
   /** id ของคู่สนทนา — ใช้จับคู่เหตุการณ์ออนไลน์/ออฟไลน์ที่ส่งมาทางสตรีม */
@@ -463,6 +465,8 @@ export type ChatThreadDto = {
   unread: number;
   muted: boolean;
   archived: boolean;
+  /** true = เราเป็นฝ่ายที่เปิดห้อง จึงปิดเสียง/เก็บเข้าคลังห้องนี้ได้ */
+  own: boolean;
 };
 
 export type ChatMessageDto = {
@@ -480,6 +484,10 @@ export const chatApi = {
   /** เปิด (หรือกลับเข้า) ห้องคุยกับผู้จัดของกิจกรรมที่ลงทะเบียนไว้ */
   openThread: (activityId: string) =>
     apiPost<{ ok: true; id: string }>('/chat/threads', { activityId }),
+
+  /** เปิด (หรือกลับเข้า) ห้องคุยกับทีมผู้ดูแลระบบ — ผู้จัดกิจกรรมมีห้องนี้ห้องเดียว */
+  openSupportThread: () =>
+    apiPost<{ ok: true; id: string }>('/chat/threads', { kind: 'support' }),
 
   messages: (threadId: string, signal?: AbortSignal) =>
     apiGet<{ ok: true; messages: ChatMessageDto[] }>('/chat/messages', { threadId }, signal),
@@ -690,34 +698,6 @@ export const adminContentApi = {
       method: 'PATCH',
       body: { ids, status },
     }),
-};
-
-/** ข้อความที่ผู้ใช้ส่งถึงผู้ดูแลระบบ */
-export type AdminContactRow = {
-  id: string;
-  fromName: string;
-  email: string;
-  subject: string;
-  text: string;
-  read: boolean;
-  atMs: number;
-};
-
-export const adminContactApi = {
-  list: (signal?: AbortSignal) =>
-    apiGet<{ ok: true; cap: number; messages: AdminContactRow[] }>('/admin/contact', undefined, signal),
-
-  setRead: (id: string, read: boolean) =>
-    apiFetch<{ ok: true; message: { id: string; read: boolean } }>(`/admin/contact/${id}`, {
-      method: 'PATCH',
-      body: { read },
-    }),
-
-  /** ทำเครื่องหมายอ่านแล้วทั้งกล่อง */
-  readAll: () =>
-    apiFetch<{ ok: true; updated: number }>('/admin/contact', { method: 'PATCH', body: { read: true } }),
-
-  remove: (id: string) => apiFetch<{ ok: true }>(`/admin/contact/${id}`, { method: 'DELETE' }),
 };
 
 export const adminOpsApi = {

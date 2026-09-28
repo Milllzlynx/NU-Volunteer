@@ -307,8 +307,8 @@ export type UserWhereInput = {
   appealsJudged?: Prisma.AppealListRelationFilter
   evidenceSeen?: Prisma.EvidenceListRelationFilter
   messages?: Prisma.ChatMessageListRelationFilter
-  threadsAsUser?: Prisma.ChatThreadListRelationFilter
-  threadsAsStaff?: Prisma.ChatThreadListRelationFilter
+  threadsOpened?: Prisma.ChatThreadListRelationFilter
+  threadsAnswered?: Prisma.ChatThreadListRelationFilter
   hourAdjustments?: Prisma.HourAdjustmentListRelationFilter
   adjustmentsMade?: Prisma.HourAdjustmentListRelationFilter
   systemLogs?: Prisma.SystemLogListRelationFilter
@@ -350,8 +350,8 @@ export type UserOrderByWithRelationInput = {
   appealsJudged?: Prisma.AppealOrderByRelationAggregateInput
   evidenceSeen?: Prisma.EvidenceOrderByRelationAggregateInput
   messages?: Prisma.ChatMessageOrderByRelationAggregateInput
-  threadsAsUser?: Prisma.ChatThreadOrderByRelationAggregateInput
-  threadsAsStaff?: Prisma.ChatThreadOrderByRelationAggregateInput
+  threadsOpened?: Prisma.ChatThreadOrderByRelationAggregateInput
+  threadsAnswered?: Prisma.ChatThreadOrderByRelationAggregateInput
   hourAdjustments?: Prisma.HourAdjustmentOrderByRelationAggregateInput
   adjustmentsMade?: Prisma.HourAdjustmentOrderByRelationAggregateInput
   systemLogs?: Prisma.SystemLogOrderByRelationAggregateInput
@@ -396,8 +396,8 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   appealsJudged?: Prisma.AppealListRelationFilter
   evidenceSeen?: Prisma.EvidenceListRelationFilter
   messages?: Prisma.ChatMessageListRelationFilter
-  threadsAsUser?: Prisma.ChatThreadListRelationFilter
-  threadsAsStaff?: Prisma.ChatThreadListRelationFilter
+  threadsOpened?: Prisma.ChatThreadListRelationFilter
+  threadsAnswered?: Prisma.ChatThreadListRelationFilter
   hourAdjustments?: Prisma.HourAdjustmentListRelationFilter
   adjustmentsMade?: Prisma.HourAdjustmentListRelationFilter
   systemLogs?: Prisma.SystemLogListRelationFilter
@@ -489,8 +489,8 @@ export type UserCreateInput = {
   appealsJudged?: Prisma.AppealCreateNestedManyWithoutDecidedByInput
   evidenceSeen?: Prisma.EvidenceCreateNestedManyWithoutReviewedByInput
   messages?: Prisma.ChatMessageCreateNestedManyWithoutSenderInput
-  threadsAsUser?: Prisma.ChatThreadCreateNestedManyWithoutStudentInput
-  threadsAsStaff?: Prisma.ChatThreadCreateNestedManyWithoutStaffInput
+  threadsOpened?: Prisma.ChatThreadCreateNestedManyWithoutOpenerInput
+  threadsAnswered?: Prisma.ChatThreadCreateNestedManyWithoutResponderInput
   hourAdjustments?: Prisma.HourAdjustmentCreateNestedManyWithoutUserInput
   adjustmentsMade?: Prisma.HourAdjustmentCreateNestedManyWithoutAuthorInput
   systemLogs?: Prisma.SystemLogCreateNestedManyWithoutActorInput
@@ -532,8 +532,8 @@ export type UserUncheckedCreateInput = {
   appealsJudged?: Prisma.AppealUncheckedCreateNestedManyWithoutDecidedByInput
   evidenceSeen?: Prisma.EvidenceUncheckedCreateNestedManyWithoutReviewedByInput
   messages?: Prisma.ChatMessageUncheckedCreateNestedManyWithoutSenderInput
-  threadsAsUser?: Prisma.ChatThreadUncheckedCreateNestedManyWithoutStudentInput
-  threadsAsStaff?: Prisma.ChatThreadUncheckedCreateNestedManyWithoutStaffInput
+  threadsOpened?: Prisma.ChatThreadUncheckedCreateNestedManyWithoutOpenerInput
+  threadsAnswered?: Prisma.ChatThreadUncheckedCreateNestedManyWithoutResponderInput
   hourAdjustments?: Prisma.HourAdjustmentUncheckedCreateNestedManyWithoutUserInput
   adjustmentsMade?: Prisma.HourAdjustmentUncheckedCreateNestedManyWithoutAuthorInput
   systemLogs?: Prisma.SystemLogUncheckedCreateNestedManyWithoutActorInput
@@ -575,8 +575,8 @@ export type UserUpdateInput = {
   appealsJudged?: Prisma.AppealUpdateManyWithoutDecidedByNestedInput
   evidenceSeen?: Prisma.EvidenceUpdateManyWithoutReviewedByNestedInput
   messages?: Prisma.ChatMessageUpdateManyWithoutSenderNestedInput
-  threadsAsUser?: Prisma.ChatThreadUpdateManyWithoutStudentNestedInput
-  threadsAsStaff?: Prisma.ChatThreadUpdateManyWithoutStaffNestedInput
+  threadsOpened?: Prisma.ChatThreadUpdateManyWithoutOpenerNestedInput
+  threadsAnswered?: Prisma.ChatThreadUpdateManyWithoutResponderNestedInput
   hourAdjustments?: Prisma.HourAdjustmentUpdateManyWithoutUserNestedInput
   adjustmentsMade?: Prisma.HourAdjustmentUpdateManyWithoutAuthorNestedInput
   systemLogs?: Prisma.SystemLogUpdateManyWithoutActorNestedInput
@@ -618,8 +618,8 @@ export type UserUncheckedUpdateInput = {
   appealsJudged?: Prisma.AppealUncheckedUpdateManyWithoutDecidedByNestedInput
   evidenceSeen?: Prisma.EvidenceUncheckedUpdateManyWithoutReviewedByNestedInput
   messages?: Prisma.ChatMessageUncheckedUpdateManyWithoutSenderNestedInput
-  threadsAsUser?: Prisma.ChatThreadUncheckedUpdateManyWithoutStudentNestedInput
-  threadsAsStaff?: Prisma.ChatThreadUncheckedUpdateManyWithoutStaffNestedInput
+  threadsOpened?: Prisma.ChatThreadUncheckedUpdateManyWithoutOpenerNestedInput
+  threadsAnswered?: Prisma.ChatThreadUncheckedUpdateManyWithoutResponderNestedInput
   hourAdjustments?: Prisma.HourAdjustmentUncheckedUpdateManyWithoutUserNestedInput
   adjustmentsMade?: Prisma.HourAdjustmentUncheckedUpdateManyWithoutAuthorNestedInput
   systemLogs?: Prisma.SystemLogUncheckedUpdateManyWithoutActorNestedInput
@@ -990,32 +990,34 @@ export type UserUpdateOneRequiredWithoutNotificationsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutNotificationsInput, Prisma.UserUpdateWithoutNotificationsInput>, Prisma.UserUncheckedUpdateWithoutNotificationsInput>
 }
 
-export type UserCreateNestedOneWithoutThreadsAsUserInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutThreadsAsUserInput, Prisma.UserUncheckedCreateWithoutThreadsAsUserInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutThreadsAsUserInput
+export type UserCreateNestedOneWithoutThreadsOpenedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutThreadsOpenedInput, Prisma.UserUncheckedCreateWithoutThreadsOpenedInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutThreadsOpenedInput
   connect?: Prisma.UserWhereUniqueInput
 }
 
-export type UserCreateNestedOneWithoutThreadsAsStaffInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutThreadsAsStaffInput, Prisma.UserUncheckedCreateWithoutThreadsAsStaffInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutThreadsAsStaffInput
+export type UserCreateNestedOneWithoutThreadsAnsweredInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutThreadsAnsweredInput, Prisma.UserUncheckedCreateWithoutThreadsAnsweredInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutThreadsAnsweredInput
   connect?: Prisma.UserWhereUniqueInput
 }
 
-export type UserUpdateOneRequiredWithoutThreadsAsUserNestedInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutThreadsAsUserInput, Prisma.UserUncheckedCreateWithoutThreadsAsUserInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutThreadsAsUserInput
-  upsert?: Prisma.UserUpsertWithoutThreadsAsUserInput
+export type UserUpdateOneRequiredWithoutThreadsOpenedNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutThreadsOpenedInput, Prisma.UserUncheckedCreateWithoutThreadsOpenedInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutThreadsOpenedInput
+  upsert?: Prisma.UserUpsertWithoutThreadsOpenedInput
   connect?: Prisma.UserWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutThreadsAsUserInput, Prisma.UserUpdateWithoutThreadsAsUserInput>, Prisma.UserUncheckedUpdateWithoutThreadsAsUserInput>
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutThreadsOpenedInput, Prisma.UserUpdateWithoutThreadsOpenedInput>, Prisma.UserUncheckedUpdateWithoutThreadsOpenedInput>
 }
 
-export type UserUpdateOneRequiredWithoutThreadsAsStaffNestedInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutThreadsAsStaffInput, Prisma.UserUncheckedCreateWithoutThreadsAsStaffInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutThreadsAsStaffInput
-  upsert?: Prisma.UserUpsertWithoutThreadsAsStaffInput
+export type UserUpdateOneWithoutThreadsAnsweredNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutThreadsAnsweredInput, Prisma.UserUncheckedCreateWithoutThreadsAnsweredInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutThreadsAnsweredInput
+  upsert?: Prisma.UserUpsertWithoutThreadsAnsweredInput
+  disconnect?: Prisma.UserWhereInput | boolean
+  delete?: Prisma.UserWhereInput | boolean
   connect?: Prisma.UserWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutThreadsAsStaffInput, Prisma.UserUpdateWithoutThreadsAsStaffInput>, Prisma.UserUncheckedUpdateWithoutThreadsAsStaffInput>
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutThreadsAnsweredInput, Prisma.UserUpdateWithoutThreadsAnsweredInput>, Prisma.UserUncheckedUpdateWithoutThreadsAnsweredInput>
 }
 
 export type UserCreateNestedOneWithoutMessagesInput = {
@@ -1124,8 +1126,8 @@ export type UserCreateWithoutSessionsInput = {
   appealsJudged?: Prisma.AppealCreateNestedManyWithoutDecidedByInput
   evidenceSeen?: Prisma.EvidenceCreateNestedManyWithoutReviewedByInput
   messages?: Prisma.ChatMessageCreateNestedManyWithoutSenderInput
-  threadsAsUser?: Prisma.ChatThreadCreateNestedManyWithoutStudentInput
-  threadsAsStaff?: Prisma.ChatThreadCreateNestedManyWithoutStaffInput
+  threadsOpened?: Prisma.ChatThreadCreateNestedManyWithoutOpenerInput
+  threadsAnswered?: Prisma.ChatThreadCreateNestedManyWithoutResponderInput
   hourAdjustments?: Prisma.HourAdjustmentCreateNestedManyWithoutUserInput
   adjustmentsMade?: Prisma.HourAdjustmentCreateNestedManyWithoutAuthorInput
   systemLogs?: Prisma.SystemLogCreateNestedManyWithoutActorInput
@@ -1166,8 +1168,8 @@ export type UserUncheckedCreateWithoutSessionsInput = {
   appealsJudged?: Prisma.AppealUncheckedCreateNestedManyWithoutDecidedByInput
   evidenceSeen?: Prisma.EvidenceUncheckedCreateNestedManyWithoutReviewedByInput
   messages?: Prisma.ChatMessageUncheckedCreateNestedManyWithoutSenderInput
-  threadsAsUser?: Prisma.ChatThreadUncheckedCreateNestedManyWithoutStudentInput
-  threadsAsStaff?: Prisma.ChatThreadUncheckedCreateNestedManyWithoutStaffInput
+  threadsOpened?: Prisma.ChatThreadUncheckedCreateNestedManyWithoutOpenerInput
+  threadsAnswered?: Prisma.ChatThreadUncheckedCreateNestedManyWithoutResponderInput
   hourAdjustments?: Prisma.HourAdjustmentUncheckedCreateNestedManyWithoutUserInput
   adjustmentsMade?: Prisma.HourAdjustmentUncheckedCreateNestedManyWithoutAuthorInput
   systemLogs?: Prisma.SystemLogUncheckedCreateNestedManyWithoutActorInput
@@ -1224,8 +1226,8 @@ export type UserUpdateWithoutSessionsInput = {
   appealsJudged?: Prisma.AppealUpdateManyWithoutDecidedByNestedInput
   evidenceSeen?: Prisma.EvidenceUpdateManyWithoutReviewedByNestedInput
   messages?: Prisma.ChatMessageUpdateManyWithoutSenderNestedInput
-  threadsAsUser?: Prisma.ChatThreadUpdateManyWithoutStudentNestedInput
-  threadsAsStaff?: Prisma.ChatThreadUpdateManyWithoutStaffNestedInput
+  threadsOpened?: Prisma.ChatThreadUpdateManyWithoutOpenerNestedInput
+  threadsAnswered?: Prisma.ChatThreadUpdateManyWithoutResponderNestedInput
   hourAdjustments?: Prisma.HourAdjustmentUpdateManyWithoutUserNestedInput
   adjustmentsMade?: Prisma.HourAdjustmentUpdateManyWithoutAuthorNestedInput
   systemLogs?: Prisma.SystemLogUpdateManyWithoutActorNestedInput
@@ -1266,8 +1268,8 @@ export type UserUncheckedUpdateWithoutSessionsInput = {
   appealsJudged?: Prisma.AppealUncheckedUpdateManyWithoutDecidedByNestedInput
   evidenceSeen?: Prisma.EvidenceUncheckedUpdateManyWithoutReviewedByNestedInput
   messages?: Prisma.ChatMessageUncheckedUpdateManyWithoutSenderNestedInput
-  threadsAsUser?: Prisma.ChatThreadUncheckedUpdateManyWithoutStudentNestedInput
-  threadsAsStaff?: Prisma.ChatThreadUncheckedUpdateManyWithoutStaffNestedInput
+  threadsOpened?: Prisma.ChatThreadUncheckedUpdateManyWithoutOpenerNestedInput
+  threadsAnswered?: Prisma.ChatThreadUncheckedUpdateManyWithoutResponderNestedInput
   hourAdjustments?: Prisma.HourAdjustmentUncheckedUpdateManyWithoutUserNestedInput
   adjustmentsMade?: Prisma.HourAdjustmentUncheckedUpdateManyWithoutAuthorNestedInput
   systemLogs?: Prisma.SystemLogUncheckedUpdateManyWithoutActorNestedInput
@@ -1308,8 +1310,8 @@ export type UserCreateWithoutResetTokensInput = {
   appealsJudged?: Prisma.AppealCreateNestedManyWithoutDecidedByInput
   evidenceSeen?: Prisma.EvidenceCreateNestedManyWithoutReviewedByInput
   messages?: Prisma.ChatMessageCreateNestedManyWithoutSenderInput
-  threadsAsUser?: Prisma.ChatThreadCreateNestedManyWithoutStudentInput
-  threadsAsStaff?: Prisma.ChatThreadCreateNestedManyWithoutStaffInput
+  threadsOpened?: Prisma.ChatThreadCreateNestedManyWithoutOpenerInput
+  threadsAnswered?: Prisma.ChatThreadCreateNestedManyWithoutResponderInput
   hourAdjustments?: Prisma.HourAdjustmentCreateNestedManyWithoutUserInput
   adjustmentsMade?: Prisma.HourAdjustmentCreateNestedManyWithoutAuthorInput
   systemLogs?: Prisma.SystemLogCreateNestedManyWithoutActorInput
@@ -1350,8 +1352,8 @@ export type UserUncheckedCreateWithoutResetTokensInput = {
   appealsJudged?: Prisma.AppealUncheckedCreateNestedManyWithoutDecidedByInput
   evidenceSeen?: Prisma.EvidenceUncheckedCreateNestedManyWithoutReviewedByInput
   messages?: Prisma.ChatMessageUncheckedCreateNestedManyWithoutSenderInput
-  threadsAsUser?: Prisma.ChatThreadUncheckedCreateNestedManyWithoutStudentInput
-  threadsAsStaff?: Prisma.ChatThreadUncheckedCreateNestedManyWithoutStaffInput
+  threadsOpened?: Prisma.ChatThreadUncheckedCreateNestedManyWithoutOpenerInput
+  threadsAnswered?: Prisma.ChatThreadUncheckedCreateNestedManyWithoutResponderInput
   hourAdjustments?: Prisma.HourAdjustmentUncheckedCreateNestedManyWithoutUserInput
   adjustmentsMade?: Prisma.HourAdjustmentUncheckedCreateNestedManyWithoutAuthorInput
   systemLogs?: Prisma.SystemLogUncheckedCreateNestedManyWithoutActorInput
@@ -1408,8 +1410,8 @@ export type UserUpdateWithoutResetTokensInput = {
   appealsJudged?: Prisma.AppealUpdateManyWithoutDecidedByNestedInput
   evidenceSeen?: Prisma.EvidenceUpdateManyWithoutReviewedByNestedInput
   messages?: Prisma.ChatMessageUpdateManyWithoutSenderNestedInput
-  threadsAsUser?: Prisma.ChatThreadUpdateManyWithoutStudentNestedInput
-  threadsAsStaff?: Prisma.ChatThreadUpdateManyWithoutStaffNestedInput
+  threadsOpened?: Prisma.ChatThreadUpdateManyWithoutOpenerNestedInput
+  threadsAnswered?: Prisma.ChatThreadUpdateManyWithoutResponderNestedInput
   hourAdjustments?: Prisma.HourAdjustmentUpdateManyWithoutUserNestedInput
   adjustmentsMade?: Prisma.HourAdjustmentUpdateManyWithoutAuthorNestedInput
   systemLogs?: Prisma.SystemLogUpdateManyWithoutActorNestedInput
@@ -1450,8 +1452,8 @@ export type UserUncheckedUpdateWithoutResetTokensInput = {
   appealsJudged?: Prisma.AppealUncheckedUpdateManyWithoutDecidedByNestedInput
   evidenceSeen?: Prisma.EvidenceUncheckedUpdateManyWithoutReviewedByNestedInput
   messages?: Prisma.ChatMessageUncheckedUpdateManyWithoutSenderNestedInput
-  threadsAsUser?: Prisma.ChatThreadUncheckedUpdateManyWithoutStudentNestedInput
-  threadsAsStaff?: Prisma.ChatThreadUncheckedUpdateManyWithoutStaffNestedInput
+  threadsOpened?: Prisma.ChatThreadUncheckedUpdateManyWithoutOpenerNestedInput
+  threadsAnswered?: Prisma.ChatThreadUncheckedUpdateManyWithoutResponderNestedInput
   hourAdjustments?: Prisma.HourAdjustmentUncheckedUpdateManyWithoutUserNestedInput
   adjustmentsMade?: Prisma.HourAdjustmentUncheckedUpdateManyWithoutAuthorNestedInput
   systemLogs?: Prisma.SystemLogUncheckedUpdateManyWithoutActorNestedInput
@@ -1492,8 +1494,8 @@ export type UserCreateWithoutTwoFactorInput = {
   appealsJudged?: Prisma.AppealCreateNestedManyWithoutDecidedByInput
   evidenceSeen?: Prisma.EvidenceCreateNestedManyWithoutReviewedByInput
   messages?: Prisma.ChatMessageCreateNestedManyWithoutSenderInput
-  threadsAsUser?: Prisma.ChatThreadCreateNestedManyWithoutStudentInput
-  threadsAsStaff?: Prisma.ChatThreadCreateNestedManyWithoutStaffInput
+  threadsOpened?: Prisma.ChatThreadCreateNestedManyWithoutOpenerInput
+  threadsAnswered?: Prisma.ChatThreadCreateNestedManyWithoutResponderInput
   hourAdjustments?: Prisma.HourAdjustmentCreateNestedManyWithoutUserInput
   adjustmentsMade?: Prisma.HourAdjustmentCreateNestedManyWithoutAuthorInput
   systemLogs?: Prisma.SystemLogCreateNestedManyWithoutActorInput
@@ -1534,8 +1536,8 @@ export type UserUncheckedCreateWithoutTwoFactorInput = {
   appealsJudged?: Prisma.AppealUncheckedCreateNestedManyWithoutDecidedByInput
   evidenceSeen?: Prisma.EvidenceUncheckedCreateNestedManyWithoutReviewedByInput
   messages?: Prisma.ChatMessageUncheckedCreateNestedManyWithoutSenderInput
-  threadsAsUser?: Prisma.ChatThreadUncheckedCreateNestedManyWithoutStudentInput
-  threadsAsStaff?: Prisma.ChatThreadUncheckedCreateNestedManyWithoutStaffInput
+  threadsOpened?: Prisma.ChatThreadUncheckedCreateNestedManyWithoutOpenerInput
+  threadsAnswered?: Prisma.ChatThreadUncheckedCreateNestedManyWithoutResponderInput
   hourAdjustments?: Prisma.HourAdjustmentUncheckedCreateNestedManyWithoutUserInput
   adjustmentsMade?: Prisma.HourAdjustmentUncheckedCreateNestedManyWithoutAuthorInput
   systemLogs?: Prisma.SystemLogUncheckedCreateNestedManyWithoutActorInput
@@ -1592,8 +1594,8 @@ export type UserUpdateWithoutTwoFactorInput = {
   appealsJudged?: Prisma.AppealUpdateManyWithoutDecidedByNestedInput
   evidenceSeen?: Prisma.EvidenceUpdateManyWithoutReviewedByNestedInput
   messages?: Prisma.ChatMessageUpdateManyWithoutSenderNestedInput
-  threadsAsUser?: Prisma.ChatThreadUpdateManyWithoutStudentNestedInput
-  threadsAsStaff?: Prisma.ChatThreadUpdateManyWithoutStaffNestedInput
+  threadsOpened?: Prisma.ChatThreadUpdateManyWithoutOpenerNestedInput
+  threadsAnswered?: Prisma.ChatThreadUpdateManyWithoutResponderNestedInput
   hourAdjustments?: Prisma.HourAdjustmentUpdateManyWithoutUserNestedInput
   adjustmentsMade?: Prisma.HourAdjustmentUpdateManyWithoutAuthorNestedInput
   systemLogs?: Prisma.SystemLogUpdateManyWithoutActorNestedInput
@@ -1634,8 +1636,8 @@ export type UserUncheckedUpdateWithoutTwoFactorInput = {
   appealsJudged?: Prisma.AppealUncheckedUpdateManyWithoutDecidedByNestedInput
   evidenceSeen?: Prisma.EvidenceUncheckedUpdateManyWithoutReviewedByNestedInput
   messages?: Prisma.ChatMessageUncheckedUpdateManyWithoutSenderNestedInput
-  threadsAsUser?: Prisma.ChatThreadUncheckedUpdateManyWithoutStudentNestedInput
-  threadsAsStaff?: Prisma.ChatThreadUncheckedUpdateManyWithoutStaffNestedInput
+  threadsOpened?: Prisma.ChatThreadUncheckedUpdateManyWithoutOpenerNestedInput
+  threadsAnswered?: Prisma.ChatThreadUncheckedUpdateManyWithoutResponderNestedInput
   hourAdjustments?: Prisma.HourAdjustmentUncheckedUpdateManyWithoutUserNestedInput
   adjustmentsMade?: Prisma.HourAdjustmentUncheckedUpdateManyWithoutAuthorNestedInput
   systemLogs?: Prisma.SystemLogUncheckedUpdateManyWithoutActorNestedInput
@@ -1676,8 +1678,8 @@ export type UserCreateWithoutOrganizedInput = {
   appealsJudged?: Prisma.AppealCreateNestedManyWithoutDecidedByInput
   evidenceSeen?: Prisma.EvidenceCreateNestedManyWithoutReviewedByInput
   messages?: Prisma.ChatMessageCreateNestedManyWithoutSenderInput
-  threadsAsUser?: Prisma.ChatThreadCreateNestedManyWithoutStudentInput
-  threadsAsStaff?: Prisma.ChatThreadCreateNestedManyWithoutStaffInput
+  threadsOpened?: Prisma.ChatThreadCreateNestedManyWithoutOpenerInput
+  threadsAnswered?: Prisma.ChatThreadCreateNestedManyWithoutResponderInput
   hourAdjustments?: Prisma.HourAdjustmentCreateNestedManyWithoutUserInput
   adjustmentsMade?: Prisma.HourAdjustmentCreateNestedManyWithoutAuthorInput
   systemLogs?: Prisma.SystemLogCreateNestedManyWithoutActorInput
@@ -1718,8 +1720,8 @@ export type UserUncheckedCreateWithoutOrganizedInput = {
   appealsJudged?: Prisma.AppealUncheckedCreateNestedManyWithoutDecidedByInput
   evidenceSeen?: Prisma.EvidenceUncheckedCreateNestedManyWithoutReviewedByInput
   messages?: Prisma.ChatMessageUncheckedCreateNestedManyWithoutSenderInput
-  threadsAsUser?: Prisma.ChatThreadUncheckedCreateNestedManyWithoutStudentInput
-  threadsAsStaff?: Prisma.ChatThreadUncheckedCreateNestedManyWithoutStaffInput
+  threadsOpened?: Prisma.ChatThreadUncheckedCreateNestedManyWithoutOpenerInput
+  threadsAnswered?: Prisma.ChatThreadUncheckedCreateNestedManyWithoutResponderInput
   hourAdjustments?: Prisma.HourAdjustmentUncheckedCreateNestedManyWithoutUserInput
   adjustmentsMade?: Prisma.HourAdjustmentUncheckedCreateNestedManyWithoutAuthorInput
   systemLogs?: Prisma.SystemLogUncheckedCreateNestedManyWithoutActorInput
@@ -1776,8 +1778,8 @@ export type UserUpdateWithoutOrganizedInput = {
   appealsJudged?: Prisma.AppealUpdateManyWithoutDecidedByNestedInput
   evidenceSeen?: Prisma.EvidenceUpdateManyWithoutReviewedByNestedInput
   messages?: Prisma.ChatMessageUpdateManyWithoutSenderNestedInput
-  threadsAsUser?: Prisma.ChatThreadUpdateManyWithoutStudentNestedInput
-  threadsAsStaff?: Prisma.ChatThreadUpdateManyWithoutStaffNestedInput
+  threadsOpened?: Prisma.ChatThreadUpdateManyWithoutOpenerNestedInput
+  threadsAnswered?: Prisma.ChatThreadUpdateManyWithoutResponderNestedInput
   hourAdjustments?: Prisma.HourAdjustmentUpdateManyWithoutUserNestedInput
   adjustmentsMade?: Prisma.HourAdjustmentUpdateManyWithoutAuthorNestedInput
   systemLogs?: Prisma.SystemLogUpdateManyWithoutActorNestedInput
@@ -1818,8 +1820,8 @@ export type UserUncheckedUpdateWithoutOrganizedInput = {
   appealsJudged?: Prisma.AppealUncheckedUpdateManyWithoutDecidedByNestedInput
   evidenceSeen?: Prisma.EvidenceUncheckedUpdateManyWithoutReviewedByNestedInput
   messages?: Prisma.ChatMessageUncheckedUpdateManyWithoutSenderNestedInput
-  threadsAsUser?: Prisma.ChatThreadUncheckedUpdateManyWithoutStudentNestedInput
-  threadsAsStaff?: Prisma.ChatThreadUncheckedUpdateManyWithoutStaffNestedInput
+  threadsOpened?: Prisma.ChatThreadUncheckedUpdateManyWithoutOpenerNestedInput
+  threadsAnswered?: Prisma.ChatThreadUncheckedUpdateManyWithoutResponderNestedInput
   hourAdjustments?: Prisma.HourAdjustmentUncheckedUpdateManyWithoutUserNestedInput
   adjustmentsMade?: Prisma.HourAdjustmentUncheckedUpdateManyWithoutAuthorNestedInput
   systemLogs?: Prisma.SystemLogUncheckedUpdateManyWithoutActorNestedInput
@@ -1860,8 +1862,8 @@ export type UserCreateWithoutRegistrationsInput = {
   appealsJudged?: Prisma.AppealCreateNestedManyWithoutDecidedByInput
   evidenceSeen?: Prisma.EvidenceCreateNestedManyWithoutReviewedByInput
   messages?: Prisma.ChatMessageCreateNestedManyWithoutSenderInput
-  threadsAsUser?: Prisma.ChatThreadCreateNestedManyWithoutStudentInput
-  threadsAsStaff?: Prisma.ChatThreadCreateNestedManyWithoutStaffInput
+  threadsOpened?: Prisma.ChatThreadCreateNestedManyWithoutOpenerInput
+  threadsAnswered?: Prisma.ChatThreadCreateNestedManyWithoutResponderInput
   hourAdjustments?: Prisma.HourAdjustmentCreateNestedManyWithoutUserInput
   adjustmentsMade?: Prisma.HourAdjustmentCreateNestedManyWithoutAuthorInput
   systemLogs?: Prisma.SystemLogCreateNestedManyWithoutActorInput
@@ -1902,8 +1904,8 @@ export type UserUncheckedCreateWithoutRegistrationsInput = {
   appealsJudged?: Prisma.AppealUncheckedCreateNestedManyWithoutDecidedByInput
   evidenceSeen?: Prisma.EvidenceUncheckedCreateNestedManyWithoutReviewedByInput
   messages?: Prisma.ChatMessageUncheckedCreateNestedManyWithoutSenderInput
-  threadsAsUser?: Prisma.ChatThreadUncheckedCreateNestedManyWithoutStudentInput
-  threadsAsStaff?: Prisma.ChatThreadUncheckedCreateNestedManyWithoutStaffInput
+  threadsOpened?: Prisma.ChatThreadUncheckedCreateNestedManyWithoutOpenerInput
+  threadsAnswered?: Prisma.ChatThreadUncheckedCreateNestedManyWithoutResponderInput
   hourAdjustments?: Prisma.HourAdjustmentUncheckedCreateNestedManyWithoutUserInput
   adjustmentsMade?: Prisma.HourAdjustmentUncheckedCreateNestedManyWithoutAuthorInput
   systemLogs?: Prisma.SystemLogUncheckedCreateNestedManyWithoutActorInput
@@ -1960,8 +1962,8 @@ export type UserUpdateWithoutRegistrationsInput = {
   appealsJudged?: Prisma.AppealUpdateManyWithoutDecidedByNestedInput
   evidenceSeen?: Prisma.EvidenceUpdateManyWithoutReviewedByNestedInput
   messages?: Prisma.ChatMessageUpdateManyWithoutSenderNestedInput
-  threadsAsUser?: Prisma.ChatThreadUpdateManyWithoutStudentNestedInput
-  threadsAsStaff?: Prisma.ChatThreadUpdateManyWithoutStaffNestedInput
+  threadsOpened?: Prisma.ChatThreadUpdateManyWithoutOpenerNestedInput
+  threadsAnswered?: Prisma.ChatThreadUpdateManyWithoutResponderNestedInput
   hourAdjustments?: Prisma.HourAdjustmentUpdateManyWithoutUserNestedInput
   adjustmentsMade?: Prisma.HourAdjustmentUpdateManyWithoutAuthorNestedInput
   systemLogs?: Prisma.SystemLogUpdateManyWithoutActorNestedInput
@@ -2002,8 +2004,8 @@ export type UserUncheckedUpdateWithoutRegistrationsInput = {
   appealsJudged?: Prisma.AppealUncheckedUpdateManyWithoutDecidedByNestedInput
   evidenceSeen?: Prisma.EvidenceUncheckedUpdateManyWithoutReviewedByNestedInput
   messages?: Prisma.ChatMessageUncheckedUpdateManyWithoutSenderNestedInput
-  threadsAsUser?: Prisma.ChatThreadUncheckedUpdateManyWithoutStudentNestedInput
-  threadsAsStaff?: Prisma.ChatThreadUncheckedUpdateManyWithoutStaffNestedInput
+  threadsOpened?: Prisma.ChatThreadUncheckedUpdateManyWithoutOpenerNestedInput
+  threadsAnswered?: Prisma.ChatThreadUncheckedUpdateManyWithoutResponderNestedInput
   hourAdjustments?: Prisma.HourAdjustmentUncheckedUpdateManyWithoutUserNestedInput
   adjustmentsMade?: Prisma.HourAdjustmentUncheckedUpdateManyWithoutAuthorNestedInput
   systemLogs?: Prisma.SystemLogUncheckedUpdateManyWithoutActorNestedInput
@@ -2044,8 +2046,8 @@ export type UserCreateWithoutFavoritesInput = {
   appealsJudged?: Prisma.AppealCreateNestedManyWithoutDecidedByInput
   evidenceSeen?: Prisma.EvidenceCreateNestedManyWithoutReviewedByInput
   messages?: Prisma.ChatMessageCreateNestedManyWithoutSenderInput
-  threadsAsUser?: Prisma.ChatThreadCreateNestedManyWithoutStudentInput
-  threadsAsStaff?: Prisma.ChatThreadCreateNestedManyWithoutStaffInput
+  threadsOpened?: Prisma.ChatThreadCreateNestedManyWithoutOpenerInput
+  threadsAnswered?: Prisma.ChatThreadCreateNestedManyWithoutResponderInput
   hourAdjustments?: Prisma.HourAdjustmentCreateNestedManyWithoutUserInput
   adjustmentsMade?: Prisma.HourAdjustmentCreateNestedManyWithoutAuthorInput
   systemLogs?: Prisma.SystemLogCreateNestedManyWithoutActorInput
@@ -2086,8 +2088,8 @@ export type UserUncheckedCreateWithoutFavoritesInput = {
   appealsJudged?: Prisma.AppealUncheckedCreateNestedManyWithoutDecidedByInput
   evidenceSeen?: Prisma.EvidenceUncheckedCreateNestedManyWithoutReviewedByInput
   messages?: Prisma.ChatMessageUncheckedCreateNestedManyWithoutSenderInput
-  threadsAsUser?: Prisma.ChatThreadUncheckedCreateNestedManyWithoutStudentInput
-  threadsAsStaff?: Prisma.ChatThreadUncheckedCreateNestedManyWithoutStaffInput
+  threadsOpened?: Prisma.ChatThreadUncheckedCreateNestedManyWithoutOpenerInput
+  threadsAnswered?: Prisma.ChatThreadUncheckedCreateNestedManyWithoutResponderInput
   hourAdjustments?: Prisma.HourAdjustmentUncheckedCreateNestedManyWithoutUserInput
   adjustmentsMade?: Prisma.HourAdjustmentUncheckedCreateNestedManyWithoutAuthorInput
   systemLogs?: Prisma.SystemLogUncheckedCreateNestedManyWithoutActorInput
@@ -2144,8 +2146,8 @@ export type UserUpdateWithoutFavoritesInput = {
   appealsJudged?: Prisma.AppealUpdateManyWithoutDecidedByNestedInput
   evidenceSeen?: Prisma.EvidenceUpdateManyWithoutReviewedByNestedInput
   messages?: Prisma.ChatMessageUpdateManyWithoutSenderNestedInput
-  threadsAsUser?: Prisma.ChatThreadUpdateManyWithoutStudentNestedInput
-  threadsAsStaff?: Prisma.ChatThreadUpdateManyWithoutStaffNestedInput
+  threadsOpened?: Prisma.ChatThreadUpdateManyWithoutOpenerNestedInput
+  threadsAnswered?: Prisma.ChatThreadUpdateManyWithoutResponderNestedInput
   hourAdjustments?: Prisma.HourAdjustmentUpdateManyWithoutUserNestedInput
   adjustmentsMade?: Prisma.HourAdjustmentUpdateManyWithoutAuthorNestedInput
   systemLogs?: Prisma.SystemLogUpdateManyWithoutActorNestedInput
@@ -2186,8 +2188,8 @@ export type UserUncheckedUpdateWithoutFavoritesInput = {
   appealsJudged?: Prisma.AppealUncheckedUpdateManyWithoutDecidedByNestedInput
   evidenceSeen?: Prisma.EvidenceUncheckedUpdateManyWithoutReviewedByNestedInput
   messages?: Prisma.ChatMessageUncheckedUpdateManyWithoutSenderNestedInput
-  threadsAsUser?: Prisma.ChatThreadUncheckedUpdateManyWithoutStudentNestedInput
-  threadsAsStaff?: Prisma.ChatThreadUncheckedUpdateManyWithoutStaffNestedInput
+  threadsOpened?: Prisma.ChatThreadUncheckedUpdateManyWithoutOpenerNestedInput
+  threadsAnswered?: Prisma.ChatThreadUncheckedUpdateManyWithoutResponderNestedInput
   hourAdjustments?: Prisma.HourAdjustmentUncheckedUpdateManyWithoutUserNestedInput
   adjustmentsMade?: Prisma.HourAdjustmentUncheckedUpdateManyWithoutAuthorNestedInput
   systemLogs?: Prisma.SystemLogUncheckedUpdateManyWithoutActorNestedInput
@@ -2228,8 +2230,8 @@ export type UserCreateWithoutEvidenceSeenInput = {
   appeals?: Prisma.AppealCreateNestedManyWithoutUserInput
   appealsJudged?: Prisma.AppealCreateNestedManyWithoutDecidedByInput
   messages?: Prisma.ChatMessageCreateNestedManyWithoutSenderInput
-  threadsAsUser?: Prisma.ChatThreadCreateNestedManyWithoutStudentInput
-  threadsAsStaff?: Prisma.ChatThreadCreateNestedManyWithoutStaffInput
+  threadsOpened?: Prisma.ChatThreadCreateNestedManyWithoutOpenerInput
+  threadsAnswered?: Prisma.ChatThreadCreateNestedManyWithoutResponderInput
   hourAdjustments?: Prisma.HourAdjustmentCreateNestedManyWithoutUserInput
   adjustmentsMade?: Prisma.HourAdjustmentCreateNestedManyWithoutAuthorInput
   systemLogs?: Prisma.SystemLogCreateNestedManyWithoutActorInput
@@ -2270,8 +2272,8 @@ export type UserUncheckedCreateWithoutEvidenceSeenInput = {
   appeals?: Prisma.AppealUncheckedCreateNestedManyWithoutUserInput
   appealsJudged?: Prisma.AppealUncheckedCreateNestedManyWithoutDecidedByInput
   messages?: Prisma.ChatMessageUncheckedCreateNestedManyWithoutSenderInput
-  threadsAsUser?: Prisma.ChatThreadUncheckedCreateNestedManyWithoutStudentInput
-  threadsAsStaff?: Prisma.ChatThreadUncheckedCreateNestedManyWithoutStaffInput
+  threadsOpened?: Prisma.ChatThreadUncheckedCreateNestedManyWithoutOpenerInput
+  threadsAnswered?: Prisma.ChatThreadUncheckedCreateNestedManyWithoutResponderInput
   hourAdjustments?: Prisma.HourAdjustmentUncheckedCreateNestedManyWithoutUserInput
   adjustmentsMade?: Prisma.HourAdjustmentUncheckedCreateNestedManyWithoutAuthorInput
   systemLogs?: Prisma.SystemLogUncheckedCreateNestedManyWithoutActorInput
@@ -2328,8 +2330,8 @@ export type UserUpdateWithoutEvidenceSeenInput = {
   appeals?: Prisma.AppealUpdateManyWithoutUserNestedInput
   appealsJudged?: Prisma.AppealUpdateManyWithoutDecidedByNestedInput
   messages?: Prisma.ChatMessageUpdateManyWithoutSenderNestedInput
-  threadsAsUser?: Prisma.ChatThreadUpdateManyWithoutStudentNestedInput
-  threadsAsStaff?: Prisma.ChatThreadUpdateManyWithoutStaffNestedInput
+  threadsOpened?: Prisma.ChatThreadUpdateManyWithoutOpenerNestedInput
+  threadsAnswered?: Prisma.ChatThreadUpdateManyWithoutResponderNestedInput
   hourAdjustments?: Prisma.HourAdjustmentUpdateManyWithoutUserNestedInput
   adjustmentsMade?: Prisma.HourAdjustmentUpdateManyWithoutAuthorNestedInput
   systemLogs?: Prisma.SystemLogUpdateManyWithoutActorNestedInput
@@ -2370,8 +2372,8 @@ export type UserUncheckedUpdateWithoutEvidenceSeenInput = {
   appeals?: Prisma.AppealUncheckedUpdateManyWithoutUserNestedInput
   appealsJudged?: Prisma.AppealUncheckedUpdateManyWithoutDecidedByNestedInput
   messages?: Prisma.ChatMessageUncheckedUpdateManyWithoutSenderNestedInput
-  threadsAsUser?: Prisma.ChatThreadUncheckedUpdateManyWithoutStudentNestedInput
-  threadsAsStaff?: Prisma.ChatThreadUncheckedUpdateManyWithoutStaffNestedInput
+  threadsOpened?: Prisma.ChatThreadUncheckedUpdateManyWithoutOpenerNestedInput
+  threadsAnswered?: Prisma.ChatThreadUncheckedUpdateManyWithoutResponderNestedInput
   hourAdjustments?: Prisma.HourAdjustmentUncheckedUpdateManyWithoutUserNestedInput
   adjustmentsMade?: Prisma.HourAdjustmentUncheckedUpdateManyWithoutAuthorNestedInput
   systemLogs?: Prisma.SystemLogUncheckedUpdateManyWithoutActorNestedInput
@@ -2412,8 +2414,8 @@ export type UserCreateWithoutAppealsInput = {
   appealsJudged?: Prisma.AppealCreateNestedManyWithoutDecidedByInput
   evidenceSeen?: Prisma.EvidenceCreateNestedManyWithoutReviewedByInput
   messages?: Prisma.ChatMessageCreateNestedManyWithoutSenderInput
-  threadsAsUser?: Prisma.ChatThreadCreateNestedManyWithoutStudentInput
-  threadsAsStaff?: Prisma.ChatThreadCreateNestedManyWithoutStaffInput
+  threadsOpened?: Prisma.ChatThreadCreateNestedManyWithoutOpenerInput
+  threadsAnswered?: Prisma.ChatThreadCreateNestedManyWithoutResponderInput
   hourAdjustments?: Prisma.HourAdjustmentCreateNestedManyWithoutUserInput
   adjustmentsMade?: Prisma.HourAdjustmentCreateNestedManyWithoutAuthorInput
   systemLogs?: Prisma.SystemLogCreateNestedManyWithoutActorInput
@@ -2454,8 +2456,8 @@ export type UserUncheckedCreateWithoutAppealsInput = {
   appealsJudged?: Prisma.AppealUncheckedCreateNestedManyWithoutDecidedByInput
   evidenceSeen?: Prisma.EvidenceUncheckedCreateNestedManyWithoutReviewedByInput
   messages?: Prisma.ChatMessageUncheckedCreateNestedManyWithoutSenderInput
-  threadsAsUser?: Prisma.ChatThreadUncheckedCreateNestedManyWithoutStudentInput
-  threadsAsStaff?: Prisma.ChatThreadUncheckedCreateNestedManyWithoutStaffInput
+  threadsOpened?: Prisma.ChatThreadUncheckedCreateNestedManyWithoutOpenerInput
+  threadsAnswered?: Prisma.ChatThreadUncheckedCreateNestedManyWithoutResponderInput
   hourAdjustments?: Prisma.HourAdjustmentUncheckedCreateNestedManyWithoutUserInput
   adjustmentsMade?: Prisma.HourAdjustmentUncheckedCreateNestedManyWithoutAuthorInput
   systemLogs?: Prisma.SystemLogUncheckedCreateNestedManyWithoutActorInput
@@ -2501,8 +2503,8 @@ export type UserCreateWithoutAppealsJudgedInput = {
   appeals?: Prisma.AppealCreateNestedManyWithoutUserInput
   evidenceSeen?: Prisma.EvidenceCreateNestedManyWithoutReviewedByInput
   messages?: Prisma.ChatMessageCreateNestedManyWithoutSenderInput
-  threadsAsUser?: Prisma.ChatThreadCreateNestedManyWithoutStudentInput
-  threadsAsStaff?: Prisma.ChatThreadCreateNestedManyWithoutStaffInput
+  threadsOpened?: Prisma.ChatThreadCreateNestedManyWithoutOpenerInput
+  threadsAnswered?: Prisma.ChatThreadCreateNestedManyWithoutResponderInput
   hourAdjustments?: Prisma.HourAdjustmentCreateNestedManyWithoutUserInput
   adjustmentsMade?: Prisma.HourAdjustmentCreateNestedManyWithoutAuthorInput
   systemLogs?: Prisma.SystemLogCreateNestedManyWithoutActorInput
@@ -2543,8 +2545,8 @@ export type UserUncheckedCreateWithoutAppealsJudgedInput = {
   appeals?: Prisma.AppealUncheckedCreateNestedManyWithoutUserInput
   evidenceSeen?: Prisma.EvidenceUncheckedCreateNestedManyWithoutReviewedByInput
   messages?: Prisma.ChatMessageUncheckedCreateNestedManyWithoutSenderInput
-  threadsAsUser?: Prisma.ChatThreadUncheckedCreateNestedManyWithoutStudentInput
-  threadsAsStaff?: Prisma.ChatThreadUncheckedCreateNestedManyWithoutStaffInput
+  threadsOpened?: Prisma.ChatThreadUncheckedCreateNestedManyWithoutOpenerInput
+  threadsAnswered?: Prisma.ChatThreadUncheckedCreateNestedManyWithoutResponderInput
   hourAdjustments?: Prisma.HourAdjustmentUncheckedCreateNestedManyWithoutUserInput
   adjustmentsMade?: Prisma.HourAdjustmentUncheckedCreateNestedManyWithoutAuthorInput
   systemLogs?: Prisma.SystemLogUncheckedCreateNestedManyWithoutActorInput
@@ -2601,8 +2603,8 @@ export type UserUpdateWithoutAppealsInput = {
   appealsJudged?: Prisma.AppealUpdateManyWithoutDecidedByNestedInput
   evidenceSeen?: Prisma.EvidenceUpdateManyWithoutReviewedByNestedInput
   messages?: Prisma.ChatMessageUpdateManyWithoutSenderNestedInput
-  threadsAsUser?: Prisma.ChatThreadUpdateManyWithoutStudentNestedInput
-  threadsAsStaff?: Prisma.ChatThreadUpdateManyWithoutStaffNestedInput
+  threadsOpened?: Prisma.ChatThreadUpdateManyWithoutOpenerNestedInput
+  threadsAnswered?: Prisma.ChatThreadUpdateManyWithoutResponderNestedInput
   hourAdjustments?: Prisma.HourAdjustmentUpdateManyWithoutUserNestedInput
   adjustmentsMade?: Prisma.HourAdjustmentUpdateManyWithoutAuthorNestedInput
   systemLogs?: Prisma.SystemLogUpdateManyWithoutActorNestedInput
@@ -2643,8 +2645,8 @@ export type UserUncheckedUpdateWithoutAppealsInput = {
   appealsJudged?: Prisma.AppealUncheckedUpdateManyWithoutDecidedByNestedInput
   evidenceSeen?: Prisma.EvidenceUncheckedUpdateManyWithoutReviewedByNestedInput
   messages?: Prisma.ChatMessageUncheckedUpdateManyWithoutSenderNestedInput
-  threadsAsUser?: Prisma.ChatThreadUncheckedUpdateManyWithoutStudentNestedInput
-  threadsAsStaff?: Prisma.ChatThreadUncheckedUpdateManyWithoutStaffNestedInput
+  threadsOpened?: Prisma.ChatThreadUncheckedUpdateManyWithoutOpenerNestedInput
+  threadsAnswered?: Prisma.ChatThreadUncheckedUpdateManyWithoutResponderNestedInput
   hourAdjustments?: Prisma.HourAdjustmentUncheckedUpdateManyWithoutUserNestedInput
   adjustmentsMade?: Prisma.HourAdjustmentUncheckedUpdateManyWithoutAuthorNestedInput
   systemLogs?: Prisma.SystemLogUncheckedUpdateManyWithoutActorNestedInput
@@ -2696,8 +2698,8 @@ export type UserUpdateWithoutAppealsJudgedInput = {
   appeals?: Prisma.AppealUpdateManyWithoutUserNestedInput
   evidenceSeen?: Prisma.EvidenceUpdateManyWithoutReviewedByNestedInput
   messages?: Prisma.ChatMessageUpdateManyWithoutSenderNestedInput
-  threadsAsUser?: Prisma.ChatThreadUpdateManyWithoutStudentNestedInput
-  threadsAsStaff?: Prisma.ChatThreadUpdateManyWithoutStaffNestedInput
+  threadsOpened?: Prisma.ChatThreadUpdateManyWithoutOpenerNestedInput
+  threadsAnswered?: Prisma.ChatThreadUpdateManyWithoutResponderNestedInput
   hourAdjustments?: Prisma.HourAdjustmentUpdateManyWithoutUserNestedInput
   adjustmentsMade?: Prisma.HourAdjustmentUpdateManyWithoutAuthorNestedInput
   systemLogs?: Prisma.SystemLogUpdateManyWithoutActorNestedInput
@@ -2738,8 +2740,8 @@ export type UserUncheckedUpdateWithoutAppealsJudgedInput = {
   appeals?: Prisma.AppealUncheckedUpdateManyWithoutUserNestedInput
   evidenceSeen?: Prisma.EvidenceUncheckedUpdateManyWithoutReviewedByNestedInput
   messages?: Prisma.ChatMessageUncheckedUpdateManyWithoutSenderNestedInput
-  threadsAsUser?: Prisma.ChatThreadUncheckedUpdateManyWithoutStudentNestedInput
-  threadsAsStaff?: Prisma.ChatThreadUncheckedUpdateManyWithoutStaffNestedInput
+  threadsOpened?: Prisma.ChatThreadUncheckedUpdateManyWithoutOpenerNestedInput
+  threadsAnswered?: Prisma.ChatThreadUncheckedUpdateManyWithoutResponderNestedInput
   hourAdjustments?: Prisma.HourAdjustmentUncheckedUpdateManyWithoutUserNestedInput
   adjustmentsMade?: Prisma.HourAdjustmentUncheckedUpdateManyWithoutAuthorNestedInput
   systemLogs?: Prisma.SystemLogUncheckedUpdateManyWithoutActorNestedInput
@@ -2781,8 +2783,8 @@ export type UserCreateWithoutHourAdjustmentsInput = {
   appealsJudged?: Prisma.AppealCreateNestedManyWithoutDecidedByInput
   evidenceSeen?: Prisma.EvidenceCreateNestedManyWithoutReviewedByInput
   messages?: Prisma.ChatMessageCreateNestedManyWithoutSenderInput
-  threadsAsUser?: Prisma.ChatThreadCreateNestedManyWithoutStudentInput
-  threadsAsStaff?: Prisma.ChatThreadCreateNestedManyWithoutStaffInput
+  threadsOpened?: Prisma.ChatThreadCreateNestedManyWithoutOpenerInput
+  threadsAnswered?: Prisma.ChatThreadCreateNestedManyWithoutResponderInput
   adjustmentsMade?: Prisma.HourAdjustmentCreateNestedManyWithoutAuthorInput
   systemLogs?: Prisma.SystemLogCreateNestedManyWithoutActorInput
   calendarEvents?: Prisma.CalendarEventCreateNestedManyWithoutUserInput
@@ -2823,8 +2825,8 @@ export type UserUncheckedCreateWithoutHourAdjustmentsInput = {
   appealsJudged?: Prisma.AppealUncheckedCreateNestedManyWithoutDecidedByInput
   evidenceSeen?: Prisma.EvidenceUncheckedCreateNestedManyWithoutReviewedByInput
   messages?: Prisma.ChatMessageUncheckedCreateNestedManyWithoutSenderInput
-  threadsAsUser?: Prisma.ChatThreadUncheckedCreateNestedManyWithoutStudentInput
-  threadsAsStaff?: Prisma.ChatThreadUncheckedCreateNestedManyWithoutStaffInput
+  threadsOpened?: Prisma.ChatThreadUncheckedCreateNestedManyWithoutOpenerInput
+  threadsAnswered?: Prisma.ChatThreadUncheckedCreateNestedManyWithoutResponderInput
   adjustmentsMade?: Prisma.HourAdjustmentUncheckedCreateNestedManyWithoutAuthorInput
   systemLogs?: Prisma.SystemLogUncheckedCreateNestedManyWithoutActorInput
   calendarEvents?: Prisma.CalendarEventUncheckedCreateNestedManyWithoutUserInput
@@ -2870,8 +2872,8 @@ export type UserCreateWithoutAdjustmentsMadeInput = {
   appealsJudged?: Prisma.AppealCreateNestedManyWithoutDecidedByInput
   evidenceSeen?: Prisma.EvidenceCreateNestedManyWithoutReviewedByInput
   messages?: Prisma.ChatMessageCreateNestedManyWithoutSenderInput
-  threadsAsUser?: Prisma.ChatThreadCreateNestedManyWithoutStudentInput
-  threadsAsStaff?: Prisma.ChatThreadCreateNestedManyWithoutStaffInput
+  threadsOpened?: Prisma.ChatThreadCreateNestedManyWithoutOpenerInput
+  threadsAnswered?: Prisma.ChatThreadCreateNestedManyWithoutResponderInput
   hourAdjustments?: Prisma.HourAdjustmentCreateNestedManyWithoutUserInput
   systemLogs?: Prisma.SystemLogCreateNestedManyWithoutActorInput
   calendarEvents?: Prisma.CalendarEventCreateNestedManyWithoutUserInput
@@ -2912,8 +2914,8 @@ export type UserUncheckedCreateWithoutAdjustmentsMadeInput = {
   appealsJudged?: Prisma.AppealUncheckedCreateNestedManyWithoutDecidedByInput
   evidenceSeen?: Prisma.EvidenceUncheckedCreateNestedManyWithoutReviewedByInput
   messages?: Prisma.ChatMessageUncheckedCreateNestedManyWithoutSenderInput
-  threadsAsUser?: Prisma.ChatThreadUncheckedCreateNestedManyWithoutStudentInput
-  threadsAsStaff?: Prisma.ChatThreadUncheckedCreateNestedManyWithoutStaffInput
+  threadsOpened?: Prisma.ChatThreadUncheckedCreateNestedManyWithoutOpenerInput
+  threadsAnswered?: Prisma.ChatThreadUncheckedCreateNestedManyWithoutResponderInput
   hourAdjustments?: Prisma.HourAdjustmentUncheckedCreateNestedManyWithoutUserInput
   systemLogs?: Prisma.SystemLogUncheckedCreateNestedManyWithoutActorInput
   calendarEvents?: Prisma.CalendarEventUncheckedCreateNestedManyWithoutUserInput
@@ -2970,8 +2972,8 @@ export type UserUpdateWithoutHourAdjustmentsInput = {
   appealsJudged?: Prisma.AppealUpdateManyWithoutDecidedByNestedInput
   evidenceSeen?: Prisma.EvidenceUpdateManyWithoutReviewedByNestedInput
   messages?: Prisma.ChatMessageUpdateManyWithoutSenderNestedInput
-  threadsAsUser?: Prisma.ChatThreadUpdateManyWithoutStudentNestedInput
-  threadsAsStaff?: Prisma.ChatThreadUpdateManyWithoutStaffNestedInput
+  threadsOpened?: Prisma.ChatThreadUpdateManyWithoutOpenerNestedInput
+  threadsAnswered?: Prisma.ChatThreadUpdateManyWithoutResponderNestedInput
   adjustmentsMade?: Prisma.HourAdjustmentUpdateManyWithoutAuthorNestedInput
   systemLogs?: Prisma.SystemLogUpdateManyWithoutActorNestedInput
   calendarEvents?: Prisma.CalendarEventUpdateManyWithoutUserNestedInput
@@ -3012,8 +3014,8 @@ export type UserUncheckedUpdateWithoutHourAdjustmentsInput = {
   appealsJudged?: Prisma.AppealUncheckedUpdateManyWithoutDecidedByNestedInput
   evidenceSeen?: Prisma.EvidenceUncheckedUpdateManyWithoutReviewedByNestedInput
   messages?: Prisma.ChatMessageUncheckedUpdateManyWithoutSenderNestedInput
-  threadsAsUser?: Prisma.ChatThreadUncheckedUpdateManyWithoutStudentNestedInput
-  threadsAsStaff?: Prisma.ChatThreadUncheckedUpdateManyWithoutStaffNestedInput
+  threadsOpened?: Prisma.ChatThreadUncheckedUpdateManyWithoutOpenerNestedInput
+  threadsAnswered?: Prisma.ChatThreadUncheckedUpdateManyWithoutResponderNestedInput
   adjustmentsMade?: Prisma.HourAdjustmentUncheckedUpdateManyWithoutAuthorNestedInput
   systemLogs?: Prisma.SystemLogUncheckedUpdateManyWithoutActorNestedInput
   calendarEvents?: Prisma.CalendarEventUncheckedUpdateManyWithoutUserNestedInput
@@ -3065,8 +3067,8 @@ export type UserUpdateWithoutAdjustmentsMadeInput = {
   appealsJudged?: Prisma.AppealUpdateManyWithoutDecidedByNestedInput
   evidenceSeen?: Prisma.EvidenceUpdateManyWithoutReviewedByNestedInput
   messages?: Prisma.ChatMessageUpdateManyWithoutSenderNestedInput
-  threadsAsUser?: Prisma.ChatThreadUpdateManyWithoutStudentNestedInput
-  threadsAsStaff?: Prisma.ChatThreadUpdateManyWithoutStaffNestedInput
+  threadsOpened?: Prisma.ChatThreadUpdateManyWithoutOpenerNestedInput
+  threadsAnswered?: Prisma.ChatThreadUpdateManyWithoutResponderNestedInput
   hourAdjustments?: Prisma.HourAdjustmentUpdateManyWithoutUserNestedInput
   systemLogs?: Prisma.SystemLogUpdateManyWithoutActorNestedInput
   calendarEvents?: Prisma.CalendarEventUpdateManyWithoutUserNestedInput
@@ -3107,8 +3109,8 @@ export type UserUncheckedUpdateWithoutAdjustmentsMadeInput = {
   appealsJudged?: Prisma.AppealUncheckedUpdateManyWithoutDecidedByNestedInput
   evidenceSeen?: Prisma.EvidenceUncheckedUpdateManyWithoutReviewedByNestedInput
   messages?: Prisma.ChatMessageUncheckedUpdateManyWithoutSenderNestedInput
-  threadsAsUser?: Prisma.ChatThreadUncheckedUpdateManyWithoutStudentNestedInput
-  threadsAsStaff?: Prisma.ChatThreadUncheckedUpdateManyWithoutStaffNestedInput
+  threadsOpened?: Prisma.ChatThreadUncheckedUpdateManyWithoutOpenerNestedInput
+  threadsAnswered?: Prisma.ChatThreadUncheckedUpdateManyWithoutResponderNestedInput
   hourAdjustments?: Prisma.HourAdjustmentUncheckedUpdateManyWithoutUserNestedInput
   systemLogs?: Prisma.SystemLogUncheckedUpdateManyWithoutActorNestedInput
   calendarEvents?: Prisma.CalendarEventUncheckedUpdateManyWithoutUserNestedInput
@@ -3148,8 +3150,8 @@ export type UserCreateWithoutCertificatesInput = {
   appealsJudged?: Prisma.AppealCreateNestedManyWithoutDecidedByInput
   evidenceSeen?: Prisma.EvidenceCreateNestedManyWithoutReviewedByInput
   messages?: Prisma.ChatMessageCreateNestedManyWithoutSenderInput
-  threadsAsUser?: Prisma.ChatThreadCreateNestedManyWithoutStudentInput
-  threadsAsStaff?: Prisma.ChatThreadCreateNestedManyWithoutStaffInput
+  threadsOpened?: Prisma.ChatThreadCreateNestedManyWithoutOpenerInput
+  threadsAnswered?: Prisma.ChatThreadCreateNestedManyWithoutResponderInput
   hourAdjustments?: Prisma.HourAdjustmentCreateNestedManyWithoutUserInput
   adjustmentsMade?: Prisma.HourAdjustmentCreateNestedManyWithoutAuthorInput
   systemLogs?: Prisma.SystemLogCreateNestedManyWithoutActorInput
@@ -3190,8 +3192,8 @@ export type UserUncheckedCreateWithoutCertificatesInput = {
   appealsJudged?: Prisma.AppealUncheckedCreateNestedManyWithoutDecidedByInput
   evidenceSeen?: Prisma.EvidenceUncheckedCreateNestedManyWithoutReviewedByInput
   messages?: Prisma.ChatMessageUncheckedCreateNestedManyWithoutSenderInput
-  threadsAsUser?: Prisma.ChatThreadUncheckedCreateNestedManyWithoutStudentInput
-  threadsAsStaff?: Prisma.ChatThreadUncheckedCreateNestedManyWithoutStaffInput
+  threadsOpened?: Prisma.ChatThreadUncheckedCreateNestedManyWithoutOpenerInput
+  threadsAnswered?: Prisma.ChatThreadUncheckedCreateNestedManyWithoutResponderInput
   hourAdjustments?: Prisma.HourAdjustmentUncheckedCreateNestedManyWithoutUserInput
   adjustmentsMade?: Prisma.HourAdjustmentUncheckedCreateNestedManyWithoutAuthorInput
   systemLogs?: Prisma.SystemLogUncheckedCreateNestedManyWithoutActorInput
@@ -3248,8 +3250,8 @@ export type UserUpdateWithoutCertificatesInput = {
   appealsJudged?: Prisma.AppealUpdateManyWithoutDecidedByNestedInput
   evidenceSeen?: Prisma.EvidenceUpdateManyWithoutReviewedByNestedInput
   messages?: Prisma.ChatMessageUpdateManyWithoutSenderNestedInput
-  threadsAsUser?: Prisma.ChatThreadUpdateManyWithoutStudentNestedInput
-  threadsAsStaff?: Prisma.ChatThreadUpdateManyWithoutStaffNestedInput
+  threadsOpened?: Prisma.ChatThreadUpdateManyWithoutOpenerNestedInput
+  threadsAnswered?: Prisma.ChatThreadUpdateManyWithoutResponderNestedInput
   hourAdjustments?: Prisma.HourAdjustmentUpdateManyWithoutUserNestedInput
   adjustmentsMade?: Prisma.HourAdjustmentUpdateManyWithoutAuthorNestedInput
   systemLogs?: Prisma.SystemLogUpdateManyWithoutActorNestedInput
@@ -3290,8 +3292,8 @@ export type UserUncheckedUpdateWithoutCertificatesInput = {
   appealsJudged?: Prisma.AppealUncheckedUpdateManyWithoutDecidedByNestedInput
   evidenceSeen?: Prisma.EvidenceUncheckedUpdateManyWithoutReviewedByNestedInput
   messages?: Prisma.ChatMessageUncheckedUpdateManyWithoutSenderNestedInput
-  threadsAsUser?: Prisma.ChatThreadUncheckedUpdateManyWithoutStudentNestedInput
-  threadsAsStaff?: Prisma.ChatThreadUncheckedUpdateManyWithoutStaffNestedInput
+  threadsOpened?: Prisma.ChatThreadUncheckedUpdateManyWithoutOpenerNestedInput
+  threadsAnswered?: Prisma.ChatThreadUncheckedUpdateManyWithoutResponderNestedInput
   hourAdjustments?: Prisma.HourAdjustmentUncheckedUpdateManyWithoutUserNestedInput
   adjustmentsMade?: Prisma.HourAdjustmentUncheckedUpdateManyWithoutAuthorNestedInput
   systemLogs?: Prisma.SystemLogUncheckedUpdateManyWithoutActorNestedInput
@@ -3332,8 +3334,8 @@ export type UserCreateWithoutReviewsInput = {
   appealsJudged?: Prisma.AppealCreateNestedManyWithoutDecidedByInput
   evidenceSeen?: Prisma.EvidenceCreateNestedManyWithoutReviewedByInput
   messages?: Prisma.ChatMessageCreateNestedManyWithoutSenderInput
-  threadsAsUser?: Prisma.ChatThreadCreateNestedManyWithoutStudentInput
-  threadsAsStaff?: Prisma.ChatThreadCreateNestedManyWithoutStaffInput
+  threadsOpened?: Prisma.ChatThreadCreateNestedManyWithoutOpenerInput
+  threadsAnswered?: Prisma.ChatThreadCreateNestedManyWithoutResponderInput
   hourAdjustments?: Prisma.HourAdjustmentCreateNestedManyWithoutUserInput
   adjustmentsMade?: Prisma.HourAdjustmentCreateNestedManyWithoutAuthorInput
   systemLogs?: Prisma.SystemLogCreateNestedManyWithoutActorInput
@@ -3374,8 +3376,8 @@ export type UserUncheckedCreateWithoutReviewsInput = {
   appealsJudged?: Prisma.AppealUncheckedCreateNestedManyWithoutDecidedByInput
   evidenceSeen?: Prisma.EvidenceUncheckedCreateNestedManyWithoutReviewedByInput
   messages?: Prisma.ChatMessageUncheckedCreateNestedManyWithoutSenderInput
-  threadsAsUser?: Prisma.ChatThreadUncheckedCreateNestedManyWithoutStudentInput
-  threadsAsStaff?: Prisma.ChatThreadUncheckedCreateNestedManyWithoutStaffInput
+  threadsOpened?: Prisma.ChatThreadUncheckedCreateNestedManyWithoutOpenerInput
+  threadsAnswered?: Prisma.ChatThreadUncheckedCreateNestedManyWithoutResponderInput
   hourAdjustments?: Prisma.HourAdjustmentUncheckedCreateNestedManyWithoutUserInput
   adjustmentsMade?: Prisma.HourAdjustmentUncheckedCreateNestedManyWithoutAuthorInput
   systemLogs?: Prisma.SystemLogUncheckedCreateNestedManyWithoutActorInput
@@ -3432,8 +3434,8 @@ export type UserUpdateWithoutReviewsInput = {
   appealsJudged?: Prisma.AppealUpdateManyWithoutDecidedByNestedInput
   evidenceSeen?: Prisma.EvidenceUpdateManyWithoutReviewedByNestedInput
   messages?: Prisma.ChatMessageUpdateManyWithoutSenderNestedInput
-  threadsAsUser?: Prisma.ChatThreadUpdateManyWithoutStudentNestedInput
-  threadsAsStaff?: Prisma.ChatThreadUpdateManyWithoutStaffNestedInput
+  threadsOpened?: Prisma.ChatThreadUpdateManyWithoutOpenerNestedInput
+  threadsAnswered?: Prisma.ChatThreadUpdateManyWithoutResponderNestedInput
   hourAdjustments?: Prisma.HourAdjustmentUpdateManyWithoutUserNestedInput
   adjustmentsMade?: Prisma.HourAdjustmentUpdateManyWithoutAuthorNestedInput
   systemLogs?: Prisma.SystemLogUpdateManyWithoutActorNestedInput
@@ -3474,8 +3476,8 @@ export type UserUncheckedUpdateWithoutReviewsInput = {
   appealsJudged?: Prisma.AppealUncheckedUpdateManyWithoutDecidedByNestedInput
   evidenceSeen?: Prisma.EvidenceUncheckedUpdateManyWithoutReviewedByNestedInput
   messages?: Prisma.ChatMessageUncheckedUpdateManyWithoutSenderNestedInput
-  threadsAsUser?: Prisma.ChatThreadUncheckedUpdateManyWithoutStudentNestedInput
-  threadsAsStaff?: Prisma.ChatThreadUncheckedUpdateManyWithoutStaffNestedInput
+  threadsOpened?: Prisma.ChatThreadUncheckedUpdateManyWithoutOpenerNestedInput
+  threadsAnswered?: Prisma.ChatThreadUncheckedUpdateManyWithoutResponderNestedInput
   hourAdjustments?: Prisma.HourAdjustmentUncheckedUpdateManyWithoutUserNestedInput
   adjustmentsMade?: Prisma.HourAdjustmentUncheckedUpdateManyWithoutAuthorNestedInput
   systemLogs?: Prisma.SystemLogUncheckedUpdateManyWithoutActorNestedInput
@@ -3516,8 +3518,8 @@ export type UserCreateWithoutNotificationsInput = {
   appealsJudged?: Prisma.AppealCreateNestedManyWithoutDecidedByInput
   evidenceSeen?: Prisma.EvidenceCreateNestedManyWithoutReviewedByInput
   messages?: Prisma.ChatMessageCreateNestedManyWithoutSenderInput
-  threadsAsUser?: Prisma.ChatThreadCreateNestedManyWithoutStudentInput
-  threadsAsStaff?: Prisma.ChatThreadCreateNestedManyWithoutStaffInput
+  threadsOpened?: Prisma.ChatThreadCreateNestedManyWithoutOpenerInput
+  threadsAnswered?: Prisma.ChatThreadCreateNestedManyWithoutResponderInput
   hourAdjustments?: Prisma.HourAdjustmentCreateNestedManyWithoutUserInput
   adjustmentsMade?: Prisma.HourAdjustmentCreateNestedManyWithoutAuthorInput
   systemLogs?: Prisma.SystemLogCreateNestedManyWithoutActorInput
@@ -3558,8 +3560,8 @@ export type UserUncheckedCreateWithoutNotificationsInput = {
   appealsJudged?: Prisma.AppealUncheckedCreateNestedManyWithoutDecidedByInput
   evidenceSeen?: Prisma.EvidenceUncheckedCreateNestedManyWithoutReviewedByInput
   messages?: Prisma.ChatMessageUncheckedCreateNestedManyWithoutSenderInput
-  threadsAsUser?: Prisma.ChatThreadUncheckedCreateNestedManyWithoutStudentInput
-  threadsAsStaff?: Prisma.ChatThreadUncheckedCreateNestedManyWithoutStaffInput
+  threadsOpened?: Prisma.ChatThreadUncheckedCreateNestedManyWithoutOpenerInput
+  threadsAnswered?: Prisma.ChatThreadUncheckedCreateNestedManyWithoutResponderInput
   hourAdjustments?: Prisma.HourAdjustmentUncheckedCreateNestedManyWithoutUserInput
   adjustmentsMade?: Prisma.HourAdjustmentUncheckedCreateNestedManyWithoutAuthorInput
   systemLogs?: Prisma.SystemLogUncheckedCreateNestedManyWithoutActorInput
@@ -3616,8 +3618,8 @@ export type UserUpdateWithoutNotificationsInput = {
   appealsJudged?: Prisma.AppealUpdateManyWithoutDecidedByNestedInput
   evidenceSeen?: Prisma.EvidenceUpdateManyWithoutReviewedByNestedInput
   messages?: Prisma.ChatMessageUpdateManyWithoutSenderNestedInput
-  threadsAsUser?: Prisma.ChatThreadUpdateManyWithoutStudentNestedInput
-  threadsAsStaff?: Prisma.ChatThreadUpdateManyWithoutStaffNestedInput
+  threadsOpened?: Prisma.ChatThreadUpdateManyWithoutOpenerNestedInput
+  threadsAnswered?: Prisma.ChatThreadUpdateManyWithoutResponderNestedInput
   hourAdjustments?: Prisma.HourAdjustmentUpdateManyWithoutUserNestedInput
   adjustmentsMade?: Prisma.HourAdjustmentUpdateManyWithoutAuthorNestedInput
   systemLogs?: Prisma.SystemLogUpdateManyWithoutActorNestedInput
@@ -3658,8 +3660,8 @@ export type UserUncheckedUpdateWithoutNotificationsInput = {
   appealsJudged?: Prisma.AppealUncheckedUpdateManyWithoutDecidedByNestedInput
   evidenceSeen?: Prisma.EvidenceUncheckedUpdateManyWithoutReviewedByNestedInput
   messages?: Prisma.ChatMessageUncheckedUpdateManyWithoutSenderNestedInput
-  threadsAsUser?: Prisma.ChatThreadUncheckedUpdateManyWithoutStudentNestedInput
-  threadsAsStaff?: Prisma.ChatThreadUncheckedUpdateManyWithoutStaffNestedInput
+  threadsOpened?: Prisma.ChatThreadUncheckedUpdateManyWithoutOpenerNestedInput
+  threadsAnswered?: Prisma.ChatThreadUncheckedUpdateManyWithoutResponderNestedInput
   hourAdjustments?: Prisma.HourAdjustmentUncheckedUpdateManyWithoutUserNestedInput
   adjustmentsMade?: Prisma.HourAdjustmentUncheckedUpdateManyWithoutAuthorNestedInput
   systemLogs?: Prisma.SystemLogUncheckedUpdateManyWithoutActorNestedInput
@@ -3668,7 +3670,7 @@ export type UserUncheckedUpdateWithoutNotificationsInput = {
   news?: Prisma.NewsUncheckedUpdateManyWithoutAuthorNestedInput
 }
 
-export type UserCreateWithoutThreadsAsUserInput = {
+export type UserCreateWithoutThreadsOpenedInput = {
   id?: string
   email: string
   passwordHash: string
@@ -3701,7 +3703,7 @@ export type UserCreateWithoutThreadsAsUserInput = {
   appealsJudged?: Prisma.AppealCreateNestedManyWithoutDecidedByInput
   evidenceSeen?: Prisma.EvidenceCreateNestedManyWithoutReviewedByInput
   messages?: Prisma.ChatMessageCreateNestedManyWithoutSenderInput
-  threadsAsStaff?: Prisma.ChatThreadCreateNestedManyWithoutStaffInput
+  threadsAnswered?: Prisma.ChatThreadCreateNestedManyWithoutResponderInput
   hourAdjustments?: Prisma.HourAdjustmentCreateNestedManyWithoutUserInput
   adjustmentsMade?: Prisma.HourAdjustmentCreateNestedManyWithoutAuthorInput
   systemLogs?: Prisma.SystemLogCreateNestedManyWithoutActorInput
@@ -3710,7 +3712,7 @@ export type UserCreateWithoutThreadsAsUserInput = {
   news?: Prisma.NewsCreateNestedManyWithoutAuthorInput
 }
 
-export type UserUncheckedCreateWithoutThreadsAsUserInput = {
+export type UserUncheckedCreateWithoutThreadsOpenedInput = {
   id?: string
   email: string
   passwordHash: string
@@ -3743,7 +3745,7 @@ export type UserUncheckedCreateWithoutThreadsAsUserInput = {
   appealsJudged?: Prisma.AppealUncheckedCreateNestedManyWithoutDecidedByInput
   evidenceSeen?: Prisma.EvidenceUncheckedCreateNestedManyWithoutReviewedByInput
   messages?: Prisma.ChatMessageUncheckedCreateNestedManyWithoutSenderInput
-  threadsAsStaff?: Prisma.ChatThreadUncheckedCreateNestedManyWithoutStaffInput
+  threadsAnswered?: Prisma.ChatThreadUncheckedCreateNestedManyWithoutResponderInput
   hourAdjustments?: Prisma.HourAdjustmentUncheckedCreateNestedManyWithoutUserInput
   adjustmentsMade?: Prisma.HourAdjustmentUncheckedCreateNestedManyWithoutAuthorInput
   systemLogs?: Prisma.SystemLogUncheckedCreateNestedManyWithoutActorInput
@@ -3752,12 +3754,12 @@ export type UserUncheckedCreateWithoutThreadsAsUserInput = {
   news?: Prisma.NewsUncheckedCreateNestedManyWithoutAuthorInput
 }
 
-export type UserCreateOrConnectWithoutThreadsAsUserInput = {
+export type UserCreateOrConnectWithoutThreadsOpenedInput = {
   where: Prisma.UserWhereUniqueInput
-  create: Prisma.XOR<Prisma.UserCreateWithoutThreadsAsUserInput, Prisma.UserUncheckedCreateWithoutThreadsAsUserInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutThreadsOpenedInput, Prisma.UserUncheckedCreateWithoutThreadsOpenedInput>
 }
 
-export type UserCreateWithoutThreadsAsStaffInput = {
+export type UserCreateWithoutThreadsAnsweredInput = {
   id?: string
   email: string
   passwordHash: string
@@ -3790,7 +3792,7 @@ export type UserCreateWithoutThreadsAsStaffInput = {
   appealsJudged?: Prisma.AppealCreateNestedManyWithoutDecidedByInput
   evidenceSeen?: Prisma.EvidenceCreateNestedManyWithoutReviewedByInput
   messages?: Prisma.ChatMessageCreateNestedManyWithoutSenderInput
-  threadsAsUser?: Prisma.ChatThreadCreateNestedManyWithoutStudentInput
+  threadsOpened?: Prisma.ChatThreadCreateNestedManyWithoutOpenerInput
   hourAdjustments?: Prisma.HourAdjustmentCreateNestedManyWithoutUserInput
   adjustmentsMade?: Prisma.HourAdjustmentCreateNestedManyWithoutAuthorInput
   systemLogs?: Prisma.SystemLogCreateNestedManyWithoutActorInput
@@ -3799,7 +3801,7 @@ export type UserCreateWithoutThreadsAsStaffInput = {
   news?: Prisma.NewsCreateNestedManyWithoutAuthorInput
 }
 
-export type UserUncheckedCreateWithoutThreadsAsStaffInput = {
+export type UserUncheckedCreateWithoutThreadsAnsweredInput = {
   id?: string
   email: string
   passwordHash: string
@@ -3832,7 +3834,7 @@ export type UserUncheckedCreateWithoutThreadsAsStaffInput = {
   appealsJudged?: Prisma.AppealUncheckedCreateNestedManyWithoutDecidedByInput
   evidenceSeen?: Prisma.EvidenceUncheckedCreateNestedManyWithoutReviewedByInput
   messages?: Prisma.ChatMessageUncheckedCreateNestedManyWithoutSenderInput
-  threadsAsUser?: Prisma.ChatThreadUncheckedCreateNestedManyWithoutStudentInput
+  threadsOpened?: Prisma.ChatThreadUncheckedCreateNestedManyWithoutOpenerInput
   hourAdjustments?: Prisma.HourAdjustmentUncheckedCreateNestedManyWithoutUserInput
   adjustmentsMade?: Prisma.HourAdjustmentUncheckedCreateNestedManyWithoutAuthorInput
   systemLogs?: Prisma.SystemLogUncheckedCreateNestedManyWithoutActorInput
@@ -3841,23 +3843,23 @@ export type UserUncheckedCreateWithoutThreadsAsStaffInput = {
   news?: Prisma.NewsUncheckedCreateNestedManyWithoutAuthorInput
 }
 
-export type UserCreateOrConnectWithoutThreadsAsStaffInput = {
+export type UserCreateOrConnectWithoutThreadsAnsweredInput = {
   where: Prisma.UserWhereUniqueInput
-  create: Prisma.XOR<Prisma.UserCreateWithoutThreadsAsStaffInput, Prisma.UserUncheckedCreateWithoutThreadsAsStaffInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutThreadsAnsweredInput, Prisma.UserUncheckedCreateWithoutThreadsAnsweredInput>
 }
 
-export type UserUpsertWithoutThreadsAsUserInput = {
-  update: Prisma.XOR<Prisma.UserUpdateWithoutThreadsAsUserInput, Prisma.UserUncheckedUpdateWithoutThreadsAsUserInput>
-  create: Prisma.XOR<Prisma.UserCreateWithoutThreadsAsUserInput, Prisma.UserUncheckedCreateWithoutThreadsAsUserInput>
+export type UserUpsertWithoutThreadsOpenedInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutThreadsOpenedInput, Prisma.UserUncheckedUpdateWithoutThreadsOpenedInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutThreadsOpenedInput, Prisma.UserUncheckedCreateWithoutThreadsOpenedInput>
   where?: Prisma.UserWhereInput
 }
 
-export type UserUpdateToOneWithWhereWithoutThreadsAsUserInput = {
+export type UserUpdateToOneWithWhereWithoutThreadsOpenedInput = {
   where?: Prisma.UserWhereInput
-  data: Prisma.XOR<Prisma.UserUpdateWithoutThreadsAsUserInput, Prisma.UserUncheckedUpdateWithoutThreadsAsUserInput>
+  data: Prisma.XOR<Prisma.UserUpdateWithoutThreadsOpenedInput, Prisma.UserUncheckedUpdateWithoutThreadsOpenedInput>
 }
 
-export type UserUpdateWithoutThreadsAsUserInput = {
+export type UserUpdateWithoutThreadsOpenedInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
@@ -3890,7 +3892,7 @@ export type UserUpdateWithoutThreadsAsUserInput = {
   appealsJudged?: Prisma.AppealUpdateManyWithoutDecidedByNestedInput
   evidenceSeen?: Prisma.EvidenceUpdateManyWithoutReviewedByNestedInput
   messages?: Prisma.ChatMessageUpdateManyWithoutSenderNestedInput
-  threadsAsStaff?: Prisma.ChatThreadUpdateManyWithoutStaffNestedInput
+  threadsAnswered?: Prisma.ChatThreadUpdateManyWithoutResponderNestedInput
   hourAdjustments?: Prisma.HourAdjustmentUpdateManyWithoutUserNestedInput
   adjustmentsMade?: Prisma.HourAdjustmentUpdateManyWithoutAuthorNestedInput
   systemLogs?: Prisma.SystemLogUpdateManyWithoutActorNestedInput
@@ -3899,7 +3901,7 @@ export type UserUpdateWithoutThreadsAsUserInput = {
   news?: Prisma.NewsUpdateManyWithoutAuthorNestedInput
 }
 
-export type UserUncheckedUpdateWithoutThreadsAsUserInput = {
+export type UserUncheckedUpdateWithoutThreadsOpenedInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
@@ -3932,7 +3934,7 @@ export type UserUncheckedUpdateWithoutThreadsAsUserInput = {
   appealsJudged?: Prisma.AppealUncheckedUpdateManyWithoutDecidedByNestedInput
   evidenceSeen?: Prisma.EvidenceUncheckedUpdateManyWithoutReviewedByNestedInput
   messages?: Prisma.ChatMessageUncheckedUpdateManyWithoutSenderNestedInput
-  threadsAsStaff?: Prisma.ChatThreadUncheckedUpdateManyWithoutStaffNestedInput
+  threadsAnswered?: Prisma.ChatThreadUncheckedUpdateManyWithoutResponderNestedInput
   hourAdjustments?: Prisma.HourAdjustmentUncheckedUpdateManyWithoutUserNestedInput
   adjustmentsMade?: Prisma.HourAdjustmentUncheckedUpdateManyWithoutAuthorNestedInput
   systemLogs?: Prisma.SystemLogUncheckedUpdateManyWithoutActorNestedInput
@@ -3941,18 +3943,18 @@ export type UserUncheckedUpdateWithoutThreadsAsUserInput = {
   news?: Prisma.NewsUncheckedUpdateManyWithoutAuthorNestedInput
 }
 
-export type UserUpsertWithoutThreadsAsStaffInput = {
-  update: Prisma.XOR<Prisma.UserUpdateWithoutThreadsAsStaffInput, Prisma.UserUncheckedUpdateWithoutThreadsAsStaffInput>
-  create: Prisma.XOR<Prisma.UserCreateWithoutThreadsAsStaffInput, Prisma.UserUncheckedCreateWithoutThreadsAsStaffInput>
+export type UserUpsertWithoutThreadsAnsweredInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutThreadsAnsweredInput, Prisma.UserUncheckedUpdateWithoutThreadsAnsweredInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutThreadsAnsweredInput, Prisma.UserUncheckedCreateWithoutThreadsAnsweredInput>
   where?: Prisma.UserWhereInput
 }
 
-export type UserUpdateToOneWithWhereWithoutThreadsAsStaffInput = {
+export type UserUpdateToOneWithWhereWithoutThreadsAnsweredInput = {
   where?: Prisma.UserWhereInput
-  data: Prisma.XOR<Prisma.UserUpdateWithoutThreadsAsStaffInput, Prisma.UserUncheckedUpdateWithoutThreadsAsStaffInput>
+  data: Prisma.XOR<Prisma.UserUpdateWithoutThreadsAnsweredInput, Prisma.UserUncheckedUpdateWithoutThreadsAnsweredInput>
 }
 
-export type UserUpdateWithoutThreadsAsStaffInput = {
+export type UserUpdateWithoutThreadsAnsweredInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
@@ -3985,7 +3987,7 @@ export type UserUpdateWithoutThreadsAsStaffInput = {
   appealsJudged?: Prisma.AppealUpdateManyWithoutDecidedByNestedInput
   evidenceSeen?: Prisma.EvidenceUpdateManyWithoutReviewedByNestedInput
   messages?: Prisma.ChatMessageUpdateManyWithoutSenderNestedInput
-  threadsAsUser?: Prisma.ChatThreadUpdateManyWithoutStudentNestedInput
+  threadsOpened?: Prisma.ChatThreadUpdateManyWithoutOpenerNestedInput
   hourAdjustments?: Prisma.HourAdjustmentUpdateManyWithoutUserNestedInput
   adjustmentsMade?: Prisma.HourAdjustmentUpdateManyWithoutAuthorNestedInput
   systemLogs?: Prisma.SystemLogUpdateManyWithoutActorNestedInput
@@ -3994,7 +3996,7 @@ export type UserUpdateWithoutThreadsAsStaffInput = {
   news?: Prisma.NewsUpdateManyWithoutAuthorNestedInput
 }
 
-export type UserUncheckedUpdateWithoutThreadsAsStaffInput = {
+export type UserUncheckedUpdateWithoutThreadsAnsweredInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
@@ -4027,7 +4029,7 @@ export type UserUncheckedUpdateWithoutThreadsAsStaffInput = {
   appealsJudged?: Prisma.AppealUncheckedUpdateManyWithoutDecidedByNestedInput
   evidenceSeen?: Prisma.EvidenceUncheckedUpdateManyWithoutReviewedByNestedInput
   messages?: Prisma.ChatMessageUncheckedUpdateManyWithoutSenderNestedInput
-  threadsAsUser?: Prisma.ChatThreadUncheckedUpdateManyWithoutStudentNestedInput
+  threadsOpened?: Prisma.ChatThreadUncheckedUpdateManyWithoutOpenerNestedInput
   hourAdjustments?: Prisma.HourAdjustmentUncheckedUpdateManyWithoutUserNestedInput
   adjustmentsMade?: Prisma.HourAdjustmentUncheckedUpdateManyWithoutAuthorNestedInput
   systemLogs?: Prisma.SystemLogUncheckedUpdateManyWithoutActorNestedInput
@@ -4068,8 +4070,8 @@ export type UserCreateWithoutMessagesInput = {
   appeals?: Prisma.AppealCreateNestedManyWithoutUserInput
   appealsJudged?: Prisma.AppealCreateNestedManyWithoutDecidedByInput
   evidenceSeen?: Prisma.EvidenceCreateNestedManyWithoutReviewedByInput
-  threadsAsUser?: Prisma.ChatThreadCreateNestedManyWithoutStudentInput
-  threadsAsStaff?: Prisma.ChatThreadCreateNestedManyWithoutStaffInput
+  threadsOpened?: Prisma.ChatThreadCreateNestedManyWithoutOpenerInput
+  threadsAnswered?: Prisma.ChatThreadCreateNestedManyWithoutResponderInput
   hourAdjustments?: Prisma.HourAdjustmentCreateNestedManyWithoutUserInput
   adjustmentsMade?: Prisma.HourAdjustmentCreateNestedManyWithoutAuthorInput
   systemLogs?: Prisma.SystemLogCreateNestedManyWithoutActorInput
@@ -4110,8 +4112,8 @@ export type UserUncheckedCreateWithoutMessagesInput = {
   appeals?: Prisma.AppealUncheckedCreateNestedManyWithoutUserInput
   appealsJudged?: Prisma.AppealUncheckedCreateNestedManyWithoutDecidedByInput
   evidenceSeen?: Prisma.EvidenceUncheckedCreateNestedManyWithoutReviewedByInput
-  threadsAsUser?: Prisma.ChatThreadUncheckedCreateNestedManyWithoutStudentInput
-  threadsAsStaff?: Prisma.ChatThreadUncheckedCreateNestedManyWithoutStaffInput
+  threadsOpened?: Prisma.ChatThreadUncheckedCreateNestedManyWithoutOpenerInput
+  threadsAnswered?: Prisma.ChatThreadUncheckedCreateNestedManyWithoutResponderInput
   hourAdjustments?: Prisma.HourAdjustmentUncheckedCreateNestedManyWithoutUserInput
   adjustmentsMade?: Prisma.HourAdjustmentUncheckedCreateNestedManyWithoutAuthorInput
   systemLogs?: Prisma.SystemLogUncheckedCreateNestedManyWithoutActorInput
@@ -4168,8 +4170,8 @@ export type UserUpdateWithoutMessagesInput = {
   appeals?: Prisma.AppealUpdateManyWithoutUserNestedInput
   appealsJudged?: Prisma.AppealUpdateManyWithoutDecidedByNestedInput
   evidenceSeen?: Prisma.EvidenceUpdateManyWithoutReviewedByNestedInput
-  threadsAsUser?: Prisma.ChatThreadUpdateManyWithoutStudentNestedInput
-  threadsAsStaff?: Prisma.ChatThreadUpdateManyWithoutStaffNestedInput
+  threadsOpened?: Prisma.ChatThreadUpdateManyWithoutOpenerNestedInput
+  threadsAnswered?: Prisma.ChatThreadUpdateManyWithoutResponderNestedInput
   hourAdjustments?: Prisma.HourAdjustmentUpdateManyWithoutUserNestedInput
   adjustmentsMade?: Prisma.HourAdjustmentUpdateManyWithoutAuthorNestedInput
   systemLogs?: Prisma.SystemLogUpdateManyWithoutActorNestedInput
@@ -4210,8 +4212,8 @@ export type UserUncheckedUpdateWithoutMessagesInput = {
   appeals?: Prisma.AppealUncheckedUpdateManyWithoutUserNestedInput
   appealsJudged?: Prisma.AppealUncheckedUpdateManyWithoutDecidedByNestedInput
   evidenceSeen?: Prisma.EvidenceUncheckedUpdateManyWithoutReviewedByNestedInput
-  threadsAsUser?: Prisma.ChatThreadUncheckedUpdateManyWithoutStudentNestedInput
-  threadsAsStaff?: Prisma.ChatThreadUncheckedUpdateManyWithoutStaffNestedInput
+  threadsOpened?: Prisma.ChatThreadUncheckedUpdateManyWithoutOpenerNestedInput
+  threadsAnswered?: Prisma.ChatThreadUncheckedUpdateManyWithoutResponderNestedInput
   hourAdjustments?: Prisma.HourAdjustmentUncheckedUpdateManyWithoutUserNestedInput
   adjustmentsMade?: Prisma.HourAdjustmentUncheckedUpdateManyWithoutAuthorNestedInput
   systemLogs?: Prisma.SystemLogUncheckedUpdateManyWithoutActorNestedInput
@@ -4253,8 +4255,8 @@ export type UserCreateWithoutNewsInput = {
   appealsJudged?: Prisma.AppealCreateNestedManyWithoutDecidedByInput
   evidenceSeen?: Prisma.EvidenceCreateNestedManyWithoutReviewedByInput
   messages?: Prisma.ChatMessageCreateNestedManyWithoutSenderInput
-  threadsAsUser?: Prisma.ChatThreadCreateNestedManyWithoutStudentInput
-  threadsAsStaff?: Prisma.ChatThreadCreateNestedManyWithoutStaffInput
+  threadsOpened?: Prisma.ChatThreadCreateNestedManyWithoutOpenerInput
+  threadsAnswered?: Prisma.ChatThreadCreateNestedManyWithoutResponderInput
   hourAdjustments?: Prisma.HourAdjustmentCreateNestedManyWithoutUserInput
   adjustmentsMade?: Prisma.HourAdjustmentCreateNestedManyWithoutAuthorInput
   systemLogs?: Prisma.SystemLogCreateNestedManyWithoutActorInput
@@ -4295,8 +4297,8 @@ export type UserUncheckedCreateWithoutNewsInput = {
   appealsJudged?: Prisma.AppealUncheckedCreateNestedManyWithoutDecidedByInput
   evidenceSeen?: Prisma.EvidenceUncheckedCreateNestedManyWithoutReviewedByInput
   messages?: Prisma.ChatMessageUncheckedCreateNestedManyWithoutSenderInput
-  threadsAsUser?: Prisma.ChatThreadUncheckedCreateNestedManyWithoutStudentInput
-  threadsAsStaff?: Prisma.ChatThreadUncheckedCreateNestedManyWithoutStaffInput
+  threadsOpened?: Prisma.ChatThreadUncheckedCreateNestedManyWithoutOpenerInput
+  threadsAnswered?: Prisma.ChatThreadUncheckedCreateNestedManyWithoutResponderInput
   hourAdjustments?: Prisma.HourAdjustmentUncheckedCreateNestedManyWithoutUserInput
   adjustmentsMade?: Prisma.HourAdjustmentUncheckedCreateNestedManyWithoutAuthorInput
   systemLogs?: Prisma.SystemLogUncheckedCreateNestedManyWithoutActorInput
@@ -4353,8 +4355,8 @@ export type UserUpdateWithoutNewsInput = {
   appealsJudged?: Prisma.AppealUpdateManyWithoutDecidedByNestedInput
   evidenceSeen?: Prisma.EvidenceUpdateManyWithoutReviewedByNestedInput
   messages?: Prisma.ChatMessageUpdateManyWithoutSenderNestedInput
-  threadsAsUser?: Prisma.ChatThreadUpdateManyWithoutStudentNestedInput
-  threadsAsStaff?: Prisma.ChatThreadUpdateManyWithoutStaffNestedInput
+  threadsOpened?: Prisma.ChatThreadUpdateManyWithoutOpenerNestedInput
+  threadsAnswered?: Prisma.ChatThreadUpdateManyWithoutResponderNestedInput
   hourAdjustments?: Prisma.HourAdjustmentUpdateManyWithoutUserNestedInput
   adjustmentsMade?: Prisma.HourAdjustmentUpdateManyWithoutAuthorNestedInput
   systemLogs?: Prisma.SystemLogUpdateManyWithoutActorNestedInput
@@ -4395,8 +4397,8 @@ export type UserUncheckedUpdateWithoutNewsInput = {
   appealsJudged?: Prisma.AppealUncheckedUpdateManyWithoutDecidedByNestedInput
   evidenceSeen?: Prisma.EvidenceUncheckedUpdateManyWithoutReviewedByNestedInput
   messages?: Prisma.ChatMessageUncheckedUpdateManyWithoutSenderNestedInput
-  threadsAsUser?: Prisma.ChatThreadUncheckedUpdateManyWithoutStudentNestedInput
-  threadsAsStaff?: Prisma.ChatThreadUncheckedUpdateManyWithoutStaffNestedInput
+  threadsOpened?: Prisma.ChatThreadUncheckedUpdateManyWithoutOpenerNestedInput
+  threadsAnswered?: Prisma.ChatThreadUncheckedUpdateManyWithoutResponderNestedInput
   hourAdjustments?: Prisma.HourAdjustmentUncheckedUpdateManyWithoutUserNestedInput
   adjustmentsMade?: Prisma.HourAdjustmentUncheckedUpdateManyWithoutAuthorNestedInput
   systemLogs?: Prisma.SystemLogUncheckedUpdateManyWithoutActorNestedInput
@@ -4437,8 +4439,8 @@ export type UserCreateWithoutSystemLogsInput = {
   appealsJudged?: Prisma.AppealCreateNestedManyWithoutDecidedByInput
   evidenceSeen?: Prisma.EvidenceCreateNestedManyWithoutReviewedByInput
   messages?: Prisma.ChatMessageCreateNestedManyWithoutSenderInput
-  threadsAsUser?: Prisma.ChatThreadCreateNestedManyWithoutStudentInput
-  threadsAsStaff?: Prisma.ChatThreadCreateNestedManyWithoutStaffInput
+  threadsOpened?: Prisma.ChatThreadCreateNestedManyWithoutOpenerInput
+  threadsAnswered?: Prisma.ChatThreadCreateNestedManyWithoutResponderInput
   hourAdjustments?: Prisma.HourAdjustmentCreateNestedManyWithoutUserInput
   adjustmentsMade?: Prisma.HourAdjustmentCreateNestedManyWithoutAuthorInput
   calendarEvents?: Prisma.CalendarEventCreateNestedManyWithoutUserInput
@@ -4479,8 +4481,8 @@ export type UserUncheckedCreateWithoutSystemLogsInput = {
   appealsJudged?: Prisma.AppealUncheckedCreateNestedManyWithoutDecidedByInput
   evidenceSeen?: Prisma.EvidenceUncheckedCreateNestedManyWithoutReviewedByInput
   messages?: Prisma.ChatMessageUncheckedCreateNestedManyWithoutSenderInput
-  threadsAsUser?: Prisma.ChatThreadUncheckedCreateNestedManyWithoutStudentInput
-  threadsAsStaff?: Prisma.ChatThreadUncheckedCreateNestedManyWithoutStaffInput
+  threadsOpened?: Prisma.ChatThreadUncheckedCreateNestedManyWithoutOpenerInput
+  threadsAnswered?: Prisma.ChatThreadUncheckedCreateNestedManyWithoutResponderInput
   hourAdjustments?: Prisma.HourAdjustmentUncheckedCreateNestedManyWithoutUserInput
   adjustmentsMade?: Prisma.HourAdjustmentUncheckedCreateNestedManyWithoutAuthorInput
   calendarEvents?: Prisma.CalendarEventUncheckedCreateNestedManyWithoutUserInput
@@ -4537,8 +4539,8 @@ export type UserUpdateWithoutSystemLogsInput = {
   appealsJudged?: Prisma.AppealUpdateManyWithoutDecidedByNestedInput
   evidenceSeen?: Prisma.EvidenceUpdateManyWithoutReviewedByNestedInput
   messages?: Prisma.ChatMessageUpdateManyWithoutSenderNestedInput
-  threadsAsUser?: Prisma.ChatThreadUpdateManyWithoutStudentNestedInput
-  threadsAsStaff?: Prisma.ChatThreadUpdateManyWithoutStaffNestedInput
+  threadsOpened?: Prisma.ChatThreadUpdateManyWithoutOpenerNestedInput
+  threadsAnswered?: Prisma.ChatThreadUpdateManyWithoutResponderNestedInput
   hourAdjustments?: Prisma.HourAdjustmentUpdateManyWithoutUserNestedInput
   adjustmentsMade?: Prisma.HourAdjustmentUpdateManyWithoutAuthorNestedInput
   calendarEvents?: Prisma.CalendarEventUpdateManyWithoutUserNestedInput
@@ -4579,8 +4581,8 @@ export type UserUncheckedUpdateWithoutSystemLogsInput = {
   appealsJudged?: Prisma.AppealUncheckedUpdateManyWithoutDecidedByNestedInput
   evidenceSeen?: Prisma.EvidenceUncheckedUpdateManyWithoutReviewedByNestedInput
   messages?: Prisma.ChatMessageUncheckedUpdateManyWithoutSenderNestedInput
-  threadsAsUser?: Prisma.ChatThreadUncheckedUpdateManyWithoutStudentNestedInput
-  threadsAsStaff?: Prisma.ChatThreadUncheckedUpdateManyWithoutStaffNestedInput
+  threadsOpened?: Prisma.ChatThreadUncheckedUpdateManyWithoutOpenerNestedInput
+  threadsAnswered?: Prisma.ChatThreadUncheckedUpdateManyWithoutResponderNestedInput
   hourAdjustments?: Prisma.HourAdjustmentUncheckedUpdateManyWithoutUserNestedInput
   adjustmentsMade?: Prisma.HourAdjustmentUncheckedUpdateManyWithoutAuthorNestedInput
   calendarEvents?: Prisma.CalendarEventUncheckedUpdateManyWithoutUserNestedInput
@@ -4621,8 +4623,8 @@ export type UserCreateWithoutCalendarEventsInput = {
   appealsJudged?: Prisma.AppealCreateNestedManyWithoutDecidedByInput
   evidenceSeen?: Prisma.EvidenceCreateNestedManyWithoutReviewedByInput
   messages?: Prisma.ChatMessageCreateNestedManyWithoutSenderInput
-  threadsAsUser?: Prisma.ChatThreadCreateNestedManyWithoutStudentInput
-  threadsAsStaff?: Prisma.ChatThreadCreateNestedManyWithoutStaffInput
+  threadsOpened?: Prisma.ChatThreadCreateNestedManyWithoutOpenerInput
+  threadsAnswered?: Prisma.ChatThreadCreateNestedManyWithoutResponderInput
   hourAdjustments?: Prisma.HourAdjustmentCreateNestedManyWithoutUserInput
   adjustmentsMade?: Prisma.HourAdjustmentCreateNestedManyWithoutAuthorInput
   systemLogs?: Prisma.SystemLogCreateNestedManyWithoutActorInput
@@ -4663,8 +4665,8 @@ export type UserUncheckedCreateWithoutCalendarEventsInput = {
   appealsJudged?: Prisma.AppealUncheckedCreateNestedManyWithoutDecidedByInput
   evidenceSeen?: Prisma.EvidenceUncheckedCreateNestedManyWithoutReviewedByInput
   messages?: Prisma.ChatMessageUncheckedCreateNestedManyWithoutSenderInput
-  threadsAsUser?: Prisma.ChatThreadUncheckedCreateNestedManyWithoutStudentInput
-  threadsAsStaff?: Prisma.ChatThreadUncheckedCreateNestedManyWithoutStaffInput
+  threadsOpened?: Prisma.ChatThreadUncheckedCreateNestedManyWithoutOpenerInput
+  threadsAnswered?: Prisma.ChatThreadUncheckedCreateNestedManyWithoutResponderInput
   hourAdjustments?: Prisma.HourAdjustmentUncheckedCreateNestedManyWithoutUserInput
   adjustmentsMade?: Prisma.HourAdjustmentUncheckedCreateNestedManyWithoutAuthorInput
   systemLogs?: Prisma.SystemLogUncheckedCreateNestedManyWithoutActorInput
@@ -4721,8 +4723,8 @@ export type UserUpdateWithoutCalendarEventsInput = {
   appealsJudged?: Prisma.AppealUpdateManyWithoutDecidedByNestedInput
   evidenceSeen?: Prisma.EvidenceUpdateManyWithoutReviewedByNestedInput
   messages?: Prisma.ChatMessageUpdateManyWithoutSenderNestedInput
-  threadsAsUser?: Prisma.ChatThreadUpdateManyWithoutStudentNestedInput
-  threadsAsStaff?: Prisma.ChatThreadUpdateManyWithoutStaffNestedInput
+  threadsOpened?: Prisma.ChatThreadUpdateManyWithoutOpenerNestedInput
+  threadsAnswered?: Prisma.ChatThreadUpdateManyWithoutResponderNestedInput
   hourAdjustments?: Prisma.HourAdjustmentUpdateManyWithoutUserNestedInput
   adjustmentsMade?: Prisma.HourAdjustmentUpdateManyWithoutAuthorNestedInput
   systemLogs?: Prisma.SystemLogUpdateManyWithoutActorNestedInput
@@ -4763,8 +4765,8 @@ export type UserUncheckedUpdateWithoutCalendarEventsInput = {
   appealsJudged?: Prisma.AppealUncheckedUpdateManyWithoutDecidedByNestedInput
   evidenceSeen?: Prisma.EvidenceUncheckedUpdateManyWithoutReviewedByNestedInput
   messages?: Prisma.ChatMessageUncheckedUpdateManyWithoutSenderNestedInput
-  threadsAsUser?: Prisma.ChatThreadUncheckedUpdateManyWithoutStudentNestedInput
-  threadsAsStaff?: Prisma.ChatThreadUncheckedUpdateManyWithoutStaffNestedInput
+  threadsOpened?: Prisma.ChatThreadUncheckedUpdateManyWithoutOpenerNestedInput
+  threadsAnswered?: Prisma.ChatThreadUncheckedUpdateManyWithoutResponderNestedInput
   hourAdjustments?: Prisma.HourAdjustmentUncheckedUpdateManyWithoutUserNestedInput
   adjustmentsMade?: Prisma.HourAdjustmentUncheckedUpdateManyWithoutAuthorNestedInput
   systemLogs?: Prisma.SystemLogUncheckedUpdateManyWithoutActorNestedInput
@@ -4805,8 +4807,8 @@ export type UserCreateWithoutNotifyPrefsInput = {
   appealsJudged?: Prisma.AppealCreateNestedManyWithoutDecidedByInput
   evidenceSeen?: Prisma.EvidenceCreateNestedManyWithoutReviewedByInput
   messages?: Prisma.ChatMessageCreateNestedManyWithoutSenderInput
-  threadsAsUser?: Prisma.ChatThreadCreateNestedManyWithoutStudentInput
-  threadsAsStaff?: Prisma.ChatThreadCreateNestedManyWithoutStaffInput
+  threadsOpened?: Prisma.ChatThreadCreateNestedManyWithoutOpenerInput
+  threadsAnswered?: Prisma.ChatThreadCreateNestedManyWithoutResponderInput
   hourAdjustments?: Prisma.HourAdjustmentCreateNestedManyWithoutUserInput
   adjustmentsMade?: Prisma.HourAdjustmentCreateNestedManyWithoutAuthorInput
   systemLogs?: Prisma.SystemLogCreateNestedManyWithoutActorInput
@@ -4847,8 +4849,8 @@ export type UserUncheckedCreateWithoutNotifyPrefsInput = {
   appealsJudged?: Prisma.AppealUncheckedCreateNestedManyWithoutDecidedByInput
   evidenceSeen?: Prisma.EvidenceUncheckedCreateNestedManyWithoutReviewedByInput
   messages?: Prisma.ChatMessageUncheckedCreateNestedManyWithoutSenderInput
-  threadsAsUser?: Prisma.ChatThreadUncheckedCreateNestedManyWithoutStudentInput
-  threadsAsStaff?: Prisma.ChatThreadUncheckedCreateNestedManyWithoutStaffInput
+  threadsOpened?: Prisma.ChatThreadUncheckedCreateNestedManyWithoutOpenerInput
+  threadsAnswered?: Prisma.ChatThreadUncheckedCreateNestedManyWithoutResponderInput
   hourAdjustments?: Prisma.HourAdjustmentUncheckedCreateNestedManyWithoutUserInput
   adjustmentsMade?: Prisma.HourAdjustmentUncheckedCreateNestedManyWithoutAuthorInput
   systemLogs?: Prisma.SystemLogUncheckedCreateNestedManyWithoutActorInput
@@ -4905,8 +4907,8 @@ export type UserUpdateWithoutNotifyPrefsInput = {
   appealsJudged?: Prisma.AppealUpdateManyWithoutDecidedByNestedInput
   evidenceSeen?: Prisma.EvidenceUpdateManyWithoutReviewedByNestedInput
   messages?: Prisma.ChatMessageUpdateManyWithoutSenderNestedInput
-  threadsAsUser?: Prisma.ChatThreadUpdateManyWithoutStudentNestedInput
-  threadsAsStaff?: Prisma.ChatThreadUpdateManyWithoutStaffNestedInput
+  threadsOpened?: Prisma.ChatThreadUpdateManyWithoutOpenerNestedInput
+  threadsAnswered?: Prisma.ChatThreadUpdateManyWithoutResponderNestedInput
   hourAdjustments?: Prisma.HourAdjustmentUpdateManyWithoutUserNestedInput
   adjustmentsMade?: Prisma.HourAdjustmentUpdateManyWithoutAuthorNestedInput
   systemLogs?: Prisma.SystemLogUpdateManyWithoutActorNestedInput
@@ -4947,8 +4949,8 @@ export type UserUncheckedUpdateWithoutNotifyPrefsInput = {
   appealsJudged?: Prisma.AppealUncheckedUpdateManyWithoutDecidedByNestedInput
   evidenceSeen?: Prisma.EvidenceUncheckedUpdateManyWithoutReviewedByNestedInput
   messages?: Prisma.ChatMessageUncheckedUpdateManyWithoutSenderNestedInput
-  threadsAsUser?: Prisma.ChatThreadUncheckedUpdateManyWithoutStudentNestedInput
-  threadsAsStaff?: Prisma.ChatThreadUncheckedUpdateManyWithoutStaffNestedInput
+  threadsOpened?: Prisma.ChatThreadUncheckedUpdateManyWithoutOpenerNestedInput
+  threadsAnswered?: Prisma.ChatThreadUncheckedUpdateManyWithoutResponderNestedInput
   hourAdjustments?: Prisma.HourAdjustmentUncheckedUpdateManyWithoutUserNestedInput
   adjustmentsMade?: Prisma.HourAdjustmentUncheckedUpdateManyWithoutAuthorNestedInput
   systemLogs?: Prisma.SystemLogUncheckedUpdateManyWithoutActorNestedInput
@@ -4974,8 +4976,8 @@ export type UserCountOutputType = {
   appealsJudged: number
   evidenceSeen: number
   messages: number
-  threadsAsUser: number
-  threadsAsStaff: number
+  threadsOpened: number
+  threadsAnswered: number
   hourAdjustments: number
   adjustmentsMade: number
   systemLogs: number
@@ -4996,8 +4998,8 @@ export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   appealsJudged?: boolean | UserCountOutputTypeCountAppealsJudgedArgs
   evidenceSeen?: boolean | UserCountOutputTypeCountEvidenceSeenArgs
   messages?: boolean | UserCountOutputTypeCountMessagesArgs
-  threadsAsUser?: boolean | UserCountOutputTypeCountThreadsAsUserArgs
-  threadsAsStaff?: boolean | UserCountOutputTypeCountThreadsAsStaffArgs
+  threadsOpened?: boolean | UserCountOutputTypeCountThreadsOpenedArgs
+  threadsAnswered?: boolean | UserCountOutputTypeCountThreadsAnsweredArgs
   hourAdjustments?: boolean | UserCountOutputTypeCountHourAdjustmentsArgs
   adjustmentsMade?: boolean | UserCountOutputTypeCountAdjustmentsMadeArgs
   systemLogs?: boolean | UserCountOutputTypeCountSystemLogsArgs
@@ -5102,14 +5104,14 @@ export type UserCountOutputTypeCountMessagesArgs<ExtArgs extends runtime.Types.E
 /**
  * UserCountOutputType without action
  */
-export type UserCountOutputTypeCountThreadsAsUserArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type UserCountOutputTypeCountThreadsOpenedArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.ChatThreadWhereInput
 }
 
 /**
  * UserCountOutputType without action
  */
-export type UserCountOutputTypeCountThreadsAsStaffArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type UserCountOutputTypeCountThreadsAnsweredArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.ChatThreadWhereInput
 }
 
@@ -5182,8 +5184,8 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   appealsJudged?: boolean | Prisma.User$appealsJudgedArgs<ExtArgs>
   evidenceSeen?: boolean | Prisma.User$evidenceSeenArgs<ExtArgs>
   messages?: boolean | Prisma.User$messagesArgs<ExtArgs>
-  threadsAsUser?: boolean | Prisma.User$threadsAsUserArgs<ExtArgs>
-  threadsAsStaff?: boolean | Prisma.User$threadsAsStaffArgs<ExtArgs>
+  threadsOpened?: boolean | Prisma.User$threadsOpenedArgs<ExtArgs>
+  threadsAnswered?: boolean | Prisma.User$threadsAnsweredArgs<ExtArgs>
   hourAdjustments?: boolean | Prisma.User$hourAdjustmentsArgs<ExtArgs>
   adjustmentsMade?: boolean | Prisma.User$adjustmentsMadeArgs<ExtArgs>
   systemLogs?: boolean | Prisma.User$systemLogsArgs<ExtArgs>
@@ -5274,8 +5276,8 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   appealsJudged?: boolean | Prisma.User$appealsJudgedArgs<ExtArgs>
   evidenceSeen?: boolean | Prisma.User$evidenceSeenArgs<ExtArgs>
   messages?: boolean | Prisma.User$messagesArgs<ExtArgs>
-  threadsAsUser?: boolean | Prisma.User$threadsAsUserArgs<ExtArgs>
-  threadsAsStaff?: boolean | Prisma.User$threadsAsStaffArgs<ExtArgs>
+  threadsOpened?: boolean | Prisma.User$threadsOpenedArgs<ExtArgs>
+  threadsAnswered?: boolean | Prisma.User$threadsAnsweredArgs<ExtArgs>
   hourAdjustments?: boolean | Prisma.User$hourAdjustmentsArgs<ExtArgs>
   adjustmentsMade?: boolean | Prisma.User$adjustmentsMadeArgs<ExtArgs>
   systemLogs?: boolean | Prisma.User$systemLogsArgs<ExtArgs>
@@ -5303,8 +5305,8 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     appealsJudged: Prisma.$AppealPayload<ExtArgs>[]
     evidenceSeen: Prisma.$EvidencePayload<ExtArgs>[]
     messages: Prisma.$ChatMessagePayload<ExtArgs>[]
-    threadsAsUser: Prisma.$ChatThreadPayload<ExtArgs>[]
-    threadsAsStaff: Prisma.$ChatThreadPayload<ExtArgs>[]
+    threadsOpened: Prisma.$ChatThreadPayload<ExtArgs>[]
+    threadsAnswered: Prisma.$ChatThreadPayload<ExtArgs>[]
     hourAdjustments: Prisma.$HourAdjustmentPayload<ExtArgs>[]
     adjustmentsMade: Prisma.$HourAdjustmentPayload<ExtArgs>[]
     systemLogs: Prisma.$SystemLogPayload<ExtArgs>[]
@@ -5739,8 +5741,8 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   appealsJudged<T extends Prisma.User$appealsJudgedArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$appealsJudgedArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AppealPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   evidenceSeen<T extends Prisma.User$evidenceSeenArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$evidenceSeenArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$EvidencePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   messages<T extends Prisma.User$messagesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$messagesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ChatMessagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  threadsAsUser<T extends Prisma.User$threadsAsUserArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$threadsAsUserArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ChatThreadPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  threadsAsStaff<T extends Prisma.User$threadsAsStaffArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$threadsAsStaffArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ChatThreadPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  threadsOpened<T extends Prisma.User$threadsOpenedArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$threadsOpenedArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ChatThreadPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  threadsAnswered<T extends Prisma.User$threadsAnsweredArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$threadsAnsweredArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ChatThreadPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   hourAdjustments<T extends Prisma.User$hourAdjustmentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$hourAdjustmentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$HourAdjustmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   adjustmentsMade<T extends Prisma.User$adjustmentsMadeArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$adjustmentsMadeArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$HourAdjustmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   systemLogs<T extends Prisma.User$systemLogsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$systemLogsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SystemLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -6493,9 +6495,9 @@ export type User$messagesArgs<ExtArgs extends runtime.Types.Extensions.InternalA
 }
 
 /**
- * User.threadsAsUser
+ * User.threadsOpened
  */
-export type User$threadsAsUserArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type User$threadsOpenedArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
    * Select specific fields to fetch from the ChatThread
    */
@@ -6517,9 +6519,9 @@ export type User$threadsAsUserArgs<ExtArgs extends runtime.Types.Extensions.Inte
 }
 
 /**
- * User.threadsAsStaff
+ * User.threadsAnswered
  */
-export type User$threadsAsStaffArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type User$threadsAnsweredArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
    * Select specific fields to fetch from the ChatThread
    */

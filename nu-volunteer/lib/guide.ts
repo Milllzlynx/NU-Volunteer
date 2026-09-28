@@ -797,10 +797,10 @@ export const GUIDE_ADMIN: GuideSection[] = [
   {
     id: 'admin-ops',
     icon: 'hub',
-    title: 'การเชื่อมต่อระบบและกล่องข้อความ',
-    titleEn: 'System integrations and the inbox',
-    summary: 'สถานะอีเมล การสำรองข้อมูล เซสชัน และข้อความที่ผู้ใช้ส่งเข้ามา',
-    summaryEn: 'Email status, backups, sessions, and messages users send in.',
+    title: 'การเชื่อมต่อระบบ',
+    titleEn: 'System integrations',
+    summary: 'สถานะอีเมล การสำรองข้อมูล และเซสชันผู้ใช้',
+    summaryEn: 'Email status, backups, and user sessions.',
     pageKey: 'ops',
     items: [
       {
@@ -820,18 +820,6 @@ export const GUIDE_ADMIN: GuideSection[] = [
         text: 'เมื่อ MAIL_TRANSPORT เป็น console อีเมลจะถูกเขียนลง log ของเซิร์ฟเวอร์เท่านั้น ยังไม่ได้ส่งออกจริง',
         textEn:
           'When MAIL_TRANSPORT is set to console, emails are only written to the server log and never actually delivered.',
-      },
-      {
-        kind: 'step',
-        text: 'ข้อความที่ผู้ใช้ส่งเข้ามาอยู่ที่หน้ากล่องข้อความ เปิดอ่านแล้วระบบทำเครื่องหมายอ่านแล้วให้เอง',
-        textEn:
-          'Messages from users arrive in the Inbox. Opening one marks it as read automatically.',
-      },
-      {
-        kind: 'note',
-        text: 'การตอบกลับเปิดโปรแกรมอีเมลของคุณเอง เพราะระบบไม่ได้เก็บคำตอบไว้ — ถ้าตอบจากในระบบได้ จะไม่มีใครรู้ว่าเคยตอบไปแล้วหรือยัง',
-        textEn:
-          'Replying opens your own mail client, because the system does not store replies — an in-app reply box would leave no record that anyone had answered.',
       },
     ],
   },

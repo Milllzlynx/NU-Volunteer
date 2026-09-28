@@ -51,7 +51,7 @@ export const AVAILABLE_PAGES: Record<string, string[]> = {
     'reports',
     'logs',
     'ops',
-    'contact',
+    'chat',
     'notifications',
     'profile',
     'guide',

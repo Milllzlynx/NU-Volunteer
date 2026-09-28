@@ -33,9 +33,10 @@ export default async function StudentChatPage() {
     if (seen.has(r.activity.id)) continue;
     seen.add(r.activity.id);
     contacts.push({
+      kind: 'activity',
       activityId: r.activity.id,
       title: r.activity.title,
-      organizerName: r.activity.organizer.name,
+      subtitle: r.activity.organizer.name,
     });
   }
 

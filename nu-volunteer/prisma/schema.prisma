@@ -65,8 +65,8 @@ model User {
   appealsJudged Appeal[]             @relation("AppealJudge")
   evidenceSeen  Evidence[]           @relation("EvidenceReviewer")
   messages      ChatMessage[]
-  threadsAsUser ChatThread[]         @relation("ThreadStudent")
-  threadsAsStaff ChatThread[]        @relation("ThreadStaff")
+  threadsOpened ChatThread[]         @relation("ThreadOpener")
+  threadsAnswered ChatThread[]       @relation("ThreadResponder")
   hourAdjustments HourAdjustment[]   @relation("AdjustmentStudent")
   adjustmentsMade HourAdjustment[]   @relation("AdjustmentAuthor")
   systemLogs    SystemLog[]
@@ -458,26 +458,38 @@ model ChatThread {
   activityId String?
   activity   Activity? @relation(fields: [activityId], references: [id], onDelete: SetNull)
 
-  studentId String
-  student   User   @relation("ThreadStudent", fields: [studentId], references: [id], onDelete: Cascade)
-  staffId   String
-  staff     User   @relation("ThreadStaff", fields: [staffId], references: [id], onDelete: Cascade)
+  /**
+   * ชนิดของห้อง — ตัวกำหนดว่าฝั่งผู้ตอบคือใคร
+   *   'activity' = นิสิตถามผู้จัดของกิจกรรมที่ลงทะเบียนไว้ (responderId คือผู้จัดคนนั้น)
+   *   'support'  = ผู้จัดกิจกรรมถามทีมผู้ดูแลระบบ (responderId เป็น null — แอดมินคนไหนก็ตอบได้)
+   */
+  kind String @default("activity")
+
+  /** ฝ่ายที่เปิดห้อง — นิสิตในห้อง activity, ผู้จัดกิจกรรมในห้อง support */
+  openerId String
+  opener   User   @relation("ThreadOpener", fields: [openerId], references: [id], onDelete: Cascade)
+  /** ฝ่ายที่ตอบ — null = ทีมผู้ดูแลระบบทั้งทีม ไม่ผูกกับแอดมินคนใดคนหนึ่ง (ห้อง support) */
+  responderId String?
+  responder   User?   @relation("ThreadResponder", fields: [responderId], references: [id], onDelete: Cascade)
 
   lastMessageAt DateTime @default(now())
   createdAt     DateTime @default(now())
 
-  // ปิดเสียง/เก็บเข้าคลัง — ฝั่งนิสิตเท่านั้น เพราะยังไม่มีหน้าจอฝั่งผู้จัด
-  // เพิ่มคู่ของฝั่งเจ้าหน้าที่เมื่อสร้างหน้าแชทของผู้จัดแล้ว
-  studentMuted    Boolean @default(false)
-  studentArchived Boolean @default(false)
+  // ปิดเสียง/เก็บเข้าคลัง — ของฝ่ายที่เปิดห้องเท่านั้น
+  // ฝั่งผู้ตอบยังไม่มีคอลัมน์ของตัวเอง จึงไม่เห็นปุ่มสองปุ่มนี้ (ดู own ใน lib/chat.ts)
+  openerMuted    Boolean @default(false)
+  openerArchived Boolean @default(false)
 
   messages ChatMessage[]
 
-  @@unique([activityId, studentId, staffId])
-  @@index([studentId])
-  @@index([staffId])
+  // ห้อง support มี activityId กับ responderId เป็น null ทั้งคู่ ซึ่ง SQLite ถือว่า NULL
+  // ไม่ซ้ำกับ NULL — unique ชุดนี้จึงกันซ้ำได้แค่ห้อง activity ส่วนห้อง support
+  // ต้องกันซ้ำด้วย findFirst ก่อน create ที่ POST /chat/threads
+  @@unique([activityId, openerId, responderId])
+  @@index([openerId])
+  @@index([responderId])
+  @@index([kind])
 }
-
 model ChatMessage {
   id       String     @id @default(cuid())
   threadId String

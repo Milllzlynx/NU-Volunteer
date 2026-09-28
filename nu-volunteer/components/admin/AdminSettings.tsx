@@ -34,7 +34,7 @@ export function AdminSettings({
   prefs: NotifyPrefsDto;
   account: { name: string; email: string };
   /** งานค้างระดับระบบตอนนี้ — ให้เห็นว่ามีอะไรรออยู่โดยไม่ต้องกลับไปหน้าหลัก */
-  pendingWork: { deletionRequests: number; unreadContact: number; suspended: number };
+  pendingWork: { deletionRequests: number; suspended: number };
 }) {
   const { t, lang, setLang, theme, setTheme, mood, setMood, a11y, setA11y } = useApp();
   const router = useRouter();
@@ -176,7 +176,7 @@ function NotificationSection({
   onSaved,
 }: {
   prefs: NotifyPrefsDto;
-  pendingWork: { deletionRequests: number; unreadContact: number; suspended: number };
+  pendingWork: { deletionRequests: number; suspended: number };
   t: (s: string) => string;
   onSaved: () => void;
 }) {
@@ -208,7 +208,7 @@ function NotificationSection({
     }
   };
 
-  const total = pendingWork.deletionRequests + pendingWork.unreadContact;
+  const total = pendingWork.deletionRequests;
 
   return (
     <Section
@@ -221,11 +221,6 @@ function NotificationSection({
           tone={pendingWork.deletionRequests ? 'danger' : 'neutral'}
           icon="person_remove"
           label={`${t('คำขอลบบัญชี')} ${pendingWork.deletionRequests}`}
-        />
-        <Badge
-          tone={pendingWork.unreadContact ? 'warning' : 'neutral'}
-          icon="mail"
-          label={`${t('ข้อความที่ยังไม่ได้อ่าน')} ${pendingWork.unreadContact}`}
         />
         <Badge
           tone={pendingWork.suspended ? 'warning' : 'neutral'}

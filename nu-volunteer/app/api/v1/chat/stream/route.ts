@@ -1,4 +1,5 @@
 import { requireUser } from '@/lib/auth';
+import { chatScopeFor, peersOf } from '@/lib/chat';
 import { pruneLastSeen, publishTo, subscribe, touch, type ChatEvent } from '@/lib/chatBus';
 import { prisma } from '@/lib/db';
 import { handler } from '@/lib/errors';
@@ -21,12 +22,13 @@ export const GET = handler(async (req) => {
   const user = await requireUser();
 
   const threads = await prisma.chatThread.findMany({
-    where: user.role === 'student' ? { studentId: user.id } : { staffId: user.id },
-    select: { studentId: true, staffId: true },
+    where: chatScopeFor(user.id, user.role),
+    select: { kind: true, openerId: true, responderId: true },
   });
-  // คนที่ควรรู้ว่าเราออนไลน์ = คู่สนทนาทุกคนของเรา
+  // คนที่ควรรู้ว่าเราออนไลน์ = ทุกคนที่เห็นห้องใดห้องหนึ่งร่วมกับเรา
+  // (ห้อง support นับแอดมินทุกคน เพราะฝั่งผู้ตอบของห้องนั้นเป็นทีม ไม่ใช่คนคนเดียว)
   const peers = [
-    ...new Set(threads.map((t) => (t.studentId === user.id ? t.staffId : t.studentId))),
+    ...new Set((await Promise.all(threads.map((t) => peersOf(t, user.id)))).flat()),
   ];
 
   const encoder = new TextEncoder();

@@ -27,34 +27,37 @@ export type AggregateChatThread = {
 export type ChatThreadMinAggregateOutputType = {
   id: string | null
   activityId: string | null
-  studentId: string | null
-  staffId: string | null
+  kind: string | null
+  openerId: string | null
+  responderId: string | null
   lastMessageAt: Date | null
   createdAt: Date | null
-  studentMuted: boolean | null
-  studentArchived: boolean | null
+  openerMuted: boolean | null
+  openerArchived: boolean | null
 }
 
 export type ChatThreadMaxAggregateOutputType = {
   id: string | null
   activityId: string | null
-  studentId: string | null
-  staffId: string | null
+  kind: string | null
+  openerId: string | null
+  responderId: string | null
   lastMessageAt: Date | null
   createdAt: Date | null
-  studentMuted: boolean | null
-  studentArchived: boolean | null
+  openerMuted: boolean | null
+  openerArchived: boolean | null
 }
 
 export type ChatThreadCountAggregateOutputType = {
   id: number
   activityId: number
-  studentId: number
-  staffId: number
+  kind: number
+  openerId: number
+  responderId: number
   lastMessageAt: number
   createdAt: number
-  studentMuted: number
-  studentArchived: number
+  openerMuted: number
+  openerArchived: number
   _all: number
 }
 
@@ -62,34 +65,37 @@ export type ChatThreadCountAggregateOutputType = {
 export type ChatThreadMinAggregateInputType = {
   id?: true
   activityId?: true
-  studentId?: true
-  staffId?: true
+  kind?: true
+  openerId?: true
+  responderId?: true
   lastMessageAt?: true
   createdAt?: true
-  studentMuted?: true
-  studentArchived?: true
+  openerMuted?: true
+  openerArchived?: true
 }
 
 export type ChatThreadMaxAggregateInputType = {
   id?: true
   activityId?: true
-  studentId?: true
-  staffId?: true
+  kind?: true
+  openerId?: true
+  responderId?: true
   lastMessageAt?: true
   createdAt?: true
-  studentMuted?: true
-  studentArchived?: true
+  openerMuted?: true
+  openerArchived?: true
 }
 
 export type ChatThreadCountAggregateInputType = {
   id?: true
   activityId?: true
-  studentId?: true
-  staffId?: true
+  kind?: true
+  openerId?: true
+  responderId?: true
   lastMessageAt?: true
   createdAt?: true
-  studentMuted?: true
-  studentArchived?: true
+  openerMuted?: true
+  openerArchived?: true
   _all?: true
 }
 
@@ -168,12 +174,13 @@ export type ChatThreadGroupByArgs<ExtArgs extends runtime.Types.Extensions.Inter
 export type ChatThreadGroupByOutputType = {
   id: string
   activityId: string | null
-  studentId: string
-  staffId: string
+  kind: string
+  openerId: string
+  responderId: string | null
   lastMessageAt: Date
   createdAt: Date
-  studentMuted: boolean
-  studentArchived: boolean
+  openerMuted: boolean
+  openerArchived: boolean
   _count: ChatThreadCountAggregateOutputType | null
   _min: ChatThreadMinAggregateOutputType | null
   _max: ChatThreadMaxAggregateOutputType | null
@@ -200,61 +207,65 @@ export type ChatThreadWhereInput = {
   NOT?: Prisma.ChatThreadWhereInput | Prisma.ChatThreadWhereInput[]
   id?: Prisma.StringFilter<"ChatThread"> | string
   activityId?: Prisma.StringNullableFilter<"ChatThread"> | string | null
-  studentId?: Prisma.StringFilter<"ChatThread"> | string
-  staffId?: Prisma.StringFilter<"ChatThread"> | string
+  kind?: Prisma.StringFilter<"ChatThread"> | string
+  openerId?: Prisma.StringFilter<"ChatThread"> | string
+  responderId?: Prisma.StringNullableFilter<"ChatThread"> | string | null
   lastMessageAt?: Prisma.DateTimeFilter<"ChatThread"> | Date | string
   createdAt?: Prisma.DateTimeFilter<"ChatThread"> | Date | string
-  studentMuted?: Prisma.BoolFilter<"ChatThread"> | boolean
-  studentArchived?: Prisma.BoolFilter<"ChatThread"> | boolean
+  openerMuted?: Prisma.BoolFilter<"ChatThread"> | boolean
+  openerArchived?: Prisma.BoolFilter<"ChatThread"> | boolean
   activity?: Prisma.XOR<Prisma.ActivityNullableScalarRelationFilter, Prisma.ActivityWhereInput> | null
-  student?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
-  staff?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  opener?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  responder?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   messages?: Prisma.ChatMessageListRelationFilter
 }
 
 export type ChatThreadOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   activityId?: Prisma.SortOrderInput | Prisma.SortOrder
-  studentId?: Prisma.SortOrder
-  staffId?: Prisma.SortOrder
+  kind?: Prisma.SortOrder
+  openerId?: Prisma.SortOrder
+  responderId?: Prisma.SortOrderInput | Prisma.SortOrder
   lastMessageAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
-  studentMuted?: Prisma.SortOrder
-  studentArchived?: Prisma.SortOrder
+  openerMuted?: Prisma.SortOrder
+  openerArchived?: Prisma.SortOrder
   activity?: Prisma.ActivityOrderByWithRelationInput
-  student?: Prisma.UserOrderByWithRelationInput
-  staff?: Prisma.UserOrderByWithRelationInput
+  opener?: Prisma.UserOrderByWithRelationInput
+  responder?: Prisma.UserOrderByWithRelationInput
   messages?: Prisma.ChatMessageOrderByRelationAggregateInput
 }
 
 export type ChatThreadWhereUniqueInput = Prisma.AtLeast<{
   id?: string
-  activityId_studentId_staffId?: Prisma.ChatThreadActivityIdStudentIdStaffIdCompoundUniqueInput
+  activityId_openerId_responderId?: Prisma.ChatThreadActivityIdOpenerIdResponderIdCompoundUniqueInput
   AND?: Prisma.ChatThreadWhereInput | Prisma.ChatThreadWhereInput[]
   OR?: Prisma.ChatThreadWhereInput[]
   NOT?: Prisma.ChatThreadWhereInput | Prisma.ChatThreadWhereInput[]
   activityId?: Prisma.StringNullableFilter<"ChatThread"> | string | null
-  studentId?: Prisma.StringFilter<"ChatThread"> | string
-  staffId?: Prisma.StringFilter<"ChatThread"> | string
+  kind?: Prisma.StringFilter<"ChatThread"> | string
+  openerId?: Prisma.StringFilter<"ChatThread"> | string
+  responderId?: Prisma.StringNullableFilter<"ChatThread"> | string | null
   lastMessageAt?: Prisma.DateTimeFilter<"ChatThread"> | Date | string
   createdAt?: Prisma.DateTimeFilter<"ChatThread"> | Date | string
-  studentMuted?: Prisma.BoolFilter<"ChatThread"> | boolean
-  studentArchived?: Prisma.BoolFilter<"ChatThread"> | boolean
+  openerMuted?: Prisma.BoolFilter<"ChatThread"> | boolean
+  openerArchived?: Prisma.BoolFilter<"ChatThread"> | boolean
   activity?: Prisma.XOR<Prisma.ActivityNullableScalarRelationFilter, Prisma.ActivityWhereInput> | null
-  student?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
-  staff?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  opener?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  responder?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   messages?: Prisma.ChatMessageListRelationFilter
-}, "id" | "activityId_studentId_staffId">
+}, "id" | "activityId_openerId_responderId">
 
 export type ChatThreadOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   activityId?: Prisma.SortOrderInput | Prisma.SortOrder
-  studentId?: Prisma.SortOrder
-  staffId?: Prisma.SortOrder
+  kind?: Prisma.SortOrder
+  openerId?: Prisma.SortOrder
+  responderId?: Prisma.SortOrderInput | Prisma.SortOrder
   lastMessageAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
-  studentMuted?: Prisma.SortOrder
-  studentArchived?: Prisma.SortOrder
+  openerMuted?: Prisma.SortOrder
+  openerArchived?: Prisma.SortOrder
   _count?: Prisma.ChatThreadCountOrderByAggregateInput
   _max?: Prisma.ChatThreadMaxOrderByAggregateInput
   _min?: Prisma.ChatThreadMinOrderByAggregateInput
@@ -266,90 +277,98 @@ export type ChatThreadScalarWhereWithAggregatesInput = {
   NOT?: Prisma.ChatThreadScalarWhereWithAggregatesInput | Prisma.ChatThreadScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"ChatThread"> | string
   activityId?: Prisma.StringNullableWithAggregatesFilter<"ChatThread"> | string | null
-  studentId?: Prisma.StringWithAggregatesFilter<"ChatThread"> | string
-  staffId?: Prisma.StringWithAggregatesFilter<"ChatThread"> | string
+  kind?: Prisma.StringWithAggregatesFilter<"ChatThread"> | string
+  openerId?: Prisma.StringWithAggregatesFilter<"ChatThread"> | string
+  responderId?: Prisma.StringNullableWithAggregatesFilter<"ChatThread"> | string | null
   lastMessageAt?: Prisma.DateTimeWithAggregatesFilter<"ChatThread"> | Date | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"ChatThread"> | Date | string
-  studentMuted?: Prisma.BoolWithAggregatesFilter<"ChatThread"> | boolean
-  studentArchived?: Prisma.BoolWithAggregatesFilter<"ChatThread"> | boolean
+  openerMuted?: Prisma.BoolWithAggregatesFilter<"ChatThread"> | boolean
+  openerArchived?: Prisma.BoolWithAggregatesFilter<"ChatThread"> | boolean
 }
 
 export type ChatThreadCreateInput = {
   id?: string
+  kind?: string
   lastMessageAt?: Date | string
   createdAt?: Date | string
-  studentMuted?: boolean
-  studentArchived?: boolean
+  openerMuted?: boolean
+  openerArchived?: boolean
   activity?: Prisma.ActivityCreateNestedOneWithoutThreadsInput
-  student: Prisma.UserCreateNestedOneWithoutThreadsAsUserInput
-  staff: Prisma.UserCreateNestedOneWithoutThreadsAsStaffInput
+  opener: Prisma.UserCreateNestedOneWithoutThreadsOpenedInput
+  responder?: Prisma.UserCreateNestedOneWithoutThreadsAnsweredInput
   messages?: Prisma.ChatMessageCreateNestedManyWithoutThreadInput
 }
 
 export type ChatThreadUncheckedCreateInput = {
   id?: string
   activityId?: string | null
-  studentId: string
-  staffId: string
+  kind?: string
+  openerId: string
+  responderId?: string | null
   lastMessageAt?: Date | string
   createdAt?: Date | string
-  studentMuted?: boolean
-  studentArchived?: boolean
+  openerMuted?: boolean
+  openerArchived?: boolean
   messages?: Prisma.ChatMessageUncheckedCreateNestedManyWithoutThreadInput
 }
 
 export type ChatThreadUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  kind?: Prisma.StringFieldUpdateOperationsInput | string
   lastMessageAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  studentMuted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  studentArchived?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  openerMuted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  openerArchived?: Prisma.BoolFieldUpdateOperationsInput | boolean
   activity?: Prisma.ActivityUpdateOneWithoutThreadsNestedInput
-  student?: Prisma.UserUpdateOneRequiredWithoutThreadsAsUserNestedInput
-  staff?: Prisma.UserUpdateOneRequiredWithoutThreadsAsStaffNestedInput
+  opener?: Prisma.UserUpdateOneRequiredWithoutThreadsOpenedNestedInput
+  responder?: Prisma.UserUpdateOneWithoutThreadsAnsweredNestedInput
   messages?: Prisma.ChatMessageUpdateManyWithoutThreadNestedInput
 }
 
 export type ChatThreadUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   activityId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  studentId?: Prisma.StringFieldUpdateOperationsInput | string
-  staffId?: Prisma.StringFieldUpdateOperationsInput | string
+  kind?: Prisma.StringFieldUpdateOperationsInput | string
+  openerId?: Prisma.StringFieldUpdateOperationsInput | string
+  responderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastMessageAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  studentMuted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  studentArchived?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  openerMuted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  openerArchived?: Prisma.BoolFieldUpdateOperationsInput | boolean
   messages?: Prisma.ChatMessageUncheckedUpdateManyWithoutThreadNestedInput
 }
 
 export type ChatThreadCreateManyInput = {
   id?: string
   activityId?: string | null
-  studentId: string
-  staffId: string
+  kind?: string
+  openerId: string
+  responderId?: string | null
   lastMessageAt?: Date | string
   createdAt?: Date | string
-  studentMuted?: boolean
-  studentArchived?: boolean
+  openerMuted?: boolean
+  openerArchived?: boolean
 }
 
 export type ChatThreadUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  kind?: Prisma.StringFieldUpdateOperationsInput | string
   lastMessageAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  studentMuted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  studentArchived?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  openerMuted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  openerArchived?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
 export type ChatThreadUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   activityId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  studentId?: Prisma.StringFieldUpdateOperationsInput | string
-  staffId?: Prisma.StringFieldUpdateOperationsInput | string
+  kind?: Prisma.StringFieldUpdateOperationsInput | string
+  openerId?: Prisma.StringFieldUpdateOperationsInput | string
+  responderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastMessageAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  studentMuted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  studentArchived?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  openerMuted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  openerArchived?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
 export type ChatThreadListRelationFilter = {
@@ -362,43 +381,46 @@ export type ChatThreadOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
 }
 
-export type ChatThreadActivityIdStudentIdStaffIdCompoundUniqueInput = {
+export type ChatThreadActivityIdOpenerIdResponderIdCompoundUniqueInput = {
   activityId: string
-  studentId: string
-  staffId: string
+  openerId: string
+  responderId: string
 }
 
 export type ChatThreadCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   activityId?: Prisma.SortOrder
-  studentId?: Prisma.SortOrder
-  staffId?: Prisma.SortOrder
+  kind?: Prisma.SortOrder
+  openerId?: Prisma.SortOrder
+  responderId?: Prisma.SortOrder
   lastMessageAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
-  studentMuted?: Prisma.SortOrder
-  studentArchived?: Prisma.SortOrder
+  openerMuted?: Prisma.SortOrder
+  openerArchived?: Prisma.SortOrder
 }
 
 export type ChatThreadMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   activityId?: Prisma.SortOrder
-  studentId?: Prisma.SortOrder
-  staffId?: Prisma.SortOrder
+  kind?: Prisma.SortOrder
+  openerId?: Prisma.SortOrder
+  responderId?: Prisma.SortOrder
   lastMessageAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
-  studentMuted?: Prisma.SortOrder
-  studentArchived?: Prisma.SortOrder
+  openerMuted?: Prisma.SortOrder
+  openerArchived?: Prisma.SortOrder
 }
 
 export type ChatThreadMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   activityId?: Prisma.SortOrder
-  studentId?: Prisma.SortOrder
-  staffId?: Prisma.SortOrder
+  kind?: Prisma.SortOrder
+  openerId?: Prisma.SortOrder
+  responderId?: Prisma.SortOrder
   lastMessageAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
-  studentMuted?: Prisma.SortOrder
-  studentArchived?: Prisma.SortOrder
+  openerMuted?: Prisma.SortOrder
+  openerArchived?: Prisma.SortOrder
 }
 
 export type ChatThreadScalarRelationFilter = {
@@ -406,87 +428,87 @@ export type ChatThreadScalarRelationFilter = {
   isNot?: Prisma.ChatThreadWhereInput
 }
 
-export type ChatThreadCreateNestedManyWithoutStudentInput = {
-  create?: Prisma.XOR<Prisma.ChatThreadCreateWithoutStudentInput, Prisma.ChatThreadUncheckedCreateWithoutStudentInput> | Prisma.ChatThreadCreateWithoutStudentInput[] | Prisma.ChatThreadUncheckedCreateWithoutStudentInput[]
-  connectOrCreate?: Prisma.ChatThreadCreateOrConnectWithoutStudentInput | Prisma.ChatThreadCreateOrConnectWithoutStudentInput[]
-  createMany?: Prisma.ChatThreadCreateManyStudentInputEnvelope
+export type ChatThreadCreateNestedManyWithoutOpenerInput = {
+  create?: Prisma.XOR<Prisma.ChatThreadCreateWithoutOpenerInput, Prisma.ChatThreadUncheckedCreateWithoutOpenerInput> | Prisma.ChatThreadCreateWithoutOpenerInput[] | Prisma.ChatThreadUncheckedCreateWithoutOpenerInput[]
+  connectOrCreate?: Prisma.ChatThreadCreateOrConnectWithoutOpenerInput | Prisma.ChatThreadCreateOrConnectWithoutOpenerInput[]
+  createMany?: Prisma.ChatThreadCreateManyOpenerInputEnvelope
   connect?: Prisma.ChatThreadWhereUniqueInput | Prisma.ChatThreadWhereUniqueInput[]
 }
 
-export type ChatThreadCreateNestedManyWithoutStaffInput = {
-  create?: Prisma.XOR<Prisma.ChatThreadCreateWithoutStaffInput, Prisma.ChatThreadUncheckedCreateWithoutStaffInput> | Prisma.ChatThreadCreateWithoutStaffInput[] | Prisma.ChatThreadUncheckedCreateWithoutStaffInput[]
-  connectOrCreate?: Prisma.ChatThreadCreateOrConnectWithoutStaffInput | Prisma.ChatThreadCreateOrConnectWithoutStaffInput[]
-  createMany?: Prisma.ChatThreadCreateManyStaffInputEnvelope
+export type ChatThreadCreateNestedManyWithoutResponderInput = {
+  create?: Prisma.XOR<Prisma.ChatThreadCreateWithoutResponderInput, Prisma.ChatThreadUncheckedCreateWithoutResponderInput> | Prisma.ChatThreadCreateWithoutResponderInput[] | Prisma.ChatThreadUncheckedCreateWithoutResponderInput[]
+  connectOrCreate?: Prisma.ChatThreadCreateOrConnectWithoutResponderInput | Prisma.ChatThreadCreateOrConnectWithoutResponderInput[]
+  createMany?: Prisma.ChatThreadCreateManyResponderInputEnvelope
   connect?: Prisma.ChatThreadWhereUniqueInput | Prisma.ChatThreadWhereUniqueInput[]
 }
 
-export type ChatThreadUncheckedCreateNestedManyWithoutStudentInput = {
-  create?: Prisma.XOR<Prisma.ChatThreadCreateWithoutStudentInput, Prisma.ChatThreadUncheckedCreateWithoutStudentInput> | Prisma.ChatThreadCreateWithoutStudentInput[] | Prisma.ChatThreadUncheckedCreateWithoutStudentInput[]
-  connectOrCreate?: Prisma.ChatThreadCreateOrConnectWithoutStudentInput | Prisma.ChatThreadCreateOrConnectWithoutStudentInput[]
-  createMany?: Prisma.ChatThreadCreateManyStudentInputEnvelope
+export type ChatThreadUncheckedCreateNestedManyWithoutOpenerInput = {
+  create?: Prisma.XOR<Prisma.ChatThreadCreateWithoutOpenerInput, Prisma.ChatThreadUncheckedCreateWithoutOpenerInput> | Prisma.ChatThreadCreateWithoutOpenerInput[] | Prisma.ChatThreadUncheckedCreateWithoutOpenerInput[]
+  connectOrCreate?: Prisma.ChatThreadCreateOrConnectWithoutOpenerInput | Prisma.ChatThreadCreateOrConnectWithoutOpenerInput[]
+  createMany?: Prisma.ChatThreadCreateManyOpenerInputEnvelope
   connect?: Prisma.ChatThreadWhereUniqueInput | Prisma.ChatThreadWhereUniqueInput[]
 }
 
-export type ChatThreadUncheckedCreateNestedManyWithoutStaffInput = {
-  create?: Prisma.XOR<Prisma.ChatThreadCreateWithoutStaffInput, Prisma.ChatThreadUncheckedCreateWithoutStaffInput> | Prisma.ChatThreadCreateWithoutStaffInput[] | Prisma.ChatThreadUncheckedCreateWithoutStaffInput[]
-  connectOrCreate?: Prisma.ChatThreadCreateOrConnectWithoutStaffInput | Prisma.ChatThreadCreateOrConnectWithoutStaffInput[]
-  createMany?: Prisma.ChatThreadCreateManyStaffInputEnvelope
+export type ChatThreadUncheckedCreateNestedManyWithoutResponderInput = {
+  create?: Prisma.XOR<Prisma.ChatThreadCreateWithoutResponderInput, Prisma.ChatThreadUncheckedCreateWithoutResponderInput> | Prisma.ChatThreadCreateWithoutResponderInput[] | Prisma.ChatThreadUncheckedCreateWithoutResponderInput[]
+  connectOrCreate?: Prisma.ChatThreadCreateOrConnectWithoutResponderInput | Prisma.ChatThreadCreateOrConnectWithoutResponderInput[]
+  createMany?: Prisma.ChatThreadCreateManyResponderInputEnvelope
   connect?: Prisma.ChatThreadWhereUniqueInput | Prisma.ChatThreadWhereUniqueInput[]
 }
 
-export type ChatThreadUpdateManyWithoutStudentNestedInput = {
-  create?: Prisma.XOR<Prisma.ChatThreadCreateWithoutStudentInput, Prisma.ChatThreadUncheckedCreateWithoutStudentInput> | Prisma.ChatThreadCreateWithoutStudentInput[] | Prisma.ChatThreadUncheckedCreateWithoutStudentInput[]
-  connectOrCreate?: Prisma.ChatThreadCreateOrConnectWithoutStudentInput | Prisma.ChatThreadCreateOrConnectWithoutStudentInput[]
-  upsert?: Prisma.ChatThreadUpsertWithWhereUniqueWithoutStudentInput | Prisma.ChatThreadUpsertWithWhereUniqueWithoutStudentInput[]
-  createMany?: Prisma.ChatThreadCreateManyStudentInputEnvelope
+export type ChatThreadUpdateManyWithoutOpenerNestedInput = {
+  create?: Prisma.XOR<Prisma.ChatThreadCreateWithoutOpenerInput, Prisma.ChatThreadUncheckedCreateWithoutOpenerInput> | Prisma.ChatThreadCreateWithoutOpenerInput[] | Prisma.ChatThreadUncheckedCreateWithoutOpenerInput[]
+  connectOrCreate?: Prisma.ChatThreadCreateOrConnectWithoutOpenerInput | Prisma.ChatThreadCreateOrConnectWithoutOpenerInput[]
+  upsert?: Prisma.ChatThreadUpsertWithWhereUniqueWithoutOpenerInput | Prisma.ChatThreadUpsertWithWhereUniqueWithoutOpenerInput[]
+  createMany?: Prisma.ChatThreadCreateManyOpenerInputEnvelope
   set?: Prisma.ChatThreadWhereUniqueInput | Prisma.ChatThreadWhereUniqueInput[]
   disconnect?: Prisma.ChatThreadWhereUniqueInput | Prisma.ChatThreadWhereUniqueInput[]
   delete?: Prisma.ChatThreadWhereUniqueInput | Prisma.ChatThreadWhereUniqueInput[]
   connect?: Prisma.ChatThreadWhereUniqueInput | Prisma.ChatThreadWhereUniqueInput[]
-  update?: Prisma.ChatThreadUpdateWithWhereUniqueWithoutStudentInput | Prisma.ChatThreadUpdateWithWhereUniqueWithoutStudentInput[]
-  updateMany?: Prisma.ChatThreadUpdateManyWithWhereWithoutStudentInput | Prisma.ChatThreadUpdateManyWithWhereWithoutStudentInput[]
+  update?: Prisma.ChatThreadUpdateWithWhereUniqueWithoutOpenerInput | Prisma.ChatThreadUpdateWithWhereUniqueWithoutOpenerInput[]
+  updateMany?: Prisma.ChatThreadUpdateManyWithWhereWithoutOpenerInput | Prisma.ChatThreadUpdateManyWithWhereWithoutOpenerInput[]
   deleteMany?: Prisma.ChatThreadScalarWhereInput | Prisma.ChatThreadScalarWhereInput[]
 }
 
-export type ChatThreadUpdateManyWithoutStaffNestedInput = {
-  create?: Prisma.XOR<Prisma.ChatThreadCreateWithoutStaffInput, Prisma.ChatThreadUncheckedCreateWithoutStaffInput> | Prisma.ChatThreadCreateWithoutStaffInput[] | Prisma.ChatThreadUncheckedCreateWithoutStaffInput[]
-  connectOrCreate?: Prisma.ChatThreadCreateOrConnectWithoutStaffInput | Prisma.ChatThreadCreateOrConnectWithoutStaffInput[]
-  upsert?: Prisma.ChatThreadUpsertWithWhereUniqueWithoutStaffInput | Prisma.ChatThreadUpsertWithWhereUniqueWithoutStaffInput[]
-  createMany?: Prisma.ChatThreadCreateManyStaffInputEnvelope
+export type ChatThreadUpdateManyWithoutResponderNestedInput = {
+  create?: Prisma.XOR<Prisma.ChatThreadCreateWithoutResponderInput, Prisma.ChatThreadUncheckedCreateWithoutResponderInput> | Prisma.ChatThreadCreateWithoutResponderInput[] | Prisma.ChatThreadUncheckedCreateWithoutResponderInput[]
+  connectOrCreate?: Prisma.ChatThreadCreateOrConnectWithoutResponderInput | Prisma.ChatThreadCreateOrConnectWithoutResponderInput[]
+  upsert?: Prisma.ChatThreadUpsertWithWhereUniqueWithoutResponderInput | Prisma.ChatThreadUpsertWithWhereUniqueWithoutResponderInput[]
+  createMany?: Prisma.ChatThreadCreateManyResponderInputEnvelope
   set?: Prisma.ChatThreadWhereUniqueInput | Prisma.ChatThreadWhereUniqueInput[]
   disconnect?: Prisma.ChatThreadWhereUniqueInput | Prisma.ChatThreadWhereUniqueInput[]
   delete?: Prisma.ChatThreadWhereUniqueInput | Prisma.ChatThreadWhereUniqueInput[]
   connect?: Prisma.ChatThreadWhereUniqueInput | Prisma.ChatThreadWhereUniqueInput[]
-  update?: Prisma.ChatThreadUpdateWithWhereUniqueWithoutStaffInput | Prisma.ChatThreadUpdateWithWhereUniqueWithoutStaffInput[]
-  updateMany?: Prisma.ChatThreadUpdateManyWithWhereWithoutStaffInput | Prisma.ChatThreadUpdateManyWithWhereWithoutStaffInput[]
+  update?: Prisma.ChatThreadUpdateWithWhereUniqueWithoutResponderInput | Prisma.ChatThreadUpdateWithWhereUniqueWithoutResponderInput[]
+  updateMany?: Prisma.ChatThreadUpdateManyWithWhereWithoutResponderInput | Prisma.ChatThreadUpdateManyWithWhereWithoutResponderInput[]
   deleteMany?: Prisma.ChatThreadScalarWhereInput | Prisma.ChatThreadScalarWhereInput[]
 }
 
-export type ChatThreadUncheckedUpdateManyWithoutStudentNestedInput = {
-  create?: Prisma.XOR<Prisma.ChatThreadCreateWithoutStudentInput, Prisma.ChatThreadUncheckedCreateWithoutStudentInput> | Prisma.ChatThreadCreateWithoutStudentInput[] | Prisma.ChatThreadUncheckedCreateWithoutStudentInput[]
-  connectOrCreate?: Prisma.ChatThreadCreateOrConnectWithoutStudentInput | Prisma.ChatThreadCreateOrConnectWithoutStudentInput[]
-  upsert?: Prisma.ChatThreadUpsertWithWhereUniqueWithoutStudentInput | Prisma.ChatThreadUpsertWithWhereUniqueWithoutStudentInput[]
-  createMany?: Prisma.ChatThreadCreateManyStudentInputEnvelope
+export type ChatThreadUncheckedUpdateManyWithoutOpenerNestedInput = {
+  create?: Prisma.XOR<Prisma.ChatThreadCreateWithoutOpenerInput, Prisma.ChatThreadUncheckedCreateWithoutOpenerInput> | Prisma.ChatThreadCreateWithoutOpenerInput[] | Prisma.ChatThreadUncheckedCreateWithoutOpenerInput[]
+  connectOrCreate?: Prisma.ChatThreadCreateOrConnectWithoutOpenerInput | Prisma.ChatThreadCreateOrConnectWithoutOpenerInput[]
+  upsert?: Prisma.ChatThreadUpsertWithWhereUniqueWithoutOpenerInput | Prisma.ChatThreadUpsertWithWhereUniqueWithoutOpenerInput[]
+  createMany?: Prisma.ChatThreadCreateManyOpenerInputEnvelope
   set?: Prisma.ChatThreadWhereUniqueInput | Prisma.ChatThreadWhereUniqueInput[]
   disconnect?: Prisma.ChatThreadWhereUniqueInput | Prisma.ChatThreadWhereUniqueInput[]
   delete?: Prisma.ChatThreadWhereUniqueInput | Prisma.ChatThreadWhereUniqueInput[]
   connect?: Prisma.ChatThreadWhereUniqueInput | Prisma.ChatThreadWhereUniqueInput[]
-  update?: Prisma.ChatThreadUpdateWithWhereUniqueWithoutStudentInput | Prisma.ChatThreadUpdateWithWhereUniqueWithoutStudentInput[]
-  updateMany?: Prisma.ChatThreadUpdateManyWithWhereWithoutStudentInput | Prisma.ChatThreadUpdateManyWithWhereWithoutStudentInput[]
+  update?: Prisma.ChatThreadUpdateWithWhereUniqueWithoutOpenerInput | Prisma.ChatThreadUpdateWithWhereUniqueWithoutOpenerInput[]
+  updateMany?: Prisma.ChatThreadUpdateManyWithWhereWithoutOpenerInput | Prisma.ChatThreadUpdateManyWithWhereWithoutOpenerInput[]
   deleteMany?: Prisma.ChatThreadScalarWhereInput | Prisma.ChatThreadScalarWhereInput[]
 }
 
-export type ChatThreadUncheckedUpdateManyWithoutStaffNestedInput = {
-  create?: Prisma.XOR<Prisma.ChatThreadCreateWithoutStaffInput, Prisma.ChatThreadUncheckedCreateWithoutStaffInput> | Prisma.ChatThreadCreateWithoutStaffInput[] | Prisma.ChatThreadUncheckedCreateWithoutStaffInput[]
-  connectOrCreate?: Prisma.ChatThreadCreateOrConnectWithoutStaffInput | Prisma.ChatThreadCreateOrConnectWithoutStaffInput[]
-  upsert?: Prisma.ChatThreadUpsertWithWhereUniqueWithoutStaffInput | Prisma.ChatThreadUpsertWithWhereUniqueWithoutStaffInput[]
-  createMany?: Prisma.ChatThreadCreateManyStaffInputEnvelope
+export type ChatThreadUncheckedUpdateManyWithoutResponderNestedInput = {
+  create?: Prisma.XOR<Prisma.ChatThreadCreateWithoutResponderInput, Prisma.ChatThreadUncheckedCreateWithoutResponderInput> | Prisma.ChatThreadCreateWithoutResponderInput[] | Prisma.ChatThreadUncheckedCreateWithoutResponderInput[]
+  connectOrCreate?: Prisma.ChatThreadCreateOrConnectWithoutResponderInput | Prisma.ChatThreadCreateOrConnectWithoutResponderInput[]
+  upsert?: Prisma.ChatThreadUpsertWithWhereUniqueWithoutResponderInput | Prisma.ChatThreadUpsertWithWhereUniqueWithoutResponderInput[]
+  createMany?: Prisma.ChatThreadCreateManyResponderInputEnvelope
   set?: Prisma.ChatThreadWhereUniqueInput | Prisma.ChatThreadWhereUniqueInput[]
   disconnect?: Prisma.ChatThreadWhereUniqueInput | Prisma.ChatThreadWhereUniqueInput[]
   delete?: Prisma.ChatThreadWhereUniqueInput | Prisma.ChatThreadWhereUniqueInput[]
   connect?: Prisma.ChatThreadWhereUniqueInput | Prisma.ChatThreadWhereUniqueInput[]
-  update?: Prisma.ChatThreadUpdateWithWhereUniqueWithoutStaffInput | Prisma.ChatThreadUpdateWithWhereUniqueWithoutStaffInput[]
-  updateMany?: Prisma.ChatThreadUpdateManyWithWhereWithoutStaffInput | Prisma.ChatThreadUpdateManyWithWhereWithoutStaffInput[]
+  update?: Prisma.ChatThreadUpdateWithWhereUniqueWithoutResponderInput | Prisma.ChatThreadUpdateWithWhereUniqueWithoutResponderInput[]
+  updateMany?: Prisma.ChatThreadUpdateManyWithWhereWithoutResponderInput | Prisma.ChatThreadUpdateManyWithWhereWithoutResponderInput[]
   deleteMany?: Prisma.ChatThreadScalarWhereInput | Prisma.ChatThreadScalarWhereInput[]
 }
 
@@ -546,82 +568,86 @@ export type ChatThreadUpdateOneRequiredWithoutMessagesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.ChatThreadUpdateToOneWithWhereWithoutMessagesInput, Prisma.ChatThreadUpdateWithoutMessagesInput>, Prisma.ChatThreadUncheckedUpdateWithoutMessagesInput>
 }
 
-export type ChatThreadCreateWithoutStudentInput = {
+export type ChatThreadCreateWithoutOpenerInput = {
   id?: string
+  kind?: string
   lastMessageAt?: Date | string
   createdAt?: Date | string
-  studentMuted?: boolean
-  studentArchived?: boolean
+  openerMuted?: boolean
+  openerArchived?: boolean
   activity?: Prisma.ActivityCreateNestedOneWithoutThreadsInput
-  staff: Prisma.UserCreateNestedOneWithoutThreadsAsStaffInput
+  responder?: Prisma.UserCreateNestedOneWithoutThreadsAnsweredInput
   messages?: Prisma.ChatMessageCreateNestedManyWithoutThreadInput
 }
 
-export type ChatThreadUncheckedCreateWithoutStudentInput = {
+export type ChatThreadUncheckedCreateWithoutOpenerInput = {
   id?: string
   activityId?: string | null
-  staffId: string
+  kind?: string
+  responderId?: string | null
   lastMessageAt?: Date | string
   createdAt?: Date | string
-  studentMuted?: boolean
-  studentArchived?: boolean
+  openerMuted?: boolean
+  openerArchived?: boolean
   messages?: Prisma.ChatMessageUncheckedCreateNestedManyWithoutThreadInput
 }
 
-export type ChatThreadCreateOrConnectWithoutStudentInput = {
+export type ChatThreadCreateOrConnectWithoutOpenerInput = {
   where: Prisma.ChatThreadWhereUniqueInput
-  create: Prisma.XOR<Prisma.ChatThreadCreateWithoutStudentInput, Prisma.ChatThreadUncheckedCreateWithoutStudentInput>
+  create: Prisma.XOR<Prisma.ChatThreadCreateWithoutOpenerInput, Prisma.ChatThreadUncheckedCreateWithoutOpenerInput>
 }
 
-export type ChatThreadCreateManyStudentInputEnvelope = {
-  data: Prisma.ChatThreadCreateManyStudentInput | Prisma.ChatThreadCreateManyStudentInput[]
+export type ChatThreadCreateManyOpenerInputEnvelope = {
+  data: Prisma.ChatThreadCreateManyOpenerInput | Prisma.ChatThreadCreateManyOpenerInput[]
 }
 
-export type ChatThreadCreateWithoutStaffInput = {
+export type ChatThreadCreateWithoutResponderInput = {
   id?: string
+  kind?: string
   lastMessageAt?: Date | string
   createdAt?: Date | string
-  studentMuted?: boolean
-  studentArchived?: boolean
+  openerMuted?: boolean
+  openerArchived?: boolean
   activity?: Prisma.ActivityCreateNestedOneWithoutThreadsInput
-  student: Prisma.UserCreateNestedOneWithoutThreadsAsUserInput
+  opener: Prisma.UserCreateNestedOneWithoutThreadsOpenedInput
   messages?: Prisma.ChatMessageCreateNestedManyWithoutThreadInput
 }
 
-export type ChatThreadUncheckedCreateWithoutStaffInput = {
+export type ChatThreadUncheckedCreateWithoutResponderInput = {
   id?: string
   activityId?: string | null
-  studentId: string
+  kind?: string
+  openerId: string
   lastMessageAt?: Date | string
   createdAt?: Date | string
-  studentMuted?: boolean
-  studentArchived?: boolean
+  openerMuted?: boolean
+  openerArchived?: boolean
   messages?: Prisma.ChatMessageUncheckedCreateNestedManyWithoutThreadInput
 }
 
-export type ChatThreadCreateOrConnectWithoutStaffInput = {
+export type ChatThreadCreateOrConnectWithoutResponderInput = {
   where: Prisma.ChatThreadWhereUniqueInput
-  create: Prisma.XOR<Prisma.ChatThreadCreateWithoutStaffInput, Prisma.ChatThreadUncheckedCreateWithoutStaffInput>
+  create: Prisma.XOR<Prisma.ChatThreadCreateWithoutResponderInput, Prisma.ChatThreadUncheckedCreateWithoutResponderInput>
 }
 
-export type ChatThreadCreateManyStaffInputEnvelope = {
-  data: Prisma.ChatThreadCreateManyStaffInput | Prisma.ChatThreadCreateManyStaffInput[]
+export type ChatThreadCreateManyResponderInputEnvelope = {
+  data: Prisma.ChatThreadCreateManyResponderInput | Prisma.ChatThreadCreateManyResponderInput[]
 }
 
-export type ChatThreadUpsertWithWhereUniqueWithoutStudentInput = {
+export type ChatThreadUpsertWithWhereUniqueWithoutOpenerInput = {
   where: Prisma.ChatThreadWhereUniqueInput
-  update: Prisma.XOR<Prisma.ChatThreadUpdateWithoutStudentInput, Prisma.ChatThreadUncheckedUpdateWithoutStudentInput>
-  create: Prisma.XOR<Prisma.ChatThreadCreateWithoutStudentInput, Prisma.ChatThreadUncheckedCreateWithoutStudentInput>
+  update: Prisma.XOR<Prisma.ChatThreadUpdateWithoutOpenerInput, Prisma.ChatThreadUncheckedUpdateWithoutOpenerInput>
+  create: Prisma.XOR<Prisma.ChatThreadCreateWithoutOpenerInput, Prisma.ChatThreadUncheckedCreateWithoutOpenerInput>
 }
 
-export type ChatThreadUpdateWithWhereUniqueWithoutStudentInput = {
+export type ChatThreadUpdateWithWhereUniqueWithoutOpenerInput = {
   where: Prisma.ChatThreadWhereUniqueInput
-  data: Prisma.XOR<Prisma.ChatThreadUpdateWithoutStudentInput, Prisma.ChatThreadUncheckedUpdateWithoutStudentInput>
+  data: Prisma.XOR<Prisma.ChatThreadUpdateWithoutOpenerInput, Prisma.ChatThreadUncheckedUpdateWithoutOpenerInput>
 }
 
-export type ChatThreadUpdateManyWithWhereWithoutStudentInput = {
+export type ChatThreadUpdateManyWithWhereWithoutOpenerInput = {
   where: Prisma.ChatThreadScalarWhereInput
-  data: Prisma.XOR<Prisma.ChatThreadUpdateManyMutationInput, Prisma.ChatThreadUncheckedUpdateManyWithoutStudentInput>
+  data: Prisma.XOR<Prisma.ChatThreadUpdateManyMutationInput, Prisma.ChatThreadUncheckedUpdateManyWithoutOpenerInput>
 }
 
 export type ChatThreadScalarWhereInput = {
@@ -630,49 +656,52 @@ export type ChatThreadScalarWhereInput = {
   NOT?: Prisma.ChatThreadScalarWhereInput | Prisma.ChatThreadScalarWhereInput[]
   id?: Prisma.StringFilter<"ChatThread"> | string
   activityId?: Prisma.StringNullableFilter<"ChatThread"> | string | null
-  studentId?: Prisma.StringFilter<"ChatThread"> | string
-  staffId?: Prisma.StringFilter<"ChatThread"> | string
+  kind?: Prisma.StringFilter<"ChatThread"> | string
+  openerId?: Prisma.StringFilter<"ChatThread"> | string
+  responderId?: Prisma.StringNullableFilter<"ChatThread"> | string | null
   lastMessageAt?: Prisma.DateTimeFilter<"ChatThread"> | Date | string
   createdAt?: Prisma.DateTimeFilter<"ChatThread"> | Date | string
-  studentMuted?: Prisma.BoolFilter<"ChatThread"> | boolean
-  studentArchived?: Prisma.BoolFilter<"ChatThread"> | boolean
+  openerMuted?: Prisma.BoolFilter<"ChatThread"> | boolean
+  openerArchived?: Prisma.BoolFilter<"ChatThread"> | boolean
 }
 
-export type ChatThreadUpsertWithWhereUniqueWithoutStaffInput = {
+export type ChatThreadUpsertWithWhereUniqueWithoutResponderInput = {
   where: Prisma.ChatThreadWhereUniqueInput
-  update: Prisma.XOR<Prisma.ChatThreadUpdateWithoutStaffInput, Prisma.ChatThreadUncheckedUpdateWithoutStaffInput>
-  create: Prisma.XOR<Prisma.ChatThreadCreateWithoutStaffInput, Prisma.ChatThreadUncheckedCreateWithoutStaffInput>
+  update: Prisma.XOR<Prisma.ChatThreadUpdateWithoutResponderInput, Prisma.ChatThreadUncheckedUpdateWithoutResponderInput>
+  create: Prisma.XOR<Prisma.ChatThreadCreateWithoutResponderInput, Prisma.ChatThreadUncheckedCreateWithoutResponderInput>
 }
 
-export type ChatThreadUpdateWithWhereUniqueWithoutStaffInput = {
+export type ChatThreadUpdateWithWhereUniqueWithoutResponderInput = {
   where: Prisma.ChatThreadWhereUniqueInput
-  data: Prisma.XOR<Prisma.ChatThreadUpdateWithoutStaffInput, Prisma.ChatThreadUncheckedUpdateWithoutStaffInput>
+  data: Prisma.XOR<Prisma.ChatThreadUpdateWithoutResponderInput, Prisma.ChatThreadUncheckedUpdateWithoutResponderInput>
 }
 
-export type ChatThreadUpdateManyWithWhereWithoutStaffInput = {
+export type ChatThreadUpdateManyWithWhereWithoutResponderInput = {
   where: Prisma.ChatThreadScalarWhereInput
-  data: Prisma.XOR<Prisma.ChatThreadUpdateManyMutationInput, Prisma.ChatThreadUncheckedUpdateManyWithoutStaffInput>
+  data: Prisma.XOR<Prisma.ChatThreadUpdateManyMutationInput, Prisma.ChatThreadUncheckedUpdateManyWithoutResponderInput>
 }
 
 export type ChatThreadCreateWithoutActivityInput = {
   id?: string
+  kind?: string
   lastMessageAt?: Date | string
   createdAt?: Date | string
-  studentMuted?: boolean
-  studentArchived?: boolean
-  student: Prisma.UserCreateNestedOneWithoutThreadsAsUserInput
-  staff: Prisma.UserCreateNestedOneWithoutThreadsAsStaffInput
+  openerMuted?: boolean
+  openerArchived?: boolean
+  opener: Prisma.UserCreateNestedOneWithoutThreadsOpenedInput
+  responder?: Prisma.UserCreateNestedOneWithoutThreadsAnsweredInput
   messages?: Prisma.ChatMessageCreateNestedManyWithoutThreadInput
 }
 
 export type ChatThreadUncheckedCreateWithoutActivityInput = {
   id?: string
-  studentId: string
-  staffId: string
+  kind?: string
+  openerId: string
+  responderId?: string | null
   lastMessageAt?: Date | string
   createdAt?: Date | string
-  studentMuted?: boolean
-  studentArchived?: boolean
+  openerMuted?: boolean
+  openerArchived?: boolean
   messages?: Prisma.ChatMessageUncheckedCreateNestedManyWithoutThreadInput
 }
 
@@ -703,24 +732,26 @@ export type ChatThreadUpdateManyWithWhereWithoutActivityInput = {
 
 export type ChatThreadCreateWithoutMessagesInput = {
   id?: string
+  kind?: string
   lastMessageAt?: Date | string
   createdAt?: Date | string
-  studentMuted?: boolean
-  studentArchived?: boolean
+  openerMuted?: boolean
+  openerArchived?: boolean
   activity?: Prisma.ActivityCreateNestedOneWithoutThreadsInput
-  student: Prisma.UserCreateNestedOneWithoutThreadsAsUserInput
-  staff: Prisma.UserCreateNestedOneWithoutThreadsAsStaffInput
+  opener: Prisma.UserCreateNestedOneWithoutThreadsOpenedInput
+  responder?: Prisma.UserCreateNestedOneWithoutThreadsAnsweredInput
 }
 
 export type ChatThreadUncheckedCreateWithoutMessagesInput = {
   id?: string
   activityId?: string | null
-  studentId: string
-  staffId: string
+  kind?: string
+  openerId: string
+  responderId?: string | null
   lastMessageAt?: Date | string
   createdAt?: Date | string
-  studentMuted?: boolean
-  studentArchived?: boolean
+  openerMuted?: boolean
+  openerArchived?: boolean
 }
 
 export type ChatThreadCreateOrConnectWithoutMessagesInput = {
@@ -741,150 +772,164 @@ export type ChatThreadUpdateToOneWithWhereWithoutMessagesInput = {
 
 export type ChatThreadUpdateWithoutMessagesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  kind?: Prisma.StringFieldUpdateOperationsInput | string
   lastMessageAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  studentMuted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  studentArchived?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  openerMuted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  openerArchived?: Prisma.BoolFieldUpdateOperationsInput | boolean
   activity?: Prisma.ActivityUpdateOneWithoutThreadsNestedInput
-  student?: Prisma.UserUpdateOneRequiredWithoutThreadsAsUserNestedInput
-  staff?: Prisma.UserUpdateOneRequiredWithoutThreadsAsStaffNestedInput
+  opener?: Prisma.UserUpdateOneRequiredWithoutThreadsOpenedNestedInput
+  responder?: Prisma.UserUpdateOneWithoutThreadsAnsweredNestedInput
 }
 
 export type ChatThreadUncheckedUpdateWithoutMessagesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   activityId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  studentId?: Prisma.StringFieldUpdateOperationsInput | string
-  staffId?: Prisma.StringFieldUpdateOperationsInput | string
+  kind?: Prisma.StringFieldUpdateOperationsInput | string
+  openerId?: Prisma.StringFieldUpdateOperationsInput | string
+  responderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastMessageAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  studentMuted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  studentArchived?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  openerMuted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  openerArchived?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
-export type ChatThreadCreateManyStudentInput = {
+export type ChatThreadCreateManyOpenerInput = {
   id?: string
   activityId?: string | null
-  staffId: string
+  kind?: string
+  responderId?: string | null
   lastMessageAt?: Date | string
   createdAt?: Date | string
-  studentMuted?: boolean
-  studentArchived?: boolean
+  openerMuted?: boolean
+  openerArchived?: boolean
 }
 
-export type ChatThreadCreateManyStaffInput = {
+export type ChatThreadCreateManyResponderInput = {
   id?: string
   activityId?: string | null
-  studentId: string
+  kind?: string
+  openerId: string
   lastMessageAt?: Date | string
   createdAt?: Date | string
-  studentMuted?: boolean
-  studentArchived?: boolean
+  openerMuted?: boolean
+  openerArchived?: boolean
 }
 
-export type ChatThreadUpdateWithoutStudentInput = {
+export type ChatThreadUpdateWithoutOpenerInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  kind?: Prisma.StringFieldUpdateOperationsInput | string
   lastMessageAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  studentMuted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  studentArchived?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  openerMuted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  openerArchived?: Prisma.BoolFieldUpdateOperationsInput | boolean
   activity?: Prisma.ActivityUpdateOneWithoutThreadsNestedInput
-  staff?: Prisma.UserUpdateOneRequiredWithoutThreadsAsStaffNestedInput
+  responder?: Prisma.UserUpdateOneWithoutThreadsAnsweredNestedInput
   messages?: Prisma.ChatMessageUpdateManyWithoutThreadNestedInput
 }
 
-export type ChatThreadUncheckedUpdateWithoutStudentInput = {
+export type ChatThreadUncheckedUpdateWithoutOpenerInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   activityId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  staffId?: Prisma.StringFieldUpdateOperationsInput | string
+  kind?: Prisma.StringFieldUpdateOperationsInput | string
+  responderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastMessageAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  studentMuted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  studentArchived?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  openerMuted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  openerArchived?: Prisma.BoolFieldUpdateOperationsInput | boolean
   messages?: Prisma.ChatMessageUncheckedUpdateManyWithoutThreadNestedInput
 }
 
-export type ChatThreadUncheckedUpdateManyWithoutStudentInput = {
+export type ChatThreadUncheckedUpdateManyWithoutOpenerInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   activityId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  staffId?: Prisma.StringFieldUpdateOperationsInput | string
+  kind?: Prisma.StringFieldUpdateOperationsInput | string
+  responderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastMessageAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  studentMuted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  studentArchived?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  openerMuted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  openerArchived?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
-export type ChatThreadUpdateWithoutStaffInput = {
+export type ChatThreadUpdateWithoutResponderInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  kind?: Prisma.StringFieldUpdateOperationsInput | string
   lastMessageAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  studentMuted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  studentArchived?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  openerMuted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  openerArchived?: Prisma.BoolFieldUpdateOperationsInput | boolean
   activity?: Prisma.ActivityUpdateOneWithoutThreadsNestedInput
-  student?: Prisma.UserUpdateOneRequiredWithoutThreadsAsUserNestedInput
+  opener?: Prisma.UserUpdateOneRequiredWithoutThreadsOpenedNestedInput
   messages?: Prisma.ChatMessageUpdateManyWithoutThreadNestedInput
 }
 
-export type ChatThreadUncheckedUpdateWithoutStaffInput = {
+export type ChatThreadUncheckedUpdateWithoutResponderInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   activityId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  studentId?: Prisma.StringFieldUpdateOperationsInput | string
+  kind?: Prisma.StringFieldUpdateOperationsInput | string
+  openerId?: Prisma.StringFieldUpdateOperationsInput | string
   lastMessageAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  studentMuted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  studentArchived?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  openerMuted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  openerArchived?: Prisma.BoolFieldUpdateOperationsInput | boolean
   messages?: Prisma.ChatMessageUncheckedUpdateManyWithoutThreadNestedInput
 }
 
-export type ChatThreadUncheckedUpdateManyWithoutStaffInput = {
+export type ChatThreadUncheckedUpdateManyWithoutResponderInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   activityId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  studentId?: Prisma.StringFieldUpdateOperationsInput | string
+  kind?: Prisma.StringFieldUpdateOperationsInput | string
+  openerId?: Prisma.StringFieldUpdateOperationsInput | string
   lastMessageAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  studentMuted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  studentArchived?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  openerMuted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  openerArchived?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
 export type ChatThreadCreateManyActivityInput = {
   id?: string
-  studentId: string
-  staffId: string
+  kind?: string
+  openerId: string
+  responderId?: string | null
   lastMessageAt?: Date | string
   createdAt?: Date | string
-  studentMuted?: boolean
-  studentArchived?: boolean
+  openerMuted?: boolean
+  openerArchived?: boolean
 }
 
 export type ChatThreadUpdateWithoutActivityInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  kind?: Prisma.StringFieldUpdateOperationsInput | string
   lastMessageAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  studentMuted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  studentArchived?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  student?: Prisma.UserUpdateOneRequiredWithoutThreadsAsUserNestedInput
-  staff?: Prisma.UserUpdateOneRequiredWithoutThreadsAsStaffNestedInput
+  openerMuted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  openerArchived?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  opener?: Prisma.UserUpdateOneRequiredWithoutThreadsOpenedNestedInput
+  responder?: Prisma.UserUpdateOneWithoutThreadsAnsweredNestedInput
   messages?: Prisma.ChatMessageUpdateManyWithoutThreadNestedInput
 }
 
 export type ChatThreadUncheckedUpdateWithoutActivityInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  studentId?: Prisma.StringFieldUpdateOperationsInput | string
-  staffId?: Prisma.StringFieldUpdateOperationsInput | string
+  kind?: Prisma.StringFieldUpdateOperationsInput | string
+  openerId?: Prisma.StringFieldUpdateOperationsInput | string
+  responderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastMessageAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  studentMuted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  studentArchived?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  openerMuted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  openerArchived?: Prisma.BoolFieldUpdateOperationsInput | boolean
   messages?: Prisma.ChatMessageUncheckedUpdateManyWithoutThreadNestedInput
 }
 
 export type ChatThreadUncheckedUpdateManyWithoutActivityInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  studentId?: Prisma.StringFieldUpdateOperationsInput | string
-  staffId?: Prisma.StringFieldUpdateOperationsInput | string
+  kind?: Prisma.StringFieldUpdateOperationsInput | string
+  openerId?: Prisma.StringFieldUpdateOperationsInput | string
+  responderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastMessageAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  studentMuted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  studentArchived?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  openerMuted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  openerArchived?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
 
@@ -921,15 +966,16 @@ export type ChatThreadCountOutputTypeCountMessagesArgs<ExtArgs extends runtime.T
 export type ChatThreadSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   activityId?: boolean
-  studentId?: boolean
-  staffId?: boolean
+  kind?: boolean
+  openerId?: boolean
+  responderId?: boolean
   lastMessageAt?: boolean
   createdAt?: boolean
-  studentMuted?: boolean
-  studentArchived?: boolean
+  openerMuted?: boolean
+  openerArchived?: boolean
   activity?: boolean | Prisma.ChatThread$activityArgs<ExtArgs>
-  student?: boolean | Prisma.UserDefaultArgs<ExtArgs>
-  staff?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  opener?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  responder?: boolean | Prisma.ChatThread$responderArgs<ExtArgs>
   messages?: boolean | Prisma.ChatThread$messagesArgs<ExtArgs>
   _count?: boolean | Prisma.ChatThreadCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["chatThread"]>
@@ -937,78 +983,94 @@ export type ChatThreadSelect<ExtArgs extends runtime.Types.Extensions.InternalAr
 export type ChatThreadSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   activityId?: boolean
-  studentId?: boolean
-  staffId?: boolean
+  kind?: boolean
+  openerId?: boolean
+  responderId?: boolean
   lastMessageAt?: boolean
   createdAt?: boolean
-  studentMuted?: boolean
-  studentArchived?: boolean
+  openerMuted?: boolean
+  openerArchived?: boolean
   activity?: boolean | Prisma.ChatThread$activityArgs<ExtArgs>
-  student?: boolean | Prisma.UserDefaultArgs<ExtArgs>
-  staff?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  opener?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  responder?: boolean | Prisma.ChatThread$responderArgs<ExtArgs>
 }, ExtArgs["result"]["chatThread"]>
 
 export type ChatThreadSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   activityId?: boolean
-  studentId?: boolean
-  staffId?: boolean
+  kind?: boolean
+  openerId?: boolean
+  responderId?: boolean
   lastMessageAt?: boolean
   createdAt?: boolean
-  studentMuted?: boolean
-  studentArchived?: boolean
+  openerMuted?: boolean
+  openerArchived?: boolean
   activity?: boolean | Prisma.ChatThread$activityArgs<ExtArgs>
-  student?: boolean | Prisma.UserDefaultArgs<ExtArgs>
-  staff?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  opener?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  responder?: boolean | Prisma.ChatThread$responderArgs<ExtArgs>
 }, ExtArgs["result"]["chatThread"]>
 
 export type ChatThreadSelectScalar = {
   id?: boolean
   activityId?: boolean
-  studentId?: boolean
-  staffId?: boolean
+  kind?: boolean
+  openerId?: boolean
+  responderId?: boolean
   lastMessageAt?: boolean
   createdAt?: boolean
-  studentMuted?: boolean
-  studentArchived?: boolean
+  openerMuted?: boolean
+  openerArchived?: boolean
 }
 
-export type ChatThreadOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "activityId" | "studentId" | "staffId" | "lastMessageAt" | "createdAt" | "studentMuted" | "studentArchived", ExtArgs["result"]["chatThread"]>
+export type ChatThreadOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "activityId" | "kind" | "openerId" | "responderId" | "lastMessageAt" | "createdAt" | "openerMuted" | "openerArchived", ExtArgs["result"]["chatThread"]>
 export type ChatThreadInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   activity?: boolean | Prisma.ChatThread$activityArgs<ExtArgs>
-  student?: boolean | Prisma.UserDefaultArgs<ExtArgs>
-  staff?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  opener?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  responder?: boolean | Prisma.ChatThread$responderArgs<ExtArgs>
   messages?: boolean | Prisma.ChatThread$messagesArgs<ExtArgs>
   _count?: boolean | Prisma.ChatThreadCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type ChatThreadIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   activity?: boolean | Prisma.ChatThread$activityArgs<ExtArgs>
-  student?: boolean | Prisma.UserDefaultArgs<ExtArgs>
-  staff?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  opener?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  responder?: boolean | Prisma.ChatThread$responderArgs<ExtArgs>
 }
 export type ChatThreadIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   activity?: boolean | Prisma.ChatThread$activityArgs<ExtArgs>
-  student?: boolean | Prisma.UserDefaultArgs<ExtArgs>
-  staff?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  opener?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  responder?: boolean | Prisma.ChatThread$responderArgs<ExtArgs>
 }
 
 export type $ChatThreadPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "ChatThread"
   objects: {
     activity: Prisma.$ActivityPayload<ExtArgs> | null
-    student: Prisma.$UserPayload<ExtArgs>
-    staff: Prisma.$UserPayload<ExtArgs>
+    opener: Prisma.$UserPayload<ExtArgs>
+    responder: Prisma.$UserPayload<ExtArgs> | null
     messages: Prisma.$ChatMessagePayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     activityId: string | null
-    studentId: string
-    staffId: string
+    /**
+     * *
+     *    * ชนิดของห้อง — ตัวกำหนดว่าฝั่งผู้ตอบคือใคร
+     *    *   'activity' = นิสิตถามผู้จัดของกิจกรรมที่ลงทะเบียนไว้ (responderId คือผู้จัดคนนั้น)
+     *    *   'support'  = ผู้จัดกิจกรรมถามทีมผู้ดูแลระบบ (responderId เป็น null — แอดมินคนไหนก็ตอบได้)
+     */
+    kind: string
+    /**
+     * * ฝ่ายที่เปิดห้อง — นิสิตในห้อง activity, ผู้จัดกิจกรรมในห้อง support
+     */
+    openerId: string
+    /**
+     * * ฝ่ายที่ตอบ — null = ทีมผู้ดูแลระบบทั้งทีม ไม่ผูกกับแอดมินคนใดคนหนึ่ง (ห้อง support)
+     */
+    responderId: string | null
     lastMessageAt: Date
     createdAt: Date
-    studentMuted: boolean
-    studentArchived: boolean
+    openerMuted: boolean
+    openerArchived: boolean
   }, ExtArgs["result"]["chatThread"]>
   composites: {}
 }
@@ -1404,8 +1466,8 @@ readonly fields: ChatThreadFieldRefs;
 export interface Prisma__ChatThreadClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   activity<T extends Prisma.ChatThread$activityArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ChatThread$activityArgs<ExtArgs>>): Prisma.Prisma__ActivityClient<runtime.Types.Result.GetResult<Prisma.$ActivityPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-  student<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-  staff<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  opener<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  responder<T extends Prisma.ChatThread$responderArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ChatThread$responderArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   messages<T extends Prisma.ChatThread$messagesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ChatThread$messagesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ChatMessagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -1438,12 +1500,13 @@ export interface Prisma__ChatThreadClient<T, Null = never, ExtArgs extends runti
 export interface ChatThreadFieldRefs {
   readonly id: Prisma.FieldRef<"ChatThread", 'String'>
   readonly activityId: Prisma.FieldRef<"ChatThread", 'String'>
-  readonly studentId: Prisma.FieldRef<"ChatThread", 'String'>
-  readonly staffId: Prisma.FieldRef<"ChatThread", 'String'>
+  readonly kind: Prisma.FieldRef<"ChatThread", 'String'>
+  readonly openerId: Prisma.FieldRef<"ChatThread", 'String'>
+  readonly responderId: Prisma.FieldRef<"ChatThread", 'String'>
   readonly lastMessageAt: Prisma.FieldRef<"ChatThread", 'DateTime'>
   readonly createdAt: Prisma.FieldRef<"ChatThread", 'DateTime'>
-  readonly studentMuted: Prisma.FieldRef<"ChatThread", 'Boolean'>
-  readonly studentArchived: Prisma.FieldRef<"ChatThread", 'Boolean'>
+  readonly openerMuted: Prisma.FieldRef<"ChatThread", 'Boolean'>
+  readonly openerArchived: Prisma.FieldRef<"ChatThread", 'Boolean'>
 }
     
 
@@ -1859,6 +1922,25 @@ export type ChatThread$activityArgs<ExtArgs extends runtime.Types.Extensions.Int
    */
   include?: Prisma.ActivityInclude<ExtArgs> | null
   where?: Prisma.ActivityWhereInput
+}
+
+/**
+ * ChatThread.responder
+ */
+export type ChatThread$responderArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the User
+   */
+  select?: Prisma.UserSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the User
+   */
+  omit?: Prisma.UserOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserInclude<ExtArgs> | null
+  where?: Prisma.UserWhereInput
 }
 
 /**

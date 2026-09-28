@@ -15,10 +15,9 @@ export const metadata: Metadata = { title: 'ตั้งค่า · NU Voluntee
 export default async function AdminSettingsPage() {
   const user = await requireAdmin();
 
-  const [prefs, deletionRequests, unreadContact, suspended] = await Promise.all([
+  const [prefs, deletionRequests, suspended] = await Promise.all([
     getPrefs(user.id),
     prisma.user.count({ where: { deletionRequestedAt: { not: null } } }),
-    prisma.contactMessage.count({ where: { read: false } }),
     prisma.user.count({ where: { active: false } }),
   ]);
 
@@ -26,7 +25,7 @@ export default async function AdminSettingsPage() {
     <AdminSettings
       prefs={prefs}
       account={{ name: user.name, email: user.email }}
-      pendingWork={{ deletionRequests, unreadContact, suspended }}
+      pendingWork={{ deletionRequests, suspended }}
     />
   );
 }

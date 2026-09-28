@@ -3,7 +3,7 @@
  *
  * คู่ขนานกับ deriveOrganizerAlerts() ใน lib/organizer.ts แต่คนละชุดงาน —
  * ของผู้จัดคืองานที่ผูกกับกิจกรรมของตัวเอง ส่วนของแอดมินคืองานระดับระบบ
- * ที่ไม่มีใครอื่นทำแทนได้ (คำขอลบบัญชี ข้อความถึงผู้ดูแล ฯลฯ)
+ * ที่ไม่มีใครอื่นทำแทนได้ (คำขอลบบัญชี กิจกรรมฉบับร่าง ฯลฯ)
  */
 
 import { NOT_DELETED } from '@/lib/activities';
@@ -18,9 +18,8 @@ import type { ActionAlert } from '@/components/notifications/NotificationsView';
  * ถ้าเอาทุกอย่างมากองที่นี่ รายการนี้จะไม่มีความหมายในฐานะ "งานที่ต้องทำ"
  */
 export async function deriveAdminAlerts(): Promise<ActionAlert[]> {
-  const [deletionRequests, unreadContact, draftActivities, suspendedUsers] = await Promise.all([
+  const [deletionRequests, draftActivities, suspendedUsers] = await Promise.all([
     prisma.user.count({ where: { deletionRequestedAt: { not: null } } }),
-    prisma.contactMessage.count({ where: { read: false } }),
     prisma.activity.count({ where: { ...NOT_DELETED, status: 'draft' } }),
     prisma.user.count({ where: { active: false } }),
   ]);
@@ -36,18 +35,6 @@ export async function deriveAdminAlerts(): Promise<ActionAlert[]> {
       href: '/admin/users?filter=deletion',
       count: deletionRequests,
       severity: 'danger',
-    });
-  }
-
-  if (unreadContact > 0) {
-    alerts.push({
-      key: 'unread-contact',
-      icon: 'mail',
-      title: 'มีข้อความถึงผู้ดูแลที่ยังไม่ได้อ่าน',
-      body: 'ผู้ส่งจะยังไม่ได้รับคำตอบจนกว่าจะมีคนเปิดอ่าน',
-      href: '/admin/contact',
-      count: unreadContact,
-      severity: 'warning',
     });
   }
 

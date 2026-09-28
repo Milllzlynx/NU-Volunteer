@@ -2935,12 +2935,13 @@ export type NotificationScalarFieldEnum = (typeof NotificationScalarFieldEnum)[k
 export const ChatThreadScalarFieldEnum = {
   id: 'id',
   activityId: 'activityId',
-  studentId: 'studentId',
-  staffId: 'staffId',
+  kind: 'kind',
+  openerId: 'openerId',
+  responderId: 'responderId',
   lastMessageAt: 'lastMessageAt',
   createdAt: 'createdAt',
-  studentMuted: 'studentMuted',
-  studentArchived: 'studentArchived'
+  openerMuted: 'openerMuted',
+  openerArchived: 'openerArchived'
 } as const
 
 export type ChatThreadScalarFieldEnum = (typeof ChatThreadScalarFieldEnum)[keyof typeof ChatThreadScalarFieldEnum]

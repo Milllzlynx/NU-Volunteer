@@ -739,8 +739,8 @@ async function main() {
       const existing = await prisma.chatThread.findFirst({
         where: {
           activityId: seed.activity.id,
-          studentId: demoStudent.id,
-          staffId: seed.activity.organizerId,
+          openerId: demoStudent.id,
+          responderId: seed.activity.organizerId,
         },
         select: { id: true },
       });
@@ -749,9 +749,10 @@ async function main() {
       const last = script[script.length - 1];
       const thread = await prisma.chatThread.create({
         data: {
+          kind: 'activity',
           activityId: seed.activity.id,
-          studentId: demoStudent.id,
-          staffId: seed.activity.organizerId,
+          openerId: demoStudent.id,
+          responderId: seed.activity.organizerId,
           lastMessageAt: last.at,
         },
         select: { id: true },

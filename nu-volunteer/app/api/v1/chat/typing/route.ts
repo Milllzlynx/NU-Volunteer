@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { requireUser } from '@/lib/auth';
+import { findThreadFor, peersOf } from '@/lib/chat';
 import { publishTo, touch } from '@/lib/chatBus';
-import { prisma } from '@/lib/db';
 import { fail, handler } from '@/lib/errors';
 import { readJson } from '@/lib/validation';
 
@@ -19,14 +19,15 @@ export const POST = handler(async (req) => {
   const threadId = String(body.threadId ?? '');
   if (!threadId) fail('VALIDATION_ERROR');
 
-  const thread = await prisma.chatThread.findFirst({
-    where: { id: threadId, OR: [{ studentId: user.id }, { staffId: user.id }] },
-    select: { studentId: true, staffId: true },
-  });
+  const thread = await findThreadFor(threadId, user.id, user.role);
   if (!thread) fail('NOT_FOUND');
 
-  const otherId = thread.studentId === user.id ? thread.staffId : thread.studentId;
-  publishTo([otherId], { type: 'typing', threadId, userId: user.id, at: Date.now() });
+  publishTo(await peersOf(thread, user.id), {
+    type: 'typing',
+    threadId,
+    userId: user.id,
+    at: Date.now(),
+  });
 
   return NextResponse.json({ ok: true });
 });
