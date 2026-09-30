@@ -212,8 +212,8 @@ export const GUIDE_STUDENT: GuideSection[] = [
       },
       {
         kind: 'bullet',
-        text: 'ปีการศึกษาเริ่มนับวันที่ 1 มิถุนายน ถึง 31 พฤษภาคมของปีถัดไป',
-        textEn: 'The academic year runs from 1 June to 31 May of the following year.',
+        text: 'ปีการศึกษานับชั่วโมงตั้งแต่วันที่ 1 พฤษภาคม ถึง 31 มีนาคมของปีถัดไป ชั่วโมงที่ได้รับการรับรองในเดือนเมษายนไม่นับเข้าปีการศึกษาใด',
+        textEn: 'Academic-year hours count from 1 May to 31 March of the following year. Hours approved in April do not count toward any academic year.',
       },
     ],
   },

@@ -219,7 +219,7 @@ async function planHalf(activities: Activity[], now: Date): Promise<Map<string, 
     const s = statusOf(a);
     if (s === 'completed') {
       plan.set(a.id, 'full');
-      if (a.endAt >= ay.start) earned += a.hours;
+      if (a.endAt >= ay.start && a.endAt < ay.end) earned += a.hours;
     } else if (s === 'no-show' || s === 'rejected') {
       plan.set(a.id, s);
       failedCount[s]++;
@@ -230,7 +230,7 @@ async function planHalf(activities: Activity[], now: Date): Promise<Map<string, 
   // เติมชั่วโมงจากกิจกรรมในปีการศึกษานี้ เริ่มจากชั่วโมงน้อย รับเฉพาะตัวที่ทำให้ใกล้ครึ่งเกณฑ์ขึ้น
   // (เกินเป้าเล็กน้อยได้ ถ้าใกล้กว่าหยุดไว้ต่ำกว่าเป้า)
   const candidates = ended
-    .filter((a) => plan.get(a.id) === 'none' && a.endAt >= ay.start)
+    .filter((a) => plan.get(a.id) === 'none' && a.endAt >= ay.start && a.endAt < ay.end)
     .sort((x, y) => x.hours - y.hours || rank(x.id).localeCompare(rank(y.id)));
   for (const a of candidates) {
     if (Math.abs(earned + a.hours - hoursTarget) >= Math.abs(earned - hoursTarget)) continue;
