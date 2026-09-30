@@ -3083,6 +3083,7 @@ export const NotificationPreferenceScalarFieldEnum = {
   deadlineReminder: 'deadlineReminder',
   systemNotice: 'systemNotice',
   chatMessage: 'chatMessage',
+  loanHoursReminder: 'loanHoursReminder',
   leadDays: 'leadDays',
   emailEnabled: 'emailEnabled',
   createdAt: 'createdAt',

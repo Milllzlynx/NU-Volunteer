@@ -41,6 +41,7 @@ export type NotificationPreferenceMinAggregateOutputType = {
   deadlineReminder: boolean | null
   systemNotice: boolean | null
   chatMessage: boolean | null
+  loanHoursReminder: boolean | null
   leadDays: number | null
   emailEnabled: boolean | null
   createdAt: Date | null
@@ -54,6 +55,7 @@ export type NotificationPreferenceMaxAggregateOutputType = {
   deadlineReminder: boolean | null
   systemNotice: boolean | null
   chatMessage: boolean | null
+  loanHoursReminder: boolean | null
   leadDays: number | null
   emailEnabled: boolean | null
   createdAt: Date | null
@@ -67,6 +69,7 @@ export type NotificationPreferenceCountAggregateOutputType = {
   deadlineReminder: number
   systemNotice: number
   chatMessage: number
+  loanHoursReminder: number
   leadDays: number
   emailEnabled: number
   createdAt: number
@@ -90,6 +93,7 @@ export type NotificationPreferenceMinAggregateInputType = {
   deadlineReminder?: true
   systemNotice?: true
   chatMessage?: true
+  loanHoursReminder?: true
   leadDays?: true
   emailEnabled?: true
   createdAt?: true
@@ -103,6 +107,7 @@ export type NotificationPreferenceMaxAggregateInputType = {
   deadlineReminder?: true
   systemNotice?: true
   chatMessage?: true
+  loanHoursReminder?: true
   leadDays?: true
   emailEnabled?: true
   createdAt?: true
@@ -116,6 +121,7 @@ export type NotificationPreferenceCountAggregateInputType = {
   deadlineReminder?: true
   systemNotice?: true
   chatMessage?: true
+  loanHoursReminder?: true
   leadDays?: true
   emailEnabled?: true
   createdAt?: true
@@ -216,6 +222,7 @@ export type NotificationPreferenceGroupByOutputType = {
   deadlineReminder: boolean
   systemNotice: boolean
   chatMessage: boolean
+  loanHoursReminder: boolean
   leadDays: number
   emailEnabled: boolean
   createdAt: Date
@@ -252,6 +259,7 @@ export type NotificationPreferenceWhereInput = {
   deadlineReminder?: Prisma.BoolFilter<"NotificationPreference"> | boolean
   systemNotice?: Prisma.BoolFilter<"NotificationPreference"> | boolean
   chatMessage?: Prisma.BoolFilter<"NotificationPreference"> | boolean
+  loanHoursReminder?: Prisma.BoolFilter<"NotificationPreference"> | boolean
   leadDays?: Prisma.IntFilter<"NotificationPreference"> | number
   emailEnabled?: Prisma.BoolFilter<"NotificationPreference"> | boolean
   createdAt?: Prisma.DateTimeFilter<"NotificationPreference"> | Date | string
@@ -266,6 +274,7 @@ export type NotificationPreferenceOrderByWithRelationInput = {
   deadlineReminder?: Prisma.SortOrder
   systemNotice?: Prisma.SortOrder
   chatMessage?: Prisma.SortOrder
+  loanHoursReminder?: Prisma.SortOrder
   leadDays?: Prisma.SortOrder
   emailEnabled?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -283,6 +292,7 @@ export type NotificationPreferenceWhereUniqueInput = Prisma.AtLeast<{
   deadlineReminder?: Prisma.BoolFilter<"NotificationPreference"> | boolean
   systemNotice?: Prisma.BoolFilter<"NotificationPreference"> | boolean
   chatMessage?: Prisma.BoolFilter<"NotificationPreference"> | boolean
+  loanHoursReminder?: Prisma.BoolFilter<"NotificationPreference"> | boolean
   leadDays?: Prisma.IntFilter<"NotificationPreference"> | number
   emailEnabled?: Prisma.BoolFilter<"NotificationPreference"> | boolean
   createdAt?: Prisma.DateTimeFilter<"NotificationPreference"> | Date | string
@@ -297,6 +307,7 @@ export type NotificationPreferenceOrderByWithAggregationInput = {
   deadlineReminder?: Prisma.SortOrder
   systemNotice?: Prisma.SortOrder
   chatMessage?: Prisma.SortOrder
+  loanHoursReminder?: Prisma.SortOrder
   leadDays?: Prisma.SortOrder
   emailEnabled?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -318,6 +329,7 @@ export type NotificationPreferenceScalarWhereWithAggregatesInput = {
   deadlineReminder?: Prisma.BoolWithAggregatesFilter<"NotificationPreference"> | boolean
   systemNotice?: Prisma.BoolWithAggregatesFilter<"NotificationPreference"> | boolean
   chatMessage?: Prisma.BoolWithAggregatesFilter<"NotificationPreference"> | boolean
+  loanHoursReminder?: Prisma.BoolWithAggregatesFilter<"NotificationPreference"> | boolean
   leadDays?: Prisma.IntWithAggregatesFilter<"NotificationPreference"> | number
   emailEnabled?: Prisma.BoolWithAggregatesFilter<"NotificationPreference"> | boolean
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"NotificationPreference"> | Date | string
@@ -330,6 +342,7 @@ export type NotificationPreferenceCreateInput = {
   deadlineReminder?: boolean
   systemNotice?: boolean
   chatMessage?: boolean
+  loanHoursReminder?: boolean
   leadDays?: number
   emailEnabled?: boolean
   createdAt?: Date | string
@@ -344,6 +357,7 @@ export type NotificationPreferenceUncheckedCreateInput = {
   deadlineReminder?: boolean
   systemNotice?: boolean
   chatMessage?: boolean
+  loanHoursReminder?: boolean
   leadDays?: number
   emailEnabled?: boolean
   createdAt?: Date | string
@@ -356,6 +370,7 @@ export type NotificationPreferenceUpdateInput = {
   deadlineReminder?: Prisma.BoolFieldUpdateOperationsInput | boolean
   systemNotice?: Prisma.BoolFieldUpdateOperationsInput | boolean
   chatMessage?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  loanHoursReminder?: Prisma.BoolFieldUpdateOperationsInput | boolean
   leadDays?: Prisma.IntFieldUpdateOperationsInput | number
   emailEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -370,6 +385,7 @@ export type NotificationPreferenceUncheckedUpdateInput = {
   deadlineReminder?: Prisma.BoolFieldUpdateOperationsInput | boolean
   systemNotice?: Prisma.BoolFieldUpdateOperationsInput | boolean
   chatMessage?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  loanHoursReminder?: Prisma.BoolFieldUpdateOperationsInput | boolean
   leadDays?: Prisma.IntFieldUpdateOperationsInput | number
   emailEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -383,6 +399,7 @@ export type NotificationPreferenceCreateManyInput = {
   deadlineReminder?: boolean
   systemNotice?: boolean
   chatMessage?: boolean
+  loanHoursReminder?: boolean
   leadDays?: number
   emailEnabled?: boolean
   createdAt?: Date | string
@@ -395,6 +412,7 @@ export type NotificationPreferenceUpdateManyMutationInput = {
   deadlineReminder?: Prisma.BoolFieldUpdateOperationsInput | boolean
   systemNotice?: Prisma.BoolFieldUpdateOperationsInput | boolean
   chatMessage?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  loanHoursReminder?: Prisma.BoolFieldUpdateOperationsInput | boolean
   leadDays?: Prisma.IntFieldUpdateOperationsInput | number
   emailEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -408,6 +426,7 @@ export type NotificationPreferenceUncheckedUpdateManyInput = {
   deadlineReminder?: Prisma.BoolFieldUpdateOperationsInput | boolean
   systemNotice?: Prisma.BoolFieldUpdateOperationsInput | boolean
   chatMessage?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  loanHoursReminder?: Prisma.BoolFieldUpdateOperationsInput | boolean
   leadDays?: Prisma.IntFieldUpdateOperationsInput | number
   emailEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -426,6 +445,7 @@ export type NotificationPreferenceCountOrderByAggregateInput = {
   deadlineReminder?: Prisma.SortOrder
   systemNotice?: Prisma.SortOrder
   chatMessage?: Prisma.SortOrder
+  loanHoursReminder?: Prisma.SortOrder
   leadDays?: Prisma.SortOrder
   emailEnabled?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -443,6 +463,7 @@ export type NotificationPreferenceMaxOrderByAggregateInput = {
   deadlineReminder?: Prisma.SortOrder
   systemNotice?: Prisma.SortOrder
   chatMessage?: Prisma.SortOrder
+  loanHoursReminder?: Prisma.SortOrder
   leadDays?: Prisma.SortOrder
   emailEnabled?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -456,6 +477,7 @@ export type NotificationPreferenceMinOrderByAggregateInput = {
   deadlineReminder?: Prisma.SortOrder
   systemNotice?: Prisma.SortOrder
   chatMessage?: Prisma.SortOrder
+  loanHoursReminder?: Prisma.SortOrder
   leadDays?: Prisma.SortOrder
   emailEnabled?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -504,6 +526,7 @@ export type NotificationPreferenceCreateWithoutUserInput = {
   deadlineReminder?: boolean
   systemNotice?: boolean
   chatMessage?: boolean
+  loanHoursReminder?: boolean
   leadDays?: number
   emailEnabled?: boolean
   createdAt?: Date | string
@@ -516,6 +539,7 @@ export type NotificationPreferenceUncheckedCreateWithoutUserInput = {
   deadlineReminder?: boolean
   systemNotice?: boolean
   chatMessage?: boolean
+  loanHoursReminder?: boolean
   leadDays?: number
   emailEnabled?: boolean
   createdAt?: Date | string
@@ -544,6 +568,7 @@ export type NotificationPreferenceUpdateWithoutUserInput = {
   deadlineReminder?: Prisma.BoolFieldUpdateOperationsInput | boolean
   systemNotice?: Prisma.BoolFieldUpdateOperationsInput | boolean
   chatMessage?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  loanHoursReminder?: Prisma.BoolFieldUpdateOperationsInput | boolean
   leadDays?: Prisma.IntFieldUpdateOperationsInput | number
   emailEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -556,6 +581,7 @@ export type NotificationPreferenceUncheckedUpdateWithoutUserInput = {
   deadlineReminder?: Prisma.BoolFieldUpdateOperationsInput | boolean
   systemNotice?: Prisma.BoolFieldUpdateOperationsInput | boolean
   chatMessage?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  loanHoursReminder?: Prisma.BoolFieldUpdateOperationsInput | boolean
   leadDays?: Prisma.IntFieldUpdateOperationsInput | number
   emailEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -571,6 +597,7 @@ export type NotificationPreferenceSelect<ExtArgs extends runtime.Types.Extension
   deadlineReminder?: boolean
   systemNotice?: boolean
   chatMessage?: boolean
+  loanHoursReminder?: boolean
   leadDays?: boolean
   emailEnabled?: boolean
   createdAt?: boolean
@@ -585,6 +612,7 @@ export type NotificationPreferenceSelectCreateManyAndReturn<ExtArgs extends runt
   deadlineReminder?: boolean
   systemNotice?: boolean
   chatMessage?: boolean
+  loanHoursReminder?: boolean
   leadDays?: boolean
   emailEnabled?: boolean
   createdAt?: boolean
@@ -599,6 +627,7 @@ export type NotificationPreferenceSelectUpdateManyAndReturn<ExtArgs extends runt
   deadlineReminder?: boolean
   systemNotice?: boolean
   chatMessage?: boolean
+  loanHoursReminder?: boolean
   leadDays?: boolean
   emailEnabled?: boolean
   createdAt?: boolean
@@ -613,13 +642,14 @@ export type NotificationPreferenceSelectScalar = {
   deadlineReminder?: boolean
   systemNotice?: boolean
   chatMessage?: boolean
+  loanHoursReminder?: boolean
   leadDays?: boolean
   emailEnabled?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type NotificationPreferenceOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "activityReminder" | "deadlineReminder" | "systemNotice" | "chatMessage" | "leadDays" | "emailEnabled" | "createdAt" | "updatedAt", ExtArgs["result"]["notificationPreference"]>
+export type NotificationPreferenceOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "activityReminder" | "deadlineReminder" | "systemNotice" | "chatMessage" | "loanHoursReminder" | "leadDays" | "emailEnabled" | "createdAt" | "updatedAt", ExtArgs["result"]["notificationPreference"]>
 export type NotificationPreferenceInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }
@@ -642,6 +672,7 @@ export type $NotificationPreferencePayload<ExtArgs extends runtime.Types.Extensi
     deadlineReminder: boolean
     systemNotice: boolean
     chatMessage: boolean
+    loanHoursReminder: boolean
     leadDays: number
     emailEnabled: boolean
     createdAt: Date
@@ -1076,6 +1107,7 @@ export interface NotificationPreferenceFieldRefs {
   readonly deadlineReminder: Prisma.FieldRef<"NotificationPreference", 'Boolean'>
   readonly systemNotice: Prisma.FieldRef<"NotificationPreference", 'Boolean'>
   readonly chatMessage: Prisma.FieldRef<"NotificationPreference", 'Boolean'>
+  readonly loanHoursReminder: Prisma.FieldRef<"NotificationPreference", 'Boolean'>
   readonly leadDays: Prisma.FieldRef<"NotificationPreference", 'Int'>
   readonly emailEnabled: Prisma.FieldRef<"NotificationPreference", 'Boolean'>
   readonly createdAt: Prisma.FieldRef<"NotificationPreference", 'DateTime'>

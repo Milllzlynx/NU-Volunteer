@@ -14,10 +14,13 @@ export default async function StudentSettingsPage() {
     <StudentSettings
       prefs={prefs}
       account={{ name: user.name, email: user.email, shareContact: user.shareContact }}
+      // การเตือนชั่วโมง กยศ. ใช้กับผู้กู้ยืมเท่านั้น คนอื่นไม่ต้องเห็นสวิตช์นี้
+      isLoan={user.loanStatus === 'yes'}
       // ให้เห็นผลทันทีว่าการตั้งค่าปัจจุบันทำให้มีการเตือนกี่รายการ
       activeAlerts={{
         reminder: alerts.filter((a) => a.kind === 'activity-reminder').length,
         deadline: alerts.filter((a) => a.kind === 'deadline').length,
+        loanHours: alerts.filter((a) => a.kind === 'loan-hours-gap').length,
       }}
     />
   );

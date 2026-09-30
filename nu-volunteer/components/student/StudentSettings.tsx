@@ -21,11 +21,18 @@ const LEAD_MAX = 14;
 /** เขตเวลาของระบบ — ตรึงไว้ทั้งฝั่งเซิร์ฟเวอร์และหน้าเว็บ (ดู lib/activities.ts) */
 const SYSTEM_TZ = 'Asia/Bangkok (UTC+7)';
 
-type ToggleKey = 'activityReminder' | 'deadlineReminder' | 'systemNotice' | 'chatMessage' | 'emailEnabled';
+type ToggleKey =
+  | 'activityReminder'
+  | 'deadlineReminder'
+  | 'loanHoursReminder'
+  | 'systemNotice'
+  | 'chatMessage'
+  | 'emailEnabled';
 
 const TOGGLES: { key: ToggleKey; label: string; desc: string; icon: string }[] = [
   { key: 'activityReminder', label: 'เตือนก่อนถึงวันกิจกรรม', desc: 'แจ้งเตือนกิจกรรมที่คุณลงทะเบียนไว้และกำลังจะถึง', icon: 'event_upcoming' },
   { key: 'deadlineReminder', label: 'เตือนก่อนปิดรับสมัคร', desc: 'แจ้งเตือนกิจกรรมที่คุณกดถูกใจไว้แต่ยังไม่ได้สมัคร', icon: 'hourglass_bottom' },
+  { key: 'loanHoursReminder', label: 'เตือนชั่วโมง กยศ. ไม่ครบเกณฑ์', desc: 'แจ้งเตือนเมื่อชั่วโมงของปีการศึกษานี้ตามหลังเกณฑ์ที่ต้องทำให้ครบ', icon: 'volunteer_activism' },
   { key: 'systemNotice', label: 'ประกาศจากระบบ', desc: 'ข่าวสารและประกาศปิดปรับปรุงจากผู้ดูแลระบบ', icon: 'campaign' },
   { key: 'chatMessage', label: 'ข้อความจากผู้จัดกิจกรรม', desc: 'แจ้งเตือนเมื่อมีข้อความใหม่ในห้องแชท', icon: 'forum' },
   { key: 'emailEnabled', label: 'ส่งอีเมลด้วย', desc: 'ยังไม่เปิดใช้งานจริง — เก็บค่าไว้รอระบบส่งอีเมล', icon: 'mail' },
@@ -34,11 +41,13 @@ const TOGGLES: { key: ToggleKey; label: string; desc: string; icon: string }[] =
 export function StudentSettings({
   prefs,
   account,
+  isLoan,
   activeAlerts,
 }: {
   prefs: NotifyPrefsDto;
   account: { name: string; email: string; shareContact: boolean };
-  activeAlerts: { reminder: number; deadline: number };
+  isLoan: boolean;
+  activeAlerts: { reminder: number; deadline: number; loanHours: number };
 }) {
   const { t, lang, setLang, theme, setTheme, mood, setMood, a11y, setA11y } = useApp();
   const router = useRouter();
@@ -50,7 +59,7 @@ export function StudentSettings({
     <div style={{ display: 'grid', gap: 16 }}>
       <AccountSection account={account} t={t} />
       <PrivacySection shareContact={account.shareContact} t={t} onSaved={refresh} />
-      <NotificationSection prefs={prefs} activeAlerts={activeAlerts} t={t} onSaved={refresh} />
+      <NotificationSection prefs={prefs} isLoan={isLoan} activeAlerts={activeAlerts} t={t} onSaved={refresh} />
 
       {/* ── ธีมและการแสดงผล ── */}
       <Section icon="palette" title={t('ธีมและการแสดงผล')} desc={t('ตั้งค่าแยกในแต่ละอุปกรณ์ ไม่ผูกกับบัญชี')}>
@@ -258,12 +267,14 @@ function PrivacySection({
 
 function NotificationSection({
   prefs,
+  isLoan,
   activeAlerts,
   t,
   onSaved,
 }: {
   prefs: NotifyPrefsDto;
-  activeAlerts: { reminder: number; deadline: number };
+  isLoan: boolean;
+  activeAlerts: { reminder: number; deadline: number; loanHours: number };
   t: (s: string) => string;
   onSaved: () => void;
 }) {
@@ -272,7 +283,8 @@ function NotificationSection({
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
 
-  const dirty = TOGGLES.some((tg) => draft[tg.key] !== prefs[tg.key]) || draft.leadDays !== prefs.leadDays;
+  const toggles = isLoan ? TOGGLES : TOGGLES.filter((tg) => tg.key !== 'loanHoursReminder');
+  const dirty = toggles.some((tg) => draft[tg.key] !== prefs[tg.key]) || draft.leadDays !== prefs.leadDays;
 
   const save = async () => {
     if (saving || !dirty) return;
@@ -312,13 +324,20 @@ function NotificationSection({
           icon="hourglass_bottom"
           label={`${t('ใกล้ปิดรับสมัคร')} ${activeAlerts.deadline}`}
         />
+        {isLoan ? (
+          <Badge
+            tone={activeAlerts.loanHours ? 'warning' : 'neutral'}
+            icon="volunteer_activism"
+            label={`${t('ชั่วโมง กยศ.')} ${activeAlerts.loanHours}`}
+          />
+        ) : null}
         <Link href="/student/notifications" style={{ alignSelf: 'center', fontSize: 12.5, color: COLOR.link }}>
           {t('ดูในกล่องการแจ้งเตือน')}
         </Link>
       </div>
 
       <div style={{ display: 'grid', gap: 10 }}>
-        {TOGGLES.map((tg) => (
+        {toggles.map((tg) => (
           <Toggle
             key={tg.key}
             icon={tg.icon}

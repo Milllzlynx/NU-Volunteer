@@ -409,6 +409,7 @@ export type NotifyPrefsDto = {
   deadlineReminder: boolean;
   systemNotice: boolean;
   chatMessage: boolean;
+  loanHoursReminder: boolean;
   leadDays: number;
   emailEnabled: boolean;
 };
@@ -560,6 +561,8 @@ export type AdminUserRow = {
   studentId: string | null;
   faculty: string | null;
   avatarUrl: string | null;
+  /** ผู้กู้ยืม กยศ. — ส่งเฉพาะ API ฝั่งแอดมิน ไม่เปิดให้ผู้จัดกิจกรรมเห็น */
+  isLoan: boolean;
   active: boolean;
   deletionRequested: boolean;
   deletionReason: string | null;

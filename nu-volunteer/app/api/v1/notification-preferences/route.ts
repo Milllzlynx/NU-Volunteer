@@ -25,6 +25,7 @@ export const PATCH = handler(async (req) => {
     deadlineReminder: bool('deadlineReminder'),
     systemNotice: bool('systemNotice'),
     chatMessage: bool('chatMessage'),
+    loanHoursReminder: bool('loanHoursReminder'),
     emailEnabled: bool('emailEnabled'),
     leadDays:
       typeof body.leadDays === 'number' ? clampLeadDays(body.leadDays) : current.leadDays,

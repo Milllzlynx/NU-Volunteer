@@ -666,6 +666,8 @@ model NotificationPreference {
   systemNotice     Boolean @default(true)
   // ข้อความจากผู้จัดกิจกรรม
   chatMessage      Boolean @default(true)
+  // เตือนผู้กู้ยืม กยศ. เมื่อชั่วโมงของปีการศึกษาตามหลังเกณฑ์
+  loanHoursReminder Boolean @default(true)
 
   // เตือนล่วงหน้ากี่วัน (1–14)
   leadDays Int @default(3)

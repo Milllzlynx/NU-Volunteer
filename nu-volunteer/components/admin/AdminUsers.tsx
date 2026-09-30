@@ -331,17 +331,48 @@ function UserRow({
   const roleLabel = isEn ? ROLE_LABEL_EN[u.role] : ROLE_LABEL[u.role];
 
   return (
-    <li style={{ ...glass(18), padding: 16, display: 'grid', gap: 12 }}>
-      <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, flexWrap: 'wrap' }}>
+    // minWidth: 0 ทั้งสองชั้น — รายการเป็น grid ซ้อน grid ถ้าปล่อยเป็น auto คอลัมน์จะยืดตามชื่อที่ยาวที่สุดจนการ์ดล้นจอ
+    <li style={{ ...glass(18), padding: 16, display: 'grid', gap: 12, minWidth: 0 }}>
+      <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, flexWrap: 'wrap', minWidth: 0 }}>
         <Avatar name={u.name || u.email} src={u.avatarUrl} size={46} />
 
         <div style={{ flex: 1, minWidth: 160 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-            <span style={{ fontSize: 14.5, fontWeight: 600, color: COLOR.ink }}>
+            {/* ชื่อยาวให้ตัดด้วย … ส่วนป้ายด้านหลังห้ามหด จะได้ไม่ถูกดันตกขอบ */}
+            <span
+              title={u.name || u.email}
+              style={{
+                fontSize: 14.5,
+                fontWeight: 600,
+                color: COLOR.ink,
+                minWidth: 0,
+                maxWidth: '100%',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
+              }}
+            >
               {u.name || u.email}
             </span>
+            {u.isLoan ? (
+              <span
+                title={t('ผู้กู้ยืม กยศ.')}
+                style={{
+                  flexShrink: 0,
+                  padding: '1px 8px',
+                  borderRadius: 999,
+                  fontSize: 10.5,
+                  fontWeight: 500,
+                  color: COLOR.label,
+                  border: `1px solid ${SEMANTIC.neutral.bg}`,
+                }}
+              >
+                กยศ.
+              </span>
+            ) : null}
             <span
               style={{
+                flexShrink: 0,
                 padding: '3px 10px',
                 borderRadius: 999,
                 fontSize: 11,

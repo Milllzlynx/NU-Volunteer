@@ -20,7 +20,7 @@ export type NotificationRow = {
 
 export type AlertRow = {
   key: string;
-  kind: 'activity-reminder' | 'deadline';
+  kind: 'activity-reminder' | 'deadline' | 'loan-hours-gap';
   type: string;
   title: string;
   body: string;
@@ -30,6 +30,12 @@ export type AlertRow = {
 };
 
 type TabKey = 'all' | 'unread' | string;
+
+const ALERT_ICON: Record<AlertRow['kind'], string> = {
+  'activity-reminder': 'event_upcoming',
+  deadline: 'hourglass_bottom',
+  'loan-hours-gap': 'volunteer_activism',
+};
 
 export function StudentNotifications({
   notifications,
@@ -121,7 +127,7 @@ export function StudentNotifications({
                   }}
                 >
                   <Icon
-                    name={a.kind === 'deadline' ? 'hourglass_bottom' : 'event_upcoming'}
+                    name={ALERT_ICON[a.kind]}
                     size={20}
                     style={{ color: tone.color, flexShrink: 0 }}
                   />
