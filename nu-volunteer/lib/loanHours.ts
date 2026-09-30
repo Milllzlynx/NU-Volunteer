@@ -5,6 +5,8 @@
  * จึงใช้ loanYearStatus() ร่วมกันแทนที่จะต่างคนต่างรวมเอง
  *
  * ยอดของปี = ชั่วโมงที่ผู้จัดรับรองภายในช่วงนับ (1 พ.ค.–31 มี.ค.) + รายการปรับชั่วโมงของปีนั้น
+ *
+ * ทดสอบสถานะในอนาคตได้ด้วย NUV_DEV_NOW (ดู loanNow) — มีผลเฉพาะตอน dev และเฉพาะการคำนวณ กยศ. ในไฟล์นี้
  */
 import { DEFAULT_HOURS_GOAL, HOURS_GOAL_KEY, academicYearOf, type AcademicYear } from '@/lib/academic';
 import type { AlertSeverity } from '@/lib/alerts';
@@ -18,6 +20,25 @@ const LOAN_PACE_SLACK = 1.25;
 const LOAN_FINAL_DAYS = 60;
 
 const round1 = (n: number) => Math.round(n * 10) / 10;
+
+/**
+ * "ตอนนี้" ของการคำนวณ กยศ. — ตั้ง NUV_DEV_NOW ใน .env เพื่อดูหน้าและการเตือนเหมือนเป็นวันอื่น
+ *
+ *   NUV_DEV_NOW=2026-12-15            # ระดับ warning ของบัญชีที่ชั่วโมงน้อย
+ *   NUV_DEV_NOW=2027-03-15T09:00+07:00  # ระดับ danger
+ *
+ * มีเพราะระดับ warning/danger ขึ้นกับวันที่ล้วน ๆ (warning ต้องผ่านครึ่งปีการศึกษาไปแล้ว danger เหลือไม่เกิน 30 วัน)
+ * จะดูล่วงหน้าได้ก็ต้องเลื่อนวันของการคำนวณ ไม่ใช่แก้ข้อมูล
+ *
+ * ไม่มีผลใน production เด็ดขาด และไม่แตะส่วนอื่นของระบบ (วันกิจกรรม การเตือนอื่น ยอดชั่วโมงทั่วไป)
+ * วันที่ไม่ถูกรูปแบบถูกเมินเฉยแล้วใช้เวลาจริง
+ */
+export function loanNow(): number {
+  const raw = process.env.NUV_DEV_NOW;
+  if (!raw || process.env.NODE_ENV === 'production') return Date.now();
+  const t = new Date(raw).getTime();
+  return Number.isFinite(t) ? t : Date.now();
+}
 
 /** จำนวนวันเต็มจากตอนนี้ถึงเวลาที่กำหนด (ปัดขึ้น) — 0 = ภายในวันนี้ */
 const daysUntil = (target: Date, now: number) => Math.max(0, Math.ceil((target.getTime() - now) / DAY_MS));
@@ -98,7 +119,7 @@ export async function hoursGoal(): Promise<number> {
   return Number(row?.value) || DEFAULT_HOURS_GOAL;
 }
 
-export async function loanYearStatus(userId: string, now: number = Date.now()): Promise<LoanYearStatus> {
+export async function loanYearStatus(userId: string, now: number = loanNow()): Promise<LoanYearStatus> {
   const ay = academicYearOf(new Date(now));
   const [total, goal] = await Promise.all([yearHours(userId, ay), hoursGoal()]);
 

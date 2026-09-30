@@ -164,7 +164,7 @@ export async function deriveAlerts(userId: string, prefs?: NotifyPrefs): Promise
   }
 
   if (p.loanHoursReminder) {
-    const gap = await loanHoursAlert(userId, now);
+    const gap = await loanHoursAlert(userId);
     if (gap) alerts.push(gap);
   }
 
@@ -177,11 +177,12 @@ export async function deriveAlerts(userId: string, prefs?: NotifyPrefs): Promise
  *
  * กติกาจังหวะอยู่ที่ loanGap() ใน lib/loanHours.ts — ใช้ชุดเดียวกับแถบความคืบหน้าบนหน้าแรกและหน้าชั่วโมงสะสม
  */
-async function loanHoursAlert(userId: string, now: number): Promise<DerivedAlert | null> {
+async function loanHoursAlert(userId: string): Promise<DerivedAlert | null> {
   const user = await prisma.user.findUnique({ where: { id: userId }, select: { loanStatus: true } });
   if (user?.loanStatus !== 'yes') return null;
 
-  const st = await loanYearStatus(userId, now);
+  // ไม่ส่ง now ต่อ — ให้ใช้นาฬิกาเดียวกับหน้าชั่วโมงสะสม (รวม NUV_DEV_NOW ตอน dev)
+  const st = await loanYearStatus(userId);
   if (st.pace !== 'info' && st.pace !== 'warning' && st.pace !== 'danger') return null;
 
   return {

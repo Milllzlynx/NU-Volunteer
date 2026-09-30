@@ -36,7 +36,7 @@ async function loadStudentHome(userId: string, isLoanStudent: boolean) {
       prisma.hourAdjustment.aggregate({ where: { userId }, _sum: { hours: true } }),
       prisma.certificate.count({ where: { userId, revokedAt: null } }),
       prisma.favorite.count({ where: { userId } }),
-      isLoanStudent ? loanYearStatus(userId, now.getTime()) : null,
+      isLoanStudent ? loanYearStatus(userId) : null,
     ]);
 
   const hours = round1((awarded._sum.hoursAwarded ?? 0) + (adjustments._sum.hours ?? 0));
