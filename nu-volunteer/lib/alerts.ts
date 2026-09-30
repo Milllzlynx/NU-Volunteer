@@ -8,9 +8,9 @@
  * แต่ยังเผื่อทางไว้ให้ยิง cron ได้ด้วย — materializeAlerts() เขียนผลลัพธ์ชุดเดียวกัน
  * ลงตาราง Notification (กันซ้ำด้วย userId+type+title) เผื่อวันหนึ่งต้องส่งอีเมลจริง
  */
-import { DEFAULT_HOURS_GOAL, HOURS_GOAL_KEY, academicYearOf, type AcademicYear } from '@/lib/academic';
 import { DATE_TH, JOINED } from '@/lib/activities';
 import { prisma } from '@/lib/db';
+import { loanYearStatus } from '@/lib/loanHours';
 
 export type AlertKind = 'activity-reminder' | 'deadline' | 'loan-hours-gap';
 export type AlertSeverity = 'info' | 'warning' | 'danger';
@@ -172,83 +172,29 @@ export async function deriveAlerts(userId: string, prefs?: NotifyPrefs): Promise
   return alerts.sort((a, b) => a.atMs - b.atMs);
 }
 
-/** ผ่อนให้ช้ากว่าจังหวะปกติได้ 25% ก่อนเริ่มเตือน — กันไม่ให้ตามจี้ตั้งแต่ต้นปีการศึกษา */
-const LOAN_PACE_SLACK = 1.25;
-/** ช่วงท้ายปีการศึกษาที่ขาดเท่าไหร่ก็เตือน เพราะเหลือเวลาน้อยจนเกณฑ์จังหวะแทบไม่ผ่อนให้แล้ว */
-const LOAN_FINAL_DAYS = 60;
-
-export type LoanGap = { remaining: number; daysLeft: number; severity: AlertSeverity };
-
 /**
- * ตัดสินว่าผู้กู้ยืม กยศ. ควรถูกเตือนเรื่องชั่วโมงหรือไม่ — คืน null ถ้ายังไม่ต้องเตือน
+ * เตือนผู้กู้ยืม กยศ. ที่ชั่วโมงของปีการศึกษาปัจจุบันตามหลังเกณฑ์
  *
- * ให้ G = เกณฑ์ชั่วโมง, f = สัดส่วนของช่วงนับ (1 พ.ค.–31 มี.ค.) ที่ผ่านไปแล้ว, remaining = ชั่วโมงที่ยังขาด
- * เตือนเมื่อ
- *   - remaining > 1.25 × G × (1 − f)  คือต้องเร่งเร็วกว่าจังหวะปกติเกิน 1.25 เท่า
- *     คนที่ยังไม่มีชั่วโมงเลยจะเริ่มเห็นราวต้น ก.ค. (f ≈ 0.2) ไม่ใช่สัปดาห์แรกของปี
- *   - หรือเหลือไม่เกิน 60 วันและยังขาดอยู่
- * เดือนเมษายนปิดนับไปแล้ว ทำอะไรเพิ่มไม่ได้ จึงไม่เตือน
- */
-export function loanGap(total: number, goal: number, ay: AcademicYear, now: number): LoanGap | null {
-  if (now < ay.start.getTime() || now >= ay.end.getTime()) return null;
-
-  const remaining = Math.round(Math.max(0, goal - total) * 10) / 10;
-  if (remaining <= 0) return null;
-
-  const span = ay.end.getTime() - ay.start.getTime();
-  const left = 1 - (now - ay.start.getTime()) / span;
-  const daysLeft = daysUntil(ay.end, now);
-
-  const behindPace = remaining > LOAN_PACE_SLACK * goal * left;
-  const finalStretch = daysLeft <= LOAN_FINAL_DAYS;
-  if (!behindPace && !finalStretch) return null;
-
-  const severity: AlertSeverity =
-    daysLeft <= 30 ? 'danger' : finalStretch || remaining > 2 * goal * left ? 'warning' : 'info';
-  return { remaining, daysLeft, severity };
-}
-
-/**
- * เตือนผู้กู้ยืม กยศ. ที่ชั่วโมงของปีการศึกษาปัจจุบันตามหลังเกณฑ์ (ดูกติกาที่ loanGap)
- *
- * นับชั่วโมงแบบเดียวกับแถบความคืบหน้าบนหน้าแรกนิสิต (ชั่วโมงที่รับรองในปีนี้ + รายการปรับชั่วโมงของปีนี้)
+ * กติกาจังหวะอยู่ที่ loanGap() ใน lib/loanHours.ts — ใช้ชุดเดียวกับแถบความคืบหน้าบนหน้าแรกและหน้าชั่วโมงสะสม
  */
 async function loanHoursAlert(userId: string, now: number): Promise<DerivedAlert | null> {
   const user = await prisma.user.findUnique({ where: { id: userId }, select: { loanStatus: true } });
   if (user?.loanStatus !== 'yes') return null;
 
-  const ay = academicYearOf(new Date(now));
-  if (now >= ay.end.getTime()) return null;
+  const st = await loanYearStatus(userId, now);
+  if (st.pace !== 'info' && st.pace !== 'warning' && st.pace !== 'danger') return null;
 
-  const [goalSetting, awarded, adjustments] = await Promise.all([
-    prisma.setting.findUnique({ where: { key: HOURS_GOAL_KEY } }),
-    prisma.registration.aggregate({
-      where: { userId, hoursApprovedAt: { gte: ay.start, lt: ay.end } },
-      _sum: { hoursAwarded: true },
-    }),
-    prisma.hourAdjustment.aggregate({
-      where: { userId, academicYear: ay.year },
-      _sum: { hours: true },
-    }),
-  ]);
-
-  const goal = Number(goalSetting?.value) || DEFAULT_HOURS_GOAL;
-  const total = (awarded._sum.hoursAwarded ?? 0) + (adjustments._sum.hours ?? 0);
-  const gap = loanGap(total, goal, ay, now);
-  if (!gap) return null;
-
-  const lastDay = new Date(ay.end.getTime() - DAY_MS);
   return {
-    key: `loan-hours:${ay.year}`,
+    key: `loan-hours:${st.year}`,
     kind: 'loan-hours-gap',
     type: 'reminder',
     // หัวข้อคงที่ตลอดทั้งปีการศึกษา — ไม่ใส่จำนวนชั่วโมง ไม่งั้น materialize จะงอกแถวใหม่ทุกครั้งที่ได้ชั่วโมงเพิ่ม
-    title: `ชั่วโมงจิตอาสา กยศ. ปีการศึกษา ${ay.year} ยังไม่ครบเกณฑ์`,
-    body: `ยังขาดอีก ${gap.remaining} ชม. จากเกณฑ์ ${goal} ชม. — เหลือเวลาอีก ${gap.daysLeft} วัน (ถึง ${DATE_TH.format(lastDay)})`,
+    title: `ชั่วโมงจิตอาสา กยศ. ปีการศึกษา ${st.year} ยังไม่ครบเกณฑ์`,
+    body: `ยังขาดอีก ${st.remaining} ชม. จากเกณฑ์ ${st.goal} ชม. — เหลือเวลาอีก ${st.daysLeft} วัน (ถึง ${DATE_TH.format(st.lastDayMs)})`,
     link: '/student/discover',
-    severity: gap.severity,
-    daysLeft: gap.daysLeft,
-    atMs: ay.end.getTime(),
+    severity: st.pace,
+    daysLeft: st.daysLeft,
+    atMs: st.lastDayMs + DAY_MS,
   };
 }
 

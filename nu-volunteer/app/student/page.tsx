@@ -1,9 +1,9 @@
 import { redirect } from 'next/navigation';
 import { StudentHome, type StudentBanner } from '@/components/student/StudentHome';
-import { DEFAULT_HOURS_GOAL, HOURS_GOAL_KEY, academicYearOf } from '@/lib/academic';
 import { DATE_EN, DATE_TH, JOINED, NOT_DELETED, toPublicActivities } from '@/lib/activities';
 import { getCurrentUser } from '@/lib/auth';
 import { prisma } from '@/lib/db';
+import { loanYearStatus } from '@/lib/loanHours';
 import { ROLE_NAV } from '@/lib/design';
 import { AVAILABLE_PAGES } from '@/lib/routes';
 
@@ -16,9 +16,8 @@ function ctaFor(target: string): { label: boolean; href: string } {
 
 async function loadStudentHome(userId: string, isLoanStudent: boolean) {
   const now = new Date();
-  const ay = academicYearOf(now);
 
-  const [bannerRows, activityRows, joined, awarded, adjustments, certificates, favorites, goalRow] =
+  const [bannerRows, activityRows, joined, awarded, adjustments, certificates, favorites, loan] =
     await Promise.all([
       prisma.banner.findMany({
         where: { visible: true },
@@ -37,7 +36,7 @@ async function loadStudentHome(userId: string, isLoanStudent: boolean) {
       prisma.hourAdjustment.aggregate({ where: { userId }, _sum: { hours: true } }),
       prisma.certificate.count({ where: { userId, revokedAt: null } }),
       prisma.favorite.count({ where: { userId } }),
-      prisma.setting.findUnique({ where: { key: HOURS_GOAL_KEY } }),
+      isLoanStudent ? loanYearStatus(userId, now.getTime()) : null,
     ]);
 
   const hours = round1((awarded._sum.hoursAwarded ?? 0) + (adjustments._sum.hours ?? 0));
@@ -61,37 +60,7 @@ async function loadStudentHome(userId: string, isLoanStudent: boolean) {
     banners,
     latest: await toPublicActivities(activityRows),
     stats: { joined, hours, certificates, favorites },
-    progress: isLoanStudent
-      ? await loanProgress(userId, ay.start, ay.end, ay.year, Number(goalRow?.value) || DEFAULT_HOURS_GOAL)
-      : null,
-  };
-}
-
-/** ความคืบหน้าเกณฑ์ กยศ. — นับเฉพาะชั่วโมงที่รับรองภายในปีการศึกษาปัจจุบัน */
-async function loanProgress(
-  userId: string,
-  start: Date,
-  end: Date,
-  year: number,
-  goal: number,
-) {
-  const [yearAwarded, yearAdjustments] = await Promise.all([
-    prisma.registration.aggregate({
-      where: { userId, hoursApprovedAt: { gte: start, lt: end } },
-      _sum: { hoursAwarded: true },
-    }),
-    prisma.hourAdjustment.aggregate({
-      where: { userId, academicYear: year },
-      _sum: { hours: true },
-    }),
-  ]);
-
-  const total = round1((yearAwarded._sum.hoursAwarded ?? 0) + (yearAdjustments._sum.hours ?? 0));
-  return {
-    total,
-    goal,
-    remaining: round1(Math.max(0, goal - total)),
-    pct: goal > 0 ? Math.min(100, Math.round((total / goal) * 100)) : 0,
+    progress: loan ? { total: loan.total, goal: loan.goal, remaining: loan.remaining, pct: loan.pct } : null,
   };
 }
 

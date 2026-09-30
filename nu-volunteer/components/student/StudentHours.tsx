@@ -1,10 +1,13 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import Link from 'next/link';
+import { useMemo, useState, type ReactNode } from 'react';
 import { useApp } from '@/components/providers/AppProviders';
 import { Badge, Button, ColorBadge, EmptyState, Icon, inputStyle } from '@/components/ui';
 import { DateEcho } from '@/components/ui/DateEcho';
+import { LoanPill } from '@/components/ui/LoanPill';
 import { COLOR, SEMANTIC, glass } from '@/lib/design';
+import type { LoanPace, LoanYearStatus } from '@/lib/loanHours';
 
 export type HourEntry = {
   id: string;
@@ -26,6 +29,22 @@ export type MonthBucket = { key: string; hours: number };
 
 type Category = { id: string; label: string; labelEn: string; color: string };
 
+/** สถานะเกณฑ์ กยศ. ของปีการศึกษา พร้อมวันที่ที่จัดรูปแบบจากฝั่งเซิร์ฟเวอร์แล้ว */
+export type LoanCard = LoanYearStatus & { startTh: string; startEn: string; lastDayTh: string; lastDayEn: string };
+
+/**
+ * ป้ายและสีแถบตามสถานะ — info/warning/danger ใช้ระดับเดียวกับการเตือน loan-hours-gap
+ * เพื่อให้สีที่เห็นในหน้านี้ตรงกับการแจ้งเตือนที่นิสิตได้รับ
+ */
+const PACE: Record<LoanPace, { tone: 'success' | 'neutral' | 'info' | 'warning' | 'danger'; label: string; bar: string }> = {
+  met: { tone: 'success', label: 'ครบเกณฑ์แล้ว', bar: SEMANTIC.success.dot },
+  'on-pace': { tone: 'neutral', label: 'ทันตามจังหวะ', bar: 'linear-gradient(90deg,#E97171,#A774F7)' },
+  info: { tone: 'info', label: 'เริ่มช้ากว่าจังหวะ', bar: SEMANTIC.info.dot },
+  warning: { tone: 'warning', label: 'ต้องเร่งทำชั่วโมง', bar: SEMANTIC.warning.dot },
+  danger: { tone: 'danger', label: 'ใกล้หมดเวลา', bar: SEMANTIC.danger.dot },
+  closed: { tone: 'neutral', label: 'ปิดนับแล้ว', bar: COLOR.hint },
+};
+
 const MONTHS_TH = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
 const MONTHS_EN = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
@@ -42,8 +61,8 @@ export function StudentHours({
   months,
   categories,
   totals,
-  goal,
   academicYear,
+  loan,
   adjustments,
   studentName,
 }: {
@@ -51,8 +70,9 @@ export function StudentHours({
   months: MonthBucket[];
   categories: Category[];
   totals: { all: number; thisMonth: number; academicYear: number; adjustments: number };
-  goal: number;
   academicYear: number;
+  /** null = ไม่ใช่ผู้กู้ยืม กยศ. — ไม่แสดงเกณฑ์ชั่วโมงใด ๆ */
+  loan: LoanCard | null;
   adjustments: { id: string; hours: number; reason: string; dateTh: string; dateEn: string }[];
   studentName: string;
 }) {
@@ -93,7 +113,6 @@ export function StudentHours({
 
   const filteredTotal = round1(filtered.reduce((s, e) => s + e.hours, 0));
   const active = Boolean(from || to || category);
-  const pct = goal > 0 ? Math.min(100, Math.round((totals.academicYear / goal) * 100)) : 0;
 
   const exportCsv = () => {
     const head = ['date', 'activity', 'organisation', 'category', 'hours'];
@@ -132,7 +151,14 @@ export function StudentHours({
         </div>
 
         <Stat icon="calendar_month" tone="info" label={t('เดือนนี้')} value={round1(totals.thisMonth)} t={t} />
-        <Stat icon="school" tone="purple" label={`${t('ปีการศึกษา')} ${academicYear}`} value={round1(totals.academicYear)} t={t} />
+        <Stat
+          icon="school"
+          tone="purple"
+          label={`${t('ปีการศึกษา')} ${academicYear}`}
+          tag={loan ? <LoanPill /> : null}
+          value={round1(totals.academicYear)}
+          t={t}
+        />
         {totals.adjustments !== 0 ? (
           <Stat
             icon="tune"
@@ -144,39 +170,8 @@ export function StudentHours({
         ) : null}
       </div>
 
-      {/* ── ความคืบหน้าตามเป้าหมาย ── */}
-      <div style={{ ...glass(20), padding: 18 }}>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, alignItems: 'center', marginBottom: 10 }}>
-          <Icon name="flag" size={19} style={{ color: '#E4572E' }} />
-          <span style={{ fontSize: 14, fontWeight: 600, color: COLOR.ink }}>
-            {`${t('เป้าหมายปีการศึกษา')} ${academicYear}`}
-          </span>
-          <Badge tone={pct >= 100 ? 'success' : 'warning'} label={`${round1(totals.academicYear)} / ${goal} ${t('ชม.')}`} />
-          <span style={{ marginInlineStart: 'auto', fontSize: 13, fontWeight: 600, color: COLOR.ink }}>{pct}%</span>
-        </div>
-        <div
-          role="progressbar"
-          aria-valuenow={pct}
-          aria-valuemin={0}
-          aria-valuemax={100}
-          aria-label={t('ความคืบหน้าชั่วโมงจิตอาสา')}
-          style={{ height: 12, borderRadius: 999, background: 'rgba(31,41,55,.1)', overflow: 'hidden' }}
-        >
-          <div
-            style={{
-              width: `${pct}%`,
-              height: '100%',
-              borderRadius: 999,
-              background: pct >= 100 ? '#63D2A1' : 'linear-gradient(90deg,#E97171,#A774F7)',
-            }}
-          />
-        </div>
-        <div style={{ fontSize: 12, color: COLOR.label, marginTop: 8 }}>
-          {pct >= 100
-            ? t('ครบเกณฑ์แล้ว')
-            : `${t('เหลืออีก')} ${round1(Math.max(0, goal - totals.academicYear))} ${t('ชม.')}`}
-        </div>
-      </div>
+      {/* ── เกณฑ์ชั่วโมง กยศ. — เฉพาะผู้กู้ยืม ── */}
+      {loan ? <LoanProgress loan={loan} /> : null}
 
       {/* ── ตัวกรอง ── */}
       <div className="nuv-no-print" style={{ ...glass(20), padding: 16, display: 'flex', flexWrap: 'wrap', gap: 10, alignItems: 'flex-end' }}>
@@ -375,12 +370,15 @@ function Stat({
   icon,
   tone,
   label,
+  tag,
   value,
   t,
 }: {
   icon: string;
   tone: 'info' | 'purple' | 'success' | 'danger';
   label: string;
+  /** ป้ายเล็กต่อท้ายชื่อการ์ด */
+  tag?: ReactNode;
   value: number;
   t: (s: string) => string;
 }) {
@@ -403,10 +401,73 @@ function Stat({
       </span>
       <span style={{ minWidth: 0 }}>
         <span style={{ display: 'block', fontSize: 24, fontWeight: 700, color: COLOR.ink }}>{value}</span>
-        <span style={{ display: 'block', fontSize: 12, color: COLOR.label }}>
+        <span style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 6, fontSize: 12, color: COLOR.label }}>
           {label} · {t('ชม.')}
+          {tag}
         </span>
       </span>
+    </div>
+  );
+}
+
+/* ───────────────── เกณฑ์ชั่วโมง กยศ. ───────────────── */
+
+function LoanProgress({ loan }: { loan: LoanCard }) {
+  const { t, isEn } = useApp();
+  const pace = PACE[loan.pace];
+  const start = isEn ? loan.startEn : loan.startTh;
+  const lastDay = isEn ? loan.lastDayEn : loan.lastDayTh;
+  const short = loan.pace !== 'met';
+
+  return (
+    <div style={{ ...glass(20), padding: 18 }}>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, alignItems: 'center', marginBottom: 10 }}>
+        <Icon name="volunteer_activism" size={19} style={{ color: '#E4572E' }} />
+        <span style={{ fontSize: 14, fontWeight: 600, color: COLOR.ink }}>
+          {`${t('ชั่วโมงจิตอาสา กยศ.')} · ${t('ปีการศึกษา')} ${loan.year}`}
+        </span>
+        <LoanPill />
+        <Badge tone={pace.tone} label={t(pace.label)} />
+      </div>
+
+      <div style={{ display: 'flex', alignItems: 'baseline', gap: 10, marginBottom: 8 }}>
+        <span style={{ fontSize: 24, fontWeight: 700, color: COLOR.ink }}>
+          {loan.total} / {loan.goal} {t('ชม.')}
+        </span>
+        <span style={{ marginInlineStart: 'auto', fontSize: 13, fontWeight: 600, color: COLOR.ink }}>{loan.pct}%</span>
+      </div>
+
+      <div
+        role="progressbar"
+        aria-valuenow={loan.pct}
+        aria-valuemin={0}
+        aria-valuemax={100}
+        aria-label={t('ความคืบหน้าชั่วโมงจิตอาสา กยศ.')}
+        style={{ height: 12, borderRadius: 999, background: 'rgba(31,41,55,.1)', overflow: 'hidden' }}
+      >
+        <div style={{ width: `${loan.pct}%`, height: '100%', borderRadius: 999, background: pace.bar }} />
+      </div>
+
+      <div style={{ fontSize: 12.5, color: COLOR.body, marginTop: 12, lineHeight: 1.7 }}>
+        {`${t('ชั่วโมงที่ได้รับการรับรองในปีการศึกษานี้นับเข้าเกณฑ์จิตอาสาของผู้กู้ยืม กยศ.')} (${t('นับ')} ${start} – ${lastDay})`}
+      </div>
+
+      <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 10, marginTop: 8 }}>
+        <span style={{ fontSize: 13, fontWeight: 600, color: short ? SEMANTIC[pace.tone].color : SEMANTIC.success.color }}>
+          {!short
+            ? t('ครบเกณฑ์ของปีการศึกษานี้แล้ว')
+            : loan.counting
+              ? `${t('ยังขาดอีก')} ${loan.remaining} ${t('ชม.')} · ${t('เหลือเวลาอีก')} ${loan.daysLeft} ${t('วัน')}`
+              : `${t('ปิดนับแล้ว ยังขาดอีก')} ${loan.remaining} ${t('ชม.')} · ${t('ปีการศึกษาใหม่เริ่มนับ 1 พ.ค.')}`}
+        </span>
+        {short && loan.counting ? (
+          <Link href="/student/discover" className="nuv-no-print" style={{ marginInlineStart: 'auto' }}>
+            <Button variant="secondary" icon="arrow_forward" style={{ padding: '8px 14px' }}>
+              {t('หากิจกรรม')}
+            </Button>
+          </Link>
+        ) : null}
+      </div>
     </div>
   );
 }

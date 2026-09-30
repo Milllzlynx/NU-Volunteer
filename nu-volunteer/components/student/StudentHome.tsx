@@ -364,7 +364,7 @@ export function StudentHome({
               </div>
             </div>
             <div style={{ fontSize: 12.5, lineHeight: 1.7, color: COLOR.label, textAlign: 'right' }}>
-              {t('เป้าหมาย 36 ชม./ปี')}
+              {`${t('เป้าหมาย')} ${progress.goal} ${t('ชม./ปี')}`}
               <br />
               {t('เหลืออีก')} {progress.remaining} {t('ชม.')}
             </div>

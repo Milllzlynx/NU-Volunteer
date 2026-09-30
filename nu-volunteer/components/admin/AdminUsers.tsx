@@ -5,6 +5,7 @@ import { Badge, Button, EmptyState, ErrorNote, Icon, Skeleton, Tabs, inputStyle 
 import { ConfirmDialog } from '@/components/admin/ConfirmDialog';
 import { useApp } from '@/components/providers/AppProviders';
 import { Avatar } from '@/components/activity/Avatar';
+import { LoanPill } from '@/components/ui/LoanPill';
 import { adminApi, errorMessage, type AdminUserRow, type AdminUserCounts } from '@/lib/api';
 import { COLOR, ROLE_ACCENT, ROLE_LABEL, ROLE_LABEL_EN, SEMANTIC, glass } from '@/lib/design';
 
@@ -354,22 +355,7 @@ function UserRow({
             >
               {u.name || u.email}
             </span>
-            {u.isLoan ? (
-              <span
-                title={t('ผู้กู้ยืม กยศ.')}
-                style={{
-                  flexShrink: 0,
-                  padding: '1px 8px',
-                  borderRadius: 999,
-                  fontSize: 10.5,
-                  fontWeight: 500,
-                  color: COLOR.label,
-                  border: `1px solid ${SEMANTIC.neutral.bg}`,
-                }}
-              >
-                กยศ.
-              </span>
-            ) : null}
+            {u.isLoan ? <LoanPill /> : null}
             <span
               style={{
                 flexShrink: 0,
