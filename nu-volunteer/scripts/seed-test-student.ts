@@ -1,7 +1,7 @@
 /**
- * บัญชีนิสิตทดสอบสำหรับสาธิตและทดสอบ — สามแบบ
+ * บัญชีนิสิตทดสอบสำหรับสาธิตและทดสอบ — สี่แบบ
  *
- *   npx tsx scripts/seed-test-student.ts [--profile full|half|none]       # dry run — ไม่เขียนฐานข้อมูล
+ *   npx tsx scripts/seed-test-student.ts [--profile full|half|low|none]   # dry run — ไม่เขียนฐานข้อมูล
  *   npx tsx scripts/seed-test-student.ts --profile half --commit          # เขียนจริง
  *   npx tsx scripts/seed-test-student.ts --profile half --remove --commit # ลบบัญชีและทุกอย่างที่ผูกอยู่
  *
@@ -21,6 +21,14 @@
  * - กิจกรรมที่ยังไม่จบแบ่ง "อนุมัติแล้ว" กับ "รออนุมัติ" (รออนุมัติเฉพาะที่ยังไม่ปิดรับสมัคร)
  * - กิจกรรมที่ไม่ได้เลือก → ไม่มีใบลงทะเบียน
  *
+ * low — ผู้กู้ยืม กยศ. ที่ตามหลังเกณฑ์มาก สำหรับทดสอบการเตือน loan-hours-gap กับหน้าชั่วโมงสะสม:
+ * - เลือกราว 10% ของกิจกรรมที่สมัครได้ กระจายตามสัดส่วนของแต่ละหมวดหมู่ (แบ่งแบบเศษเหลือมากสุด
+ *   เพราะที่ 10% หมวดส่วนใหญ่ได้ไม่ถึงหนึ่ง การปัดทีละหมวดจะได้จำนวนรวมเพี้ยน) ลำดับในหมวดใช้ค่าแฮชเดียวกับ half
+ * - ที่จบแล้วในปีการศึกษาปัจจุบัน รับรองชั่วโมงเฉพาะพอให้ได้ราว 10% ของเกณฑ์ ที่จบแล้วที่เหลือเป็นไม่มา/ไม่อนุมัติ
+ *   ไม่เกิน LOW_MAX_FAILED — มีทั้งประวัติการเข้าร่วมและชั่วโมงน้อย ไม่ใช่แค่คนที่ยังไม่เริ่ม
+ *   (รับประกันกิจกรรมชั่วโมงน้อยหนึ่งตัวในชุดที่เลือก ดู pickLow)
+ * - ที่ยังไม่จบแบ่งอนุมัติกับรออนุมัติเหมือน half
+ *
  * none — นิสิตใหม่ที่ยังไม่เข้าร่วมอะไรเลย สำหรับหน้าว่าง: สร้างบัญชีอย่างเดียว ไม่มีใบลงทะเบียน
  *
  * รันซ้ำไม่เปลี่ยนสิ่งที่เกิดขึ้นแล้ว: ใบที่รับรองชั่วโมง ใบประกาศ และใบไม่มา/ไม่อนุมัติคงเดิม
@@ -36,32 +44,40 @@
  */
 import 'dotenv/config';
 import { createHash } from 'node:crypto';
-import { academicYearOf, DEFAULT_HOURS_GOAL, HOURS_GOAL_KEY } from '@/lib/academic';
+import { academicYearOf } from '@/lib/academic';
 import { NOT_DELETED } from '@/lib/activities';
 import { newRef } from '@/lib/certificates';
 import { prisma } from '@/lib/db';
+import { hoursGoal } from '@/lib/loanHours';
 import { hashPassword } from '@/lib/tokens';
 
-type ProfileKey = 'full' | 'half' | 'none';
+type ProfileKey = 'full' | 'half' | 'low' | 'none';
 
 const PROFILES: Record<ProfileKey, { email: string; name: string; studentId: string; faculty: string; loanStatus: string }> = {
   full: {
     email: 'test.student@nu.ac.th',
-    name: 'นิสิตทดสอบ ระบบ',
+    name: 'นิสิตทดสอบ 100%',
     studentId: '00000001',
-    faculty: 'คณะวิทยาศาสตร์',
+    faculty: 'คณะสาธารณสุขศาสตร์',
     loanStatus: 'yes',
   },
   half: {
     email: 'test.student2@nu.ac.th',
-    name: 'นิสิตทดสอบ ครึ่งทาง',
+    name: 'นิสิตทดสอบ 50%',
     studentId: '00000002',
     faculty: 'คณะวิศวกรรมศาสตร์',
     loanStatus: 'no',
   },
+  low: {
+    email: 'test.student4@nu.ac.th',
+    name: 'นิสิตทดสอบ 10%',
+    studentId: '00000004',
+    faculty: 'คณะมนุษยศาสตร์',
+    loanStatus: 'yes',
+  },
   none: {
     email: 'test.student3@nu.ac.th',
-    name: 'นิสิตทดสอบ ยังไม่เริ่ม',
+    name: 'นิสิตทดสอบ 0%',
     studentId: '00000003',
     faculty: 'คณะสังคมศาสตร์',
     loanStatus: 'yes',
@@ -76,7 +92,7 @@ const commit = args.includes('--commit');
 const remove = args.includes('--remove');
 const profileArg = args[args.indexOf('--profile') + 1];
 const profile: ProfileKey = args.includes('--profile') ? (profileArg as ProfileKey) : 'full';
-if (!(profile in PROFILES)) throw new Error(`--profile ต้องเป็น full, half หรือ none (ได้ "${profileArg}")`);
+if (!(profile in PROFILES)) throw new Error(`--profile ต้องเป็น full, half, low หรือ none (ได้ "${profileArg}")`);
 const ACCOUNT = PROFILES[profile];
 
 const HOUR = 3_600_000;
@@ -92,6 +108,9 @@ const SEAT_TAKEN = ['pending', 'approved', 'checked-in', 'checked-out', 'complet
  * ให้ดูเป็นนิสิตที่เข้าร่วมพอประมาณ ไม่ใช่คนที่สมัครแล้วไม่มาเกือบทุกครั้ง
  */
 const MAX_FAILED = 8;
+/** profile low: สัดส่วนกิจกรรมที่เลือก เป้าชั่วโมงเทียบเกณฑ์ และเพดานใบไม่มา/ไม่อนุมัติ */
+const LOW_SHARE = 0.1;
+const LOW_MAX_FAILED = 3;
 
 const round1 = (n: number) => Math.round(n * 10) / 10;
 const minDate = (...ds: Date[]) => new Date(Math.min(...ds.map((d) => d.getTime())));
@@ -180,22 +199,24 @@ function planNone(activities: Activity[], now: Date): Map<string, Target> {
   return new Map(activities.map((a) => [a.id, eligible(a, now) ? 'none' : 'skip']));
 }
 
-async function planHalf(activities: Activity[], now: Date): Promise<Map<string, Target>> {
-  const plan = new Map<string, Target>(activities.map((a) => [a.id, eligible(a, now) ? 'none' : 'skip']));
-  const pool = activities.filter((a) => plan.get(a.id) === 'none');
-  const statusOf = (a: Activity) => a.registrations[0]?.status;
-  // ใบที่มีอยู่แล้วคือตัวที่เคยเลือกไว้ — เรียงไว้หน้าสุดเสมอ รันซ้ำจะได้ไม่หลุดจากการเลือก
-  const byKeepThenRank = (x: Activity, y: Activity) =>
-    Number(!statusOf(x)) - Number(!statusOf(y)) || rank(x.id).localeCompare(rank(y.id));
+/** ใบที่มีอยู่แล้วคือตัวที่เคยเลือกไว้ — เรียงไว้หน้าสุดเสมอ รันซ้ำจะได้ไม่หลุดจากการเลือก */
+const statusOf = (a: Activity) => a.registrations[0]?.status;
+const byKeepThenRank = (x: Activity, y: Activity) =>
+  Number(!statusOf(x)) - Number(!statusOf(y)) || rank(x.id).localeCompare(rank(y.id));
 
-  // ราวครึ่งหนึ่งของแต่ละหมวดหมู่ — หมวดที่มีจำนวนคี่ปัดขึ้นสลับกับปัดลง ให้รวมแล้วใกล้ครึ่งที่สุด
+/** กิจกรรมที่สมัครได้ จัดกลุ่มตามหมวดหมู่ เรียงหมวดตามรหัสให้ลำดับคงที่ */
+function poolByCategory(pool: Activity[]): Activity[][] {
   const byCategory = new Map<string, Activity[]>();
   for (const a of pool) byCategory.set(a.categoryId, [...(byCategory.get(a.categoryId) ?? []), a]);
+  return [...byCategory.entries()].sort(([x], [y]) => x.localeCompare(y)).map(([, list]) => [...list].sort(byKeepThenRank));
+}
+
+/** half: ราวครึ่งหนึ่งของแต่ละหมวดหมู่ — หมวดที่มีจำนวนคี่ปัดขึ้นสลับกับปัดลง ให้รวมแล้วใกล้ครึ่งที่สุด */
+function pickHalf(pool: Activity[]): Activity[] {
   let roundUp = true;
   const picked: Activity[] = [];
-  for (const [, list] of [...byCategory.entries()].sort(([x], [y]) => x.localeCompare(y))) {
-    const sorted = [...list].sort(byKeepThenRank);
-    let take = list.length / 2;
+  for (const sorted of poolByCategory(pool)) {
+    let take = sorted.length / 2;
     if (!Number.isInteger(take)) {
       take = roundUp ? Math.ceil(take) : Math.floor(take);
       roundUp = !roundUp;
@@ -203,10 +224,64 @@ async function planHalf(activities: Activity[], now: Date): Promise<Map<string, 
     take = Math.max(take, sorted.filter(statusOf).length);
     picked.push(...sorted.slice(0, take));
   }
+  return picked;
+}
 
-  const goalSetting = await prisma.setting.findUnique({ where: { key: HOURS_GOAL_KEY } });
-  const goal = Number(goalSetting?.value) || DEFAULT_HOURS_GOAL;
-  const hoursTarget = goal / 2;
+/**
+ * low: ราว LOW_SHARE ของทั้งหมด กระจายตามสัดส่วนหมวดหมู่แบบเศษเหลือมากสุด
+ * ได้ส่วนเต็มของแต่ละหมวดก่อน ที่เหลือแจกให้หมวดที่เศษมากสุด (เสมอกันใช้ลำดับหมวด)
+ *
+ * รับประกันว่ามีกิจกรรมชั่วโมงน้อยที่จบแล้วในปีนี้อย่างน้อยหนึ่งตัว — ไม่งั้นถ้าค่าแฮชเลือกได้แต่กิจกรรม
+ * 12 ชม. จะรับรองชั่วโมงให้ไม่ได้เลยโดยไม่เกินเป้า บัญชีนี้ต้อง "มีชั่วโมงบ้างแต่ห่างเป้ามาก"
+ * ถ้ายังไม่มี จะสลับตัวท้ายสุดของหมวดที่มีกิจกรรมแบบนั้นออก (ไม่สลับใบที่มีอยู่แล้ว รันซ้ำจึงไม่เปลี่ยน)
+ */
+function pickLow(pool: Activity[], now: Date, hoursTarget: number): Activity[] {
+  const ay = academicYearOf(now);
+  const small = (a: Activity) =>
+    a.endAt < now && a.endAt >= ay.start && a.endAt < ay.end && a.hours > 0 && a.hours <= Math.ceil(hoursTarget);
+
+  const groups = poolByCategory(pool);
+  const total = Math.round(pool.length * LOW_SHARE);
+  const quota = groups.map((g) => g.length * LOW_SHARE);
+  const take = quota.map(Math.floor);
+  const spare = total - take.reduce((s, n) => s + n, 0);
+  const order = quota.map((q, i) => ({ i, rem: q - Math.floor(q) })).sort((x, y) => y.rem - x.rem || x.i - y.i);
+  for (let k = 0; k < spare; k++) take[order[k].i]++;
+
+  const picks = groups.map((g, i) => g.slice(0, Math.max(take[i], g.filter(statusOf).length)));
+
+  if (!picks.flat().some(small)) {
+    const swap = groups
+      .map((g, i) => ({ i, cand: g.filter((a) => small(a) && !picks[i].includes(a)) }))
+      .filter(({ i, cand }) => cand.length && picks[i].some((a) => !statusOf(a)))
+      .flatMap(({ i, cand }) => cand.map((a) => ({ i, a })))
+      .sort((x, y) => x.a.hours - y.a.hours || rank(x.a.id).localeCompare(rank(y.a.id)))[0];
+    if (swap) {
+      const list = picks[swap.i];
+      const out = list.map((a, k) => ({ a, k })).filter(({ a }) => !statusOf(a)).at(-1)!.k;
+      list[out] = swap.a;
+    }
+  }
+  return picks.flat();
+}
+
+/**
+ * กำหนดผลของกิจกรรมที่เลือกแล้ว — ใช้ร่วมกันระหว่าง half กับ low
+ * ที่จบแล้วในปีนี้รับรองชั่วโมงพอให้ใกล้ hoursShare ของเกณฑ์ ที่เหลือเป็นไม่มา/ไม่อนุมัติไม่เกิน maxFailed
+ * ที่ยังไม่จบแบ่งอนุมัติกับรออนุมัติ
+ */
+async function assignOutcomes(
+  activities: Activity[],
+  picked: Activity[],
+  poolSize: number,
+  now: Date,
+  hoursShare: number,
+  maxFailed: number,
+): Promise<Map<string, Target>> {
+  const plan = new Map<string, Target>(activities.map((a) => [a.id, eligible(a, now) ? 'none' : 'skip']));
+
+  const goal = await hoursGoal();
+  const hoursTarget = round1(goal * hoursShare);
   const ay = academicYearOf(now);
   const ended = picked.filter((a) => a.endAt < now);
 
@@ -227,7 +302,7 @@ async function planHalf(activities: Activity[], now: Date): Promise<Map<string, 
     }
   }
 
-  // เติมชั่วโมงจากกิจกรรมในปีการศึกษานี้ เริ่มจากชั่วโมงน้อย รับเฉพาะตัวที่ทำให้ใกล้ครึ่งเกณฑ์ขึ้น
+  // เติมชั่วโมงจากกิจกรรมในปีการศึกษานี้ เริ่มจากชั่วโมงน้อย รับเฉพาะตัวที่ทำให้ใกล้เป้าขึ้น
   // (เกินเป้าเล็กน้อยได้ ถ้าใกล้กว่าหยุดไว้ต่ำกว่าเป้า)
   const candidates = ended
     .filter((a) => plan.get(a.id) === 'none' && a.endAt >= ay.start && a.endAt < ay.end)
@@ -238,11 +313,11 @@ async function planHalf(activities: Activity[], now: Date): Promise<Map<string, 
     earned += a.hours;
   }
 
-  // ที่เหลือของที่จบแล้ว: ไม่มา/ไม่อนุมัติไม่เกิน MAX_FAILED ใบ ตัวที่เกินไม่สมัครเลย
+  // ที่เหลือของที่จบแล้ว: ไม่มา/ไม่อนุมัติไม่เกิน maxFailed ใบ ตัวที่เกินไม่สมัครเลย
   // ยกเว้นใบที่มีอยู่แล้ว (อนุมัติหรือรออนุมัติไว้ก่อนกิจกรรมจบ) ซึ่งต้องมีผลลัพธ์เสมอ
   for (const a of ended.filter((x) => plan.get(x.id) === 'none').sort(byKeepThenRank)) {
     const prev = statusOf(a);
-    if (failed >= MAX_FAILED && !prev) continue;
+    if (failed >= maxFailed && !prev) continue;
     // ใบที่อนุมัติไปแล้วถูกไม่อนุมัติย้อนหลังไม่ได้ ใบที่ยังรออนุมัติก็ "ไม่มา" ไม่ได้
     const s =
       prev === 'approved' ? 'no-show'
@@ -271,10 +346,26 @@ async function planHalf(activities: Activity[], now: Date): Promise<Map<string, 
   }
 
   console.log(
-    `เลือกตามหมวดหมู่ ${picked.length} จาก ${pool.length} กิจกรรมที่สมัครได้ · ไม่มา/ไม่อนุมัติไม่เกิน ${MAX_FAILED} ใบ · เป้าชั่วโมงปีการศึกษา ${ay.year}: ${hoursTarget} จากเกณฑ์ ${goal} → ได้ ${round1(earned)} ชม.\n`,
+    `เลือกตามหมวดหมู่ ${picked.length} จาก ${poolSize} กิจกรรมที่สมัครได้ · ไม่มา/ไม่อนุมัติไม่เกิน ${maxFailed} ใบ · เป้าชั่วโมงปีการศึกษา ${ay.year}: ${hoursTarget} จากเกณฑ์ ${goal} → ได้ ${round1(earned)} ชม.
+`,
   );
   return plan;
 }
+
+function eligiblePool(activities: Activity[], now: Date) {
+  return activities.filter((a) => eligible(a, now));
+}
+
+const planHalf = (activities: Activity[], now: Date) => {
+  const pool = eligiblePool(activities, now);
+  return assignOutcomes(activities, pickHalf(pool), pool.length, now, 0.5, MAX_FAILED);
+};
+
+const planLow = async (activities: Activity[], now: Date) => {
+  const pool = eligiblePool(activities, now);
+  const target = (await hoursGoal()) * LOW_SHARE;
+  return assignOutcomes(activities, pickLow(pool, now, target), pool.length, now, LOW_SHARE, LOW_MAX_FAILED);
+};
 
 /** ใบเดิมอยู่ที่สถานะเป้าหมายแล้ว — ไม่ต้องแตะ */
 function reached(current: Activity['registrations'][number] | undefined, target: Target, certificate: boolean) {
@@ -327,8 +418,9 @@ async function main() {
   const plan =
     profile === 'full' ? planFull(activities, now)
     : profile === 'none' ? planNone(activities, now)
+    : profile === 'low' ? await planLow(activities, now)
     : await planHalf(activities, now);
-  if (profile !== 'half') console.log('');
+  if (profile === 'full' || profile === 'none') console.log('');
 
   let userId = existing?.id ?? '';
   if (commit && !existing) {
